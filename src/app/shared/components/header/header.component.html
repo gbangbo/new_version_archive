@@ -1,0 +1,56 @@
+<div class="header-wrapper grid grid-cols-12 m-0">
+
+    <form class="form-inline search-full" [class.open]="layoutService.isSearchOpen">
+        <app-search></app-search>
+    </form>
+
+    <div class="header-logo-wrapper hidden col-auto p-0 lg:block">
+        <app-header-logo [icon]="'align-center'" [type]="'header'"></app-header-logo>
+    </div>
+
+    <div class="left-header col-span-5 xxl:col-span-6 xl:col-span-5 lg:col-span-4 md:col-span-3">
+        <app-header-notice></app-header-notice>
+    </div>
+
+    <div class="nav-right col-span-7 xxl:col-span-6 xl:col-span-7 md:col-span-11 float-right right-header p-0 ms-auto">
+        <ul class="nav-menus">
+            
+            <li class="language-nav" (click)="toggleLanguage()" (clickOutside)="clickOutside()">
+                <app-header-language></app-header-language>
+            </li>
+
+            <li class="fullscreen-body">
+                <span>
+                    <app-toggle-screen></app-toggle-screen>
+                </span>
+            </li>
+
+<!--            <li>-->
+<!--                <span class="header-search">-->
+<!--                    <app-svg-icon [icon]="'search'" (click)="openSearch()"></app-svg-icon>-->
+<!--                </span>-->
+<!--            </li>-->
+
+<!--            <li class="onhover-dropdown">-->
+<!--                <app-header-bookmark></app-header-bookmark>-->
+<!--            </li> -->
+
+            <li>
+                <app-mode></app-mode>
+            </li>
+
+<!--            <li class="cart-nav onhover-dropdown">-->
+<!--                <app-header-cart></app-header-cart>-->
+<!--            </li>-->
+
+            <li class="onhover-dropdown">
+                <app-header-notification></app-header-notification>
+            </li>
+
+            <li class="profile-nav onhover-dropdown pe-0 py-0">
+                <app-profile></app-profile>
+            </li>
+
+        </ul>
+    </div>
+</div>

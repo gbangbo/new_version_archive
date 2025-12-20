@@ -1,0 +1,53 @@
+<div class="container default-dashboard">
+    <div class="grid grid-cols-12 card-gap widget-grid">
+        <div class="col-span-4 xxl:col-span-6 sm:col-span-12 box-col-6">
+            <app-welcome-card></app-welcome-card>
+        </div>
+
+        <div class="col-span-5 xxl:col-span-6 xl:col-span-12 box-col-6 ord-md-2 ord-custom-2">
+            <div class="grid grid-cols-12 card-gap">
+                @for(details of details; track details) {
+                    <div class="col-span-6 sm:col-span-12">
+                        <app-details [detail]="details"></app-details>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="col-span-3 xxl:col-span-4 xl:col-span-6 sm:col-span-12 ord-md-1 box-col-4 ord-xl-5 box-ord-5 ord-custom-1">
+            <app-visitors-chart></app-visitors-chart>
+        </div>
+
+        <div class="col-span-4 xxl:col-span-6 sm:col-span-12 ord-xl-1 ord-md-3 box-ord-1 box-col-6 ord-custom-3">
+            <app-top-customers></app-top-customers>
+        </div>
+
+        <div class="col-span-5 xxl:col-span-6 lg:col-span-12 box-col-6 ord-xl-2 ord-md-5 box-ord-2 ord-custom-4">
+            <app-sales-statistical></app-sales-statistical>
+        </div>
+
+        <div class="col-span-3 xl:col-span-6 md:col-span-12 ord-xl-3 ord-md-6 box-ord-3 ord-custom-5">
+            <app-monthly-target></app-monthly-target>
+        </div>
+
+        <div class="col-span-5 xl:col-span-6 md:col-span-12 ord-xl-4 ord-md-7 box-ord-4 ord-custom-6">
+            <app-activity-log></app-activity-log>
+        </div>
+
+        <div class="col-span-7 xxl:col-span-8 lg:col-span-12 ord-xl-6 ord-md-8 box-ord-6 box-col-8e ord-custom-7">
+            <app-recent-orders></app-recent-orders>
+        </div>
+
+        <div class="col-span-3 xxl:col-span-4 lg:col-span-6 sm:col-span-12 box-col-4 ord-xl-7 ord-md-4 box-ord-7 ord-custom-8">
+            <app-buy-account></app-buy-account>
+        </div>
+
+        <div class="col-span-5 xxl:col-span-6 lg:col-span-12 ord-xl-9 ord-md-9 box-ord-7 box-col-6 ord-custom-9">
+            <app-sales-report></app-sales-report>
+        </div>
+
+        <div class="col-span-4 xxl:col-span-6 lg:col-span-12 ord-xl-10 ord-md-10 box-ord-7 box-col-6 ord-custom-10">
+            <app-manage-appointments></app-manage-appointments>
+        </div>
+    </div>
+</div>

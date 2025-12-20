@@ -1,0 +1,46 @@
+<div class="card">
+  <div class="card-header card-no-border">
+    <div class="header-top week-header">
+      <h5>Sales Per Week</h5>
+      <div class="card-header-right-icon">
+        <a
+          class="btn btn-light font-medium c-o-light"
+          href="javascript:void(0)"
+        >
+          Last 7 days
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="card-body pt-0">
+    <ul class="sales-data common-flex">
+      <li>
+        <span class="sale-value primary-20"></span>
+        <span class="c-light ms-1">0-400</span>
+      </li>
+      <li>
+        <span class="sale-value primary-70"></span>
+        <span class="c-light ms-1">400-800</span>
+      </li>
+      <li>
+        <span class="sale-value bg-primary"></span>
+        <span class="c-light ms-1">800-1200</span>
+      </li>
+    </ul>
+    <div class="sales-week-container">
+      <div id="sale-week">
+        <apx-chart
+          [chart]="salesWeekChart.chart"
+          [colors]="salesWeekChart.colors"
+          [plotOptions]="salesWeekChart.plotOptions"
+          [dataLabels]="salesWeekChart.dataLabels"
+          [series]="salesWeekChart.series"
+          [xaxis]="salesWeekChart.xaxis"
+          [yaxis]="salesWeekChart.yaxis"
+          [responsive]="salesWeekChart.responsive"
+        >
+        </apx-chart>
+      </div>
+    </div>
+  </div>
+</div>

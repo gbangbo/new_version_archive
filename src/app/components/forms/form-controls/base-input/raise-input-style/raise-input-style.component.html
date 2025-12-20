@@ -1,0 +1,49 @@
+<app-card [headerTitle]="'Raise Input Style'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'theme-form dark-inputs'">
+  <p class="f-m-light mt-1" header5>
+    Use <code>input-air-* </code>to define bottom box-shadow.
+  </p>
+  <div class="grid">
+    <div class="col-span-12">
+      <div class="mb-4">
+        <label class="form-label" for="exampleFormControlInput15">Email Address</label>
+        <input class="form-control input-air-primary" id="exampleFormControlInput15" type="email" placeholder="name&#64;example.com">
+      </div>
+    </div>
+  </div>
+  <div class="grid">
+    <div class="col-span-12">
+      <div class="mb-4">
+        <label class="form-label" for="exampleInputPassword16">Password</label>
+        <input class="form-control input-air-primary" id="exampleInputPassword16" type="password" placeholder="Password">
+      </div>
+    </div>
+  </div>
+  <div class="grid">
+    <div class="col-span-12">
+      <div class="mb-4">
+        <label class="form-label" for="exampleFormControlSelect17">Select Your Favorite Pixelstrap Theme</label>
+        <select2 [data]="themeSelection" placeholder="Tivo" class="raise-input-select"> </select2>
+      </div>
+    </div>
+  </div>
+  <div class="grid">
+    <div class="col-span-12">
+      <div class="mb-4">
+        <label class="form-label" for="exampleFormControlSelect18">Select The Color You Like Below</label>
+        <select2 [multiple]="true" [data]="selectColor" placeholder="Red"> </select2>
+      </div>
+    </div>
+  </div>
+  <div class="grid">
+    <div class="col-span-12">
+      <div>
+        <label class="form-label" for="exampleFormControlTextarea19">Comments</label>
+        <textarea class="form-control input-air-primary" id="exampleFormControlTextarea19" grids="3"></textarea>
+      </div>
+    </div>
+  </div>
+  <div class="card-footer text-end" details>
+    <button class="btn btn-primary me-3 text-white" type="submit">Submit</button>
+    <input class="btn btn-light" type="reset" value="Cancel">
+  </div>
+</app-card>

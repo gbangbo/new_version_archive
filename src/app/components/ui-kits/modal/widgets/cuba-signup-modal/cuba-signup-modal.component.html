@@ -1,0 +1,41 @@
+<div class="modal  fade show modal-backdrop">
+  <div class="modal-dialog">
+    <div class="modal-content" (clickOutside)="closeModal()">
+      <div class="modal-toggle-wrapper social-profile social-profile-modal text-start dark-sign-up">
+        <h3 class="modal-header !border-none !justify-center">CUBA SIGN-UP</h3>
+        <div class="modal-body">
+          <form class="grid grid-cols-12 gap-4 needs-validation" [formGroup]="signUpForm" (ngSubmit)="submit()">
+            <div class="col-span-6 md:col-span-12">
+              <label class="form-label block text-start" for="validationCustom01">First name</label>
+              <input class="form-control" id="validationCustom01" type="text" placeholder="Enter your name" formControlName="firstName" [ngClass]="{ 'is-invalid' : signUpForm.controls['firstName'].touched && signUpForm.controls['firstName'].errors?.['required'] , 'is-valid' : signUpForm.controls['firstName'].valid}">
+              @if(signUpForm.controls['firstName'].valid) {
+                <div class="valid-feedback">Looks good!</div>
+              }
+            </div>
+            <div class="col-span-6 md:col-span-12">
+              <label class="form-label block text-start" for="validationCustom02">Last name</label>
+              <input class="form-control" id="validationCustom02" type="text" placeholder="Enter your surname" formControlName="lastName" [ngClass]="{ 'is-invalid' : signUpForm.controls['lastName'].touched && signUpForm.controls['lastName'].errors?.['required'] , 'is-valid' : signUpForm.controls['lastName'].valid}">
+              @if(signUpForm.controls['lastName'].valid) {
+                <div class="valid-feedback">Looks good!</div>
+              }
+            </div>
+            <div class="col-span-12">
+              <div class="mb-4">
+                <label class="form-label block text-start" for="exampleFormControlInput1">Email address</label>
+                <input class="form-control" id="exampleFormControlInput1" type="email" placeholder="cubatheme@gmail.com" formControlName="email" [ngClass]="{ 'is-invalid' : signUpForm.controls['email'].touched && (signUpForm.controls['email'].errors?.['required'] || !signUpForm.controls['email'].valid) , 'is-valid' : signUpForm.controls['email'].valid}">
+              </div>
+            </div>
+            <div class="col-span-12">
+              <div class="form-check flex items-start gap-2 !mb-[20px]">
+                <input class="form-check-input checkbox-primary" id="flexCheckDefault" type="checkbox" formControlName="policy" (change)="handleChange($event)" [ngClass]="{ 'is-invalid' : signUpForm.controls['policy'].touched && signUpForm.controls['policy'].errors?.['required'] , 'is-valid' : signUpForm.controls['policy'].valid}">
+                <label class="form-check-label d-block mb-0" for="flexCheckDefault">You accept our Terms and Privacy
+                  Policy by clicking Submit below.</label>
+              </div>
+              <button class="btn btn-primary rounded text-white flex" type="submit">Sign Up</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

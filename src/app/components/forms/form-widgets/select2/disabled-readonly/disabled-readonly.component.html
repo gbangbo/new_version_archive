@@ -1,0 +1,7 @@
+<app-card [headerTitle]="'Disabled Readonly'" [header]="'pb-0'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>
+    Use <code>ngx-chips</code> for tags and <code>[(ngModel)]="readonly" </code>for readonly option.</p>
+    <form>
+      <tag-input [(ngModel)]="readonly" name="tags4"  [disable]="true"></tag-input>
+    </form>
+</app-card>

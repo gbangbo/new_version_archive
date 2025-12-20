@@ -1,0 +1,46 @@
+<div class="grid grid-cols-12 car-gap">
+  <label class="col-span-3 md:col-span-12">Signup Points</label>
+  <div class="col-span-9 md:col-span-12">
+    <div class="input-group">
+      <span class="input-group-text" id="minPerOrder">
+         <i class="fa-regular fa-gem"></i>
+        </span>
+      <input class="form-control" type="number" value="150" placeholder="Enter signup points">
+    </div>
+    <div class="helper-text">
+      <p class="italic c-o-light">*Provide points to new users as a signup incentive.</p>
+    </div>
+  </div>
+</div>
+<div class="grid grid-cols-12 car-gap">
+  <label class="col-span-3 md:col-span-12">Min Per Order Amount</label>
+  <div class="col-span-9 md:col-span-12">
+    <div class="input-group">
+      <span class="input-group-text" id="collectPointOrder"> 
+        <i class="fa-solid fa-dollar-sign"></i>
+      </span>
+      <input class="form-control" type="number" value="100" placeholder="Enter min per order amount">
+    </div>
+    <div class="helper-text">
+      <p class="italic c-o-light">*Collect points when orders meet or exceed the minimum value.</p>
+    </div>
+  </div>
+</div>
+<div class="grid grid-cols-12 car-gap">
+  <label class="col-span-3 md:col-span-12">Point Currency Ratio</label>
+  <div class="col-span-9 md:col-span-12">
+    <input class="form-control" type="number" value="30" placeholder="Enter point current ratio">
+    <div class="helper-text">
+      <p class="italic c-o-light">*Determine the conversion factor from points to currency.</p>
+    </div>
+  </div>
+</div>
+<div class="grid grid-cols-12 car-gap">
+  <label class="col-span-3 md:col-span-12">Reward Per Order Point</label>
+  <div class="col-span-9 md:col-span-12">
+    <input class="form-control" type="number" value="10" placeholder="Enter reward per order point">
+    <div class="helper-text">
+      <p class="italic c-o-light">*Earn reward points based on each orders value.<br>(Rewards Points = (Total Order Amount / Min Per Order Amount) * Reward Per Order Point)</p>
+    </div>
+  </div>
+</div>

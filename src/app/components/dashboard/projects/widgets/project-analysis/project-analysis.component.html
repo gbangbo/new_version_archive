@@ -1,0 +1,28 @@
+<app-card [headerTitle]="'Projects Analysis'" [padding]="false" [cardClass]="'sales-report'" [cardBodyClass]="' pt-0'" [dropdownType]="'simple'" [options]="cardToggleOption">
+   
+    <ul class="balance-data"> 
+        @for(details of projectAnalysis.details; track details){
+            <li>
+                <span class="circle bg-{{ details.class}}"></span>
+                <span class="c-light ms-1">{{ details.name}}</span>
+            </li>
+        }
+      </ul>
+
+      <div id="project-analysis">
+        <apx-chart
+            [series]="projectAnalysis.series"
+            [chart]="projectAnalysis.chart"
+            [stroke]="projectAnalysis.stroke"
+            [plotOptions]="projectAnalysis.plotOptions"
+            [colors]="projectAnalysis.colors"
+            [fill]="projectAnalysis.fill"
+            [grid]="projectAnalysis.grid"
+            [legend]="projectAnalysis.legend"
+            [markers]="projectAnalysis.markers"
+            [xaxis]="projectAnalysis.xaxis"
+            [yaxis]="projectAnalysis.yaxis"
+            [responsive]="projectAnalysis.responsive">
+        </apx-chart>
+      </div>
+</app-card>

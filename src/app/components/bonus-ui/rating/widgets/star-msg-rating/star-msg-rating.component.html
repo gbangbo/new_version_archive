@@ -1,0 +1,23 @@
+<app-card [headerTitle]="'Star with Message Rating'" [header]="'pb-0'" [border]="true" [padding]="false" [cardClass]="'height-equal'">
+  <p class="f-m-light mt-1" header5>Use <code>bar-rating</code> to display a star rating with dynamic messages. The <code>rateChange</code> event updates the rating and shows a relevant message.</p>
+  <div class="msg-emojis-wrapper main-star-rating">
+    <div class="common-flex star-box justify-center">
+      <div class="rating">
+        <bar-rating [rate]="faoRate" (rateChange)="onFaoRate($event)" [max]="5">
+          <ng-template ratingActive>
+            <i class="fa-solid fa-star" style="color: #ffb829"></i>
+          </ng-template>
+          <ng-template ratingInactive>
+            <i class="fa-solid fa-star" style="color: #d2d2d2"></i>
+          </ng-template>
+          <ng-template ratingFraction>
+            <i class="fa-solid fa-star" style="color: #d2d2d2"></i>
+          </ng-template>
+        </bar-rating>
+        @if(faoRated){
+          <p class="mt-2">{{ getRatingString(faoRate) }}</p>
+        }
+      </div>
+    </div>
+  </div>
+</app-card>

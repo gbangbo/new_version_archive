@@ -1,0 +1,61 @@
+<div class="container dashboard-7">
+    <div class="grid grid-cols-12 card-gap">
+        <div class="col-span-9 xxl:col-span-12 box-col-12">
+            <div class="grid grid-cols-12 card-gap">
+                <div class="col-span-4 xxl:col-span-5 md:col-span-12">
+                    <app-academic-performance></app-academic-performance>
+                </div>
+                <div class="col-span-8 xxl:col-span-7 md:col-span-12">
+                    <app-school-performance></app-school-performance>
+                </div>
+
+                @for(details of schoolDetails; track details) {
+                    <div class="col-span-4 sm:col-span-12">
+                        <app-school-details [details]="details"></app-school-details>
+                    </div>
+                }
+                
+                <div class="col-span-4 xl:col-span-6 sm:col-span-12 box-col-5">
+                    <app-school-finance></app-school-finance>
+                </div>
+                <div class="col-span-8 xl:col-span-12 xl:order-1 xl:order-1 box-col-7">
+                    <app-performance-overview></app-performance-overview>
+                </div>
+                <div class="col-span-4 xl:col-span-6 sm:col-span-12 order-none">
+                    <app-school-calendar></app-school-calendar>
+                </div>
+                <div class="col-span-8 xl:col-span-12 order-2">
+                    <app-today-task></app-today-task>
+                </div>
+            </div>
+        </div>
+        <div class="col-span-3 xxl:col-span-12 block xxl:hidden box-col-none">
+            <div class="grid grid-cols-12 card-gap">
+                <div class="col-span-12 block xl:hidden">
+                    <app-increase-knowledge></app-increase-knowledge>
+                </div>
+                <div class="col-span-12 notification box-col-6 block xl:hidden">
+                    <app-notice-board></app-notice-board>
+                </div>
+                <div class="col-span-12 block xl:hidden">
+                    <app-shinning-stars></app-shinning-stars>
+                </div>
+            </div>
+        </div>
+        <div class="col-span-6 md:col-span-12">
+            <app-unpaid-fees></app-unpaid-fees>
+        </div>
+        <div class="col-span-6 md:col-span-12">
+            <app-top-student></app-top-student>
+        </div>
+        <div class="col-span-3 xl:col-span-5 sm:col-span-12 xl:order-1">
+            <app-student></app-student>
+        </div>
+        <div class="col-span-5 xl:col-span-12 xl:order-3">
+            <app-new-enroll-student></app-new-enroll-student>
+        </div>
+        <div class="col-span-4 xl:col-span-7 sm:col-span-12 xl:order-2">
+            <app-attendance></app-attendance>
+        </div>
+    </div>
+</div>

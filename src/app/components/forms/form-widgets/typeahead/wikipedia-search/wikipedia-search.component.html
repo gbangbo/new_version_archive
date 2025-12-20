@@ -1,0 +1,20 @@
+<app-card [headerTitle]="'Wikipedia search'" [header]="'pb-0'" [border]="true" [padding]="false">
+  <p class="mt-1 mb-0" header5>A typeahead example that gets values from the <code>WikipediaService</code></p>
+
+  <div class="typeahead-box" (clickOutside)="close()">
+    <input id="typeahead-http" type="text" class="form-control" [class.is-invalid]="searchFailed" [(ngModel)]="model" (input)="onSearch($event)" placeholder="Wikipedia search" />
+  </div>
+  @if(searching){
+    <small class="form-text text-muted">searching...</small>
+  }
+  @if(searchFailed){
+    <div class="invalid-feedback">Sorry, suggestions could not be loaded.</div>
+  }
+  @if(filteredResults.length > 0){
+    <ul class="list-group">
+      @for(result of filteredResults; track result){
+        <li class="list-group-item" (click)="onSelectResult(result)">{{ result }}</li>
+      }
+    </ul>
+  }
+</app-card>

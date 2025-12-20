@@ -1,0 +1,37 @@
+<app-card [headerTitle]="'Vertical Validation Wizard'" [header]="'pb-0'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5> Fill up your true details and next proceed.</p>
+  <div class="vertical-main-wizard">
+    <div class="grid grid-cols-12 gap-4 tabs">
+      <div class="col-span-3 xxl:col-span-4 xl:col-span-12">
+        <div class="tab-links nav flex-col header-vertical-wizard" orientation="vertical">
+          @for(tab of verticalValidation;track tab; let i = $index){
+            <div>
+              <a class="tab-link" [class.active]="activeTab == tab.id" (click)="changeTab(tab.id)">
+                <div class="vertical-wizard">
+                  <div class="stroke-icon-wizard">
+                    <i class="fa-solid fa-{{ tab.class }}"></i>
+                  </div>
+                  <div class="vertical-wizard-content">
+                    <h6>{{ tab.title }}</h6>
+                    <p>{{ tab.text }} </p>
+                  </div>
+                </div>
+              </a>
+            </div>
+          }
+        </div>
+      </div>
+      <div class="col-span-9 xxl:col-span-8 xl:col-span-12">
+          @if(activeTab == 1){
+            <app-your-info [active]="activeTab" (changeTab)="changeTab($event)"></app-your-info>
+          }
+          @if(activeTab == 2){
+            <app-cart-info [active]="activeTab" (changeTab)="changeTab($event)"></app-cart-info>
+          }
+          @if(activeTab == 3){
+              <app-net-banking [active]="activeTab" (changeTab)="changeTab($event)"></app-net-banking>
+          }
+        </div>
+        </div>
+    </div>
+</app-card>

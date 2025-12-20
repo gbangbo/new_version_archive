@@ -1,0 +1,68 @@
+<div class="grid grid-cols-12 gap-4 setting-options">
+    <div class="col-span-12">
+        <h5 class="mb-4">Search Options</h5>
+        <div class="grid grid-cols-12 gap-2 mb-4">
+            <div class="col-span-2 xxl:col-span-3 md:col-span-4 sm:col-span-6 box-col-3">
+              <label class="form-label mb-0">Save Search History</label>
+            </div>
+            <div class="col-span-9 xxl:col-span-8 md:col-span-7 sm:col-span-6 box-col-8e">
+              <div class="form-check form-switch form-check-inline">
+                <input class="form-check-input switch-primary check-size" type="checkbox" role="switch" checked="">
+              </div>
+            </div>
+          </div>
+          <div class="grid grid-cols-12 gap-2 mb-4">
+            <div class="col-span-2 xxl:col-span-3 md:col-span-4 sm:col-span-6 box-col-3">
+              <label class="form-label mb-0">Safe Search</label>
+            </div>
+            <div class="col-span-9 xxl:col-span-8 md:col-span-7 sm:col-span-6 box-col-8e">
+              <div class="form-check form-switch form-check-inline">
+                <input class="form-check-input switch-primary check-size" type="checkbox" role="switch" checked="">
+              </div>
+            </div>
+          </div>
+          <div class="grid grid-cols-12 gap-2 mb-4">
+            <div class="col-span-2 xxl:col-span-3 md:col-span-4 box-col-3">
+              <label class="form-label mb-0">Language</label>
+            </div>
+            <div class="col-span-9 xxl:col-span-8 md:col-span-7 sm:col-span-12 box-col-8e">
+              <select2 [data]="languages" placeholder="Select language" noResultMessage="No Language Found" resettable></select2>
+            </div>
+          </div>
+          <div class="grid grid-cols-12 gap-2 mb-4">
+            <div class="col-span-2 xxl:col-span-3 md:col-span-4 box-col-3">
+              <label class="form-label mb-0">Region</label>
+            </div>
+            <div class="col-span-9 xxl:col-span-8 md:col-span-7 sm:col-span-12 box-col-8e">
+                <select2 [data]="regions" placeholder="Select region" noResultMessage="No Region Found" resettable></select2>
+            </div>
+          </div>
+          <div class="grid grid-cols-12 gap-2 mb-4">
+            <div class="col-span-2 xxl:col-span-3 md:col-span-4 box-col-3">
+              <label class="form-label mb-0">File Type</label>
+            </div>
+            <div class="col-span-9 xxl:col-span-8 md:col-span-7 sm:col-span-12 box-col-8e">
+                <select2 [data]="fileFormats" placeholder="Select file format" noResultMessage="No File Format Found" resettable></select2>
+            </div>
+          </div>
+          <div class="grid grid-cols-12 gap-2 mb-4">
+            <div class="col-span-2 xxl:col-span-3 md:col-span-4 box-col-3">
+              <label class="form-label mb-0">Last Update</label>
+            </div>
+            <div class="col-span-9 xxl:col-span-8 md:col-span-7 sm:col-span-12 box-col-8e">
+                <select2 [data]="lastUpdate" placeholder="Select time" noResultMessage="No Time Found" resettable></select2>
+            </div>
+          </div>
+          <div class="grid grid-cols-12 gap-2 mb-4">
+            <div class="col-span-2 xxl:col-span-3 md:col-span-4 box-col-3">
+              <label class="form-label mb-0">License & Rights</label>
+            </div>
+            <div class="col-span-9 xxl:col-span-8 md:col-span-7 sm:col-span-12 box-col-8e">
+                <select2 [data]="licenseOptions" placeholder="Select license option" noResultMessage="No License Option Found" resettable listPosition="above"></select2>
+              <div class="flex mt-3 justify-end">
+                <a class="btn btn-primary text-white" href="Javascript:void(0)" role="button">Clear Search History </a>
+              </div>
+            </div>
+        </div>
+    </div>
+</div>

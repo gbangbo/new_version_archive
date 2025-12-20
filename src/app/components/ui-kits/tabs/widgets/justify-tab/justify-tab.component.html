@@ -1,0 +1,36 @@
+<app-card [headerTitle]="'Justify Tabs'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'tabs'">
+    <p class="mt-1 f-m-light" header5>
+        Use <code>class="tab-links flex"</code> for tabs pill shape and set content using flex property..
+    </p>
+        
+    <div class="card-header flex justify-between items-center flex-wrap gap-2 pb-2 p-0">
+        <p>CUBA Profiles For New Employees:</p>
+        <ul class="tab-links flex nav-primary border-0">
+            @for(tab of justifyTabs; track tab) {
+                <li class="tab-link block" [class.active]="activeTab == tab.value" (click)="handleTab(tab.value)"> {{ tab.title }}</li>
+            }
+        </ul>
+    </div>
+    <div class="card-body px-0 pb-0">
+        <div class="tab-content">
+            <div class="tab-pan fade show active">
+                <div class="designer-details">
+                    @for(employee of employees; track employee) {
+                        @if(employee.designation == activeTab) {
+                            <div class="designer-profile"> 
+                                <div class="designer-wrap">
+                                    <img class="designer-img" [src]="employee.profile" alt="profile">
+                                    <div class="designer-content"> 
+                                        <h6>{{ employee.name }}</h6>
+                                        <p>{{ employee.contact }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+</app-card>

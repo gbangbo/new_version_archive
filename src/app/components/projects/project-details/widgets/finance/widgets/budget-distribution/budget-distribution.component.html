@@ -1,0 +1,14 @@
+<app-card [cardClass]="'get-card'" [headerTitle]="'Budget Distribution'" [padding]="false" [cardBodyClass]="'pt-0'">
+    <div class="project-chart-wrap">
+        <div id="projectchart">
+            <apx-chart 
+                [series]="budgetDistributionChart.series"
+                [chart]="budgetDistributionChart.chart"
+                [plotOptions]="budgetDistributionChart.plotOptions"
+                [legend]="budgetDistributionChart.legend"
+                [colors]="budgetDistributionChart.colors"
+                [labels]="budgetDistributionChart.labels">
+            </apx-chart>
+        </div>
+    </div>
+</app-card>

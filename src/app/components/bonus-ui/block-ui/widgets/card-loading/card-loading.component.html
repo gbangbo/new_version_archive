@@ -1,0 +1,23 @@
+<app-card [headerTitle]="'Card Loading'" [headerClass]="'mb-0'" [header]="'pb-0'" [border]="true" [padding]="false" [cardClass]="'card-block-wrapper'">
+  <p class="f-m-light mt-1" header5>Use <code>&lt;ngx-spinner&gt;</code> to display a loading spinner. Customize the background with the <code>bdColor</code> property, adjust the size using <code>size</code>, and change the spinner color with <code>color</code>. To set different spinner styles, use the <code>[type]</code> input. Supported types include <code>ball-clip-rotate</code>, <code>ball-fall</code>, and <code>ball-spin-clockwise</code>. Control its display mode with <code>[fullScreen]</code> as needed.</p>  
+  <div class="block-main-wrapper">
+  <div class="block-wrapper">
+    <div class="card-block-wrapper">
+      <img class="card-img-top2 max-w-full" src="assets/images/other-images/sea.jpg" alt="nature">
+      <div class="p-10">
+        <h5 class="card-title">Discover the Majesty!</h5>
+        <p class="card-text c-light">"With our assortment of mountain stones, take a trip through untamed environments and historic structures. Each item infuses your area with the unadulterated beauty of nature while telling a tale of perseverance and time. Strength and tranquilly contained in these classic pieces."</p>
+      </div>
+      </div>
+      <div class="common-flex">
+        <button class="button text-white btn btn-primary block-btn-4" (click)="loading('ball-clip-rotate')">Card Loader 1</button>
+        <button class="button text-white btn btn-primary block-btn-5" (click)="loading('ball-fall')">Card Loader 2 </button>
+        <button class="button text-white btn btn-primary block-btn-6" (click)="loading('ball-spin-clockwise')">Card Loader 3</button>
+      </div>
+    </div>
+  </div>
+  @if(loadingShow) {
+    <ngx-spinner bdColor="rgba(255, 255, 255, .8)" size="default" color="#343a40" [type]="type" [fullScreen]="false"></ngx-spinner>
+  }
+</app-card>
+

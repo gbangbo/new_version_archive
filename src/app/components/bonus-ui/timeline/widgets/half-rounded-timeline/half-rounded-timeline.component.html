@@ -1,0 +1,23 @@
+<app-card [headerTitle]="'Half Rounded Timeline'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'rounded-timeline'">
+    <p class="f-m-light mt-1" header5>Use <code> rounded-timeline</code> class to your rounded timeline.</p>
+    <div class="timeline">
+      @for(details of halfRoundedTimeline; track details){
+        <div class="container {{ details.type }}">
+          <div class="date">{{ details.date }}</div>
+          <i class="icon fa-{{ details.icon }}"></i>
+          <div class="content">
+            <div class="timeline-wrapper">
+              <div class="badge bg-{{ details.badge_class }}">{{ details.badge }}</div>
+            </div>
+            <h5 class="mb-4">{{ details.title }}</h5>
+            <p class="mb-0 f-light">{{ details.description }}</p>
+            @if(details.audio){
+              <audio controls="">
+                <source src="assets/audio/horse.ogg" type="audio/ogg">
+              </audio>
+            }
+          </div>
+        </div>
+      }
+  </div>
+</app-card>

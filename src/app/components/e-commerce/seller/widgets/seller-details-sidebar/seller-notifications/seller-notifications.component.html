@@ -1,0 +1,22 @@
+<div class="notification-wrapper">
+  @for(item of notifications.notification_list; track item) {
+    <div class="form-check checkbox checkbox-primary mb-0">
+      <input class="form-check-input" [id]="'checkbox-primary-' + item.id" type="checkbox" [checked]="item.checked">
+      <label class="form-check-label" [for]="'checkbox-primary-' + item.id">{{ item.title }}</label>
+    </div>
+  }
+</div>
+<p class="font-medium">Receive Notification On&colon;</p>
+<ul class="checkbox-wrapper justify-start">
+  @for(item of notifications.notification_platform; track item) {
+    <li class="relative group inline-block">
+      <input class="form-check-input checkbox-shadow" [id]="'checkbox-icon' + item.id" type="checkbox">
+      <label class="form-check-label" [id]="'checkbox-icon' + item.id">
+        <i class="{{ item.logo }}"></i>
+      </label>
+
+      <app-tooltip [title]="item.name"></app-tooltip>
+      
+    </li>
+  }
+</ul>

@@ -1,0 +1,21 @@
+<app-card [headerTitle]="'Scrollable Content'" [header]="'pb-0'" [border]="true" [padding]="false">
+    <p class="f-m-light mt-1" header5>Use <code>ngx-scrollbar</code> to create a custom scrollbar. Use <code>list-group-item </code>through made profile and with used <code> vertical-scroll</code>.</p>
+    <div class="vertical-scroll scroll-demo scroll-b-none">
+        <ng-scrollbar style="height: 300px; width: 100%;">
+            <div class="list-group main-lists-content pt-0">
+                @for(user of scrollableContent; track user) {
+                    <a class="list-group-item list-group-item-action list-hover-primary" href="javascript:void(0)">
+                        <div class="list-wrapper gap-0">
+                            <img class="list-img" [src]="user.user_profile" alt="user">
+                            <div class="list-content"> 
+                                <h6>{{ user.user_name }}</h6>
+                                <p>{{ user.email }}</p>
+                                <small>{{ user.time }}</small>
+                            </div>
+                        </div>
+                    </a>
+                }
+            </div>
+          </ng-scrollbar>
+      </div>
+</app-card>

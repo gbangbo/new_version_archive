@@ -1,0 +1,21 @@
+<app-card [headerTitle]="'Basic Modals'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'common-flex'">
+    <p class="mt-1 f-m-light" header5>Different types of basic modals using like <code>simple / scrolling / tooltips / grid / varying modal</code>.</p>
+
+    <button class="btn btn-secondary !text-white" type="button" (click)="openSimpleModal()">Simple</button>
+    @if(simpleModalOpen){
+        <app-simple-modal (modalOpen)="handleOpenSimpleModal($event)"></app-simple-modal>
+    }
+    <button class="btn btn-success !text-white" type="button" (click)="openScrollingModal()">Scrolling Content</button>
+    @if(scrollingModalOpen){
+        <app-scrolling-content-modal (modalOpen)="handleOpenSimpleModal($event)"></app-scrolling-content-modal>
+    }
+    <button class="btn btn-info !text-white" type="button" (click)="openTooltipPopoverModal()">Tooltips and Popovers</button>
+    @if(tooltipPopoverModalOpen){
+        <app-tooltip-popover-modal (modalOpen)="handleOpenSimpleModal($event)"></app-tooltip-popover-modal>
+    }
+    <button class="btn btn-primary text-white" type="button" (click)="openCubaModal()">Open Modal for Cuba</button>
+    @if(cubaModalOpen){
+        <app-cuba-signup-modal (modalOpen)="handleOpenSimpleModal($event)"></app-cuba-signup-modal>
+    }
+
+</app-card>

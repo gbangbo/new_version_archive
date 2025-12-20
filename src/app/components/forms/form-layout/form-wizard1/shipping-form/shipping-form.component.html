@@ -1,0 +1,89 @@
+<app-card [headerTitle]="'Shipping Form'" [header]="'pb-0'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5> Fill up your true details and next proceed.</p>
+    <div class="grid grid-cols-12">
+      <div class="col-span-12"> 
+        <div class="grid grid-cols-12 shipping-form gap-4">
+          <div class="col-span-8 xl:col-span-12 pr-3 shipping-border checkout-cart tabs">
+            <div class="tab-links horizontal-options shipping-options" id="stepper1">
+              @for(tab of shippingForm; track tab) {
+                <a class="tab-link rounded-none" [class.active]="activeTab == tab.id" (click)="changeTab(tab.id)"> 
+                  <div class="cart-options">
+                    <div class="stroke-icon-wizard">
+                      <i class="fa-solid fa-{{ tab.icon}}"></i>
+                    </div>
+                    <div class="cart-options-content"> 
+                      <h6>{{ tab.title }}</h6>
+                    </div>
+                  </div>
+                </a>
+              }
+            </div>
+            <div class="tab-content dark-field shipping-content shipping-wizard basic-wizard" id="msform">
+
+              <div class="tab-pane fade show active" [ngStyle]="{ 'display': (activeTab === 1 ? 'block' : 'none') }">
+                <app-information></app-information>
+              </div>
+    
+              <div [ngStyle]="{ 'display': (activeTab === 2 ? 'block' : 'none') }">
+                <app-shipping></app-shipping>
+              </div>
+    
+              <div [ngStyle]="{ 'display': (activeTab === 3 ? 'block' : 'none') }">
+                <app-payment></app-payment>
+              </div>
+    
+              <div [ngStyle]="{ 'display': (activeTab === 4 ? 'block' : 'none') }">
+                <app-completed [type]="'classic'"></app-completed>
+              </div>
+              
+              @if(activeTab !== 4) {
+                <div class="col-span-12 justify-end common-flex flex gap-2">
+                  <button class="btn btn-primary text-white mt-3" id="backbtn" (click)="handleStep(-1)" [disabled]="activeTab == 1">Process To  Back</button>
+                  <button class="btn btn-primary text-white mt-3" id="nextbtn" (click)="handleStep(1)">{{ activeTab == shippingForm.length ? 'Finish' : 'Process To Next' }}</button>
+                </div>
+              }
+            </div>
+          </div>
+          <div class="col-span-4 xl:col-span-12"> 
+            <div class="shipping-info">
+              <h5>Current Cart </h5>
+              <div class="overflow-auto custom-scrollbar">
+                <table class="table table-striped">
+                  <thead>
+                    <tr>
+                      <th scope="col">Product</th>
+                      <th scope="col">Product Detail </th>
+                      <th scope="col">Price </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for(details of productDetails;track details){
+                      <tr>
+                        <td> <img [src]="details.image" alt="{{ details.alt }}"></td>
+                        <td> 
+                          <div> 
+                            <h6>{{ details.title }} </h6><span>${{ details.quantity }}</span>
+                          </div>
+                        </td>
+                        <td>
+                          <p>${{ details.price }}</p>
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                  <tfoot>
+                    @for(details of productTotal;track details){
+                      <tr> 
+                        <td>{{ details.title }} :</td>
+                        <td colspan="2">${{ details.price }} </td>
+                      </tr>
+                    }
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+</app-card>

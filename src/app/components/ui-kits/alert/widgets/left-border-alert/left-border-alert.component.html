@@ -1,0 +1,20 @@
+<app-card [cardClass]="'height-equal'" [header]="'pb-0'" [headerTitle]="'Left Border Alert'" [border]="true" [padding]="false" [cardBodyClass]="'live-dark dark-alert-msg'">
+
+    <p class="f-m-light mt-1" header5> Use <code>border-left-*</code> class to add left border to alert.</p>
+
+    <div class="alert alert-bg-dark light alert-dismissible fade txt-dark border-left-dark" [ngClass]="alertVisible[1] ? 'show' : 'hide'">
+        <app-feather-icon [icon]="'help-circle'"></app-feather-icon>
+        <p>Dark Alert: border-left-wrapper</p>
+        <button class="btn-close" type="button" (click)="closeAlert(1)"></button>
+    </div>
+    <div class="alert alert-bg-secondary light alert-dismissible fade txt-secondary border-left-secondary" [ngClass]="alertVisible[2] ? 'show' : 'hide'">
+        <app-feather-icon [icon]="'alert-octagon'"></app-feather-icon>
+        <p>Secondary Alert: border-left-secondary</p>
+        <button class="btn-close" type="button" (click)="closeAlert(2)"></button>
+    </div>
+    <div class="alert alert-bg-success light alert-dismissible fade txt-success border-left-success" [ngClass]="alertVisible[3] ? 'show' : 'hide'">
+        <app-feather-icon [icon]="'check-square'"></app-feather-icon>
+        <p>Success Alert: border-left-success</p>
+        <button class="btn-close" type="button" (click)="closeAlert(3)"></button>
+    </div>
+</app-card>

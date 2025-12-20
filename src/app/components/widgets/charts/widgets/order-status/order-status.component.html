@@ -1,0 +1,23 @@
+<app-card [headerTitle]="'Order Status'" [header]="'pb-0'" [border]="true" [padding]="false" [dropdownType]="'classic'" [options]="cardToggleOption">
+
+    <div class="chart-container progress-chart">
+        @for(charts of orderStatusChart; track charts) {
+            <div id="progress1">
+                <apx-chart 
+                    [chart]="charts.chart_details.chart"
+                    [plotOptions]="charts.chart_details.plotOptions"
+                    [colors]="charts.chart_details.colors"
+                    [stroke]="charts.chart_details.stroke"
+                    [fill]="charts.chart_details.fill"
+                    [series]="charts.chart_details.series"
+                    [title]="charts.chart_details.title"
+                    [subtitle]="charts.chart_details.subtitle"
+                    [tooltip]="charts.chart_details.tooltip"
+                    [xaxis]="charts.chart_details.xaxis"
+                    [yaxis]="charts.chart_details.yaxis"
+                    [responsive]="charts.chart_details.responsive">
+                </apx-chart>
+            </div>
+        }
+    </div>
+</app-card>

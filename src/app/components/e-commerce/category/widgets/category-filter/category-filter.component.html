@@ -1,0 +1,22 @@
+<app-card>
+  <div class="grid grid-cols-12 gap-4">
+    <div class="col-span-3 md:col-span-12">
+      <label class="form-label">Parent Category</label>
+      <select2 [data]="parentCategory" placeholder="Select category" noResultMessage="No Category Found." resettable> </select2>
+    </div>
+
+    <div class="col-span-3 md:col-span-12">
+      <label class="form-label">Category Type</label>
+      <select2 [data]="categoryType" placeholder="Select category type" noResultMessage="No Category Type Found." resettable> </select2>
+    </div>
+
+    <div class="col-span-3 md:col-span-12">
+      <label class="form-label">Category Status</label>
+      <select2 [data]="categoryStatus" placeholder="Select category status" noResultMessage="No Category Status Found." resettable> </select2>
+    </div>
+
+    <div class="col-span-3 md:col-span-12 flex justify-start items-center m-t-20">
+      <a class="btn btn-primary font-medium text-white" href="javascript:void(0)">Submit</a>
+    </div>
+  </div>
+</app-card>

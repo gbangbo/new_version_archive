@@ -1,0 +1,15 @@
+<app-card [cardClass]="'small-widget'" [cardBodyClass]="details.color">
+    <span class="f-light">{{ details.title }}</span>
+    <div class="flex items-center gap-1">
+        <h4 class="counter">
+            <app-counter [counter]="details.count"></app-counter>
+        </h4>
+        <span class="font-{{ details.color }} f-12 font-medium">
+            <i class="icon-arrow-{{ details.margin_type == 'profit' ? 'up' : 'down' }}"></i>
+            <span>{{ details.margin_type == 'profit' ? '+' : '-' }} {{ details.margin }}</span>
+        </span>
+    </div>
+    <div class="bg-gradient"> 
+        <app-svg-icon [class]="'stroke-icon svg-fill'" [icon]="details.icon"></app-svg-icon>
+    </div>
+</app-card>

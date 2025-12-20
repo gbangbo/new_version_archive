@@ -1,0 +1,36 @@
+<app-card [headerTitle]="'Table Foot'" [header]="'pb-0'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>
+    To prevent any styles from leaking to nested tables, we use the child combinator (>) selector in our CSS. Since we need to target all the tds and ths in the thead, tbody, and tfoot, our selector would look pretty long without it. </p>
+    <div class="card-block grid grid-cols-12">
+      <div class="col-span-12">
+        <div class="overflow-x-auto custom-scrollbar">
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Product ID</th>
+                <th scope="col">Product Name</th>
+                <th scope="col">Category</th>
+                <th scope="col">Price ($)</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for(details of tableFoot; track details){
+                <tr>
+                  <td>{{ details.product_id }}</td>
+                  <td>{{ details.product_name }}</td>
+                  <td>{{ details.category }}</td>
+                  <td>{{ details.price }}</td>
+                </tr>
+              }
+            </tbody>
+            <tfoot>
+              <tr> 
+                <td colspan="3">Total Products</td>
+                <td>04</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+</app-card>

@@ -1,0 +1,10 @@
+<app-card [headerTitle]="'Border Primary State'" [border]="true" [padding]="false" [header]="'border-l-primary border-3 pb-0'" [cardClass]="'common-hover'"> 
+  <p class="mt-1 f-m-light" header5>Use class of<code> border-l-* </code>for left border and <code>border-3 </code>is used to increase the width of the border.</p>
+  <div class="list-group">
+    @for(details of primaryStateCard; track details){
+      <a class="list-group-item list-group-item-action" [class.active]="details.active" [class.text-white]="details.active" href="javascript:void(0)">
+        <img class="rounded-full" [src]="details.img" alt="user">{{ details.name }}
+      </a>
+    }
+    </div>
+</app-card>

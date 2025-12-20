@@ -1,0 +1,34 @@
+<app-card [cardClass]="'balance-box'">
+  <div class="balance-profile">
+    <div class="balance-img">
+      <img src="assets/images/dashboard-4/user.png" alt="user vector">
+      <a class="edit-icon" href="javascript:void(0)" [routerLink]="['/user/user-profile/1']">
+        <app-svg-icon [icon]="'pencil'"></app-svg-icon>
+      </a>
+    </div>
+    <span class="f-light block">Your Balance</span>
+    <h5 class="mt-1">$
+     
+      <span class="counter"><app-counter [counter]="balanceDetails.total_balance | number"></app-counter></span>
+    </h5>
+    <ul>
+      @for(details of balanceDetails.details; track details) {
+        <li>
+          <div class="balance-item" [ngClass]="details.profit_type == 'profit' ? 'success' : 'danger'">
+            <div class="balance-icon-wrap">
+              <div class="balance-icon">
+                <app-feather-icon [icon]="details.profit_type == 'profit' ? 'arrow-up-right' : 'arrow-down-right'"></app-feather-icon>
+              </div>
+            </div>
+            <div> <span class="f-12 f-light">{{ details.title }} </span>
+              <h5>{{ details.value }}</h5>
+              <span class="badge inline-block badge-light-{{details.profit_type == 'profit' ? 'success' : 'danger'}} rounded-full">
+                {{details.profit_type == 'profit' ? '+' : '-'}}{{ details.profit }}%
+              </span>
+            </div>
+          </div>
+        </li>
+      }
+    </ul>
+  </div>
+</app-card>

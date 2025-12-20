@@ -1,0 +1,51 @@
+<div class="container main-setting">
+  <div class="grid grid-cols-12 card-gap">
+    <div class="col-span-12">
+      <app-card [headerTitle]="'E-commerce Settings'" [header]="'pb-0'" [border]="true" [padding]="false">
+        <div class="grid grid-cols-12 gap-4 tabs">
+          <div class="col-span-3 lg:col-span-12">
+            <div class="tab-links nav-primary" orientation="vertical">
+              @for(tab of settingTabs; track tab) {
+                <a class="tab-link" [class.active]="activeTab == tab.value" (click)="handleTab(tab.value)">
+                  <app-svg-icon [icon]="tab.icon"></app-svg-icon>
+                  {{ tab.title }}
+                </a>
+              }
+            </div>
+          </div>
+          <div class="col-span-9 lg:col-span-12">
+            <div class="tab-content">
+              <div class="tab-pan fade show active">
+            @if(activeTab == 'general'){
+              <app-general></app-general>
+            }
+            @else if(activeTab == 'activation'){
+              <app-activation></app-activation>
+            }
+            @else if(activeTab == 'wallet-points'){
+              <app-wallet-points></app-wallet-points>
+            }
+            @else if(activeTab == 'seller-commissions'){
+              <app-seller-commission></app-seller-commission>
+            }
+            @else if(activeTab == 'refund'){
+              <app-refund></app-refund>
+            }
+            @else if(activeTab == 'delivery'){
+              <app-delivery></app-delivery>
+            }
+            @else if(activeTab == 'payment-method'){
+              <app-payment-method></app-payment-method>
+            }
+            @else if(activeTab == 'analytics'){
+              <app-analytics></app-analytics>
+            }
+          </div>
+        </div>
+      </div>
+      </div>
+        <button class="btn btn-primary ms-auto block text-white">Save</button>
+      </app-card>
+    </div>
+  </div>
+</div>

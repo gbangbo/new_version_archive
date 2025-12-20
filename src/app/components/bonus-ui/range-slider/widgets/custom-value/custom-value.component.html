@@ -1,0 +1,10 @@
+<app-card [headerTitle]="'Custom Values'" [header]="'pb-0'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>
+    Use <code>ngx-slider</code> to create a range slider with custom values and labels. In this example, the slider is configured with a <code>value</code> starting at 4, corresponding to "Apr" in the <code>stepsArray</code>. The <code>stepsArray</code> defines custom steps, each with a value and a legend (e.g., months of the year), and <code>showTicksValues</code> is enabled to display the ticks alongside the labels.
+  </p>
+    <div class="form-group grid grid-cols-12 py-1 justify-cente">
+      <div class="col-span-10 md:col-span-12">
+        <ngx-slider [(value)]="value" [options]="options"></ngx-slider>
+      </div>
+    </div>
+</app-card>

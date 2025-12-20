@@ -1,0 +1,28 @@
+<!-- page-wrapper Start-->
+<div class="page-wrapper" [ngClass]="layoutService.config.settings.sidebar_type" id="pageWrapper">
+
+    <!-- Page Header Start-->
+    <div class="page-header" [class.close_icon]="layoutService.closeSidebar">
+        <app-header></app-header>
+    </div>
+    <!-- Page Header Ends-->
+
+    <!-- Page Body Start-->
+    <div class="page-body-wrapper">
+        <!-- Page Sidebar Start-->
+        <div class="sidebar-wrapper" [attr.data-layout]="layoutService.config.settings.icon"  [class.close_icon]="layoutService.closeSidebar">
+            <app-sidebar></app-sidebar>
+        </div>
+        <!-- Page Sidebar Ends-->
+
+        <div class="page-body">
+            <app-breadcrumb></app-breadcrumb>
+            <router-outlet></router-outlet>
+        </div>
+        
+        <!-- Footer Start -->
+         <app-footer></app-footer>
+        </div>
+</div>
+    
+<app-customizer></app-customizer>

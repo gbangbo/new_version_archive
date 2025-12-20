@@ -1,0 +1,40 @@
+<app-card [headerTitle]="'Numbering Wizard'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'basic-wizard important-validation'">
+  <p class="f-m-light mt-1" header5>
+    Fill up your details and proceed next steps.
+  </p>
+  <div class="stepper-horizontal custom-scrollbar" id="stepper1">
+    @for(tab of numberingTabs; track tab) {
+      <div class="stepper-{{ tab.class }}" [ngClass]="{'active done': tab.id < activeTab || (activeTab === numberingTabs.length && tab.id === numberingTabs.length)}">
+        <div class="step-circle">
+          <span>{{ tab.id}}</span>
+        </div>
+        <div class="step-title">{{ tab.title }}</div>
+        <div class="step-bar-left"></div>
+        <div class="step-bar-right"></div>
+      </div>
+    }
+  </div>
+  <div id="msform">
+
+    <div [ngStyle]="{ 'display': (activeTab === 1 ? '' : 'none') }">
+      <app-basic-info></app-basic-info>
+    </div>
+
+    <div [ngStyle]="{ 'display': (activeTab === 2 ? '' : 'none') }">
+      <app-cart-info></app-cart-info>
+    </div>
+
+    <div [ngStyle]="{ 'display': (activeTab === 3 ? '' : 'none') }">
+      <app-feedback></app-feedback>
+    </div>
+
+    <div [ngStyle]="{ 'display': (activeTab === 4 ? '' : 'none')}">
+      <app-finish></app-finish>
+    </div>
+
+  </div>
+  <div class="wizard-footer flex gap-2 justify-end">
+    <button class="btn button-light-primary" id="backbtn"  (click)="handleStep(-1)" [disabled]="activeTab == 1"> Back</button>
+    <button class="btn btn-primary text-white" id="nextbtn" (click)="handleStep(1)">{{ activeTab == numberingTabs.length ? 'Finish' : 'Next' }}</button>
+  </div>
+</app-card>

@@ -1,0 +1,57 @@
+<app-card [headerTitle]="'Bottom Tabs'" [header]="'pb-0'" [border]="true" [padding]="false">
+    <p class="mt-1 f-m-light" header5>
+        Use <code>tab-content </code>before the <code>tab-links</code> for bottom tab.
+    </p>
+        
+    <div class="bg-navbar bottom-navbar tabs">
+        <div class="tab-content">
+            <div class="tab-pan fade show active">
+                @if(activeTab == 'css') {
+                    <div class="common-flex"><img src="assets/images/tree/css.png" alt="">
+                        <H5>CSS</H5>
+                      </div>
+                      <div class="tab-paragraph"><i class="fa-solid fa-circle-arrow-right"></i>
+                        <P>"One of the three main web technologies is CSS. The terms "cascading" and "style," with
+                          cascading indicating how one style can cascade from another, are actually the key to
+                          understanding CSS, which stands for Cascading Style Sheets."</P>
+                      </div>
+                      <div class="tab-paragraph"><i class="fa-solid fa-circle-arrow-right"></i>
+                        <p>To specify how HTML code will appear on a website, utilize CSS.</p>
+                    </div>
+                } @else if(activeTab == 'vendors') {
+                    <div class="common-flex"><img src="assets/images/tree/vendor.png" alt="#">
+                        <H5>Vendors</H5>
+                      </div>
+                      <div class="tab-paragraph"><i class="fa-solid fa-circle-arrow-right"></i>
+                        <P>To improve the development of your website, find a carefully chosen list of premier
+                          suppliers. Use our dependable network to locate the ideal partners for the accomplishment of
+                          your project.</P>
+                      </div>
+                      <div class="tab-paragraph"><i class="fa-solid fa-circle-arrow-right"></i>
+                        <p>Cutting-edge design tools, or specialized services, our curated list ensures you have
+                          access to the best resources for a seamless and successful website development experience.
+                        </p>
+                    </div>
+                } @else if(activeTab == 'javascript') {
+                    <div class="common-flex"><img src="assets/images/tree/js.png" alt="">
+                        <H5>Javascript</H5>
+                      </div>
+                      <div class="tab-paragraph"><i class="fa-solid fa-circle-arrow-right"></i>
+                        <P>Development of interactive and adaptable websites is made possible by JavaScript, the web's
+                          dynamic programming language.</P>
+                      </div>
+                      <div class="tab-paragraph"><i class="fa-solid fa-circle-arrow-right"></i>
+                        <p>Building strong and interactive online apps requires JavaScript, which is essential for
+                          everything from enabling asynchronous requests to designing captivating user interfaces.</p>
+                    </div>
+                }
+            </div>
+        </div>
+        <ul class="tab-links nav-primary">
+            <li class="tab-link" [class.active]="activeTab == 'css'" (click)="handleTab('css')"><img src="assets/images/tree/css.png" alt="">CSS</li>
+            <li class="tab-link" [class.active]="activeTab == 'vendors'" (click)="handleTab('vendors')"> <img src="assets/images/tree/vendor.png"alt="">Vendors</li>
+            <li class="tab-link" [class.active]="activeTab == 'javascript'" (click)="handleTab('javascript')"> <img src="assets/images/tree/js.png" alt="">Javascript</li>
+        </ul>
+    </div>
+
+</app-card>

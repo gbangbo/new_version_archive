@@ -1,0 +1,9 @@
+<app-card [headerTitle]="'Movie Rating Bar'" [header]="'pb-0'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>Use<code> bar-rating </code> to create a movie rating system. Setting [max]="4" limits the rating scale, while [showText]="true" displays corresponding labels like 'No rating', 'Bad', 'Mediocre', 'Good', and 'Awesome'.</p>
+  <div class="rating-container">
+    <bar-rating class="bar" [(rate)]="movieRate" [max]="4" [theme]="'movie'" [showText]="true" [titles]="['No rating', 'Bad', 'Mediocre', 'Good', 'Awesome']"></bar-rating>
+  </div>
+</app-card>
+
+
+

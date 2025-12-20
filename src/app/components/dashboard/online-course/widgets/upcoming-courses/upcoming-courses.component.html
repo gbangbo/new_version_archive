@@ -1,0 +1,20 @@
+<app-card [headerTitle]="upcomingCourses.title" [padding]="false" [dropdownType]="'simple'" 
+    [options]="cardToggleOption" [cardBodyClass]="'pt-0'">
+
+    <div class="upcoming-event-wrap">
+        <div id="upcomingchart">
+            <apx-chart
+                [series]="upcomingCourses.series"
+                [chart]="upcomingCourses.chart"
+                [plotOptions]="upcomingCourses.plotOptions"
+                [dataLabels]="upcomingCourses.dataLabels"
+                [xaxis]="upcomingCourses.xaxis"
+                [yaxis]="upcomingCourses.yaxis"
+                [grid]="upcomingCourses.grid"
+                [stroke]="upcomingCourses.stroke"
+                [states]="upcomingCourses.states"
+                [responsive]="upcomingCourses.responsive">
+            </apx-chart>
+        </div>
+    </div>
+</app-card>

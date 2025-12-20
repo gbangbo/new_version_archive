@@ -1,0 +1,49 @@
+<app-card [headerTitle]="'Toggle Between Modal'" [header]="'pb-0'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>Toggle between multiple modals with some clever placement</p>
+
+  <a class="btn btn-dark !text-white" (click)="openFirstModal()">Open First Modal</a>
+
+  @if(modalFirstOpen){
+    <div class="modal  fade show modal-backdrop">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" (clickOutside)="closeModal()">
+          <div class="modal-body">
+            <div class="modal-toggle-wrapper">
+              <ul class="modal-img">
+                <li><img src="assets/images/gif/whatapp.gif" alt="whatsapp"></li>
+                <li> <img src="assets/images/gif/instagram.gif" alt="instagram"></li>
+                <li> <img src="assets/images/gif/facebook.gif" alt="facebook"></li>
+              </ul>
+              <h6>Remove your complete account from your phone or tablet to sign out of the Gmail app.</h6>
+              <button class="btn btn-dark rounded-full w-full mt-4 text-white" (click)="openSecondModal()">Connect new account</button>
+              <button class="btn rounded-full w-full pb-0 dark-toggle-btn" type="button" (click)="closeModal()">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if(modalSecondOpen){
+    <div class="modal  fade show modal-backdrop">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" (clickOutside)="closeModal()">
+          <div class="modal-body">
+            <div class="modal-toggle-wrapper">
+              <ul class="modal-img">
+                <li> <img src="assets/images/gif/logout.gif" alt="logout"></li>
+              </ul>
+              <h4 class="pt-3 text-center">Already leaving??</h4>
+              <p class="text-center">Are you sure want to logout this dashboard?</p>
+              <span class="block text-center mb-4"> Not a member?
+                <a class="ms-1" href="javascript:void(0)" [routerLink]="['/dashboard/e-commerce']"
+                  (click)="closeModal()">Register</a>
+              </span>
+              <button class="btn btn-dark flex m-auto text-white" type="button" (click)="closeModal()">Yes, Log out</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</app-card>

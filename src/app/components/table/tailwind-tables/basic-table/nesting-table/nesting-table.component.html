@@ -1,0 +1,56 @@
+<app-card [headerTitle]="'Nesting'" [header]="'pb-0'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>
+    Border styles, active styles, and table variants are not inherited by nested tables.</p>
+    <div class="card-block grid grid-cols-12">
+      <div class="col-span-12">
+        <div class="overflow-x-auto custom-scrollbar">
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Date</th>
+                <th scope="col">Student Name</th>
+                <th scope="col">Status</th>
+                <th scope="col">Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for(details of nestingTable; track details){
+                <tr>
+                  <td>{{ details.date }}</td>
+                  <td>{{ details.student_name }}</td>
+                  <td> <span class="badge text-white badge-{{ details.class }}">{{ details.status }}</span></td>
+                  <td>{{ details.notes }}</td>
+                  </tr>
+                  <tr>
+                    @if(details.courses){
+                    <td colspan="4">
+                      <table class="table mb-0 border table-bordered">
+                        <thead>
+                          <tr class="border-b">
+                            <th class="border-r" scope="col">Course Name</th>
+                            <th class="border-r" scope="col">Instructor</th>
+                            <th class="border-r" scope="col">Day</th>
+                            <th class="border-r" scope="col">Time</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          @for(item of details.courses; track item){
+                            <tr>
+                              <td class="border-r">{{ item.course_name }}</td>
+                              <td class="border-r">{{ item.instructor }}</td>
+                              <td class="border-r">{{ item.day }}</td>
+                              <td class="border-r">{{ item.time }}</td>
+                            </tr>
+                          }
+                        </tbody>
+                      </table>
+                    </td>
+                  }
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+</app-card>

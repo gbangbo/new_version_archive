@@ -1,0 +1,7 @@
+<app-card [cardClass]="'heading-space'" [headerTitle]="'All Campaigns'" [padding]="false" [headerClass]="'m-0'"
+          [dropdownType]="'simple'" [options]="cardToggleOption" [cardBodyClass]="'pt-0 px-0 campaign-table'">
+
+    <div class="recent-table overflow-x-auto currency-table custom-scrollbar">
+      <app-table [tableConfig]="tableConfig" [pageSize]="5"   [paginateDetails]="true" [showPaginate]="true" [tableClass]="'table'"></app-table>
+    </div>
+</app-card>

@@ -1,0 +1,25 @@
+<app-card [headerTitle]="'Orders This Month'" [padding]="false" [dropdownType]="'simple'" [options]="cardToggleOption" [cardBodyClass]="'pt-0'">
+    <div class="light-card balance-card d-inline-block">
+        <h4 class="mb-0">${{ orderChart.monthOrder | number }} 
+            <span class="f-light f-14">({{ orderChart.totalOrderGoal | number }} To Goal)</span>
+        </h4>
+    </div>
+    <div class="order-wrapper"> 
+        <div id="order-goal">
+            <apx-chart
+                [series]="orderChart.series"
+                [chart]="orderChart.chart"
+                [colors]="orderChart.colors"
+                [fill]="orderChart.fill"
+                [dataLabels]="orderChart.dataLabels"
+                [stroke]="orderChart.stroke"
+                [grid]="orderChart.grid"
+                [xaxis]="orderChart.xaxis"
+                [yaxis]="orderChart.yaxis"
+                [legend]="orderChart.legend"
+                [tooltip]="orderChart.tooltip"
+                [responsive]="orderChart.responsive">
+            </apx-chart>
+        </div>
+    </div>
+</app-card>

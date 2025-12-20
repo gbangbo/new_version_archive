@@ -1,0 +1,14 @@
+<div class="container product-report-wrapper">
+    <div class="grid grid-cols-12">
+        <div class="col-span-12">
+            <app-card [cardBodyClass]="'px-0 pt-0'">
+                <div class="product-report">
+                    <div class="product-report-table overflow-x-auto custom-scrollbar">
+                        <app-table [hasCheckbox]="true" [tableConfig]="tableConfig" [pageSize]="10"
+                            [paginateDetails]="true" [selectedRows]="true" [dateFilter]="true" [downloadReports]="true"></app-table>
+                    </div>
+                </div>
+            </app-card>
+        </div>
+    </div>
+</div>

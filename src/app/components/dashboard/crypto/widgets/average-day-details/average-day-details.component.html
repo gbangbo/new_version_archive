@@ -1,0 +1,26 @@
+<app-card [cardClass]="'widget-hover'" [cardBodyClass]="'radial-progress-card'">
+  <div>
+    <h6 class="mb-0">{{ details.title }}</h6>
+    <div class="sale-details">
+      <h5 class="font-{{ details.color }} mb-0 counter">
+        <app-counter [counter]="details.value"></app-counter>
+      </h5>
+      <span class="f-12 f-light font-medium">
+        <app-feather-icon [icon]="details.margin_type == 'profit' ? 'arrow-up' : 'arrow-down'"></app-feather-icon>
+        {{ details.margin_type == 'profit' ? '+' : '-' }}{{ details.margin }}
+      </span>
+    </div>
+    <p class="f-light">{{ details.description }}</p>
+  </div>
+  <div class="radial-chart-wrap">
+    <div>
+      <apx-chart
+        [series]="details.chart_details.series"
+        [chart]="details.chart_details.chart"
+        [plotOptions]="details.chart_details.plotOptions"
+        [colors]="details.chart_details.colors"
+        [stroke]="details.chart_details.stroke"
+        [responsive]="details.chart_details.responsive"></apx-chart>
+    </div>
+  </div>
+</app-card>

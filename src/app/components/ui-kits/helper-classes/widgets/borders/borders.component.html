@@ -1,0 +1,16 @@
+@if(title) {
+    <h6 class="mb-4">{{ title }}</h6>
+}
+
+@for(border of details; track border) {
+    <div class="helper-common-box">
+        @if(color) {
+            <div [ngClass]="class + '' + border.color"></div><span>{{ helperText }}-{{ border.color }}</span>
+        } @else if(text) {
+            <div [ngClass]="[border.color === 'dark' ? class + '' + 'txt-light bg-dark' : class + '' + border.color]">C </div><span>txt-{{ border.color }}</span>
+        } 
+        @else {
+            <div [ngClass]="class + ' ' + border.class"></div><span>{{ border.class }}</span>
+        }
+    </div>
+}

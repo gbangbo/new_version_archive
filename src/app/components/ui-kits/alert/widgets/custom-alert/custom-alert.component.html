@@ -1,0 +1,20 @@
+<app-card [cardClass]="'height-equal'" [header]="'pb-0'" [headerTitle]="'Custom Alert Popup'" [border]="true" [padding]="false">
+
+    <p class="f-m-light mt-1" header5> Use<code> alert </code>class can be used to generate a custom alert.</p>
+
+    <div class="alert-box">
+        <div class="alert alert-dismissible justify-center fade !p-0" [ngClass]="alertVisible ? 'show' : 'hide'">
+            <div class="alert-body">
+                <app-svg-icon [icon]="'alert-popup'"></app-svg-icon>
+                <h6 class="mb-1">A Crucial Update is Now Available</h6>
+                <p>For improved security and functionality, install the most recent version right away.</p>
+                <div class="button-box">
+                    <button class="btn light-background">Later</button>
+                    <button class="btn btn-warning">Right Now</button>
+                </div>
+            </div>
+            <button class="btn-close" type="button" (click)="closeAlert()"></button>
+        </div>
+    </div>
+    
+</app-card>

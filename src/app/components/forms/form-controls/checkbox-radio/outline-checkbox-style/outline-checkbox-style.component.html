@@ -1,0 +1,13 @@
+<app-card [headerTitle]="'Outlined Checkbox Styles'" [header]="'pb-0'" [border]="true"
+  [padding]="false" [cardBodyClass]="'main-checkbox-toggle flex gap-2 flex-wrap'">
+  <p class="f-m-light mt-1" header5>
+    The choice between these two approaches will depend on the type of toggle you are creating, and whether or not the toggle will make sense to users
+    when announced as a checkbox or as an actual button. <code>[multiple selected]</code>.
+  </p>
+
+  @for(item of outlineCheckbox;track item){
+    <input class="btn-check" [id]="item.id" type="checkbox" [checked]="item.checked" [disabled]="item.disabled">
+    <label class="btn btn-outline-{{ item.class }} border" [for]="item.id">{{ item.text }}</label>
+  }
+  
+</app-card>

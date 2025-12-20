@@ -1,0 +1,78 @@
+<form class="stepper-three needs-validation shipping-wizard" novalidate="">
+  <div class="payment-info-wrapper w-full">
+    <div class="grid grid-cols-12 shipping-method gap-4">
+      <div class="col-span-12">
+        <div class="card-wrapper border rounded-3 light-card">
+          <div>
+            <div class="form-check radio radio-primary">
+              <input class="form-check-input" id="shipping-choose9" type="radio" name="radio3" value="option1" checked="">
+              <label class="form-check-label mb-0 font-medium" for="shipping-choose9">Paypal</label>
+            </div>
+            <p>You will be taken to the paypal website to finish your transaction safely</p>
+          </div>
+          <div> 
+            <img src="assets/images/checkout/paypal.png" alt="paypal">
+          </div>
+        </div>
+      </div>
+      <div class="col-span-12">
+        <div class="card-wrapper border rounded-3 pay-info light-card">
+          <div>
+            <div>
+              <div class="form-check radio radio-primary">
+                <input class="form-check-input" id="shipping-choose8" type="radio" name="radio3" value="option1">
+                <label class="form-check-label mb-0 font-medium" for="shipping-choose8">Credit Card</label>
+              </div>
+              <P>Transferring money securely through your bank account. Mastercard, Visa, Discover, and Stripe are all accepted</P>
+            </div>
+            <div>
+               <img src="assets/images/forms/credit-card.png" alt="card">
+              </div>
+          </div>
+          <div class="grid grid-cols-12 gap-4">
+            <div class="col-span-12">
+              <label class="form-label" for="selectCardHolderName">Card Holder</label>
+              <input class="form-control" id="selectCardHolderName" type="text" placeholder="Enter card holder name">
+            </div>
+            <div class="col-span-12">
+              <label class="form-label" for="selectCardNumber">Card Number</label>
+              <input class="form-control" id="selectCardNumber" type="number" placeholder="xxxx xxxx xxxx xxxx">
+            </div>
+            <div class="col-span-6 sm:col-span-12">
+              <label class="form-label" for="selectExpiration">Expiration(MM/YY)</label>
+              <input class="form-control" id="selectExpiration" type="number" placeholder="xx/xx">
+            </div>
+            <div class="col-span-6 sm:col-span-12">
+              <label class="form-label" for="selectCvv">CVV</label>
+              <input class="form-control" id="selectCvv" type="number">
+            </div>
+            <div class="col-span-12">
+              <label class="form-label" for="uploadDocumentation">Upload Documentation</label>
+              <input class="form-control" id="uploadDocumentation" type="file" aria-label="file example">
+            </div>
+            <div class="col-span-12">
+              <div class="form-check flex gap-2">
+                <input class="form-check-input checkbox-primary" id="invalidCheck01" type="checkbox" value="">
+                <label class="form-check-label" for="invalidCheck01">All the above information is correct</label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-span-12">
+        <div class="card-wrapper border rounded-3 light-card">
+          <div>
+            <div class="form-check radio radio-primary">
+              <input class="form-check-input" id="shipping-choose7" type="radio" name="radio3" value="option1">
+              <label class="form-check-label mb-0 font-medium" for="shipping-choose7">Cash On Delivery</label>
+            </div>
+            <p>After your order is delivered, make a cash payment</p>
+          </div>
+          <div> 
+            <img src="assets/images/forms/delivery.png" alt="delivery">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

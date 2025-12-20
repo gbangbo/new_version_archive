@@ -1,0 +1,29 @@
+<app-card [headerTitle]="'Default Checkbox'" [header]="'pb-0'" [border]="true" [padding]="false" >
+  <p class="f-m-light mt-1" header5>
+    Use <code>form-check-input </code>and <code>form-check-label </code>for checkbox.
+  </p>
+  <div class="grid grid-cols-12 gap-4">
+    @for(checkbox of defaultCheckbox; track checkbox){
+      <div class="col-span-4 xl:col-span-6 sm:col-span-12">
+        <div class="card-wrapper border rounded-3 checkbox-checked">
+          <h6 class="sub-title">{{ checkbox.title }}</h6>
+          @for(item of checkbox.details;track item){
+            <div class="form-check flex gap-2" [class.form-check-reverse]="checkbox.id == 3">
+              <input class="form-check-input" [id]="item.id" type="checkbox" value="" [checked]="item.value" [disabled]="item.disable">
+              <label class="form-check-label" [for]="item.id">{{ item.text }}</label>
+            </div>
+          }
+        </div>
+      </div>
+    }
+    <div class="col-span-12 xl:col-span-6 sm:col-span-12">
+      <div class="card-wrapper border rounded-3 checkbox-checked">
+          <h6 class="sub-title">Indeterminate </h6>
+          <div class="form-check flex gap-2">
+            <input class="form-check-input" id="flexCheckIndeterminate" type="checkbox" value="">
+            <label class="form-check-label" for="flexCheckIndeterminate">Indeterminate checkbox</label>
+          </div>
+      </div>
+  </div>
+  </div>
+</app-card>

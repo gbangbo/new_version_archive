@@ -1,0 +1,21 @@
+<app-card [headerTitle]="'Academic Performance'" [padding]="false" [dropdownType]="'simple'" [cardBodyClass]="'pt-0'" [options]="cardToggleOption">
+    
+    <div class="performance-wrap">
+        <div id="academic_performance-chart">
+            <apx-chart [series]="academicPerformance.series" 
+                    [fill]="academicPerformance.fill" 
+                    [chart]="academicPerformance.chart"
+                    [colors]="academicPerformance.colors"
+                    [dataLabels]="academicPerformance.dataLabels"
+                    [style]="academicPerformance.style"
+                    [stroke]="academicPerformance.stroke"
+                    [tooltip]="academicPerformance.tooltip"
+                    [markers]="academicPerformance.markers"
+                    [xaxis]="academicPerformance.xaxis"
+                    [yaxis]="academicPerformance.yaxis"
+                    [legend]="academicPerformance.legend"
+                    [responsive]="academicPerformance.responsive">
+            </apx-chart>
+        </div>
+      </div>
+</app-card>

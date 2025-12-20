@@ -1,0 +1,73 @@
+<app-card [cardClass]="'main-summary'" [cardType]="'classic'" [headerTitle]="projectSummary.title" 
+    [sortDescription]="projectSummary.sort_description" [cardBodyClass]="'pt-0'" [buttonText]="'View All'" [path]="'/project/project-list'">
+
+    <div class="grid grid-cols-12 gap-4"> 
+        <div class="col-span-8 md:col-span-12 xl-50">
+            <ul class="summary-section">
+                <li class="p-b-20"> 
+                    <p>{{ projectSummary.description }}</p>
+                </li>
+                <li> 
+                    <ul class="common-space p-t-10">
+                        <li> 
+                            <ul> 
+                                <li> 
+                                    <p class="mb-1">Creation Date </p>
+                                    <span>{{ projectSummary.creation_date }}</span>
+                                </li>
+                                <li> 
+                                    <p class="mb-1">Due Date</p>
+                                    <span>{{ projectSummary.due_date }}</span>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <ul>
+                                <li> 
+                                    <p class="mb-1">Priority</p>
+                                    <span class="badge badge-light-primary">{{ projectSummary.priority }}</span>
+                                </li>
+                                <li> 
+                                    <p class="mb-1">Status</p>
+                                    <span class="badge badge-light-success">{{ projectSummary.status }}</span>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <p class="p-t-10 mb-4">Resource</p>
+                            <div class="attachment-file common-flex">
+                                <div class="common-flex items-center">
+                                    @if(projectSummary.resource.file_type == 'PDF') {
+                                        <img class="max-w-full" src="assets/images/project/files/pdf.png" alt="pdf">
+                                    }
+                                    <div class="d-block"> 
+                                        <p class="mb-0">{{ projectSummary.resource.title }}</p>
+                                        <p class="c-o-light">{{ projectSummary.resource.file_size }}</p>
+                                    </div>
+                                </div>
+                                <a [href]="projectSummary.resource.file" download> 
+                                    <i class="fa-solid fa-download f-light"></i>
+                                </a>
+                            </div>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <div class="col-span-4 md:col-span-12 xl-50 md:order-0 order-1">
+            <div class="summary-chart-box">
+                <div id="summary-chart">
+                    <apx-chart 
+                        [series]="projectSummary.chart_details.series"
+                        [chart]="projectSummary.chart_details.chart"
+                        [plotOptions]="projectSummary.chart_details.plotOptions"
+                        [colors]="projectSummary.chart_details.colors"
+                        [labels]="projectSummary.chart_details.labels"
+                        [legend]="projectSummary.chart_details.legend"
+                        [responsive]="projectSummary.chart_details.responsive">
+                    </apx-chart>
+                </div>
+            </div>
+        </div>
+    </div>
+</app-card>

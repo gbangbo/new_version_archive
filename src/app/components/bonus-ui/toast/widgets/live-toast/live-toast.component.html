@@ -1,0 +1,60 @@
+<app-card [headerTitle]="'Live Toast'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'relative common-flex live-toast'">
+
+    <p class="f-m-light mt-1" header5>Use <code>hide </code>class to hide toast and <code>show </code>class to visible toast and given directions.<code>[top-0/bottom-0/start-0/end-0]</code></p>
+    
+    <button class="btn btn-primary text-white" type="button" (click)="showToast('topRight')">Top-right Toast</button>
+    <div class="toast-container fixed top-0 end-0 p-3 toast-index toast-rtl">
+        <div class="toast toast fade" [class.show]="toast['topRight']">
+        <div class="toast-header toast-img">
+            <img class="rounded-full me-2" src="assets/images/dashboard-5/profile.png" alt="profile">
+            <strong class="me-auto">Yuri Theme</strong><small>5 min ago</small>
+            <button class="btn-close" type="button" (click)="closeToast('topRight')"></button>
+        </div>
+        <div class="toast-body toast-dark">Hello, I'm a web-designer.</div>
+        </div>
+    </div>
+
+    <button class="btn btn-secondary text-white" type="button" (click)="showToast('bottomRight')">Bottom-right Toast</button>
+    <div class="toast-container fixed bottom-0 end-0 p-3 toast-index toast-rtl">
+        <div class="toast toast fade" [class.show]="toast['bottomRight']">
+        <div class="flex justify-between alert-secondary">
+            <div class="toast-body">Your time over after 5 minute.</div>
+            <button class="btn-close btn-close-white me-2 m-auto" type="button" (click)="closeToast('bottomRight')"></button>
+        </div>
+        </div>
+    </div>
+
+    <button class="btn btn-warning text-white" type="button" (click)="showToast('topLeft')">Top-left Toast</button>
+    <div class="toast-container fixed start-0 top-0 p-3 toast-index toast-rtl">
+        <div class="toast toast fade" [class.show]="toast['topLeft']">
+            <div class="toast-header toast-img">
+                <img class="rounded-full me-2" src="assets/images/dashboard-5/profile.png" alt="profile">
+                <strong class="me-auto">Riho Theme</strong>
+                <small class="d-sm-block hidden">10 min ago</small>
+                <button class="btn-close" type="button" (click)="closeToast('topLeft')"></button>
+            </div>
+            <div class="toast-body toast-dark">
+                <strong class="txt-success">Well done!</strong> You successfully read this important message.
+            </div>
+        </div>
+    </div>
+
+    <button class="btn btn-success text-white" type="button" (click)="showToast('bottomLeft')">Bottom-left Toast</button>
+    <div class="toast-container fixed start-0 bottom-0 p-3 toast-index toast-rtl">
+        <div class="toast toast fade" [class.show]="toast['bottomLeft']">
+        <div class="toast-header toast-img">
+            <img class="rounded-full me-2" src="assets/images/dashboard-5/profile.png" alt="profile">
+            <strong class="me-auto">Mofi Theme</strong>
+            <button class="btn-close" type="button" (click)="closeToast('bottomLeft')"></button>
+        </div>
+        <div class="toast-body toast-dark">
+            <h6 class="mb-4">Your account will be permanently deleted?</h6>
+            <p class="mb-0">Do you intend to continue?</p>
+            <div class="mt-2 pt-2 border-top flex gap-2">
+                <button class="btn btn-dark btn-sm rounded-md text-white" type="button">I'm not sure</button>
+                <button class="btn btn-danger btn-sm rounded-md text-white" type="button"(click)="closeToast('bottomLeft')">Remove My Account</button>
+            </div>
+        </div>
+        </div>
+    </div>
+</app-card>

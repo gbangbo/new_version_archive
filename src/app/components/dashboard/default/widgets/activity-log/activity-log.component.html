@@ -1,0 +1,36 @@
+<app-card 
+    [cardClass]="'activity-log notification main-timeline'"
+    [headerTitle]="'Activity Log'"
+    [padding]="false"
+    [header]="'pb-0'"
+    [dropdownType]="'simple'"
+    [options]="cardToggleOptions"
+    [cardBodyClass]="'pt-0 dark-timeline basic-timeline'">
+    
+    <ul>
+        @for(details of activityLogs; track details) {
+            <li class="flex">
+                <div class="timeline-dot-{{ details.color }}"></div>
+                <div class="w-full ms-4">
+                  <div class="flex justify-between items-center">
+                    <p class="mb-0 f-16 font-medium">{{ details.title }}
+                        <span class="font-normal">({{ details.log_type }}: <a href="javascript:void(0)"> {{ details.log_details }}</a>)
+                        </span>
+                    </p>
+                    <span class="c-light">{{ details.time }}</span>
+                  </div>
+                  <p class="mb-0 f-light pb-1">{{ details.description }}</p>
+
+                  @if(details.image && details.images) {
+                      <ul class="common-flex pb-1">
+                        @for(image of details.images; track image) {
+                            <li><img class="max-w-full" [src]="image.image_url" alt="background"></li>
+                        }
+                      </ul>
+                  }
+                  <p class="date-content p-0">{{ details.date }}</p>
+                </div>
+            </li>
+        }
+    </ul>
+</app-card>

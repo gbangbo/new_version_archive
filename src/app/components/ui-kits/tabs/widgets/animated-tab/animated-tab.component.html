@@ -1,0 +1,64 @@
+<app-card [headerTitle]="'Animated Tabs'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'horizontal-icons-tab tabs'">
+    <p class="mt-1 f-m-light" header5>
+        Use the <code>tab-links</code> to create tab navigation. use <code>horizontal-icons-tab</code>in card-body to create an <code>animation</code> tab.  
+    </p>
+        
+    <ul class="tab-links border-tab mb-0">
+        <li class="tab-link tab-info" [class.active]="activeTab == 'about'" (click)="handleTab('about')">
+            <i class="icofont icofont-building-alt"></i><span>Home</span>
+        </li>
+        <li class="tab-link tab-info" [class.active]="activeTab == 'profile'" (click)="handleTab('profile')">
+            <i class="icofont icofont-user-male"></i><span>Profile</span>
+        </li>
+        <li class="tab-link tab-info" [class.active]="activeTab == 'contact'" (click)="handleTab('contact')">
+            <i class="icofont icofont-business-man"></i><span>About Us</span>
+        </li>
+        <li class="tab-link tab-info" [class.active]="activeTab == 'gallery'" (click)="handleTab('gallery')">
+            <i class="icofont icofont-picture"></i><span>Gallery</span>
+        </li>
+        <li class="tab-link tab-info" [class.active]="activeTab == 'faq'" (click)="handleTab('faq')">
+            <i class="icofont icofont-question-circle"></i><span>FAQ</span>
+        </li>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pan fade show active">
+            @if(activeTab == 'about') {
+                <p class="pt-3">This is some placeholder content for the <b>Home tab's </b>associated content.
+                    Clicking another tab will toggle the visibility of this one for the next. The tab JavaScript
+                    swaps classes to control the content visibility and styling. You can use it with tabs, pills,
+                    and any other .nav-powered navigation. Bootstrap provides a flexible and easy-to-use tab
+                    component that allows developers to create tabbed navigation effortlessly.
+                </p>
+            } @else if(activeTab == 'profile') {
+                <p class="pt-3">This is some placeholder content the <b>Profile tab's</b> associated content.
+                    Clicking another tab will toggle the visibility of this one for the next. The tab JavaScript
+                    swaps classes to control the content visibility and styling. You can use it with tabs, pills,
+                    and any other .nav-powered navigation. Bootstrap provides a flexible and easy-to-use tab
+                    component that allows developers to create tabbed navigation effortlessly.
+                </p>
+            } @else if(activeTab == 'contact') {
+                <p class="pt-3">This is some placeholder content the <b>About tab's </b>associated content.
+                    Clicking another tab will toggle the visibility of this one for the next. The tab JavaScript
+                    swaps classes to control the content visibility and styling. You can use it with tabs, pills,
+                    and any other .nav-powered navigation. Bootstrap provides a flexible and easy-to-use tab
+                    component that allows developers to create tabbed navigation effortlessly.
+                </p>
+            } @else if(activeTab == 'gallery') {
+                <p class="pt-3">This is some placeholder content the <b>Gallery tab's </b>associated content.
+                    Clicking another tab will toggle the visibility of this one for the next. The tab JavaScript
+                    swaps classes to control the content visibility and styling. You can use it with tabs, pills,
+                    and any other .nav-powered navigation. Bootstrap provides a flexible and easy-to-use tab
+                    component that allows developers to create tabbed navigation effortlessly.
+                </p>
+            } @else if(activeTab == 'faq') {
+                <p class="pt-3">This is some placeholder content the <b>FAQ tab's </b>associated content. Clicking
+                    another tab will toggle the visibility of this one for the next. The tab JavaScript swaps
+                    classes to control the content visibility and styling. You can use it with tabs, pills, and any
+                    other .nav-powered navigation. Bootstrap provides a flexible and easy-to-use tab component that
+                    allows developers to create tabbed navigation effortlessly.
+                </p>
+            }
+        </div>
+    </div>
+
+</app-card>

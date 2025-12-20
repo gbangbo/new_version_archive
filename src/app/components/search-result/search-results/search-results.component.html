@@ -1,0 +1,94 @@
+<div class="grid grid-cols-12 card-gap">
+    <div class="col-span-8 xxl:col-span-6 xl:col-span-12 box-col-6">
+        <h6 class="mb-4">Search result for "Pixelstrap"</h6>
+        @for(theme of themes; track theme) {
+            <div class="info-block">
+                <a href="javascript:void(0)">{{ theme.theme_url }}</a>
+                <h6> 
+                    <a [href]="theme.theme_url" target="_blank">{{ theme.theme_name }}</a>
+                </h6>
+                <p>{{ theme.description }}</p>
+                <div class="star-ratings">
+                  <ul class="search-info">
+                    <li>
+                        <bar-rating [rate]="theme.rating" [readonly]="true" [max]="5">
+                            <ng-template ratingActive>
+                            <i class="fa-solid fa-star" [ngStyle]="{ 'color': '#ffb829'}"></i>
+                            </ng-template>
+                            <ng-template ratingInactive>
+                            <i class="fa-regular fa-star" [ngStyle]="{ 'color': '#ffb829'}"></i>
+                            </ng-template>
+                            <ng-template ratingFraction>
+                            <i class="fa-solid fa-star-half-stroke" [ngStyle]="{ 'color': '#ffb829'}"></i>
+                            </ng-template>
+                        </bar-rating>
+                    </li>
+                    <li>{{ theme.votes }} Votes</li>
+                    <li>{{ theme.type }}</li>
+                  </ul>
+                </div>
+            </div>
+        }
+    </div>
+    <div class="col-span-4 xxl:col-span-6 xl:col-span-12 box-col-6 mt-4">
+        <div class="card o-hidden">
+            <div class="blog-box blog-shadow">
+                <img class="max-w-full" [src]="blogDetails.image" [alt]="blogDetails.title">
+                <div class="blog-details">
+                    <p>{{ blogDetails.date }} {{ blogDetails.year }}</p>
+                    <h4>{{ blogDetails.title }}</h4>
+                    <ul class="blog-social">
+                    <li>
+                        <i class="icofont icofont-user"></i>
+                        {{ blogDetails.created_by }}
+                    </li>
+                    <li>
+                        <i class="icofont icofont-thumbs-up"></i>
+                        {{ blogDetails.hits }} Hits
+                    </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="grid grid-cols-12 gap-4">
+            @for(audio of getAudios() | slice: 0: 2; track audio) {
+                <div class="col-span-6 sm:col-span-12 xl-100">
+                    <div class="audio-card">
+                        <div class="audio-image">
+                            <img class="img-fluid" [src]="audio.poster" [alt]="audio.title">
+                        </div>
+                        <div class="audio-content">
+                        <div class="grow">
+                            <h6>{{ audio.title }}</h6>
+                            <span>{{ audio.description }}</span>
+                        </div>
+                        <div class="shrink-0">
+                            <i class="fa-solid fa-circle-{{ audio.is_play ? 'pause' : 'play' }}" (click)="playAudio(audio)"></i>
+                            <i class="fa-regular fa-heart" [class.active]="audio.is_favorite" (click)="audio.is_favorite =! audio.is_favorite"></i>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        @for(video of videos | slice: 0:1; track video) {
+            <div class="info-block m-t-20">
+                <iframe class="w-full h-full" width="100" height="100" [src]="safe(video.url)"></iframe>
+                <div class="grow">
+                    <a href="javascript:void(0)">{{ video.url }}</a>
+                    <h6>{{ video.title }}</h6>
+                    <div class="star-ratings">
+                        <ul class="search-info">
+                        <li>{{ video.rating }} stars</li>
+                        <li>{{ video.votes }} votes</li>
+                        <li>{{ video.type }}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    <div class="col-span-12 mt-7">
+        <app-pagination></app-pagination>
+    </div>
+</div>

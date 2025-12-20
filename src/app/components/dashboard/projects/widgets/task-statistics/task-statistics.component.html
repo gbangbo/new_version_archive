@@ -1,0 +1,17 @@
+<app-card [headerTitle]="'Task Statistics'" [padding]="false" [cardClass]="' height-equal'" [cardBodyClass]="'pt-0'" [dropdownType]="'simple'" [options]="cardToggleOption">
+    <div class="task-statistics">
+        <div id="task-statistics">
+            <apx-chart
+                [labels]="taskStatistics.labels"
+                [series]="taskStatistics.series"
+                [chart]="taskStatistics.chart"
+                [dataLabels]="taskStatistics.dataLabels"
+                [legend]="taskStatistics.legend"
+                [stroke]="taskStatistics.stroke"
+                [plotOptions]="taskStatistics.plotOptions"
+                [states]="taskStatistics.states"
+                [colors]="taskStatistics.colors">
+            </apx-chart>
+        </div>
+      </div>
+</app-card>

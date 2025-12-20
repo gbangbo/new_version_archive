@@ -1,0 +1,45 @@
+<app-card>
+    <div class="main-team-box">
+        @for(team of projectTeam; track team) {
+            <div>
+                <div class="team-box">
+                    <div class="team-box-circle">
+                        <img class="max-w-full rounded-full" [src]="team.profile" alt="user">
+                    </div>
+                    <div class="team-box-content">
+                        <h6>
+                            <a href="javascript:void(0)">{{ team.developer_name }}</a>
+                        </h6>
+                        <p class="mb-0">{{ team.position }}</p>
+                        <div class="pt-3">
+                            <div class="common-space">
+                                <p class="mb-0">Task</p>
+                                <span>{{ team.completed_task }} /<span>&nbsp; {{ team.total_task }}</span>
+                            </span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar bg-{{ team.color }}" [ngStyle]="{ 'width': (team.completed_task / team.total_task)*100 + '%'}"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="team-box-footer">
+                        <div class="common-space">
+                        <div> 
+                            <h6>${{ team.revenue | number }}</h6>
+                            <p class="mb-0">Revenue</p>
+                        </div>
+                        <div>
+                            <h6>{{ team.projects }}</h6>
+                            <p class="mb-0">Project</p>
+                        </div>
+                        <div>
+                            <h6>{{ team.features }}</h6>
+                            <p class="mb-0">Features    </p>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</app-card>

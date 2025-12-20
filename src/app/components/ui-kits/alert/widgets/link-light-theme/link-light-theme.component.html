@@ -1,0 +1,22 @@
+<app-card [headerTitle]="'Link Color in Light Theme'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'dark-alert-msg'">
+  <p class="f-m-light mt-1" header5>To create an light alert, use<code> alert-light-*</code> class.</p>
+  <div class="grid grid-cols-12 card-gap">
+    @for(i of [0, 4]; track i) {
+      <div class="col-span-6 xl:col-span-12">
+        @for(color of colors.slice(i, i + 4); track color) {
+          <p class="mb-0">{{ color.color | titlecase }} Alert</p>
+
+          <div class="alert alert-light-{{ color.color }}" role="alert">
+            <p [ngClass]="color.color == 'light' ? 'text-dark' : 'txt-'+color.color">
+              The 
+              <a class="alert-link" [ngClass]="color.color == 'light' ? 'txt-dark' : 'txt-'+color.color" href="javascript:void(0)">
+                "alert-light-{{ color.color }}"
+              </a>
+              class can be used to create an alert like this one.
+            </p>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</app-card>

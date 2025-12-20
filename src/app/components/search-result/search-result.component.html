@@ -1,0 +1,49 @@
+<div class="container search-page">
+    <div class="grid grid-cols-12">
+        <div class="col-span-12">
+            <div class="card">
+                <div class="card-header card-no-border pb-0">
+                    <form class="theme-form">
+                      <div class="input-group m-0 flex-nowrap">
+                        <input class="form-control-plaintext" type="search" placeholder="Pixelstrap ..">
+                        <span class="btn btn-primary input-group-text text-white">Search</span>
+                      </div>
+                    </form>
+                </div>
+                <div class="card-body tabs">
+                    <div class="text-center">
+                        <ul class="tab-links search-list">
+                            @for(tab of searchResultTab; track tab) {
+                                <li class="tab-link" [class.active]="activeTab == tab.value" (click)="handleTab(tab.value)">
+                                    <i class="icon-{{ tab.icon }}"></i>
+                                    {{ tab.title }}
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                    <div>
+                        <div class="tab-content" id="top-tabContent">
+                            <div class="tab-pan fade search-links active show" [class.search-links]="activeTab == 'all'">
+                                @if(activeTab == 'all') {
+                                    <app-search-results></app-search-results>
+                                }
+                                @if(activeTab == 'images') {
+                                    <app-social-app-photos [likesSection]="false"></app-social-app-photos>
+                                }
+                                @if(activeTab == 'videos') {
+                                    <app-search-result-video></app-search-result-video>
+                                }
+                                @if(activeTab == 'audio') {
+                                    <app-search-result-audio></app-search-result-audio>
+                                }
+                                @if(activeTab == 'setting') {
+                                    <app-search-result-setting></app-search-result-setting>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

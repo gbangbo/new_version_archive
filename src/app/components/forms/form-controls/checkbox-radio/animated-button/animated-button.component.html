@@ -1,0 +1,24 @@
+<app-card [headerTitle]="'Animated Buttons'" [header]="'pb-0'" [cardClass]="'height-equal'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>
+    Use <code>radio_animated </code>to animate checkbox and radio buttons.</p>
+    <div class="grid grid-cols-12 gap-4">
+      <div class="col-span-6 sm:col-span-12">
+        <div class="card-wrapper border rounded-3 checkbox-checked">
+          <h6 class="sub-title">Select your payment method</h6>
+          @for(item of paymentDetails ;track item){
+            <label class="block" for="edo-ani"></label>
+            <input class="radio_animated" id="edo-ani" type="radio" name="rdo-ani" [checked]="item.value">{{ item.text }}
+          }
+        </div>
+      </div>
+      <div class="col-span-6 sm:col-span-12">
+        <div class="card-wrapper border rounded-3 checkbox-checked">
+          <h6 class="sub-title">What is your favorite social media? </h6>
+          @for(item of socialMedia;track item){
+            <label class="block" for="chk-ani"></label>
+            <input class="checkbox_animated" id="chk-ani" type="checkbox" [checked]="item.value">{{ item.text }}
+          }
+        </div>
+      </div>
+    </div>
+</app-card>

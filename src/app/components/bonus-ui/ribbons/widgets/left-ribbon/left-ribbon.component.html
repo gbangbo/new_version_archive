@@ -1,0 +1,13 @@
+<app-card [headerTitle]="'Variations Of Left Ribbons'" [header]="'pb-0'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>Use class of <code>ribbon-*</code>[ribbon-space-bottom/ribbon-clip/ribbon-vertical-left/ribbon-bookmark/ribbon-clip-bottom/ribbon-vertical-left] through create ribbons and all ribbon colors are available.<code>[ribbon-*] </code></p>
+  <div class="grid grid-cols-12 gap-4">
+    @for(details of leftRibbons; track details){
+      <div class="col-span-4 xl:col-span-6 sm:col-span-12">
+        <div class="border border-1 {{ details.class }}">
+          <div class="ribbon ribbon-{{ details.ribbon_class }} " [innerHTML]="details.ribbon_text"></div>
+          <p [innerHTML]="details.text"></p>
+        </div>
+      </div>
+    }
+  </div>
+</app-card>

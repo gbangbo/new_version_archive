@@ -1,0 +1,35 @@
+<app-card [headerTitle]="'Unique Dropdown'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'rtl-dropdown'">
+  <p class="f-m-light mt-1" header5>
+      Unique way to represent form dropdown and text dropdown.
+  </p>
+
+  <div class="common-flex unique-dropdown">
+    <div class="btn-group" (clickOutside)="clickOutside(1)">
+      <button class="btn btn-primary border dropdown-toggle" type="button" (click)="toggleDropdown(1)">Dropdown form</button>
+      <form class="dropdown-menu p-4 form-wrapper dark-form" [class.show]="dropdownOpen[1]">
+        <div class="mb-4">
+          <label class="form-label font-medium" for="exampleDropdownFormEmail2">Email Address</label>
+          <input class="form-control" id="exampleDropdownFormEmail2" type="email" placeholder="email@example.com">
+        </div>
+        <div class="mb-4">
+          <label class="form-label font-medium" for="exampleDropdownFormPassword2">Password</label>
+          <input class="form-control" id="exampleDropdownFormPassword2" type="password" placeholder="Password">
+        </div>
+        <div class="mb-4">
+          <div class="form-check flex gap-2">
+            <input class="form-check-input checkbox-primary" id="dropdownCheck2" type="checkbox">
+            <label class="form-check-label f-14 !mb-0" for="dropdownCheck2">Remember me</label>
+          </div>
+        </div>
+        <button class="btn btn-primary text-white" type="submit">Sign in</button>
+      </form>
+    </div>
+    <div class="btn-group" (clickOutside)="clickOutside(2)">
+      <button class="btn btn-dark dropdown-toggle border text-white" type="button" (click)="toggleDropdown(2)">Text</button>
+      <div class="dropdown-menu p-4 form-wrapper" [class.show]="dropdownOpen[2]">
+        <p>Some example text that&apos;s free-flowing within the dropdown menu.</p>
+        <p class="mb-0">And this is more example text.</p>
+      </div>
+    </div>
+  </div>
+</app-card>

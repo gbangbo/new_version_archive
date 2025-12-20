@@ -1,0 +1,46 @@
+<div class="modal  fade show modal-backdrop">
+  <div class="modal-dialog modal-dialog-centered modal-md">
+    <div class="modal-content category-popup">
+      <div class="modal-header">
+        <h5 class="modal-title">ADD API</h5>
+        <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close" (click)="closeModal()"></button>
+      </div>
+      <div class="modal-body p-0 custom-input">
+        <div class="text-start">
+          <div class="p-20">
+            <form class="grid grid-cols-12 gap-4 needs-validation" novalidate="" [formGroup]="validationForm" (ngSubmit)="submitForm()">
+              <div class="col-span-12">
+                <label class="form-label" for="validationAPIName">API Name
+                  <span class="txt-danger">*</span>
+                </label>
+                <input class="form-control" id="validationAPIName" type="text" placeholder="Enter your API name" formControlName="api_name"
+                  [ngClass]="{ 'is-invalid' : validationForm.controls['api_name'].touched &&  validationForm.controls['api_name'].errors?.['required'] , 'is-valid' : validationForm.controls['api_name'].valid}">
+                @if(validationForm.controls['api_name'].valid) {
+                  <div class="valid-feedback">Looks's Good!</div>
+                } @else if(validationForm.controls['api_name'].touched && validationForm.controls['api_name'].errors?.['required']) {
+                  <div class="invalid-feedback"> Please enter a API name.</div>
+                }
+              </div>
+              <div class="col-span-12">
+                <label class="form-label" for="validationAPIKey">API Key
+                  <span class="txt-danger">*</span>
+                </label>
+                <input class="form-control" id="validationAPIKey" type="text" placeholder="3e4a9461-cb9b-4179-91be-2bf4998461d6" formControlName="api_key"
+                  [ngClass]="{ 'is-invalid' : validationForm.controls['api_key'].touched && 
+                  validationForm.controls['api_key'].errors?.['required'] , 'is-valid' : validationForm.controls['api_key'].valid}">
+                @if(validationForm.controls['api_key'].valid) {
+                  <div class="valid-feedback">Looks's Good!</div>
+                } @else if(validationForm.controls['api_key'].touched && validationForm.controls['api_key'].errors?.['required']) {
+                  <div class="invalid-feedback"> Please enter a API Key.</div>
+                }
+              </div>
+              <div class="col-span-12 flex justify-end">
+                <button class="btn btn-primary text-white" type="submit">Create +</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

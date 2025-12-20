@@ -1,0 +1,35 @@
+<app-card [headerTitle]="'Open Sales Orders'" [padding]="false" [cardBodyClass]="'pt-0 sales-order'" [dropdownType]="'simple'" [options]="cardToggleOption">
+    <h3> 
+      <span class="counter" data-target="890000">
+        <app-counter [counter]="openSalesOrder.count"></app-counter>
+      </span>
+    </h3>
+    <div class="common-space">
+        <span>{{ openSalesOrder.text }}</span>
+        <span class="total-sale">{{ openSalesOrder.total_sale}}</span>
+    </div>
+    <div class="common-space"> 
+      <div class="progress">
+        <div class="progress-bar bg-primary" [ngStyle]="{ 'width': '58%'}"></div>
+      </div>
+      <span>Pending Boxes</span>
+    </div>
+    <div class="sales-order-chart">
+      <div id="sales-order-chart">
+        <apx-chart
+            [series]="openSalesOrder.series"
+            [chart]="openSalesOrder.chart"
+            [stroke]="openSalesOrder.stroke"
+            [grid]="openSalesOrder.grid"
+            [title]="openSalesOrder.title"
+            [colors]="openSalesOrder.colors"
+            [fill]="openSalesOrder.fill"
+            [annotations]="openSalesOrder.annotations"
+            [xaxis]="openSalesOrder.xaxis"
+            [legend]="openSalesOrder.legend"
+            [yaxis]="openSalesOrder.yaxis"
+            [responsive]="openSalesOrder.responsive">
+        </apx-chart>
+      </div>
+    </div>
+</app-card>

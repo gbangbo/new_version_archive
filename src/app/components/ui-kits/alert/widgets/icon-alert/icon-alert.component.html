@@ -1,0 +1,24 @@
+<app-card [headerTitle]="'Icons with Alerts'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'alerts-icon'">
+
+    <p class="f-m-light mt-1" header5>Use<code> alert  alert-* </code>classes to add SVG icons to the alerts.</p>
+
+    <div class="grid grid-cols-12 card-gap">
+        @for(i of [0, 4]; track i) {
+            <div class="col-span-6 md:col-span-12">
+                @for(alert of iconsAlert.slice(i, i + 4); track alert) {
+                    <div class="alert alert-{{ alert.color }} flex items-center">
+                        <div>
+                            <app-feather-icon [icon]="alert.icon" [class]="alert.color == 'light' ? 'stroke-dark' : 'stroke-'+alert.color"></app-feather-icon>
+                        </div>
+                        <span [ngClass]="alert.color == 'light' ? 'text-dark' : 'text-white'">Use
+                            <a class="alert-link" [ngClass]="alert.color == 'light' ? 'text-dark' : 'text-white'" href="javascript:void(0)">"alert-{{ alert.color }}"</a> 
+                            and 
+                            <a class="alert-link" [ngClass]="alert.color == 'light' ? 'text-dark' : 'text-white'" href="javascript:void(0)">"stroke-{{ alert.color }}"</a> classes for alerts like this
+                          one. 
+                        </span>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</app-card>

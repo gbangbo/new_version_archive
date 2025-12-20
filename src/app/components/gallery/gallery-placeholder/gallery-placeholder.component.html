@@ -1,0 +1,46 @@
+<div class="container">
+    <div class="grid grid-cols-12">
+        <div class="col-span-12">
+            <div class="card">
+                <div class="card-header card-no-border pb-0">
+                    <h5>IMAGE GALLERY WITH PLACEHOLDER LOADER</h5>
+                </div>
+                @if(isLoading){
+                  <div class="gallery-description-skeleton loader_skeleton">
+                      <div class="grid grid-cols-12 gap-4">
+                          @for(item of loader; track item){
+                            <div class="col-span-3 xxl:col-span-4 lg:col-span-6 sm:col-span-12 boc-col-4">
+                                <div class="skeleton-wrapper">
+                                    <div class="skeleton-image"> </div>
+                                    <div class="skeleton-caption">
+                                        <div class="skeleton-name"></div>
+                                        <div class="skeleton-desc"></div>
+                                        <div class="skeleton-desc"></div>
+                                        <div class="skeleton-desc"></div>
+                                    </div>
+                                </div>
+                            </div>
+                          }
+                      </div>
+                  </div>
+                } @else {
+                  <div class="card-body product-wrapper-grid" itemscope="">
+                      <div class="grid grid-cols-12 gap-4 masonryComponent gallery-with-description">
+                          @for(img of galleryPlaceholder;track img; let i = $index){
+                            <figure class="col-span-3 xxl:col-span-4 lg:col-span-6 sm:col-span-12 box-col-4">
+                                <a (click)="openInFullScreen(i)" itemprop="contentUrl">
+                                    <img [src]="img.src_url"/>
+                                    <div class="caption">
+                                        <h4>{{ img.title }}</h4>
+                                        <p>{{ img.description }}</p>
+                                    </div>
+                                </a>
+                            </figure>
+                          }
+                      </div>
+                  </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

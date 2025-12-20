@@ -1,0 +1,41 @@
+<div class="container w-full">
+    <div class="grid effective-card grid-cols-12 card-gap">
+        <div class="col-span-3 xxl:col-span-6 xl:col-span-12 box-col-4">
+            <app-hover-icon-card></app-hover-icon-card>
+        </div>
+        <div class="col-span-6 xl:col-span-12 box-col-4">
+            <app-image-card></app-image-card>
+        </div>
+        <div class="col-span-3 xxl:col-span-12 box-col-4">
+            <app-overlay-card></app-overlay-card>
+        </div>
+        <div class="col-span-6 md:col-span-12">
+            <app-border-left-card></app-border-left-card>
+        </div>
+        <div class="col-span-6 md:col-span-12">
+            <app-border-right-card></app-border-right-card>
+        </div>
+        <div class="col-span-6 md:col-span-12">
+            <app-border-top-card></app-border-top-card>
+        </div>
+        <div class="col-span-6 md:col-span-12">
+            <app-border-bottom-card></app-border-bottom-card>
+        </div>
+        <div class="col-span-4 xxl:col-span-6 md:col-span-12">
+            <app-border-primary-state></app-border-primary-state>
+        </div>
+        <div class="col-span-4 xxl:col-span-6 md:col-span-12">
+            <app-border-warning-state></app-border-warning-state>
+        </div>
+        <div class="col-span-4 xxl:col-span-12">
+            <app-border-secondary-state></app-border-secondary-state>
+        </div>
+
+        @for(details of absoluteCards; track details){
+            <div class="col-span-6 xl:col-span-12">
+                <app-absolute-card [details]="details"></app-absolute-card>
+            </div>
+        }
+        
+    </div>
+</div>

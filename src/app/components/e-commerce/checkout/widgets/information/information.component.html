@@ -1,0 +1,36 @@
+<form class="stepper-one needs-validation shipping-wizard" novalidate="">
+  <div class="grid grid-cols-12 gap-4 custom-input">
+    <div class="col-span-6 sm:col-span-12">
+      <label class="form-label" for="customName">Full Name</label>
+      <input class="form-control" id="customName" type="text" placeholder="Enter full name">
+    </div>
+    <div class="col-span-6 sm:col-span-12">
+      <label class="form-label" for="customContact">Contact Number</label>
+      <input class="form-control" id="customContact" type="number" placeholder="Enter number">
+    </div>
+    <div class="col-span-12">
+      <label class="form-label" for="customEmail">Email</label>
+      <input class="form-control" id="customEmail" type="email" placeholder="pixelstrap@example.com">
+    </div>
+    <div class="col-span-12">
+      <label class="form-label" for="currentAddress1">Current Address </label>
+      <textarea class="form-control" id="currentAddress1" rows="3" placeholder="Enter your current address"></textarea>
+    </div>
+    <div class="col-span-12">
+      <label class="form-label" for="otherNotes1">Other Notes</label>
+      <textarea class="form-control" id="otherNotes1" rows="3" placeholder="Enter your queries..."></textarea>
+    </div>
+    <div class="col-span-4 md:col-span-12">
+      <label class="form-label" for="customSelectCountry">Country</label>
+      <select2 [data]="country" placeholder="Select Country" (update)="onCountryChange($event)" noResultMessage="No Data Found" resettable></select2>
+    </div>
+    <div class="col-span-4 md:col-span-6 md:col-span-12">
+      <label class="form-label" for="customstate">State</label>
+      <select2 [data]="states" placeholder="Select State" noResultMessage="No Data Found" resettable></select2>
+    </div>
+    <div class="col-span-4 md:col-span-6 md:col-span-12">
+      <label class="form-label" for="customPostalCode">Postal Code</label>
+      <input class="form-control" id="customPostalCode" type="text" placeholder="Enter postal code">
+    </div>
+  </div>
+</form>

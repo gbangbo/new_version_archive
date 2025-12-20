@@ -1,0 +1,40 @@
+<div class="mail-header-wrapper">
+  <div class="mail-header">
+    <div class="form-check form-check-inline">
+      <input class="form-check-input checkbox-primary" id="emailCheckboxA" type="checkbox" value="option1">
+      <ul class="mail-filters">
+        @for(type of emailTypes; track type) {
+          <li class="common-align mail-header-option" [class.active]="activeType == type.value" (click)="handleType(type.value)">
+            <app-svg-icon [icon]="type.icon" [class]="'stroke-icon'"></app-svg-icon>
+            <span>{{ type.title }}</span>
+          </li>
+        }
+      </ul>
+    </div>
+  </div>
+  <div class="mail-body">
+    <div class="mail-search flex-items-center">
+      <input class="form-control" type="search" placeholder="Search...">
+      <i class="fa-solid fa-magnifying-glass"></i>
+    </div>
+    <div class="light-square block-btn-1">
+      <i class="fa-solid fa-arrows-rotate"></i>
+    </div>
+    <div class="light-square bg-light-danger"> 
+      <i class="fa-solid fa-trash-can txt-danger"></i>
+    </div>
+    <div class="dropdown" (clickOutside)="clickOutside()">
+      <button class="light-square dropdown-toggle" (click)="toggleDropdown()">
+        <i class="fa-solid fa-ellipsis-vertical"></i>
+      </button>
+      <ul class="dropdown-menu dropdown-block dropdown-menu-end" [class.show]="dropdownOpen">
+        <li> <a class="dropdown-item" href="javascript:void(0)">All</a></li>
+        <li> <a class="dropdown-item" href="javascript:void(0)">None</a></li>
+        <li> <a class="dropdown-item" href="javascript:void(0)">Read</a></li>
+        <li> <a class="dropdown-item" href="javascript:void(0)">Unread</a></li>
+        <li> <a class="dropdown-item" href="javascript:void(0)">Starred</a></li>
+        <li> <a class="dropdown-item" href="javascript:void(0)">Unstarred</a></li>
+      </ul>
+    </div>
+  </div>
+</div>

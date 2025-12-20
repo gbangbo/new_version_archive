@@ -1,0 +1,23 @@
+<app-card [headerTitle]="'Notifications'" [header]="'pb-0'" [border]="true" [padding]="false">
+    <div class="user-notifications">
+        @for(group of objectKeys(getNotificationGroup()); track group) {
+            <h6>{{ getDate(group) }}</h6>
+            <ul>
+                @for(notification of getNotificationGroup()[group]; track notification; let i = $index) {
+                    <li>
+                        <div> <img class="max-w-full" [src]="notification.user_profile" alt="user">
+                          <div>
+                            <p>{{ notification.title }}
+                                @if(notification.time) {
+                                    <span class="ps-2">{{ notification.time }}</span>
+                                }
+                            </p>
+                            <span>{{ notification.description }}</span>
+                          </div>
+                        </div>
+                    </li>
+                }
+            </ul>
+        }
+    </div>
+</app-card>

@@ -1,0 +1,56 @@
+<div class="container">
+    <div class="img-cropper">
+      <div class="grid grid-cols-12 card-gap">
+        <div class="col-span-12">
+          <app-card [headerTitle]="'Image Cropper'" [header]="'pb-0'" [border]="true" [padding]="false">
+            <image-cropper [imageChangedEvent]="imageChangedEvent" [maintainAspectRatio]="true"
+                           [containWithinAspectRatio]="containWithinAspectRatio" [aspectRatio]="4 / 3" [resizeToWidth]="256"
+                           [cropperMinWidth]="128" [onlyScaleDown]="true" [roundCropper]="false" [canvasRotation]="canvasRotation"
+                           [transform]="transform" [alignImage]="'left'" [style.display]="showCropper ? null : 'none'" format="png"
+                           (imageCropped)="imageCropped($event)" (imageLoaded)="imageLoaded()" (cropperReady)="cropperReady($event)"
+                           (loadImageFailed)="loadImageFailed()">
+          </image-cropper>
+          <div class="btn-showcase image-cropper-modal">
+            @if(croppedImage) {
+              <div class="text-center my-2">
+                <img [src]="croppedImage" />
+              </div>
+            }
+            <div class="image-cropper-btn">
+              <input class="btn border btn-outline-primary" placeholder="Choose Your Image" type="file"
+                (change)="fileChangeEvent($event)" />
+            </div>
+            <div>
+              <button class="btn btn-primary text-white" (click)="rotateLeft()">Rotate left</button>
+              <button class="btn btn-primary text-white" (click)="rotateRight()">Rotate right</button>
+              <button class="btn btn-primary text-white" (click)="flipHorizontal()">Flip horizontal</button>
+              <button class="btn btn-primary text-white" (click)="flipVertical()">Flip vertical</button>
+            </div>
+            <div>
+              <button class="btn btn-primary text-white" (click)="toggleContainWithinAspectRatio()">
+                {{ containWithinAspectRatio ? "Fill Aspect Ratio" : "Contain Within Aspect Ratio" }}
+              </button>
+              <button class="btn btn-primary text-white" (click)="resetImage()">
+                Reset image
+              </button>
+            </div>
+            <div>
+              <label class="col-form-label" for="rotation">Rotation</label>
+              <input class="btn btn-outline-primary border ms-2" (ngModel)="rotation" placeholder="Rotation"
+                (keyup)="updateRotation()" type="text" onlyNumbers />
+            </div>
+            <div>
+              <button class="btn btn-primary text-white" (click)="zoomOut()">
+                Zoom -
+              </button>
+              <button class="btn btn-primary text-white" (click)="zoomIn()">
+                Zoom +
+              </button>
+            </div>
+            </div>
+          </app-card>
+        </div>
+      </div>
+    </div>
+</div>
+  

@@ -1,0 +1,35 @@
+<app-card [headerTitle]="'Segmented Buttons '" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'main-segment-btn card-wrapper input-group-wrapper'">
+  <p class="f-m-light mt-1" header5> Multiple add-ons are supported and can be mixed with<code> dropdowns</code> versions.</p>
+    <div class="input-group dropdown" (clickOutside)="clickOutside(1)">
+      <button class="btn btn-outline-primary border !rounded-l-lg !rounded-none" type="button" (click)="toggleDropdown(1)">Primary</button>
+      <button class="btn btn-primary dropdown-toggle dropdown-toggle-split !rounded-none !m-0" type="button" (click)="toggleDropdown(1)">
+        <span class="visually-hidden"></span>
+      </button>
+        <ul class="dropdown-menu dropdown-block" [class.show]="dropdownOpen[1]">
+            <li><a class="dropdown-item" href="javascript:void(0)">Learning</a></li>
+            <li><a class="dropdown-item" href="javascript:void(0)">Editors</a></li>
+            <li><a class="dropdown-item" href="javascript:void(0)">Users</a></li>
+            <li>
+                <hr class="dropdown-divider">
+            </li>
+            <li><a class="dropdown-item" href="javascript:void(0)">Social App</a></li>
+        </ul>
+  <input class="form-control !rounded-none !rounded-r-lg" type="text" aria-label="Text input with segmented dropdown button">
+</div>
+<div class="input-group dropdown" (clickOutside)="clickOutside(2)">
+  <input class="form-control !rounded-none !rounded-l-lg" type="text" aria-label="Text input with segmented dropdown button">
+  <button class="btn btn-outline-secondary border !rounded-none" type="button" (click)="toggleDropdown(2)">Secondary</button>
+  <button class="btn btn-secondary dropdown-toggle dropdown-toggle-split !rounded-r-lg !rounded-none text-white !m-0" type="button" (click)="toggleDropdown(2)">
+    <span class="visually-hidden"></span>
+  </button>
+    <ul class="dropdown-menu dropdown-menu-end dropdown-block" [class.show]="dropdownOpen[2]">
+        <li><a class="dropdown-item" href="javascript:void(0)">Search Result</a></li>
+        <li><a class="dropdown-item" href="javascript:void(0)">Tasks</a></li>
+        <li><a class="dropdown-item" href="javascript:void(0)">Projects</a></li>
+        <li>
+            <hr class="dropdown-divider">
+        </li>
+        <li><a class="dropdown-item" href="javascript:void(0)">Animation</a></li>
+    </ul>
+</div>
+</app-card>

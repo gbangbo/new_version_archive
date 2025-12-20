@@ -1,0 +1,9 @@
+<app-card [headerTitle]="'Icons Buttons'" [border]="true" [header]="'pb-0'" [padding]="false" [cardBodyClass]="'common-flex visual-button'">
+    <p class="f-m-light mt-1" header5>Use <code>btn-square </code>and <code>btn-pill </code>class for icons buttons.</p>
+    
+    @for(button of iconsButton; track button){
+        <button [class]="button.class">
+            <app-feather-icon [icon]="button.icon"></app-feather-icon>
+        </button>
+    }
+</app-card>

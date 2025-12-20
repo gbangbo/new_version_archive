@@ -1,0 +1,37 @@
+<app-card [headerTitle]="'Stackable Sortable Lists'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'stackable-list'">
+  <p class="f-m-light mt-1" header5>
+    Use the <code>cdkDropListGroup</code> directive to group multiple drag-and-drop lists and enable nested sorting.  
+    The <code>cdkDropList</code> directive allows reordering items within the same list, while <code>cdkDrag</code> enables individual items to be draggable.  
+    The <code>drop()</code> method updates the item order when an element is repositioned.  
+    Nested lists are dynamically rendered using <code>*ngTemplateOutlet</code>, ensuring hierarchical structures can be reordered efficiently.
+  </p>
+
+  <div class="list-group col nested-sortable" id="nested-demo" cdkDropList (cdkDropListDropped)="drop($event, stackableSortableList)" >
+    @for(item of stackableSortableList; track item) {
+        <div class="list-group-item nested-1" cdkDrag [cdkDragData]="item">
+          <i class="fa-solid fa-folder-open"></i>
+            {{ item.title }}
+            @if(item.children && item.children.length) {
+                <div class="list-group nested-sortable">
+                    @for(child of item.children; track child) {
+                        <div class="list-group-item nested-2" cdkDrag [cdkDragData]="child">
+                          <i class="fa-solid fa-folder-open"></i>
+                            {{ child.title }}
+                            @if(child.children && child.children.length) {
+                                <div class="list-group">
+                                    @for(subChild of child.children; track subChild) {
+                                        <div class="list-group-item nested-3" cdkDrag [cdkDragData]="subChild">
+                                          <i class="fa-solid fa-folder-open"></i>
+                                             {{ subChild.title }}
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    }
+  </div>
+</app-card>

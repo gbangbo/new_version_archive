@@ -1,0 +1,11 @@
+<app-card
+    [headerTitle]="'Recent Orders'"
+    [dropdownType]="'simple'"
+    [options]="cardToggleOptions"
+    [padding]="false"
+    [cardBodyClass]="'px-0 pt-0 common-option'">
+
+    <div class="recent-table overflow-x-auto currency-table recent-order-table custom-scrollbar">
+        <app-table [tableConfig]="tableConfig"  [hasCheckbox]="true" [pageSize]="4" [paginateDetails]="true"></app-table>
+    </div>
+</app-card>

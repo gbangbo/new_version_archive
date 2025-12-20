@@ -1,0 +1,40 @@
+<div class="card widget-hover">
+    <div class="card-header card-no-border">
+      <div class="header-top">
+        <div class="sales-header">
+          <h5 class="m-0">{{ totalSalesChart.title }}</h5>
+          <span class="c-o-light font-medium">{{ totalSalesChart.date }}</span>
+        </div>
+        <div class="card-header-right-icon">
+          <a class="btn btn-light-primary" [routerLink]="['/seller/list']">See All </a>
+        </div>
+      </div>
+    </div>
+    <div class="card-body pt-0 main-sale">
+      <div class="sales-chart-wrap">
+        <div id="sales-chart1">
+            <apx-chart 
+                [series]="totalSalesChart.chart_details.series"
+                [chart]="totalSalesChart.chart_details.chart"
+                [dataLabels]="totalSalesChart.chart_details.dataLabels"
+                [stroke]="totalSalesChart.chart_details.stroke"
+                [grid]="totalSalesChart.chart_details.grid"
+                [tooltip]="totalSalesChart.chart_details.tooltip"
+                [colors]="totalSalesChart.chart_details.colors"
+                [fill]="totalSalesChart.chart_details.fill"
+                [markers]="totalSalesChart.chart_details.markers"
+                [xaxis]="totalSalesChart.chart_details.xaxis"
+                [yaxis]="totalSalesChart.chart_details.yaxis"
+                [responsive]="totalSalesChart.chart_details.responsive">
+            </apx-chart>
+        </div>
+      </div>
+      <div class="sale-details">
+        <h4 class="mb-0">{{ totalSalesChart.total_sale}}</h4>
+        <span class="f-12 font-medium" [ngClass]="totalSalesChart.profit_type == 'profit' ? 'txt-success' : 'txt-danger'">
+            <i class="me-1" [ngClass]="totalSalesChart.profit_type == 'profit' ? 'icon-arrow-up' : 'icon-arrow-down'"></i>
+            +{{ totalSalesChart.profit }}%
+          </span>
+      </div>
+    </div>
+</div>

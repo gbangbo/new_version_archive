@@ -1,0 +1,26 @@
+<div class="flex profile-media items-center">
+    <img class="-[10px]" src="assets/images/dashboard/profile.png" alt="profile">
+    <div class="grow w-[calc(100%_-_250px)]">
+        <span>{{users?.full_name || 'Inconnu'}}</span>
+        <p class="mb-0">
+            {{users?.roles || 'Inconnu'}}
+            <i class="align-middle fa-solid fa-angle-down"></i>
+        </p>
+    </div>
+  </div>
+  <ul class="profile-dropdown onhover-show-div">
+    @for(item of profile; track item) {
+        <li>
+            <a class="flex items-center" href="javascript:void(0)" [routerLink]="item.path">
+                <app-feather-icon [icon]="item.icon"></app-feather-icon>
+                <span>{{ item.title }}</span>
+            </a>
+        </li>
+    }
+    <li>
+        <a class="flex items-center" href="javascript:void(0)">
+            <app-feather-icon [icon]="'log-in'"></app-feather-icon>
+            <span (click)="logOut()">Déconnexion</span>
+        </a>
+    </li>
+  </ul>

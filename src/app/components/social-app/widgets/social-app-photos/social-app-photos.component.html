@@ -1,0 +1,28 @@
+<div class="grid grid-cols-12 card-gap">
+    <div class="col-span-12">
+        <div class="card">
+            <div class="my-gallery card-body gallery-with-description">
+                <div class="grid grid-cols-12 gap-4">
+                    @for(photo of photos; track photo; let i = $index) {
+                        <figure class="col-span-3 xxl:col-span-4 lg:col-span-6 sm:col-span-12 box-col-4">
+                            <a (click)="openInFullScreen(i)">
+                                <img [src]="photo.src_url" itemprop="thumbnail" alt="Image description">
+                                <div class="caption">
+                                    <h4>{{ photo.user_name }}</h4>
+                                    <p class="mt-1">{{ photo.description }}</p>
+                                    @if(likesSection) {
+                                        <ul class="common-flex">
+                                          <li><i class="fa-regular fa-heart"></i><span>{{ photo.likes }}</span></li>
+                                          <li><i class="fa-regular fa-comments"></i><span>{{ photo.comment }}</span></li>
+                                          <li><i class="fa-regular fa-paper-plane"></i></li>
+                                        </ul>
+                                    }
+                                </div>
+                            </a>
+                        </figure> 
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

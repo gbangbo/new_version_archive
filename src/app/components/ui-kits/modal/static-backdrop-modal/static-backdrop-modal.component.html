@@ -1,0 +1,27 @@
+<app-card [headerTitle]="'Static Backdrop Modal'" [header]="'pb-0'" [border]="true" [padding]="false">
+
+  <p class="f-m-light mt-1" header5>When backdrop is set to static, the modal will not close when clicking outside of it. Click the button below to try it.</p>
+
+  <button class="btn btn-warning" type="button" (click)="openModal()">Static Backdrop Modal</button>
+
+  @if(modalOpen){
+    <div class="modal  fade show modal-backdrop">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-body">
+            <div class="modal-toggle-wrapper">
+              <ul class="modal-img">
+                <li>
+                  <img src="assets/images/gif/time.gif" alt="alarm">
+                </li>
+              </ul>
+              <h4 class="text-center pb-2">Failed to establish a connection.</h4>
+              <p class="text-center">Getting back in touch in <b class="txt-warning">14 seconds...</b></p>
+              <button class="btn btn-warning flex m-auto" type="button" (click)="closeModal()">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</app-card>

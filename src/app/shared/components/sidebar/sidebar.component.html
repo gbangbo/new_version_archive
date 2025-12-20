@@ -1,0 +1,103 @@
+<div>
+    <app-header-logo [icon]="'grid'" [type]="'sidebar'">
+        <div class="back-btn" icon (click)="closeSidebar()">
+            <i class="fa-solid fa-angle-left"></i>
+        </div>
+    </app-header-logo>
+
+    <div class="logo-icon-wrapper">
+        <a href="javascript:void(0)" [routerLink]="['/']">
+            <img class="max-w-full" src="assets/images/logo/logo-icon.png" alt="logo">
+        </a>
+    </div>
+
+    <nav class="sidebar-main">
+        @if(leftArrow){
+            <div class="left-arrow" (click)="scrollLeft()">
+              <app-feather-icon [icon]="'arrow-left'"></app-feather-icon>
+            </div>
+          }
+        <div id="sidebar-menu" [ngStyle]="{ 'margin-left': layoutService.margin + 'px' }">
+            <ul class="sidebar-links sidebar-scroll" id="simple-bar" #sidebar>
+                <li class="back-btn">    
+                    <a href="javascript:void(0)" [routerLink]="['/']">
+                        <img class="max-w-full" src="assets/images/logo/logo-icon.png" alt="logo">
+                    </a>
+                    <div class="mobile-back text-end">
+                        <span>Back</span>
+                        <i class="fa-solid fa-angle-right ps-2" aria-hidden="true"></i>
+                    </div>
+                </li>
+
+                <li class="pin-title sidebar-main-title" [class.show]="pinedItem.length >= 1">
+                    <div>
+                      <h6>Pinned</h6>
+                    </div>
+                </li>
+
+                @for(menu of menuItems; track menu) {
+                    @if(menu.main_title) {
+                        <li class="sidebar-main-title">
+                            <div>
+                              <h6 class="lan-1">{{ menu.main_title | translate }}</h6>
+                            </div>
+                        </li>
+                    } @else {
+                        <div *ngTemplateOutlet="recursiveMenu; context: { $implicit: menu }"></div>
+                        <ng-template #recursiveMenu let-menu>
+                            <li [class.sidebar-list]="menu.level == 1" [class.pined]="menu.pined" [id]="menu.id ? menu.id : ''">
+                                @if(menu.level == 1) {
+                                    <i class="fa-solid fa-thumbtack" (click)="pined(menu)"></i>
+                                }
+
+                                @if(menu.badge) {
+                                    <label class="badge badge-light-{{ menu.badge_color }}">{{ menu.badge_value }}</label>
+                                }
+
+                                @if(menu.type == 'extTabLink'){
+                                    <a [href]="menu.path" target="_blank">
+                                      {{ menu.title | translate }}
+                                    </a>
+                                } @else {
+                                    <a 
+                                        [ngClass]="{ 'sidebar-link sidebar-title': menu.level == 1, 'submenu-title': menu.type == 'sub' && menu.level == 2, 'link-nav': menu.type == 'link' && menu.level == 1 }" 
+                                        [class.enable-active]="menu.active"
+                                        routerLinkActive="active" 
+                                        [routerLink]="menu.path" 
+                                        (click)="toggleMenu(menu)">
+                                        @if(menu.icon) {
+                                            <app-svg-icon [icon]="menu.icon" [change]="true"></app-svg-icon>
+                                        }
+
+                                        @if(menu.level == 1) {
+                                            <span>{{ menu.title | translate }} </span>
+                                        } @else {
+                                            {{ menu.title | translate }}
+                                        }
+
+                                        @if(menu.children) {
+                                            <div class="according-menu">
+                                                <i class="fa-solid" [ngClass]="menu.active ? 'fa-angle-down' : 'fa-angle-right'"></i>
+                                            </div>
+                                        }
+                                    </a>
+                                }
+
+                                @if(menu.children && menu.children.length) {
+                                    <ul class="sidebar-submenu" [ngStyle]="{'display' : menu.active ? 'block' : 'none'}">
+                                        @for(child of menu.children; track child) {
+                                            <div *ngTemplateOutlet="recursiveMenu; context: { $implicit: child }"></div>
+                                        }
+                                    </ul>
+                                }
+                            </li>
+                        </ng-template>
+                    }
+                }
+            </ul>
+        </div>
+        @if(rightArrow){
+            <div class="right-arrow" (click)="scrollRight()"><app-feather-icon [icon]="'arrow-right'"></app-feather-icon></div>
+        }
+    </nav>
+</div>

@@ -1,0 +1,17 @@
+<app-card [headerTitle]="'Payment Gateway Earnings'"
+    [dropdownType]="'simple'" [options]="cardToggleOption" [cardBodyClass]="'payment-gateway'">
+
+    @for(earning of earnings; track earning) {
+        <div class="pay-box">
+          <div class="common-flex items-center">
+            <div class="outer-line border-{{ earning.color }}">
+              <div class="outer-svg-box bg-light-{{ earning.color }}">
+                <app-svg-icon [icon]="earning.logo" [class]="'fill-' + earning.color"></app-svg-icon>
+              </div>
+            </div>
+            <a class="font-medium" href="javascript:void(0)">{{ earning.title }}</a>
+          </div>
+            <span class="text-end txt-{{ earning.earning_type == 'profit' ? 'success' : 'danger' }}">{{ earning.earning_type == 'profit' ? '+' : '-'}}${{ earning.value }}</span>
+        </div>
+    }
+</app-card>

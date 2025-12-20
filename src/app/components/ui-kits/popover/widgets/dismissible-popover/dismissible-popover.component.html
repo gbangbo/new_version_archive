@@ -1,0 +1,14 @@
+<app-card [headerTitle]="'Dismiss Popover'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'common-flex popover-wrapper'">
+
+    <p class="mb-0 mt-1" header5>Use a <code>boolean</code> variable to toggle the popover's visibility on button click.</p>
+    <div class="relative group inline-block">
+        <button class="btn btn-danger popover-dismiss text-white" (click)="showPopover()">Dismissible Popover</button>
+    
+        <div [class.show]="popoverVisible" class="popover absolute left-1/2 top-[85%] -translate-x-1/2 mt-2 w-max bg-white text-sm rounded opacity-100 visible transition-opacity duration-300 shadow-lg">
+            <div class="popover-arrow"></div>
+            <div class="popover-header">Dismissible Popover</div>
+            <div class="popover-body">And here's some amazing content. It's very engaging. Right?</div>
+        </div>
+    </div>
+
+</app-card>

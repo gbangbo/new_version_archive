@@ -1,0 +1,24 @@
+<div class="container">
+  <div class="grid grid-cols-12 card-gap course-list-box">
+    <div class="col-span-9 xl:col-span-12 xl-60 xl-0 order-none xl:order-1 box-col-12">
+      <div class="grid grid-cols-12 card-gap">
+
+        @for(list of courseList | slice:0:2;track list){
+          <div class="col-span-12">
+            <app-vertical-blog [blog]="list"></app-vertical-blog>
+          </div>
+        }
+
+        @for(list of courseList | slice:2:8;track list){
+          <div class="col-span-4 xl-50 xl:col-span-6 sm:col-span-12 box-col-6">
+            <app-horizontal-blog [blog]="list"></app-horizontal-blog>
+          </div>
+        }
+        
+      </div>
+    </div>
+    <div class="col-span-3 xl:col-span-12 xl-40 box-col-12 learning-filter">
+      <app-course-filter></app-course-filter>
+    </div>
+  </div>
+</div>

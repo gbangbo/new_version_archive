@@ -1,0 +1,36 @@
+<div class="offcanvas show" [ngClass]="positionClass" (clickOutside)="outsideClick ? close() : null">
+  <div class="offcanvas-header pb-0">
+    <h5 class="offcanvas-title" id="offcanvasRightLabel">{{ title }}</h5>
+    <button class="btn-close" type="button" (click)="close()"></button>
+  </div>
+  <div class="offcanvas-body custom-input custom-scrollbar">
+    <form class="grid grid-cols-12 gap-4">
+      <div class="col-span-12"> 
+        <label class="form-label" for="exampleFormControlInput1">Email</label>
+        <input class="form-control" id="exampleFormControlInput1" type="email" placeholder="name@example.com">
+      </div>
+      <div class="col-span-12">
+        <label class="form-label" for="exampleFormControlInput2">Select Project</label>
+        <select2 [data]="projects" placeholder="Select your project" noResultMessage="No Project Found." resettable></select2>
+      </div>
+      <div class="col-span-12">
+        <label class="form-label" for="exampleFormControlInput3">Project Counts</label>
+        <select2 [data]="projectCount" placeholder="How many project do you make?" noResultMessage="No Project could Found." resettable></select2>
+      </div>
+      <div class="col-span-12"> 
+        <label class="form-label" for="exampleFormControlTextarea1">External Notes</label>
+        <textarea class="form-control" id="exampleFormControlTextarea1" rows="4"></textarea>
+      </div>
+      <div class="col-span-12">
+        <div class="form-check checkbox-checked flex gap-2">
+          <input class="form-check-input" id="termsCondition5" type="checkbox" value="">
+          <label class="form-check-label" for="termsCondition5">Agree to terms and conditions</label>
+        </div>
+      </div>
+      <div class="col-span-12">
+        <button class="btn btn-light me-2" type="submit" (click)="close()">Cancel</button>
+        <button class="btn btn-primary text-white" type="submit">Submit</button>
+      </div>
+    </form>
+  </div>
+</div>

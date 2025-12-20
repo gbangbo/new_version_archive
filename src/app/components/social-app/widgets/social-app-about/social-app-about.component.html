@@ -1,0 +1,114 @@
+<div class="grid grid-cols-12 card-gap">
+    <div class="col-span-3 xl:col-span-12 lg:col-span-5 md:col-span-12 xl-40 box-col-4">
+        <app-social-app-left-panel></app-social-app-left-panel>
+    </div>
+    <div class="col-span-6 xl:col-span-12 lg:col-span-7 md:col-span-12 xl-60 box-col-8e">
+        <div class="grid grid-cols-12 card-gap">
+            <div class="col-span-12">
+                <app-card [headerTitle]="'People You May Know'" [border]="true" [padding]="false" [cardBodyClass]="'avatar-showcase'">
+                    <div class="pepole-knows">
+                        <ul>
+                            @for(friend of friends | slice: 0:6; track friend) {
+                                <li>
+                                    <div class="add-friend text-center">
+                                        <img class="img-60 max-w-full rounded-full" [alt]="friend.name" [src]="friend.profile">
+                                        <span class="block">{{ friend.name }}</span>
+                                        <button class="btn btn-primary btn-xs text-white">Add Friend</button>
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </app-card>
+            </div>
+            <div class="col-span-12">
+                <div class="card">
+                    <div class="card-header social-header card-no-border pb-0">
+                        <h5 class="common-space">
+                            <span>Hobbies and Interests</span>
+                            <span class="pull-right">
+                                <app-feather-icon [icon]="'more-vertical'"></app-feather-icon>
+                            </span>
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="grid grid-cols-12 card-gap details-about">
+                            @for(hobbies of myProfile.hobbiesInterest; track hobbies; let i = $index) {
+                                <div class="col-span-6 sm:col-span-12">
+                                    <div class="your-details" [class.your-details-xs]="i % 2 == 0">
+                                        <span class="font-medium mb-3 mt-4 block">{{ hobbies.title }}:</span>
+                                        <p>{{ hobbies.description  }}</p>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-span-12">
+                <div class="card">
+                    <div class="card-header social-header card-no-border pb-0">
+                        <h5 class="common-space">
+                            <span>Education and Employment</span>
+                            <span class="pull-right">
+                                <app-feather-icon [icon]="'more-vertical'"></app-feather-icon>
+                            </span>
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="grid grid-cols-12 details-about">
+                            @for(eduction of myProfile.eduction_employment; track eduction; let i = $index) {
+                                <div class="col-span-6 sm:col-span-12">
+                                    <div class="your-details" [class.your-details-xs]="i % 2 == 0">
+                                        <span class="font-medium">{{ eduction.title }}:</span>
+                                        <p>{{ eduction.year }}</p>
+                                        <p>{{ eduction.description  }}</p>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-span-12">
+                <app-card [headerTitle]="'Viewed Your Profile'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'avatar-showcase'">
+                    <div class="pepole-knows">
+                        <ul>
+                            @for(friend of friends | slice: 0:6; track friend) {
+                                <li>
+                                    <div class="add-friend text-center">
+                                        <img class="img-60 max-w-full rounded-full" [alt]="friend.name" [src]="friend.profile">
+                                        <span class="block">{{ friend.name }}</span>
+                                        <button class="btn btn-primary btn-xs text-white">Add Friend</button>
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </app-card>
+            </div>
+            <div class="col-span-12">
+                <app-card [headerTitle]="'Activity Log'" [header]="'pb-0'" [border]="true" [padding]="false">
+                    <div class="activity-log">
+                        @for(group of objectKeys(getActivityGroup()); track group) {
+                            <div class="my-activity">
+                                <h6 class="mb-4">{{ getDate(group) }}</h6>
+                                @for(activity of getActivityGroup()[group]; track activity; let i = $index) {
+                                    <p>
+                                        <span>
+                                            <app-feather-icon [icon]="activity.icon" [class]="'m-r-20'"></app-feather-icon>
+                                        </span>
+                                        {{ activity.activity }}
+                                    </p>
+                                }
+                            </div>
+                        }
+                    </div>
+                </app-card>
+            </div>
+        </div>
+    </div>
+    <div class="col-span-3 xl:col-span-12 xl-100 box-col-12">
+        <app-social-app-right-panel></app-social-app-right-panel>
+    </div>
+</div>

@@ -1,0 +1,89 @@
+<div class="container">
+  <div class="grid grid-cols-12">
+    <div class="col-span-12">
+      <app-card [headerTitle]="'Blog Edit'" [border]="true" [header]="'pb-0'" [padding]="false" [cardBodyClass]="'add-post'">
+        <form class="grid grid-cols-12 card-gap">
+          <div class="col-span-12">
+            <div class="mb-4">
+              <label for="validationCustom01">Title:</label>
+              <input class="form-control" id="validationCustom01" type="text" placeholder="Post Title">
+            </div>
+            <div class="mb-4">
+              <label>Type:</label>
+              <div class="m-checkbox-inline flex flex-wrap">
+                @for(type of blogType;track type){
+                  <label for="{{ type.id }}">
+                    <input class="radio_animated" id="{{ type.id }}" type="radio" name="rdo-ani" [checked]="type.checked">
+                    {{ type.title }}
+                  </label>
+                }
+              </div>
+            </div>
+            <div class="mb-4">
+              <div class="col-form-label">Category:
+                <select2 class="js-example-placeholder-multiple col-sm-12" [data]="addBlogCategory" multiple="true"></select2>
+              </div>
+            </div>
+            <div class="email-wrapper">
+              <div class="theme-form">
+                <div class="mb-4">
+                  <label class="w-full">Content:</label>
+                  <div class="toolbar-box">
+                    <div class="NgxEditor__Wrapper">
+                      <ngx-editor-menu [editor]="editor"> </ngx-editor-menu>
+                      <ngx-editor [editor]="editor" [placeholder]="'Enter Your Messages..'"></ngx-editor>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+        <div class="blog-dropzone">
+          <div class="custom-dropzone">
+            <form class="dropzone dropzone-secondary" id="multiFileUpload">
+              <dropzone [config]="config" [message]="text"></dropzone>
+            </form>
+          </div>
+        </div>
+        <form class="grid grid-cols-12 gap-4 e-category">
+          <div class="col-span-12">
+            <div class="main-divider">
+              <div class="divider-body">
+                <h6>SEO Tags</h6>
+              </div>
+            </div>
+          </div>
+          <div class="col-span-6 lg:col-span-12">
+            <label class="form-label" for="validationMetaTitle1">
+              Meta Title
+              <span class="txt-danger">*</span>
+            </label>
+            <input class="form-control" id="validationMetaTitle1" type="text" placeholder="Enter meta title">
+          </div>
+          <div class="col-span-6 lg:col-span-12">
+            <label class="form-label flex" for="validationKeywords">
+              Meta Keywords
+              <span class="txt-danger">*</span>
+              <span class="c-o-light">&nbsp;(In comma separated)</span>
+            </label>
+            <input class="form-control" id="validationKeywords" type="text" placeholder="Enter meta keywords">
+          </div>
+          <div class="col-span-12">
+            <label class="form-label">Meta Description</label>
+            <div class="toolbar-box">
+              <div class="NgxEditor__Wrapper">
+                <ngx-editor-menu [editor]="editor2"></ngx-editor-menu>
+                <ngx-editor [editor]="editor2" [placeholder]="'Enter Your Messages..'"></ngx-editor>
+              </div>
+            </div>
+          </div>
+        </form>
+        <div class="common-flex justify-end mt-3">
+          <button class="btn btn-primary text-white" type="submit">Post</button>
+          <input class="btn btn-secondary text-white" type="reset" value="Discard">
+        </div>
+      </app-card>
+    </div>
+  </div>
+</div>

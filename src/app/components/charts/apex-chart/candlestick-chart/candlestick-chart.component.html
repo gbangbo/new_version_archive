@@ -1,0 +1,8 @@
+<app-card [headerTitle]="'Candlestick Chart'" [border]="true" [header]="'pb-0'" [padding]="false">
+  <div id="candlestick">
+    <apx-chart [chart]="candleStickChart.chart" [plotOptions]="candleStickChart.plotOptions" [series]="candleStickChart.series"
+               [title]="candleStickChart.title" [xaxis]="candleStickChart.xaxis" [yaxis]="candleStickChart.yaxis"
+               [colors]="candleStickChart.colors">
+    </apx-chart>
+  </div>
+</app-card>

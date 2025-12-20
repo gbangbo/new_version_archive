@@ -1,0 +1,6 @@
+<app-card [sortDescription]="'Total 28 projects pending'" [cardClass]="'projects-pending'"  [cardType]="'classic'" [headerTitle]="'Projects Pending'" [cardBodyClass]="'px-0 pt-0'" [buttonText]="'View All'" [path]="'/project/project-list'">
+
+    <div class="recent-table overflow-x-auto custom-scrollbar project-pending-table">
+        <app-table [tableConfig]="tableConfig" [pageSize]="4"></app-table>
+    </div>
+</app-card>

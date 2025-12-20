@@ -1,0 +1,30 @@
+<div class="card-wrapper border rounded-3 h-full">
+    <div class="cuba-demo-img">
+        <ul class="dot-group pb-3 pt-0">
+            <li></li>
+            <li></li>
+            <li></li>
+        </ul>
+        <div class="title-wrapper pb-3 modal-heading">
+            <h5 class="theme-name mb-0">
+                <span>Modal 3 -</span>Balance Modal
+            </h5>
+            <p class="f-m-light">Example of cuba dashboard balance card.</p>
+        </div>
+        <div class="overflow-hidden balance-modal">
+            <button class="btn btn-primary mx-auto mt-3 text-white" type="button" (click)="openModal()">Click Here</button>
+        </div>
+    </div>
+</div>
+
+@if(modalOpen){
+    <div class="modal  fade show modal-backdrop">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" (clickOutside)="closeModal()">
+                <div class="col-xl-12">
+                    <app-balance></app-balance>
+                </div>
+            </div>
+        </div>
+    </div>
+}

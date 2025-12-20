@@ -1,0 +1,35 @@
+<app-card [headerTitle]="'Offer Style Border'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'megaoptions-border-space-sm'">
+  <p class="f-m-light mt-1" header5>
+    Use <code>offer-style </code>& <code>mega-inline</code> to use solid border style checkbox button.</p>
+    <form class="mega-inline offer-style">
+      <div class="grid grid-cols-12 flex-col">
+        @for(style of offerStyleBorder;track style){
+          <div class="col-span-12">
+            <div class="card">
+              <div class="flex p-5">
+                <div class="form-check checkbox checkbox-primary">
+                  <input class="form-check-input" [id]="style.id" [type]="style.type" [checked]="style.checked">
+                  <label class="form-check-label my-0" [for]="style.id">
+                    <span class="grow">
+                      <span class="flex list-behavior-1">
+                        <span class="shrink-0">
+                          <img class="tab-img max-w-full" [src]="style.image_src" [alt]="style.image_alt">
+                        </span>
+                        <span class="grow">
+                          <span class="mb-0">{{ style.description }}</span>
+                        </span>
+                      </span>
+                    </span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </form>
+    <div class="card-footer text-end" details>
+      <button class="btn btn-primary text-white m-r-15" type="submit">Submit</button>
+      <button class="btn button-light-primary" type="submit">Cancel</button>
+    </div>
+</app-card>

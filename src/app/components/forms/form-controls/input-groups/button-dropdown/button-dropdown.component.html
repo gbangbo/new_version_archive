@@ -1,0 +1,54 @@
+<app-card [headerTitle]="'Buttons with Dropdowns'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'main-custom-form card-wrapper input-group-wrapper'">
+  <p class="f-m-light mt-1" header5>
+    Use <code>input-group </code>and <code>[aria-label='']</code> through buttons with dropdowns.</p>
+
+    <div class="input-group dropdown" (clickOutside)="clickOutside(1)">
+      <button class="btn btn-outline-primary dropdown-toggle border hover:text-white !rounded-l-lg !rounded-none" type="button" (click)="toggleDropdown(1)">Dropdown</button>
+        <ul class="dropdown-menu dropdown-block" [class.show]="dropdownOpen[1]">
+            <li><a class="dropdown-item" href="javascript:void(0)">Ecommerce</a></li>
+            <li><a class="dropdown-item" href="javascript:void(0)">Email</a></li>
+            <li><a class="dropdown-item" href="javascript:void(0)">Users</a></li>
+            <li>
+                <hr class="dropdown-divider">
+            </li>
+            <li><a class="dropdown-item" href="javascript:void(0)">Bookmarks</a></li>
+        </ul>
+  <input class="form-control" type="text" aria-label="Text input with dropdown button">
+</div>
+<div class="input-group dropdown" (clickOutside)="clickOutside(2)">
+  <input class="form-control !rounded-l-lg !rounded-none" type="text" aria-label="Text input with dropdown button">
+  <button class="btn btn-outline-secondary txt-secondary dropdown-toggle border hover:text-white !rounded-r-lg !rounded-none" type="button" (click)="toggleDropdown(2)">Dropdown</button>
+    <ul class="dropdown-menu dropdown-menu-end dropdown-block" [class.show]="dropdownOpen[2]">
+        <li><a class="dropdown-item" href="javascript:void(0)">Starter kit</a></li>
+        <li><a class="dropdown-item" href="javascript:void(0)">Gallery</a></li>
+        <li><a class="dropdown-item" href="javascript:void(0)">Blog</a></li>
+        <li>
+            <hr class="dropdown-divider">
+        </li>
+        <li><a class="dropdown-item" href="javascript:void(0)">Maps</a></li>
+    </ul>
+</div>
+<div class="input-group dropdown" (clickOutside)="clickOutside(3)">
+  <button class="btn btn-primary dropdown-toggle !rounded-l-lg !rounded-none" type="button" (click)="toggleDropdown(3)">Dropdown</button>
+    <ul class="dropdown-menu dropdown-block dropdown-toggle-btn" [class.show]="dropdownOpen[3]">
+        <li><a class="dropdown-item" href="javascript:void(0)">Widgets</a></li>
+        <li><a class="dropdown-item" href="javascript:void(0)">Project</a></li>
+        <li><a class="dropdown-item" href="javascript:void(0)">Contacts</a></li>
+        <li>
+            <hr class="dropdown-divider">
+        </li>
+        <li><a class="dropdown-item" href="javascript:void(0)">Tasks</a></li>
+    </ul>
+  <input class="form-control !rounded-none" type="text" aria-label="Text input with 2 dropdown buttons">
+  <button class="btn btn-primary dropdown-toggle" type="button" (clickOutside)="clickOutside(4)" (click)="toggleDropdown(4)">Dropdown</button>
+    <ul class="dropdown-menu dropdown-menu-end dropdown-block" [class.show]="dropdownOpen[4]">
+        <li><a class="dropdown-item" href="javascript:void(0)">To-Do</a></li>
+        <li><a class="dropdown-item" href="javascript:void(0)">FAQ</a></li>
+        <li><a class="dropdown-item" href="javascript:void(0)">Knowledgebase</a></li>
+        <li>
+            <hr class="dropdown-divider">
+        </li>
+        <li><a class="dropdown-item" href="javascript:void(0)">Support Ticket</a></li>
+    </ul>
+</div>
+</app-card>

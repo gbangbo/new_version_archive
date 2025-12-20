@@ -1,0 +1,300 @@
+/**=====================
+	3.62 Manage Reviews CSS Start
+==========================**/
+// Manage Reviews
+.manage-review-wrapper {
+  .top-body {
+    @include pixelstrap-flex(flex, flex-end, center);
+    gap: 4px;
+    padding: 20px;
+    position: relative;
+
+    .bootstrap-select {
+      width: 118px !important;
+
+      &.dropdown-toggle {
+        min-width: 100px;
+      }
+    }
+
+    .form-label {
+      margin-bottom: 0;
+    }
+
+    ~ {
+      .manage-review {
+        .dt-container {
+          .dt-layout-row {
+            &:first-child {
+              @include pixelstrap-flex(flex, flex-start, center);
+              position: absolute;
+              top: 20px;
+              left: 20px;
+              gap: 16px;
+              flex-direction: row-reverse;
+
+              [dir="rtl"] & {
+                left: unset;
+                right: 20px;
+              }
+
+              @media (max-width: 991px) {
+                flex-direction: column-reverse;
+                gap: 12px;
+                align-items: flex-start;
+              }
+
+              @media (max-width: 599px) and (min-width: 416px) {
+                top: 70px;
+              }
+
+              @media (max-width: 415px) {
+                top: 90px;
+              }
+            }
+
+            .dt-buttons {
+              margin: 0;
+
+              @media (max-width: 370px) {
+                .dt-button {
+                  padding: 5px 7px !important;
+                }
+              }
+            }
+
+            .dt-layout-cell {
+              .dt-search {
+                @media (max-width: 640px) {
+                  inset: 0;
+                  margin: 0;
+                }
+
+                @media (max-width: 345px) {
+                  display: flex;
+                  flex-direction: column;
+                  gap: 4px;
+
+                  label {
+                    margin: 0;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  .selectpicker {
+    ~ .custom-dropdown {
+      .dropdown-toggle {
+        padding: 5px 10px;
+      }
+    }
+  }
+}
+.manage-review-wrapper{
+  .card-body{
+    >.top-body{
+      @media (max-width: 1400px) {
+        justify-content: flex-start;
+      }
+      >div {
+        @media (max-width: 1400px) {
+          margin-top: 50px;
+        }
+        @media (max-width: 575px) {
+          margin-top: 90px;
+        }
+      }
+    }
+  }
+  .manage-review {
+    .recent-table {
+      .top-body{
+        position: absolute;
+        top: 0;
+        left: 0;
+        .dataTables_filter{
+          position: unset;
+          margin-right: auto;
+          @media (max-width: 575px) {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+          }
+          label {
+            input {
+              padding: 6px;
+              width: 72%;
+            }
+          }
+        }
+      }
+      div.dt-container {
+        .dt-layout-row {
+          .dt-search {
+            position: relative;
+            inset: unset;
+  
+            @media (max-width: 640px) {
+              top: 4px;
+            }
+  
+            .dt-input {
+              width: auto;
+              padding: 6px;
+              border-radius: 6px;
+              opacity: 1;
+  
+              &:focus {
+                &::placeholder {
+                  opacity: 0;
+                }
+              }
+            }
+          }
+  
+          &:last-child {
+            @media (max-width: 991px) {
+              flex-direction: column;
+            }
+          }
+        }
+      }
+  
+      [class*="square-"] {
+        @include square-box(34px, 34px, 2px, rgba($danger-color, 0.1));
+        @include pixelstrap-flex(flex, center, center);
+        box-shadow: 0px 0px 28px 6px rgba(235, 235, 235, 0.4);
+  
+        svg {
+          fill: $danger-color;
+          @include pixelstrap-size(16px, 16px);
+        }
+      }
+  
+      table {
+        thead,
+        tbody {
+          tr {
+            th,
+            td {
+              color: var(--body-font-color);
+              min-width: auto;
+  
+              &:first-child {
+                padding-left: 20px;
+                padding-right: 10px;
+              }
+  
+              &:last-child {
+                padding-right: 20px;
+              }
+  
+              &:nth-child(2) {
+                min-width: 55px;
+              }
+  
+              &:nth-child(3) {
+                min-width: 200px;
+              }
+  
+              &:nth-child(4) {
+                min-width: 215px;
+              }
+  
+              &:nth-child(5) {
+                min-width: 265px;
+              }
+  
+              &:nth-child(6) {
+                min-width: 110px;
+  
+                @media (max-width: 1347px) and (min-width: 1200px) {
+                  display: none;
+                }
+              }
+  
+              &:nth-child(7) {
+                @media (max-width: 1436px) and (min-width: 1200px) {
+                  display: none;
+                }
+              }
+  
+              .badge {
+                padding: 6px 12px;
+                font-size: 12px;
+              }
+  
+              .common-f-start {
+                gap: 8px;
+  
+                img {
+                  height: 40px;
+                }
+  
+                .user-details {
+                  display: block;
+  
+                  p {
+                    line-height: 1.3;
+                    color: rgba($badge-light-color, 0.8);
+                  }
+                }
+              }
+  
+              .rating {
+                display: flex;
+                gap: 3px;
+                padding-bottom: 6px;
+  
+                i {
+                  font-size: 14px;
+                }
+              }
+  
+              .customer-review {
+                span {
+                  color: rgba($badge-light-color, 0.8);
+                  @media (max-width: 1750px) {
+                    text-overflow:ellipsis;
+                    overflow:hidden;
+                    display: -webkit-box !important;
+                    -webkit-line-clamp: 3;
+                    -webkit-box-orient: vertical;
+                    white-space: normal;
+                  }
+                }
+              }
+            }
+  
+            &.dt-hasChild {
+              ~ {
+                tr[data-dt-row] {
+                  tbody {
+                    background-color: $auth-bg-color;
+  
+                    tr {
+                      td {
+                        &:first-child {
+                          min-width: 128px;
+                          font-weight: 500;
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+/**=====================
+	3.62 Manage Reviews CSS End
+==========================**/

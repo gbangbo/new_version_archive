@@ -1,0 +1,61 @@
+<app-card [headerTitle]="'Dynamic Form Field'" [header]="'pb-0'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>
+    Use id <code>#cart_fields </code>to dynamically add form fields.
+  </p>
+  <div class="dynamic-form-field">
+    <div class="panel panel-default">
+      <div class="panel-body grid grid-cols-12 gap-4">
+        <div id="cart_fields"></div>
+        <div class="col-span-12">
+          <div class="input-group-btn">
+            <button class="btn btn-success text-white" type="button" (click)="addItem()">
+              Add Item
+              <span class="fa-solid fa-plus" aria-hidden="true"></span>
+            </button>
+          </div>
+        </div>
+        <div class="col-span-12">
+          @for(item of items; track item; let i = $index) {
+            <div class="grid grid-cols-12 gap-4 custom-input">
+              <div class="col-span-3 xxl:col-span-6 sm:col-span-12 box-col-6">
+                <div class="form-group">
+                  <label for="baseItemName">Items</label>
+                  <input class="form-control" id="base{{i}}" type="text" [name]="'base{{i}}'" [value]="item.items" placeholder="Add item Name">
+                </div>
+              </div>
+              <div class="col-span-3 xxl:col-span-6 sm:col-span-12 box-col-6">
+                <div class="form-group">
+                  <label for="baseItemName">Price</label>
+                  <input class="form-control" id="base{{i}}" type="text" [name]="'base{{i}}'" [value]="item.price" placeholder="500">
+                </div>
+              </div>
+              <div class="col-span-3 xxl:col-span-6 sm:col-span-12 box-col-6">
+                <div class="form-group">
+                  <label for="baseItemName">Qty</label>
+                  <input class="form-control" id="base{{i}}" type="text" [name]="'base{{i}}'" [value]="item.qty"  placeholder="1">
+                </div>
+              </div>
+              <div class="col-span-3 xxl:col-span-6 sm:col-span-12 box-col-6">
+                <div class="form-group">
+                  <label for="baseItemName">Total Price</label>
+                  <input class="form-control" id="base{{i}}" type="text" [name]="'base{{i}}'" [value]="item.total_price" placeholder="500">
+                </div>
+              </div>
+              @if(items.length > 1 && i != 0) {
+                <div class="col-span-12">
+                  <div class="form-group">
+                    <div class="input-group">
+                      <div class="input-group-btn">
+                        <button class="btn btn-danger text-white" (click)="removeItem(i)" type="button">Remove Item</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</app-card>

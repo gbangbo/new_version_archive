@@ -1,0 +1,5 @@
+<app-card [headerTitle]="'All Projects'" [padding]="false" [cardClass]="'heading-space'" [cardBodyClass]="'px-0 pt-0 all-project-table'" [dropdownType]="'simple'" [options]="cardToggleOption">
+    <div class="recent-table overflow-x-auto custom-scrollbar">
+        <app-table [tableConfig]="tableConfig" [hasCheckbox]="true" [pageSize]="5" [selectedRows]="true" [paginateDetails]="true" [showPaginate]="true" [tableClass]="'table'"></app-table>
+    </div>
+</app-card>

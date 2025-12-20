@@ -1,0 +1,75 @@
+<app-card [cardClass]="'height-equal'" [header]="'pb-0'" [headerTitle]="'Browser Defaults'" [cardBodyClass]="'custom-input'"
+  [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>
+    Not interested in custom validation feedback messages or writing JavaScript to change form behaviors? Depending on
+    your browser and OS,While these feedback styles cannot be styled with CSS, you can still customize the feedback
+    text through JavaScript.</p>
+  <form class="grid grid-cols-12 gap-4" ngNativeValidate>
+    <div class="col-span-12">
+      <label class="form-label" for="first-name">First Name</label>
+      <input class="form-control" id="first-name" type="text" placeholder="First name" aria-label="First name" required>
+    </div>
+    <div class="col-span-12">
+      <label class="form-label" for="exampleFormControlInput1">Email Address</label>
+      <input class="form-control" id="exampleFormControlInput1" type="email" placeholder="pesamof475@saeoil.com" required>
+    </div>
+    <div class="col-span-12">
+      <label class="col-sm-12 col-form-label" for="inputPassword2">Password</label>
+      <input class="form-control" id="inputPassword2" type="password" required>
+    </div>
+    <div class="col-span-12">
+      <label class="form-label" for="validationDefault04">State</label>
+      <select class="form-select" id="validationDefault04">
+        <option selected="" disabled="" value="">Choose...</option>
+        <option>U.K </option>
+        <option>Thailand</option>
+        <option>India </option>
+        <option>U.S</option>
+      </select>
+    </div>
+    <div class="col-span-12">
+      <label class="form-label" for="formFile">Choose file</label>
+      <input class="form-control" id="formFile" type="file" required>
+    </div>
+    <div class="col-span-12">
+      <div class="card-wrapper border rounded-3 checkbox-checked">
+        <h6 class="sub-title">Select Your Payment Method</h6>
+        <div class="radio-form">
+          <div class="form-check flex gap-2">
+            <input class="form-check-input" id="flexRadioDefault1" type="radio" name="flexRadioDefault">
+            <label class="form-check-label" for="flexRadioDefault1">Visa</label>
+          </div>
+          <div class="form-check flex gap-2">
+            <input class="form-check-input" id="flexRadioDefault2" type="radio" name="flexRadioDefault" checked="">
+            <label class="form-check-label" for="flexRadioDefault2">MasterCard</label>
+          </div>
+          <div class="form-check flex gap-2">
+            <input class="form-check-input" id="flexRadioDefault3" type="radio" name="flexRadioDefault" checked="">
+            <label class="form-check-label" for="flexRadioDefault3">Paypal</label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-span-12">
+      <label class="form-label" for="exampleFormControlTextarea1">Description</label>
+      <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+    </div>
+    <div class="col-span-12 checkbox-checked flex gap-2">
+      <input class="form-check-input" id="flexCheckDefault" type="checkbox" value="">
+      <label class="form-check-label ms-1" for="flexCheckDefault">I accept the policies</label>
+    </div>
+    <div class="col-span-12">
+      <div class="flex gap-2">
+          <div class="form-check-size">
+              <div class="form-check form-switch form-check-inline flex gap-2">
+                <input class="form-check-input switch-danger check-size" type="checkbox" role="switch">
+                <label class="form-check-label mb-0" for="flexSwitchCheckDefault">Are you certain that the details above are accurate?</label>
+              </div>
+          </div>
+      </div>
+  </div>
+    <div class="col-span-12">
+      <button class="btn btn-primary text-white" type="submit">Submit</button>
+    </div>
+  </form>
+</app-card>

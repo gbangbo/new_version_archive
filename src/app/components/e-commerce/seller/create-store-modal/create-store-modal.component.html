@@ -1,0 +1,45 @@
+<div class="modal  fade show modal-backdrop">
+  <div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content" (clickOutside)="closeModal()">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modaldashboard">Add Seller</h5>
+        <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close" (click)="closeModal()"></button>
+      </div>
+      <div class="modal-body basic-wizard important-validation">
+        <div class="stepper-horizontal custom-scrollbar" id="stepper1">
+          @for(tab of addSeller; track tab){
+              <div class="stepper-{{ tab.class }}" [ngClass]="{'active done': tab.id < activeTab || (activeTab === addSeller.length && tab.id === addSeller.length) }">
+              <div class="step-circle">
+                  <span>{{ tab.id }}</span>
+              </div>
+                <div class="step-title">{{ tab.title }}</div>
+                <div class="step-bar-left"></div>
+                <div class="step-bar-right"></div>
+              </div>
+          }
+        </div>
+        <div id="msform">
+          <div [ngStyle]="{ 'display': (activeTab === 1 ? '' : 'none') }">
+            <app-personal-info></app-personal-info>
+          </div>
+          <div [ngStyle]="{ 'display': (activeTab === 2 ? '' : 'none') }">
+            <app-company-info></app-company-info>
+          </div>
+          <div [ngStyle]="{ 'display': (activeTab === 3 ? '' : 'none') }">
+            <app-company-overview></app-company-overview>
+          </div>
+          <div [ngStyle]="{ 'display': (activeTab === 4 ? '' : 'none') }">
+            <app-financial-info></app-financial-info>
+          </div>
+        <div [ngStyle]="{ 'display': (activeTab === 5 ? '' : 'none') }">
+          <app-finish></app-finish>
+        </div>
+        </div>
+        <div class="wizard-footer flex gap-2 justify-end">
+          <button class="btn button-light-primary" id="backbtn" (click)="handleStep(-1)" [disabled]="activeTab == 1"> Back</button>
+          <button class="btn btn-primary text-white" id="nextbtn" (click)="handleStep(1)">{{ activeTab == addSeller.length ? 'Finish' : 'Next' }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>  

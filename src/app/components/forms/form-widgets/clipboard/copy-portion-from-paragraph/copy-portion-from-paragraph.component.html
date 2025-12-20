@@ -1,0 +1,18 @@
+<app-card [headerTitle]="'Copy Portion From Paragraph'" [header]="'pb-0'" [border]="true" [padding]="false" [cardClass]="'height-equal'">
+    <div class="clipboaard-container">
+        <p class="f-16">Copy Portion From Paragraph</p>
+        <h6 class="border rounded-md card-body f-m-light">
+            <span class="bg-primary text-white p-1" id="clipboardExample4">{{copyHighlightTxt}}</span>
+            that are visible online. Take a website design course to learn how to create an appealing and responsive
+            website. In the discipline of web design, there are degree, diploma, postgraduate degree, and
+            certificate programmes. A web designer is responsible for a website's look, feel, and occasionally even
+            content.
+        </h6>
+        <div class="mt-3 flex gap-2 justify-end">
+            <button class="btn btn-primary btn-clipboard text-white" type="button" (click)="copyFunction(copyHighlightTxt)">
+                <i class="fa-solid fa-copy"></i> 
+                Copy highlighted text
+            </button>
+        </div>
+    </div>
+</app-card>

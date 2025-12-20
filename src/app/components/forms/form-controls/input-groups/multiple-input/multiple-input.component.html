@@ -1,0 +1,19 @@
+<app-card [headerTitle]="'Multiple Inputs'" [header]="'pb-0'" [border]="true" [padding]="false"
+  [cardBodyClass]="'common-flex main-custom-form card-wrapper'">
+  <p class="f-m-light mt-1" header5> While multiple <code>&lt;input&gt;</code>s are supported visually, validation styles are only available for input groups with a single <code>&lt;input&gt;</code>.</p>
+  <div class="input-group">
+    <span class="input-group-text !rounded-l-lg !rounded-none">First and Last Name</span>
+    <input class="form-control !rounded-none" type="text" aria-label="First name">
+    <input class="form-control" type="text" aria-label="Last name">
+  </div>
+  <div class="input-group">
+    <span class="input-group-text !rounded-l-lg !rounded-none">$</span>
+    <span class="input-group-text !rounded-none">0.00</span>
+    <input class="form-control" type="text" aria-label="Dollar amount (with dot and two decimal places)">
+  </div>
+  <div class="input-group">
+    <input class="form-control !rounded-l-lg !rounded-none" type="text" aria-label="Dollar amount (with dot and two decimal places)">
+    <span class="input-group-text !rounded-none">$</span>
+    <span class="input-group-text">0.00</span>
+  </div>
+</app-card>

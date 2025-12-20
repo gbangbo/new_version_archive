@@ -1,0 +1,24 @@
+<app-card [headerTitle]="'Icons with Prefix and Postfix'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'common-flex pre-post-touchspin'">
+  <p class="f-m-light mt-1" header5>
+    Use <code>decrement-touchspin </code>and <code>increment-touchspin </code>class for icons pre/post fix style touchspin.</p>
+    <div class="input-group">
+      <button class="decrement-touchspin btn-touchspin touchspin-primary" (click)="decrement(0)">
+          <i class="fa-solid fa-minus"></i>
+      </button>
+      <span class="input-group-text rounded-none">$</span>
+      <input class="input-touchspin spin-outline-primary" type="number" value={{counter[0]}}>
+      <button class="increment-touchspin btn-touchspin touchspin-primary" (click)="increment(0)">
+          <i class="fa-solid fa-plus"></i>
+      </button>
+  </div>
+  <div class="input-group">
+      <button class="decrement-touchspin btn-touchspin touchspin-primary" (click)="decrement(1)">
+          <i class="fa-solid fa-minus"></i>
+      </button>
+      <input class="input-touchspin spin-outline-primary" type="number" value={{counter[1]}}>
+      <span class="input-group-text rounded-none">%</span>
+      <button class="increment-touchspin btn-touchspin touchspin-primary" (click)="increment(1)">
+          <i class="fa-solid fa-plus"></i>
+      </button>
+  </div>
+</app-card>

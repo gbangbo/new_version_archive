@@ -1,0 +1,25 @@
+<div class="container">
+    <div class="grid grid-cols-12 card-gap">
+        <div class="col-span-12">
+            <app-custom-switch></app-custom-switch>
+        </div>
+
+        @for(switch of commonSwitch; track switch; let i = $index){
+            <div [ngClass]="(i === commonSwitch.length - 1) ? 'col-span-4 xl:col-span-12' : 'col-span-4 xl:col-span-6 sm:col-span-12'">
+                <app-common-switch [switch]="switch"></app-common-switch>
+            </div>
+        }
+        <div class="col-span-6 md:col-span-12">
+            <app-disabled-outline-switch></app-disabled-outline-switch>
+        </div>
+        <div class="col-span-6 md:col-span-12">
+            <app-variation-switch></app-variation-switch>
+        </div>
+        <div class="col-span-12">
+            <app-switch-sizing></app-switch-sizing>
+        </div>
+        <div class="col-span-12">
+            <app-switch-with-icons></app-switch-with-icons>
+        </div>       
+    </div>
+</div>

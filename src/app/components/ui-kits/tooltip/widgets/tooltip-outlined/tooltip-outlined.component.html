@@ -1,0 +1,26 @@
+<app-card [headerTitle]="'Outlined Tooltip'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'fill-tooltip'">
+    <p class="f-m-light mt-1" header5> Use <code>btn-outline-*</code> to change dark background color.</p>
+
+    <div class="common-flex">
+        <span class="group relative">
+            <button class="mb-0 me-0 btn border btn-outline-primary">Tooltip Primary</button>
+
+            <app-tooltip [title]="'Tooltip Primary'"></app-tooltip>
+        </span>
+        <span class="group relative">
+            <button class="mb-0 me-0 btn border btn-outline-secondary">Tooltip Secondary</button>
+
+            <app-tooltip [title]="'Tooltip Secondary'"></app-tooltip>
+        </span>
+        <span class="group relative">
+            <button class="mb-0 me-0 btn border btn-outline-success">Tooltip Success</button>
+
+            <app-tooltip [title]="'Tooltip Success'"></app-tooltip>
+        </span>
+        <span class="group relative">
+            <button class="mb-0 me-0 btn border btn-outline-info">Tooltip Info</button>
+
+            <app-tooltip [title]="'Tooltip Info'"></app-tooltip>
+        </span>
+    </div>
+</app-card>

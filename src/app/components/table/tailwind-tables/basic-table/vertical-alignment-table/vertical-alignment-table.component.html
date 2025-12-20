@@ -1,0 +1,11 @@
+<app-card [headerTitle]="'Vertical alignment'" [header]="'pb-0'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>
+    Table cells of <code>&lt;thead&gt; </code>are always vertical aligned to the bottom. Table cells in <code>&lt;tbody&gt; </code>inherit their alignment from <code>&lt;table&gt; </code>and are aligned to the top by default. Use the vertical align classes to re-align where needed.</p>
+    <div class="card-block grid grid-cols-12">
+      <div class="col-span-12">
+        <div class="overflow-x-auto custom-scrollbar">
+          <app-table [tableConfig]="tableConfig" [pageSize]="10" [search]="false" [pagination]="false" [tableClass]="'table align-middle'"></app-table>
+        </div>
+      </div>
+    </div>
+</app-card>

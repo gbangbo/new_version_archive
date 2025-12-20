@@ -1,0 +1,10 @@
+<app-card [headerTitle]="'Horizontal Dotted Divider'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'main-divider'">
+
+    <p class="mb-0 mt-1" header5>Use <code>divider-body-3</code> class for dotted divider.</p>
+
+    @for(divider of horizontalDottedDivider; track divider) {
+        <div class="divider-body divider-body-3 divider-{{ divider.color }} flex items-center mb-[16px] gap-[calc(14px_+_(30_-_14)_*_((100vw_-_320px)_/_(1920_-_320)))]"> 
+            {{ divider.color | titlecase }}
+        </div>
+    }
+</app-card>

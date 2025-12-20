@@ -1,0 +1,51 @@
+<app-card [cardClass]="'height-equal'" [header]="'pb-0'" [headerTitle]="'Grid Modal'"
+  [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>Utilize the Tailwind grid system within a modal by nesting <code> container-fluid </code> within the <code> modal-body</code> . Then, use the normal grid system classes as you would anywhere else.</p>
+
+  <button class="btn btn-warning" type="button" (click)="openModal()">Grid Modal</button>
+
+  @if(modalOpen){
+    <div class="modal  fade show modal-backdrop">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content" (clickOutside)="closeModal()">
+          <div class="modal-header">
+            <h5 class="modal-title">Grid Modal</h5>
+            <button class="btn-close" type="button" (click)="closeModal()"></button>
+          </div>
+          <div class="modal-body">
+            <div class="container">
+              <div class="grid grid-cols-12 card-gap common-align">
+                <div class="col-span-4 md:col-span-12"> <span class="grid-space bg-light-secondary txt-secondary">.col-span-4</span></div>
+                <div class="col-span-4"></div>
+                <div class="col-span-4  md:col-span-12"><span class="grid-space bg-light-secondary txt-secondary">.col-span-4 .ms-auto</span></div>
+              </div>
+              <div class="grid grid-cols-12 justify-center">
+                <div class="col-span-3"></div>
+                <div class="col-span-3 md:colspan-12"><span class="grid-space bg-light-secondary txt-secondary">.col-span-3 .ms-auto</span></div>
+                <div class="col-span-4"></div>
+                <div class="col-span-2 md:colspan-12"><span class="grid-space bg-light-secondary txt-secondary">.col-span-2 .ms-auto</span></div>
+              </div>
+              <div class="grid grid-cols-12">
+                <div class="col-span-6"></div>
+                <div class="col-span-6 md:col-span-12"><span class="grid-space bg-light-secondary txt-secondary">.col-span-6 .ms-auto</span></div>
+              </div>
+              <div class="grid grid-cols-12 common-align">
+                <div class="col-span-1"></div>
+                <div class="col-span-9 sm:col-span-12"><span class="grid-space bg-light-secondary txt-secondary">Level 1: .col-span-9</span>
+                  <div class="grid grid-cols-12 gap-2">
+                    <div class="col-span-6 sm:col-span-8"><span class="grid-space bg-light-secondary txt-secondary mb-0"> Level 2: .col-span-8 .col-span-6</span></div>
+                    <div class="col-span-6 sm:col-span-4"><span class="grid-space bg-light-secondary txt-secondary mb-0">Level 2: .col-span-4 .col-span-6</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary text-white" type="button" (click)="closeModal()">Close</button>
+            <button class="btn btn-primary text-white" type="button">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</app-card>

@@ -1,0 +1,31 @@
+<app-card [headerTitle]="'Tailwind Table With Variants'" [border]="true" [padding]="false" [cardBodyClass]="'p-0'">
+  <p class="f-m-light mt-1" header5>
+    Use <code>table</code> class to any table, and <code>border-bottom-* </code>class for Border bottom color.
+ </p>
+ <div class="overflow-x-auto custom-scrollbar">
+  <table class="table">
+    <thead>
+      <tr> 
+        <th scope="col">#</th>
+        <th scope="col">Roll Number</th>
+        <th scope="col">Student Name</th>
+        <th scope="col">Standard</th>
+        <th scope="col">Grade</th>
+        <th scope="col">Percentage</th>
+      </tr>
+    </thead>
+    <tbody> 
+      @for(details of student; track details){
+        <tr [class]="details.class"> 
+          <td>{{ details.id }} </td>
+          <td>{{ details.roll_number }}</td>
+          <td>{{ details.student_name }}</td>
+          <td>{{ details.standard}}<sup>th</sup></td>
+          <td>{{ details.grade }} <sup>+</sup></td>
+          <td>{{ details.percentage }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
+</app-card>

@@ -1,0 +1,34 @@
+<app-card [headerTitle]="'Inline Style'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'megaoptions-border-space-sm inline-style-box'">
+  <p class="f-m-light mt-1" header5>
+    To create inline megaoption add <code>mega-inline</code> class in form tag</p>
+    <form class="mega-inline">
+      <div class="grid grid-cols-12 card-gap">
+        @for(item of inlineStyle;track item){
+          <div class="col-span-6 sm:col-span-12">
+            <div class="card">
+              <div class="flex p-5">
+                <div class="form-check radio radio-{{ item.class }} m-0 w-full">
+                  <input class="form-check-input" id="{{ item.id }}" type="radio" name="radio1" value="option1">
+                  <label class="form-check-label mb-0 w-full" for="{{ item.id }}">
+                    <span class="flex-grow-1">
+                      <span class="mt-0 mega-title-badge">
+                        {{ item.title}}
+                        <span class="badge badge-{{ item.class }} text-white pull-right digits">
+                          {{ item.digit }}
+                        </span>
+                      </span>
+                      <span>{{ item.label }}</span>
+                    </span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </form>
+    <div class="card-footer text-end" details>
+      <button class="btn btn-primary text-white m-r-15" type="submit">Submit</button>
+      <button class="btn btn-light" type="submit">Cancel</button>
+    </div>
+</app-card>

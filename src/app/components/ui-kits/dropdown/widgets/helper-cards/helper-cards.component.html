@@ -1,0 +1,33 @@
+<app-card [headerTitle]="'Helper Cards'" [border]="true" [header]="'pb-0'" [padding]="false" [cardBodyClass]="'rtl-dropdown helper-cards'">
+  <p class="f-m-light mt-1" header5> Use the <code>show</code> class on the <code>dropdown-menu</code> to toggle its visibility when the button is clicked. </p>
+
+    <div class="common-flex">
+      <div class="btn-group" (clickOutside)="clickOutside(1)">
+        <button class="btn btn-secondary border dropdown-toggle text-white" type="button" (click)="toggleDropdown(1)">Helper Card</button>
+        <ul class="dropdown-menu dropdown-block p-3 dark-form" [class.show]="dropdownOpen[1]">
+          <li>
+            <h6 class="fs-6 pb-2">Learn More!</h6>
+            <p class="dropdown-item">There is a lot of information available here</p>
+          </li>
+        </ul>
+      </div>
+      <div class="btn-group" (clickOutside)="clickOutside(2)">
+        <button class="btn btn-warning border dropdown-toggle text-white" type="button" (click)="toggleDropdown(2)">Warning Card</button>
+        <ul class="dropdown-menu dropdown-block p-3 dark-form" [class.show]="dropdownOpen[2]">
+          <li>
+            <h6 class="fs-6 pb-2">Warning!</h6>
+            <p class="dropdown-item helper-truncate">Please! Check your notifications.</p>
+          </li>
+        </ul>
+      </div>
+      <div class="btn-group" (clickOutside)="clickOutside(3)">
+        <button class="btn btn-info border dropdown-toggle text-white" type="button" (click)="toggleDropdown(3)">Alert Card</button>
+        <ul class="dropdown-menu dropdown-block p-3 dark-form" [class.show]="dropdownOpen[3]">
+          <li>
+            <h6 class="fs-6 pb-2">Danger</h6>
+            <p class="dropdown-item helper-truncate">It's a danger path.</p>
+          </li>
+        </ul>
+      </div>
+    </div>
+</app-card>

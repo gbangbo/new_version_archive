@@ -1,0 +1,17 @@
+<div class="container subscribed-user">
+    <div class="grid grid-cols-12">
+        <div class="col-span-12">
+            <app-card [headerTitle]="'Newsletter Subscribed'" [cardBodyClass]="'!pt-0 !px-0'" [padding]="false">
+                <div class="grid grid-cols-12">
+                    <div class="col-span-12">
+                        <div class="subscribed-user-wrapper">
+                            <div class="recent-table overflow-x-auto custom-scrollbar">
+                                <app-table [tableConfig]="tableConfig" [pageSize]="10" [searchPlaceholder]="'Search here... '" [paginateDetails]="true" [hasCheckbox]="true" [downloadReports]="true"></app-table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </app-card>
+        </div>
+    </div>
+</div>

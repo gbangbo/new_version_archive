@@ -1,0 +1,26 @@
+<div class="container api-manage">
+    <div class="grid grid-cols-12">
+        <div class="col-span-12">
+            <div class="card relative">
+                <div class="card-header card-no-border text-end">
+                    <div class="card-header-right-icon">
+                        <a class="btn btn-primary font-medium text-white inline-block hover:text-white"  data-bs-toggle="modal" data-bs-target="#apiManagement" (click)="openModal()">
+                            <i class="fa-solid fa-plus pe-2"></i>
+                            Add
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body pt-0 !px-0">
+                    <div class="api-management">
+                        <div class="recent-table overflow-x-auto custom-scrollbar">
+                            <app-table [tableClass]="'table'" [hasCheckbox]="true" [tableConfig]="tableConfig" [pageSize]="10" [paginateDetails]="true" [showPaginate]="true" [selectedRows]="true" [searchPlaceholder]="'Search here...'"  (action)="handleAction($event)"></app-table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @if(modalOpen){
+        <app-manage-api-modal (modalOpen)="handleOpenSimpleModal($event)"></app-manage-api-modal>
+    }
+</div>

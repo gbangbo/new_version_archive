@@ -1,0 +1,33 @@
+<div class="tab-content custom-input">
+  <div class="sidebar-body add-product-box advance-options">
+    <ul class="tab-links  border-tab mb-0">
+      @for(item of additionalOptions;track item; let i = $index){
+        <li class="nav-item">
+          <a class="tab-link" [class.active]="activeTab == item.value" (click)="handleTab(item.value)">
+            {{ item.title }}
+          </a>
+        </li>
+        }
+      </ul>
+      <div>
+        <div class="meta-body">
+          @if(activeTab == 'inventory'){
+            <app-inventory (changeTabDetails)="changeTabDetails($event)" (changeTab)="handleChangeTab($event)" [active]="active" [additionalActiveId]="additionalActiveId"></app-inventory>
+          }
+          @if(activeTab == 'seo tag'){
+            <app-seo-tags (changeTabDetails)="changeTabDetails($event)" [additionalActiveId]="additionalActiveId"></app-seo-tags>
+          }
+          @if(activeTab == 'shipping'){
+            <app-shipping (changeTabDetails)="changeTabDetails($event)" [additionalActiveId]="additionalActiveId"></app-shipping>
+          }
+          @if(activeTab == 'variations'){
+            <app-variations (changeTabDetails)="changeTabDetails($event)" [additionalActiveId]="additionalActiveId"></app-variations>
+          }
+          @if(activeTab == 'publish'){
+            <app-publish (changeTabDetails)="changeTabDetails($event)" [additionalActiveId]="additionalActiveId"></app-publish>
+          }
+      </div>
+    </div>
+  </div>
+</div>
+

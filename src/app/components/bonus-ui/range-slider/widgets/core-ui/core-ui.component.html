@@ -1,0 +1,10 @@
+<app-card [headerTitle]="'Core UI Text'" [header]="'pb-0'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>
+    Use <code>ngx-slider</code> to create a range slider with custom text labels. In this example, the slider's <code>minValue</code> starts at 100 and the <code>maxValue</code> is 400, with a range defined between <code>floor</code> 0 and <code>ceil</code> 500. The <code>translate</code> function is used to prepend the label "Follower" to each value displayed on the slider, customizing the text shown as the user interacts with the range.
+  </p>
+    <div class="form-group grid grid-cols-12 py-1 justify-center">
+      <div class="col-span-10 md:col-span-12">
+        <ngx-slider [(value)]="minValue" [(highValue)]="maxValue" [options]="options"></ngx-slider>
+      </div>
+    </div>
+</app-card>

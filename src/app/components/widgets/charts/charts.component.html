@@ -1,0 +1,59 @@
+<div class="container">
+    <div class="grid grid-cols-12 card-gap">
+      
+      @for(chart of commonLineCharts; track chart) {
+        <div class="col-span-4 xl:col-span-12 box-col-12">
+            <app-common-line-chart [chart_details]="chart"></app-common-line-chart>
+        </div>
+      }  
+    </div>
+
+    <div class="grid grid-cols-12 card-gap">
+        <div class="col-span-12 box-col-12">
+            <app-monthly-history></app-monthly-history>
+        </div>
+        <div class="col-span-6 xl:col-span-12 box-col-6 xl-50">
+          <app-skill-status></app-skill-status>
+        </div>
+        <div class="col-span-6 xl:col-span-12 box-col-6 xl-50">
+          <app-order-status></app-order-status>
+        </div>
+    </div>
+    <div class="grid grid-cols-12 card-gap">
+      <div class="xl-50 col-span-7 xl:col-span-12">
+        <app-live-products></app-live-products>
+      </div>
+      <div class="xl-50 col-span-5 xl:col-span-12">
+        <app-turn-over></app-turn-over>
+      </div>
+      <div class="xl-50 col-span-6 xl:col-span-12">
+        <app-cryptocurrency-price></app-cryptocurrency-price>
+      </div>
+      <div class="xl-50 col-span-6 xl:col-span-12">
+        <app-cryptocurrency-annotation></app-cryptocurrency-annotation>
+      </div>
+    </div>
+    <div class="grid grid-cols-12 card-gap">
+      <div class="col-span-12 box-col-12">
+        <div class="donut-chart-widget">
+          <app-stock-market></app-stock-market>
+        </div>
+      </div>
+      <div class="col-span-5 xl:col-span-12 box-col-12">
+        <app-finance></app-finance>
+      </div>
+      <div class="col-span-7 xl:col-span-12 box-col-6">
+        <app-order-status-2></app-order-status-2>
+      </div>
+      <div class="xl-50 col-span-5 xl:col-span-12 box-col-6">
+        <div class="small-chart-widget chart-widgets-small">
+          <app-monthly-sales></app-monthly-sales>
+        </div>
+      </div>
+      <div class="xl-50 col-span-7 xl:col-span-12 box-col-12">
+        <div class="small-chart-widget chart-widgets-small">
+          <app-users></app-users>
+        </div>
+      </div>
+    </div>
+</div>

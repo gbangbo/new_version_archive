@@ -1,0 +1,57 @@
+<div class="md-sidebar">
+  <a class="btn btn-primary md-sidebar-toggle text-white" href="javascript:void(0)" (click)="toggleFilter()">contact filter</a>
+  <div class="md-sidebar-aside job-left-aside" [class.open]="sidebarOpen">
+    <div class="email-left-aside">
+      <div class="card">
+        <div class="card-body custom-scrollbar">
+          <div class="email-app-sidebar left-bookmark">
+            <div class="common-flex items-center">
+              <div class="flex-size-email">
+                <img class="rounded-full" [src]="userDetails.user_profile" [alt]="userDetails.name">
+              </div>
+              <div class="grow">
+                <h6>{{ userDetails.name }}</h6>
+                <p>{{ userDetails.user_email }}</p>
+              </div>
+            </div>
+            <ul class="nav main-menu contact-options" role="tablist">
+              <li class="nav-item">
+                <button class="button-primary btn-block btn-mail w-full flex items-center" type="button" (click)="openContactModal()">
+                  <app-feather-icon [icon]="'users'" [class]="'me-2'"></app-feather-icon>New Contacts
+                </button>
+              </li>
+              <li class="nav-item">
+                <button class="button-primary btn-block btn-mail w-full flex items-center" type="button" (click)="openCategoryModal()">
+                    <app-feather-icon [icon]="'plus'" [class]="'me-2'"></app-feather-icon> Add Category
+                </button>
+                <ul class="tab-links"> 
+                  <li class="nav-item">
+                    <span class="main-title">
+                      <i class="icofont icofont-filter"></i> 
+                      Filter By
+                    </span>
+                  </li>
+                  @for(item of contactSidebarList; track item) {
+                    <li>
+                      <a class="tab-link" [class.active]="item.value == activeTab" href="javascript:void(0)" (click)="handleActiveTab(item)">
+                        <span class="title">{{ item.title }}</span>
+                      </a>
+                    </li>
+                  }
+                </ul>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+@if(contactModalOpen) {
+  <app-add-contact-modal (modalOpen)="handleOpenModal($event)"></app-add-contact-modal>
+}
+
+@if(tagModalOpen) {
+  <app-category-modal (modalOpen)="handleOpenModal($event)"></app-category-modal>
+}

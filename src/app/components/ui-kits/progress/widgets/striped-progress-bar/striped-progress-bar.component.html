@@ -1,0 +1,25 @@
+<app-card [headerTitle]="'Striped Progress Bars'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'progress-showcase'">
+
+    <p class="f-m-light mt-1" header5> Add<code> progress-bar-striped </code> to any
+        <code> progress-bar </code> to apply a stripe via CSS gradient over the progress bar's
+        background color Using CSS Effects.
+    </p>  
+
+    <div class="grid grid-cols-12">
+        <div class="col-span-12">
+            <div class="progress">
+                <div class="progress-bar bg-primary progress-bar-striped"  [ngStyle]="{ 'width': '10%'}"></div>
+            </div>
+            <div class="progress">
+                <div class="progress-bar progress-bar-striped bg-warning"  [ngStyle]="{ 'width': '25%'}"></div>
+            </div>
+            <div class="progress">
+                <div class="progress-bar progress-bar-striped bg-danger"  [ngStyle]="{ 'width': '50%'}"></div>
+            </div>
+            <div class="progress">
+                <div class="progress-bar progress-bar-striped bg-success"  [ngStyle]="{ 'width': '75%'}"></div>
+            </div>
+        </div>
+    </div>
+
+</app-card>

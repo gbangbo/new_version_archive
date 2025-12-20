@@ -1,0 +1,71 @@
+<div class="container animated-modal-page">
+  <div class="grid grid-cols-12 card-gap">
+    <div class="col-span-12">
+      <app-card [headerTitle]="'Modal with Animations'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'animated-modal-wrapper'">
+        <p class="f-m-light mt-1" header5>Make use of the various modal fades and animations.</p>
+        <div class="common-align">
+          <div class="grid grid-cols-12 gap-4">
+            <div class="col-span-6 xl:col-span-8 md:col-span-12 col-start-4 xl:col-start-3 md:col-start-0">
+              <div class="animate-img" id="animation-box">
+                <div class="card mb-0">
+                  <div class="animate-widget">
+                    <div>
+                      <img class="max-w-full" src="assets/images/slider/6.jpg" alt="Drawing-room">
+                    </div>
+                    <div class="text-center p-25">
+                      <h5>It&apos;s Magic!!</h5>
+                      <span class="f-light">Select the animation options given below and then click on the launch button.</span>
+                      <p></p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-span-6 xl:col-span-12 col-start-4 xl:col-start-0">
+              <form class="form-inline theme-form animated-modal">
+                <div class="animated-modal-md-mb grid grid-cols-12">
+                  <label class="mb-0 custom-col-2 col-span-2 md:col-span-12">IN</label>
+                  <select2 class="col-span-10 md:col-span-12" [data]="modalInValues" name="in" [(ngModel)]="modalInSelectedValue" resetSelectedValue="bounceIn" placeholder="Select Value" noResultMessage="No Value Found." listPosition="above"></select2>
+                </div>
+                <div class="grid grid-cols-12 animated-modal-md-mb">
+                  <div class="col-span-2 md:col-span-12">
+                    <label class="mb-0 custom-col-2">OUT</label>
+                  </div>
+                  <select2 class="col-span-10 md:col-span-12" [data]="modalOutValues" name="out" [(ngModel)]="modalOutSelectedValue" resetSelectedValue="flipOutX" placeholder="Select Value" noResultMessage="No Value Found." listPosition="above"></select2>
+                </div>
+                <div class="mt-2 text-center w-full">
+                  <button class="btn btn-primary text-white" type="button" (click)="openModal()">Launch Modal</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </app-card>
+    </div>
+  </div>
+</div>
+
+@if(modalOpen){
+  <div class="modal fade modal-popup animated-popup show" [ngClass]="'animated ' + modalClass"  [style.display]="modalOpen ? 'block' : 'none'"  id="myModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div>
+        <button class="btn-close theme-close" type="button" (click)="closeModal()"></button>
+        <div class="modal-body">
+          <div class="card">
+            <div class="animate-widget">
+              <div>
+                <img class="max-w-full h-auto" src="assets/images/slider/6.jpg" alt="Drawing-room">
+              </div>
+              <div class="text-center p-25">
+                <p class="text-muted mb-0">
+                  <strong class="txt-danger">Wow!!!</strong> It's so beautiful animations in cuba theme...
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-backdrop"></div>
+}

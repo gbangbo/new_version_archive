@@ -1,0 +1,41 @@
+<div class="container social-user-cards">
+    <div class="grid grid-cols-12 card-gap">
+        @for(user of users; track user) {
+            <div class="col-span-3 xxl:col-span-4 xl:col-span-6 sm:col-span-12 col-ed-4 box-col-4">
+                <app-card [cardClass]="'social-profile'">
+                    <div class="social-img-wrap"> 
+                      <div class="social-img">
+                        <img [src]="user.user_profile" [alt]="user.name"></div>
+                      <div class="edit-icon">
+                        <app-svg-icon [icon]="'profile-check'"></app-svg-icon>
+                      </div>
+                    </div>
+                    <div class="social-details">
+                        <h5 class="mb-1">
+                            <a href="javascript:void(0)" [routerLink]="['/user/user-profile', user.id]">{{ user.name }}</a>
+                        </h5>
+                        <span class="c-o-light !block">{{ user.user_name }}</span>
+                        <ul class="card-social">
+                            <li><a href="https://www.facebook.com/" target="_blank"><i class="fa-brands fa-facebook-f"></i></a></li>
+                            <li><a href="https://in.linkedin.com/" target="_blank"><i class="fa-brands fa-linkedin-in"></i></a></li>
+                            <li><a href="https://twitter.com/" target="_blank"><i class="fa-brands fa-x-twitter"></i></a></li>
+                            <li><a href="https://www.instagram.com/" target="_blank"><i class="fa-brands fa-instagram"></i></a></li>
+                            <li><a href="https://rss.app/" target="_blank"><i class="fa-solid fa-rss"></i></a></li>
+                        </ul>
+                        <ul class="social-follow"> 
+                            <li>
+                            <h5 class="mb-0">{{ user.post }}</h5><span class="c-o-light !block">Posts</span>
+                            </li>
+                            <li>
+                            <h5 class="mb-0">{{ user.followers }}</h5><span class="c-o-light !block">Followers</span>
+                            </li>
+                            <li>
+                            <h5 class="mb-0">{{ user.following }}</h5><span class="c-o-light !block">Following</span>
+                            </li>
+                        </ul>
+                    </div>
+                </app-card>
+            </div>
+        }
+    </div>
+</div>

@@ -1,0 +1,15 @@
+<app-card [headerTitle]="'Formatted results'" [header]="'pb-0'" [border]="true" [padding]="false">
+  <p class="mt-1 mb-0" header5>A typeahead example that uses a formatter function for string results</p>
+
+  <div class="typeahead-box" (clickOutside)="close()"> 
+    <input id="typeahead-format" type="text" class="form-control" placeholder="Countries" [(ngModel)]="model" (input)="onSearch($event)" />
+  </div>
+
+  @if(filteredStates.length > 0){
+    <ul class="list-group">
+      @for(state of filteredStates; track state){
+        <li class="list-group-item" (click)="onSelectState(state)">{{ formatter(state) }}</li>
+      }
+    </ul>
+  }
+</app-card>

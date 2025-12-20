@@ -1,0 +1,12 @@
+<app-card [headerTitle]="'Progress with Number Steps'" [header]="'pb-0'" [border]="true" [padding]="false">
+
+    <p class="f-m-light mt-1"header5> Use the <code> position-absolute  </code>to set progress numbers steps.</p>
+    <div class="relative m-3 progress-number">
+        <div class="progress progress-wrapper">
+          <div class="progress-bar"  aria-label="Progress" [ngStyle]="{ 'width': '50%'}"></div>
+        </div>
+        <button class="absolute translate-middle btn-sm btn-primary rounded-full start-[0px] top-[-0px]" type="button">1</button>
+        <button class="absolute translate-middle btn-sm btn-primary rounded-full start-[50%] top-[-0px]" type="button">2</button>
+        <button class="progress-btn absolute translate-middle btn-sm rounded-full start-[100%] top-[-0px]" type="button">3 </button>
+    </div>
+</app-card>

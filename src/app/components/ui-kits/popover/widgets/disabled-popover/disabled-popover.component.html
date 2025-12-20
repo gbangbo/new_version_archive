@@ -1,0 +1,14 @@
+<app-card [headerTitle]="'Disabled Popover'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'common-flex popover-wrapper'">
+
+    <p class="mb-0 mt-1" header5>To create popovers for disabled buttons, wrap the button in a <code>relative group</code> container and position the popover using <code>absolute</code> positioning for visibility.</p>    
+    <span class="relative group d-inline-block">
+        <button class="btn btn-primary text-white" type="button" disabled>Disabled Button</button>
+
+        <div [class.show]="popoverVisible"  class="popover absolute left-1/2 top-full -translate-x-1/2 mt-2 w-max bg-white text-sm rounded opacity-100 visible transition-opacity duration-300 shadow-lg">
+            <div class="popover-arrow"></div>
+            <div class="popover-header">Disable Popover Title</div>
+            <div class="popover-body">And here's some amazing content. It's very engaging. Right?</div>
+        </div>
+    </span>
+
+</app-card>

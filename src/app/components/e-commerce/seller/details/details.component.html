@@ -1,0 +1,52 @@
+<div class="container seller-details-wrapper">
+  <div class="grid grid-cols-12 card-gap">
+    <div class="col-span-12 ord-xxl-2 box-ord-2">
+      <div class="grid grid-cols-12 card-gap">
+        @for(details of storeGeneralDetails; track details) {
+          <div class="col-span-3 xxl:col-span-6 sm:col-span-12">
+            <app-store-general-details [details]="details"></app-store-general-details>
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="col-span-9 xl:col-span-12 xl-100 ord-xxl-3 box-ord-3 box-col-12">
+      <div class="grid grid-cols-12">
+        <div class="col-span-12">
+          <app-sales-overview></app-sales-overview>
+        </div>
+          <div class="col-span-12">
+            <app-top-selling-products></app-top-selling-products>
+          </div>
+          <div class="col-span-12">
+            <app-recent-orders></app-recent-orders>
+          </div>
+          <div class="col-span-12">
+            <div class="card seller-product-box heading-space">
+              <div class="card-header card-no-border text-end">
+                <div class="header-top">
+                  <h5>All Products</h5>
+                  <div class="card-header-right-icon">
+                    <a class="btn btn-light-primary font-medium" href="javascript:void(0)" [routerLink]="['/product/create']">
+                      <i class="fa-solid fa-plus pe-2"></i>
+                      Add Products
+                    </a>
+                  </div>
+                </div>
+              </div>
+              <div class="card-body px-0 pt-0">
+                <div class="list-product seller-details-table">
+                  <div class="recent-table overflow-x-auto custom-scrollbar">
+                    <app-products [pageSize]="6" [hideColumns]="['sku', 'qty']"></app-products>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+      <div class="col-span-3 xl:col-span-12 oed-xxl-1 box-ord-1">
+        <app-seller-details-sidebar></app-seller-details-sidebar>
+      </div>
+  </div>
+</div>

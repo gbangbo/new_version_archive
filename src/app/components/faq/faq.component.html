@@ -1,0 +1,22 @@
+<div class="container">
+    <div class="faq-wrap">
+        <div class="grid grid-cols-12 card-gap">
+
+            @for(details of faqDetails; track details){
+                <div class="col-span-4 xl:col-span-12 box-col-4">
+                    <app-common-faq-details [details]="details"></app-common-faq-details>
+                </div>
+            }
+
+            <div class="col-span-12">
+                <app-faq-question-answer></app-faq-question-answer>
+            </div>
+            <div class="col-span-12">
+                <app-common-featured-tutorials [details]="faqFeaturedTutorial" [headerTitle]="'Featured Tutorials'"></app-common-featured-tutorials>
+            </div>
+            <div class="col-span-12">
+                <app-common-article-video [details]="faqArticlesAndVideos" [headerTitle]="'Latest Articles and Videos'" [faqClass]="'faq-wrapper'"></app-common-article-video>
+            </div>
+        </div>
+    </div>
+</div>

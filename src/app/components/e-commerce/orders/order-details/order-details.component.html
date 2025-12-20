@@ -1,0 +1,44 @@
+<div class="container">
+  <div class="grid grid-cols-12 card-gap">
+    <div class="col-span-9 xxl:col-span-8 xl:col-span-12 box-col-8e">
+      <div class="gri grid-cols-12">
+        <div class="col-span-12">
+          <app-card [headerTitle]="'Order Status'" [border]="true" [padding]="false" [cardBodyClass]="'track-order-details'">
+            <h6 id="order-status-timeline">
+              <div class="status-bar progress step-{{ currentTab }}"></div>
+              <div class="main-status-line">
+                <ul>
+                  @for(tab of orderDetailsTab; track tab) {
+                    <li>
+                      <div class="order-process" [class.active]="tab.id <= currentTab">
+                        <span>{{ tab.id }}</span>
+                      </div>
+                      <h6>{{ tab.title }}</h6>
+                    </li>
+                  }
+                </ul>
+              </div>
+            </h6>
+          </app-card>
+        </div>
+        <div class="col-span-12">
+          <app-card [headerTitle]="'Order Number: #1801'" [padding]="false" [cardBodyClass]="'order-details-product pt-0'">
+            <div class="overflow-x-auto custom-scrollbar">
+              <app-table [tableConfig]="tableConfig" [pageSize]="4" [search]="false" [pagination]="false" [tableClass]="'table'"></app-table>
+            </div>
+          </app-card>
+        </div>
+      </div>
+    </div>
+    <div class="col-span-3 xxl:col-span-4 xl:col-span-12 box-col-4">
+      <div class="grid grid-cols-12">
+        <div class="col-span-12">
+          <app-billing-details [billing_details]="orderDetails.billing_details"></app-billing-details>
+        </div>
+        <div class="col-span-12">
+          <app-customer-details [customer_details]="orderDetails.customer_details"></app-customer-details>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

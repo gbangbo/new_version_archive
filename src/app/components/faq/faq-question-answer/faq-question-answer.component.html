@@ -1,0 +1,42 @@
+<div class="header-faq">
+  <h5>Quick Questions are Answered</h5>
+</div>
+<div class="grid grid-cols-12 card-gap default-according style-1 faq-accordion" id="accordionoc">
+  <div class="col-span-8 xl-80 xl:col-span-6 lg:col-span-7 md:col-span-12">
+      @for(details of faqQuestionAnswer; track details){
+        <div class="faq-title">
+          <h6>{{ details.header_title }}</h6>
+        </div>
+        @for(item of details.details; track item){
+          <div class="card accordion">
+            <div class="card-header accordion-item">
+              <h5 class="accordion-header relative">
+                <button class="accordion-button btn btn-link collapsed" type="button" [class.collapsed]="!accordionOpen[item.id]" (click)="toggleAccordion(item.id)">
+                  <app-feather-icon [icon]="'help-circle'"></app-feather-icon>
+                  {{ item.title }}
+                </button>
+              </h5>
+            </div>
+            <div class="accordion-collapse collapse" [class.show]="accordionOpen[item.id]" [ngStyle]="{ 'max-height': accordionOpen[item.id] ? '75px' : '' }">
+              <div class="card-body">
+                  {{ item.description }}
+              </div>
+            </div>
+          </div>
+        }
+      }
+  </div>
+  <div class="col-span-4 xl:col-span-6 lg:col-span-5 md:col-span-12 xl-40">
+    <div class="grid grid-cols-12 card-gap">
+      <div class="col-span-12">
+        <app-faq-search-articles></app-faq-search-articles>
+      </div>
+      <div class="col-span-12">
+        <app-faq-navigation></app-faq-navigation>
+      </div>
+      <div class="col-span-12">
+        <app-faq-latest-updates></app-faq-latest-updates>
+      </div>
+    </div>
+  </div>
+</div>

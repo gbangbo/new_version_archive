@@ -1,0 +1,31 @@
+<div class="container list-product-view product-wrapper" [class.sidebaron]="productService.sidebarOpen">
+  <div class="grid grid-cols-12 card-gap">
+    <div class="col-span-12">
+      <div class="grid grid-cols-12 gap-4">
+        <div class="col-span-3 md:col-span-6 sm:col-span-12">
+          <app-product-sidebar></app-product-sidebar>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-span-12">
+      <div class="card">
+        <div class="card-header card-no-border text-end">
+          <div class="card-header-right-icon">
+            <a class="btn btn-primary font-medium text-white" href="javascript:void(0)" [routerLink]="['/product/create']">
+              <i class="fa fa-plus pe-2"></i>
+              Add Products
+            </a>
+          </div>
+        </div>
+        <div class="card-body px-0 pt-0">
+          <div class="list-product">
+            <div class="recent-table overflow-x-auto custom-scrollbar product-list-table">
+              <app-products></app-products>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

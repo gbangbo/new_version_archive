@@ -1,0 +1,17 @@
+<app-card [headerTitle]="'Simple Typeahead'" [header]="'pb-0'" [border]="true" [padding]="false">
+  <p class="mt-1 mb-0" header5>A typeahead example that gets values from a static <code>string[]</code></p>
+  
+  <div class="typeahead-box" (clickOutside)="close()">
+    <input id="typeahead-basic" type="text" class="form-control" placeholder="Search for a state" [(ngModel)]="model" (input)="onSearch($event)" />
+  </div>
+
+   @if(filteredStates.length > 0){
+     <ul class="list-group">
+      @for(state of filteredStates; track state){
+        <li class="list-group-item" (click)="onSelectState(state)">
+          {{ state }}
+        </li>
+      }
+     </ul>
+   }
+</app-card>

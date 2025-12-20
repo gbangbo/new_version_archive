@@ -1,0 +1,6 @@
+<app-card [headerTitle]="'Stock Report'" [padding]="false" [dropdownType]="'simple'" [options]="cardToggleOption" [cardBodyClass]="'px-0 pt-0 stock-report'">
+
+    <div class="recent-table overflow-x-auto custom-scrollbar">
+        <app-table [tableConfig]="tableConfig" [pageSize]="3"></app-table>
+    </div>
+</app-card>

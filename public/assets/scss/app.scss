@@ -1,0 +1,45 @@
+//use tailwindcss
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+// swiper
+@import 'swiper/swiper.scss';
+@import 'swiper/swiper-bundle.css';
+
+// Leaflet Map
+@import 'leaflet/dist/leaflet.css';
+
+// Carousel
+@import 'ngx-owl-carousel-o/lib/styles/scss/owl.carousel';
+@import 'ngx-owl-carousel-o/lib/styles/scss/owl.theme.default';
+
+// Date Time Picker
+@import "@danielmoncada/angular-datetime-picker/assets/style/picker.min.css";
+
+// calender
+@import "../node_modules/angular-calendar/css/angular-calendar.css";
+
+// Chartist Chart
+@import "./vendors/chartist/chartist-settings";
+@import "./vendors/chartist/chartist";
+
+// rating scss 
+@import"../../../node_modules/ngx-bar-rating/themes/br-default-theme.scss";
+@import"../../../node_modules/ngx-bar-rating/themes/br-horizontal-theme.scss";
+@import"../../../node_modules/ngx-bar-rating/themes/br-movie-theme.scss";
+@import"../../../node_modules/ngx-bar-rating/themes/br-square-theme.scss";
+@import"../../../node_modules/ngx-bar-rating/themes/br-stars-theme.scss";
+@import"../../../node_modules/ngx-bar-rating/themes/br-vertical-theme.scss";
+
+// Icons
+@import './font-awesome/fontawesome.scss';
+@import './vendors/flag-icon.scss';
+@import './vendors/icofont.scss';
+@import './vendors/themify.scss';
+@import './vendors/animate.scss';
+@import '../scss/vendors/whether-icon.scss';
+
+// Style
+@import './style.scss';
+@import './themes/responsive';

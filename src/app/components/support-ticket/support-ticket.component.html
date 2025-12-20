@@ -1,0 +1,23 @@
+<div class="container">
+    <div class="grid grid-cols-12">
+        <div class="col-span-12">
+            <div class="card">
+                <div class="card-header card-no-border pb-0">
+                    <h5>Support Ticket List</h5>
+                    <p class="f-m-light mt-1">List of ticket open by customers</p>
+                </div>
+                <div class="card-body">
+                    <div class="grid grid-cols-12 card-gap">
+                        
+                        @for(item of ticketListStatus;track item){
+                            <div class="col-span-4 xl:col-span-6 sm:col-span-12 box-col-6">
+                                <app-support-ticket-list [item]="item"></app-support-ticket-list>
+                            </div>
+                            }
+                    </div>
+                    <app-support-ticket-data-table></app-support-ticket-data-table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

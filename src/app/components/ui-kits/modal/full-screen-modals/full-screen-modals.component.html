@@ -1,0 +1,30 @@
+<app-card [headerTitle]="'Fullscreen Modals'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'common-flex'">
+
+    <p class="f-m-light mt-1" header5>Another override is the option to pop up a modal that covers the user viewport, available via modifier classes that are placed on a<code> modal-dialog</code>. </p>
+
+    <button class="btn btn-outline-secondary-2x" type="button" (click)="openModal('fullScreen')">Fullscreen Modal</button>
+    @if(fullscreenModalOpen){
+        <app-size-modal (modalOpen)="handleOpenModal($event)" [title]="'Fullscreen Modal'" [class]="'fullscreen'"></app-size-modal>
+    }
+    <button class="btn btn-outline-info-2x" type="button" (click)="openModal('below-sm')">Fullscreen Below sm</button>
+    @if(fullscreenBelowSmModalOpen){
+        <app-size-modal (modalOpen)="handleOpenModal($event)" [title]="'Fullscreen Below sm'" [class]="'fullscreen-sm-down'"></app-size-modal>
+    }
+    <button class="btn btn-outline-success-2x" type="button" (click)="openModal('below-md')">Fullscreen Below md</button>
+    @if(fullscreenBelowMdModalOpen){
+        <app-size-modal (modalOpen)="handleOpenModal($event)" [title]="'Fullscreen Below md'" [class]="'fullscreen-md-down'"></app-size-modal>
+    }
+    <button class="btn btn-outline-warning-2x" type="button" (click)="openModal('below-lg')">Fullscreen Below lg</button>
+    @if(fullscreenBelowLgModalOpen){
+        <app-size-modal (modalOpen)="handleOpenModal($event)" [title]="'Fullscreen Below lg'" [class]="'fullscreen-lg-down'"></app-size-modal>
+    }
+    <button class="btn btn-outline-primary-2x" type="button" (click)="openModal('below-xl')">Fullscreen Below xl</button>
+    @if(fullscreenBelowXlModalOpen){
+        <app-size-modal (modalOpen)="handleOpenModal($event)" [title]="'Fullscreen Below xl'" [class]="'fullscreen-xl-down'"></app-size-modal>
+    }
+    <button class="btn btn-outline-danger-2x" type="button" (click)="openModal('below-xxl')">Fullscreen Below xxl</button>
+    @if(fullscreenBelowXxlModalOpen){
+        <app-size-modal (modalOpen)="handleOpenModal($event)" [title]="'Fullscreen Below xxl'" [class]="'fullscreen-xxl-down'"></app-size-modal>
+    }
+
+</app-card>

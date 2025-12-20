@@ -1,0 +1,51 @@
+<form class="common-form">
+  <div class="grid grid-cols-12 gap-4 !static">
+    <div class="col-span-12">
+      <div class="grid grid-cols-12 card-gap">
+        <div class="col-span-12">
+          <label class="form-label" for="exampleFormControlInput1">Weight (kg)</label>
+          <i class="icon-help-alt ms-1"></i>
+        </div>
+        <div class="col-span-12">
+          <input class="form-control" id="inputCitya" type="number">
+          <p class="f-light">Decide if the product is a digital or physical item. Shipping may be necessary for real-world items.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-span-12">
+      <div class="grid grid-cols-12 gap-2">
+        <div class="col-span-12">
+          <label class="form-label" for="exampleFormControlInput1">Dimensions </label>
+          <i class="icon-help-alt ms-1"></i>
+        </div>
+        <div class="col-span-4 md:col-span-6 sm:col-span-12">
+          <input class="form-control" id="inputCityb" type="number" placeholder="Length[l]">
+        </div>
+        <div class="col-span-4 md:col-span-6 sm:col-span-12">
+          <input class="form-control" id="inputCityc" type="number" placeholder="Width[w]">
+        </div>
+        <div class="col-span-4 md:col-span-12">
+          <input class="form-control" id="inputCityd" type="number" placeholder="Height[h]">
+        </div>
+      </div>
+    </div>
+    <div class="col-span-12">
+      <div class="grid grid-cols-12">
+        <div class="col-span-12">
+          <label class="form-label" for="exampleFormControlInput1">Shipping Class</label>
+        </div>
+        <div class="col-span-12">
+          <select2 [data]="shippingClass" placeholder="Basic Shipping"> </select2>
+        </div>
+      </div>
+    </div>
+    <div class="col-span-12 product-buttons">
+      <button class="btn" type="button" (click)="previous()">
+        <app-svg-icon [icon]="'back-arrow'"></app-svg-icon>Previous
+      </button>
+      <button class="btn" type="button" (click)="next()">Next
+        <app-svg-icon [icon]="'front-arrow'"></app-svg-icon>
+      </button>
+    </div>
+  </div>
+</form>

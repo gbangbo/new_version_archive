@@ -1,0 +1,9 @@
+<app-card [headerTitle]="'Horizontal Editable Divider'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'main-divider horizontal-variation'">
+
+    <p class="mb-0 mt-1" header5>Use<code> horizontal-variation</code> and <code>double-line-*</code> classes to create a thickness divider.</p>
+
+    @for(divider of horizontalEditable; track divider; let i = $index) {
+        <div class="divider linear-line double-line double-line-{{ i + 1 }}" contenteditable="true">{{ divider.value }}</div>
+    }
+
+</app-card>

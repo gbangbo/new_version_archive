@@ -1,0 +1,33 @@
+<div class="modal fade modal-bookmark modal-backdrop show">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" (clickOutside)="closeModal()">
+      <div class="modal-header">
+          <h5 class="modal-title">Print Preview</h5>
+          <button class="btn-close" type="button" (click)="closeModal()"></button>
+      </div>
+      <div class="modal-body list-persons">
+          @if(activeContact) {
+            <div class="profile-mail pt-0" id="DivIdToPrint">
+              <div class="common-flex items-center">
+                <img class="max-w-full rounded-full" id="updateimg" [src]="activeContact.profile" [alt]="activeContact.first_name">
+                <div class="grow mt-0">
+                  <h5>
+                    <span id="printname">{{ activeContact.first_name }}</span>
+                    <span id="printlast">{{ activeContact.last_name }}</span>
+                  </h5>
+                  <p id="printmail">{{ activeContact.email }}</p>
+                </div>
+              </div>
+              <div class="email-general">
+                <h6>General</h6>
+                <p>Email Address: <span class="font-primary" id="mailadd">{{ activeContact.email }}</span>
+                </p>
+              </div>
+            </div>
+            <button class="btn btn-primary text-white" id="btnPrint" type="button" printSectionId="DivIdToPrint" ngxPrint>Print</button>
+          }
+          <button class="btn button-light-primary ms-2" type="button" (click)="closeModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>

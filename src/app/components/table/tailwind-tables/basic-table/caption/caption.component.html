@@ -1,0 +1,37 @@
+<app-card [headerTitle]="'Caption'" [header]="'pb-0'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>
+    A <code>&lt;caption&gt;</code> functions like a heading for a table. It helps users with screen readers to find a table and understand what it’s about and decide if they want to read it.</p>
+    <div class="card-block grid grid-cols-12">
+      <div class="col-span-12">
+        <div class="overflow-x-auto custom-scrollbar">
+          <table class="table">
+            <caption>List of users</caption>
+            <thead>
+              <tr>
+                <th scope="col">Id</th>
+                <th scope="col">Employee Name	</th>
+                <th scope="col">Email</th>
+                <th scope="col">Experience</th>
+                <th scope="col">Sex</th>
+                <th scope="col">Contact No.	</th>
+                <th scope="col">Age</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for(details of caption;track details){
+                <tr>
+                  <th scope="row">{{ details.id }}</th>
+                  <td>{{ details.employee_name }}	</td>
+                  <td>{{ details.email }}	</td>
+                  <td>{{ details.experience }}	</td>
+                  <td>{{ details.sex }}	</td>
+                  <td>{{ details.contact_number }}	</td>
+                  <td>{{ details.age }}	</td>
+                </tr>
+              }
+            </tbody>
+          </table>      
+          </div>
+      </div>
+    </div>
+</app-card>

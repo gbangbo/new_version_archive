@@ -1,0 +1,14 @@
+<app-card [headerTitle]="'Disabled outline switch'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'common-flex'">
+  <p class="f-m-light mt-1" header5>
+    Use the <code>.switch-outline </code> class to created outline. </p>
+    @for(switch of disabledOutlineSwitch; track switch){
+      <div class="flex">
+        <div class="grow text-end icon-state switch-outline">
+          <label class="switch mb-0">
+            <input type="checkbox">
+            <span class="switch-state bg-{{ switch.class }}"></span>
+          </label>
+        </div>
+      </div>
+      }
+</app-card>

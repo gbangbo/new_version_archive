@@ -1,0 +1,29 @@
+<app-card [headerTitle]="'Floating Form'" [header]="'pb-0'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>
+    Use <code>form-floating</code> to create floating form.</p>
+    <div class="card-wrapper border rounded-3">
+      <form class="grid grid-cols-12 gap-4 floating-wrapper">
+          <div class="col-span-12">
+              <div class="form-floating mb-4">
+                <input class="form-control" id="floatingInput22" type="email" placeholder="">
+                <label for="floatingInput22">Email Address</label>
+              </div>
+          </div>
+          <div class="col-span-12">
+              <div class="form-floating">
+                <input class="form-control" id="floatingPassword" type="password" placeholder="">
+                <label for="floatingPassword">Password</label>
+              </div>
+          </div>
+          <div class="col-span-12">
+              <div class="form-check checkbox-checked flex gap-2">
+                <input class="form-check-input" id="gridCheck" type="checkbox">
+                <label class="form-check-label mb-0" for="gridCheck">Check me out</label>
+              </div>
+          </div>
+          <div class="col-span-12">
+            <button class="btn btn-primary text-white" type="submit">Sign in </button>
+          </div>
+      </form>
+  </div>
+</app-card>

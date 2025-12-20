@@ -1,0 +1,123 @@
+<div class="container mx-auto px-0 w-full helper-classes">
+    <div class="grid grid-cols-12 gap-4">
+        <div class="col-span-12">
+            <app-card [headerTitle]="'Styled Borders'" [header]="'pb-0'" [border]="true" [padding]="false">
+                <p class="f-m-light mt-1" header5>Use different styles of borders, like <code>border radius, border-color, and border-width</code> use of any components.</p>
+
+                <div class="grid grid-cols-12 gap-4">
+                    <div class="col-span-3 xxl:col-span-6 sm:col-span-12">
+                        <div class="border-wrapper h-full alert-light-light dark-helper">
+                            <app-borders [title]="'Custom Border-radius Class'" [details]="borderRadiusClasses" [class]="'bg-light border w-[40px] h-[40px]'"></app-borders>
+                        </div>
+                    </div>
+
+                    <div class="col-span-3 xxl:col-span-6 sm:col-span-12">
+                        <div class="border-wrapper h-full alert-light-light dark-helper">
+                            <app-borders [title]="'Border Color'" [details]="colors" [class]="'border w-[40px] h-[40px] rounded-[25%] border-'" [color]="true"></app-borders>
+                        </div>
+                    </div>
+
+                    <div class="col-span-3 xxl:col-span-6 sm:col-span-12">
+                        <div class="border-wrapper h-full alert-light-light dark-helper">
+                            <app-borders [title]="'Border Width'" [details]="borderWidth" [class]="'border w-[40px] h-[40px] rounded-[25%]'"></app-borders>
+                        </div>
+                    </div>
+
+                    <div class="col-span-3 xxl:col-span-6 sm:col-span-12">
+                        <div class="border-wrapper alert-light-light h-full dark-helper">
+                            <app-borders [title]="'Text Colors'" [details]="colors" [class]="'helper-text border w-[40px] h-[40px] rounded-[25%] flex items-center justify-center font-black txt-'" [text]="true"></app-borders>
+                        </div>
+                    </div>
+                </div>
+            </app-card>
+        </div>
+
+        <div class="col-span-12">
+            <app-card [headerTitle]="'Variation of Borders and Displays'" [header]="'pb-0'" [border]="true" [padding]="false">
+                <p class="f-m-light mt-1" header5>Use border utilities to add or remove an element's borders.</p>
+
+                <div class="grid grid-cols-12 gap-4">
+                    <div class="col-span-4 xl:col-span-6 sm:col-span-12">
+                        <div class="border-wrapper h-full border">
+                            <app-borders [title]="'Additive Border'" [details]="additiveBorder" [class]="'bg-light w-[40px] h-[40px] rounded-[25%]'"></app-borders>
+                        </div>
+                    </div>
+
+                    <div class="col-span-4 xl:col-span-6 sm:col-span-12">
+                        <div class="border-wrapper h-full border subtract-border">
+                            <app-borders [title]="'Subtractive Border'" [details]="subtractiveBorder" [class]="'bg-light border w-[40px] h-[40px] rounded-[25%]'"></app-borders>
+                        </div>
+                    </div>
+
+                    <div class="col-span-4 xl:col-span-6 sm:col-span-12">
+                        <div class="border-wrapper h-full border">
+                            <app-additive-radius></app-additive-radius>
+                        </div>
+                    </div>
+                </div>
+            </app-card>
+        </div>
+
+        <div class="col-span-12">
+            <app-card [headerTitle]="'Background Colors'" [header]="'pb-0'" [border]="true" [padding]="false">
+                <p class="f-m-light mt-1" header5>Use any component in a theme, use the colors <code>bg-* </code>and <code>alert-light-*.</code></p>
+
+                <div class="grid grid-cols-12 gap-4">
+                    <div class="col-span-4 xl:col-span-6 sm:col-span-12">
+                        <div class="border-wrapper h-full border">
+                            <app-borders [title]="'Dark Backgrounds'" [details]="colorsTwo" [class]="'w-[40px] h-[40px] rounded-[25%] bg-'" [color]="true" [backgroundColor]="true" [helperText]="'bg'"></app-borders>
+                        </div>
+                    </div>
+
+                    <div class="col-span-4 xl:col-span-6 sm:col-span-12">
+                        <div class="border-wrapper h-full border">
+                            <app-borders [title]="'Light Backgrounds'" [details]="colorsTwo" [class]="'w-[40px] h-[40px] rounded-[25%] alert-light-'" [color]="true" [backgroundColor]="true" [helperText]="'alert-light'"></app-borders>
+                        </div>
+                    </div>
+
+                    <div class="col-span-4 xl:col-span-6 sm:col-span-12">
+                        <div class="border-wrapper h-full border">
+                            <app-extender-background-color></app-extender-background-color>
+                        </div>
+                    </div>
+                </div>
+            </app-card>
+        </div>
+
+        <div class="col-span-12">
+            <app-border-position></app-border-position>
+        </div>
+        <div class="col-span-6 xxl:col-span-12">
+            <app-image-size></app-image-size>
+        </div>
+        <div class="col-span-6 xxl:col-span-12">
+            <app-font-style></app-font-style>
+        </div>
+        <div class="col-span-6 xl:col-span-12">
+            <app-font-weight></app-font-weight>
+        </div>
+        <div class="col-span-6 xl:col-span-12">
+            <app-text-colors></app-text-colors>
+        </div>
+        <div class="col-span-12">
+            <app-padding></app-padding>
+        </div>
+        @for(types of borderTypes; track types) {
+            <div class="col-span-3 xl:col-span-12">
+                <app-border-types [borderType]="types.type"></app-border-types>
+            </div>
+        }
+        <div class="col-span-12">
+            <app-one-side-padding></app-one-side-padding>
+        </div>
+        <div class="col-span-12">
+            <app-margins></app-margins>
+        </div>
+        <div class="col-span-12">
+            <app-one-side-margin></app-one-side-margin>
+        </div>
+        <div class="col-span-12">
+            <app-font-size></app-font-size>
+        </div>
+    </div>
+</div>

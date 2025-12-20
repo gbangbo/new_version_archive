@@ -1,0 +1,43 @@
+<div class="container product-wrapper" [class.sidebaron]="productService.sidebarOpen">
+  <div class="product-grid">
+    <div class="feature-products">
+      <div class="common-f-start mb-4 justify-end md:justify-start">
+        <a class="btn btn-primary text-white font-medium" href="javascript:void(0)" [routerLink]="['/product/create']">
+          <i class="fa-solid fa-plus pe-2"></i>
+          Add Products
+        </a>
+      </div>
+
+      <app-product-sort></app-product-sort>
+
+      <div class="grid grid-cols-12 card-gap">
+        <div class="col-span-3 md:col-span-6 sm:col-span-12">
+          <app-product-sidebar></app-product-sidebar>
+        </div>
+        <div class="col-span-9 md:col-span-12">
+          <form>
+            <div class="form-group m-0">
+              <input class="form-control" type="search" placeholder="Search.." data-original-title="" title="">
+              <i class="fa-solid fa-magnifying-glass"></i>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="product-wrapper-grid" [class.list-view]="productService.listView">
+      <div class="grid grid-cols-12 card-gap">
+        @for(product of products; track product) {
+          <div
+            [ngClass]="{  'col-span-6': productService.grid_2,
+                          'col-span-4': productService.grid_3,
+                          'col-span-3': productService.grid_4 || productService.gridView,
+                          'col-span-2': productService.grid_6,
+                          'col-span-12': productService.listView
+             }"  class="xl:col-span-4 sm:col-span-12">
+            <app-product-box [product]="product"></app-product-box>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>

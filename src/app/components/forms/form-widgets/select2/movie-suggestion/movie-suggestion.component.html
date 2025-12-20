@@ -1,0 +1,10 @@
+<app-card [headerTitle]="'Movie Suggestions'" [header]="'pb-0'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>
+    Use <code>ngx-chips</code> for select movie options.</p>
+    <form>
+      <tag-input [ngModel]="movieSelect" name="select" [onlyFromAutocomplete]="false">
+        <tag-input-dropdown [autocompleteItems]="movieSuggestion" [showDropdownIfEmpty]="false">
+        </tag-input-dropdown>
+      </tag-input>
+    </form>
+</app-card>

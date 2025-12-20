@@ -1,0 +1,34 @@
+<app-card [headerTitle]="financeOverviewChart.title" [padding]="false" [header]="'pb-0'" [dropdownType]="'simple'" [options]="cardToggleOption" [cardBodyClass]="'finance-wrapper pt-0'">
+
+    <div class="common-flex">
+        <h6>
+           $<span class="counter">
+            <app-counter [counter]="financeOverviewChart.revenue"></app-counter>
+             </span>
+             <span class="ms-1 c-o-light f-14">Revenue</span>
+            </h6>
+        <h6>$<span class="counter">
+            <app-counter [counter]="financeOverviewChart.expenses"></app-counter>
+            </span>
+            <span class="ms-1 c-o-light f-14">Expenses</span>
+        </h6>
+    </div>
+    <div class="finance-chart-wrapper">
+        <div id="finance-chart">
+            <apx-chart
+                [series]="financeOverviewChart.series"
+                [chart]="financeOverviewChart.chart"
+                [plotOptions]="financeOverviewChart.plotOptions"
+                [grid]="financeOverviewChart.grid"
+                [dataLabels]="financeOverviewChart.dataLabels"
+                [stroke]="financeOverviewChart.stroke"
+                [fill]="financeOverviewChart.fill"
+                [legend]="financeOverviewChart.legend"
+                [colors]="financeOverviewChart.colors"
+                [yaxis]="financeOverviewChart.yaxis"
+                [xaxis]="financeOverviewChart.xaxis"
+                [responsive]="financeOverviewChart.responsive">
+            </apx-chart>
+        </div>
+    </div>
+</app-card>

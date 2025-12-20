@@ -1,0 +1,27 @@
+<app-card [headerTitle]="'Button Groups'" [border]="true" [header]="'pb-0'" [padding]="false" [cardBodyClass]="'btn-groups'">
+    <p class="f-m-light mt-1" header5>Wrap a series of buttons with <code>btn </code>in <code>btn-group </code> and for custom class used for sizes: <code>btn-lg </code>& <code>btn-sm</code>.</p>
+    <div class="grid grid-cols-12 gap-4">
+        @for(details of buttonGroups; track details) {
+            <div [class]="details.class">
+                <div class="card-wrapper border rounded-3 h-full">
+                  <h6 class="sub-title fw-bold">{{ details.title }}</h6>
+                  <div class="button-wrapper {{ details.sub_class }}">
+                    @for(button of details.button_groups;track button){
+                        <div class="btn-group {{ button.class }}" role="group" aria-label="Basic example">
+                            @for(buttons of button.buttons;track buttons){
+                                @if(buttons.icon){
+                                    <button class="btn border {{ buttons.class }}" type="button">
+                                        <app-feather-icon [icon]="buttons.icon"></app-feather-icon>
+                                    </button>
+                                } @else {
+                                    <button class="btn {{ buttons.class }}" type="button">{{ buttons.label }}</button>
+                                }
+                            }
+                        </div>
+                    }
+                  </div>
+                </div>
+              </div>
+        }
+    </div>
+</app-card>

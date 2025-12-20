@@ -1,0 +1,26 @@
+<app-card [headerTitle]="'SVG\'s Tooltip'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'svg-tooltip'">
+    <p class="f-m-light mt-1" header5> Use<code> bg-light-* </code> to change light background color and <code>stroke-*</code> to change SVG colors.</p>
+
+    <div class="common-flex">
+        <div class="bg-light-info group relative">
+            <app-svg-icon [icon]="'email-box'" [class]="'stroke-info'"></app-svg-icon>
+
+            <app-tooltip [title]="'Notification'"></app-tooltip>
+        </div>
+        <div class="bg-light-danger group relative">
+          <app-svg-icon [icon]="'stroke-bookmark'" [class]="'stroke-danger'"></app-svg-icon>
+
+          <app-tooltip [title]="'Like'"></app-tooltip>
+        </div>
+        <div class="bg-light-dark group relative">
+          <app-svg-icon [icon]="'stroke-msg'" [class]="'stroke-dark'"></app-svg-icon>
+
+          <app-tooltip [title]="'Comment'"></app-tooltip>
+        </div>
+        <div class="bg-light-primary group relative">
+          <app-svg-icon [icon]="'stroke-button'" [class]="'stroke-primary'"></app-svg-icon>
+
+          <app-tooltip [title]="'Share'"></app-tooltip>
+      </div>
+    </div>
+</app-card>

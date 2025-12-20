@@ -1,0 +1,17 @@
+<app-card [headerTitle]="'Horizontal Accordion'" [header]="'pb-0'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>
+    This horizontal accordion expands and collapses with a button click.  
+    The <code>toggleAccordion</code> method controls its state, and Tailwind classes handle layout and spacing.  
+  </p>
+  
+  <div class="common-flex">
+      <button class="btn btn-secondary text-white" type="button" (click)="toggleAccordion()">Toggle width Collapse</button>
+  </div>
+  <div class="grid grid-cols-12 card-gap"> 
+    <div class="col-span-8 xxl:col-span-12">
+      <div class="collapse collapse-horizontal mt-3" [class.show]="!isCollapsed">
+        <div class="card card-body accordion-h-space mb-0">This is some placeholder content for a horizontal collapse. It's hidden by default and shown when triggered.</div>
+      </div>
+    </div>
+  </div>
+</app-card>

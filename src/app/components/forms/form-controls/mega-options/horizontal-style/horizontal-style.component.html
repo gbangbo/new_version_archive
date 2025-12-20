@@ -1,0 +1,74 @@
+<app-card [headerTitle]="'Horizontal Style'" [header]="'pb-0'" [border]="true" [padding]="false" [cardClass]="'height-equal'">
+  <p class="f-m-light mt-1" header5>Use <code>mega-horizontal</code> class to create horizontal alignments.</p>
+  <form class="mega-horizontal">
+    <div class="grid grid-cols-12 card-gap">
+      @for(style of horizontalStyle;track style){
+        <div class="col-span-3 sm:col-span-12">
+          <p class="mega-title">{{ style.title }}</p>
+        </div>
+        @for(item of style.details;track item){
+          <div class="col-span-9 sm:col-span-12 {{ item.div_class }}">
+            <div class="card">
+              <div class="flex p-5">
+                <div class="form-check radio radio-{{ item.class }} m-0 w-full">
+                  <input class="form-check-input" [id]="item.id" type="radio" [name]="item.name" [value]="item.value" [checked]="item.check">
+                  <label class="form-check-label mb-0 w-full" [for]="item.id">
+                    <span class="grow {{ item.badge_class}}">
+                      <span class="mt-0 mega-title-badge">
+                       {{ item.title }}
+                        <span class="badge badge-{{ item.class }} text-white pull-right digits">
+                        {{ item.digit }}
+                        </span>
+                      </span>
+                      <span>{{item.description }}</span>
+                      @if(item.rating == 5){
+                        <span class="rating-star-wrapper">
+                          <div class="rating">
+                            <bar-rating [rate]="item.rating" [readonly]="true" [max]="5">
+                              <ng-template ratingActive>
+                                <i class="fa-solid fa-star" style="color: #ffb829"></i>
+                              </ng-template>
+                              <ng-template ratingInactive>
+                                <i class="fa-solid fa-star" style="color: #d2d2d2"></i>
+                              </ng-template>
+                              <ng-template ratingFraction>
+                                <i class="fa-solid fa-star-half-stroke" style="color: #ffb829"></i>
+                              </ng-template>
+                            </bar-rating>
+                          </div>
+                          {{ item.label }}
+                        </span>
+                      }
+                      @if(item.rating == 4){
+                        <span class="rating-star-wrapper">
+                          <div class="rating">
+                            <bar-rating [rate]="item.rating" [readonly]="true" [max]="5">
+                              <ng-template ratingActive>
+                                <i class="fa-solid fa-star" style="color: #ffb829"></i>
+                              </ng-template>
+                              <ng-template ratingInactive>
+                                <i class="fa-solid fa-star" style="color: #d2d2d2"></i>
+                              </ng-template>
+                              <ng-template ratingFraction>
+                                <i class="fa-solid fa-star-half-stroke" style="color: #ffb829"></i>
+                              </ng-template>
+                            </bar-rating>
+                          </div>
+                          {{ item.label }}
+                        </span>
+                      }
+                    </span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+      }
+    </div>
+  </form>
+  <div class="card-footer text-end" details>
+    <button class="btn btn-primary text-white m-r-15" type="submit">Submit</button>
+    <button class="btn btn-light" type="submit">Cancel</button>
+  </div>
+</app-card>

@@ -1,0 +1,40 @@
+<div class="card-wrapper border rounded-3 h-full">
+  <div class="cuba-demo-img">
+    <ul class="dot-group pb-3 pt-0">
+      <li></li>
+      <li></li>
+      <li></li>
+    </ul>
+    <div class="title-wrapper pb-3 modal-heading">
+      <h5 class="theme-name mb-0"><span>Modal 2 - </span>Result Modal</h5>
+      <p class="f-m-light">Example of cuba login form.</p>
+    </div>
+    <div class="overflow-hidden">
+      <button class="btn btn-primary mx-auto mt-3 text-white" type="button" (click)="openModal()">Click Here</button>
+    </div>
+  </div>
+</div>
+
+@if(modalOpen){
+  <div class="modal  fade show modal-backdrop">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" (clickOutside)="closeModal()">
+        <div class="modal-body social-profile text-start dark-sign-up">
+          <div class="modal-toggle-wrapper">
+            <h3>Cuba Login</h3>
+            <p class="f-light"> Fill in your information below to continue.</p>
+            <form class="grid grid-cols-12 gap-4">
+              <div class="col-span-12"><label class="form-label" for="inputEmailEnter">Email</label><input class="form-control" id="inputEmailEnter" type="email" placeholder="Enter Your Email"></div>
+              <div class="col-span-12"><label class="form-label" for="inputPasswordEnter">Password</label><input class="form-control" id="inputPasswordEnter" type="password" placeholder="Enter Your Password">
+              </div>
+              <div class="col-span-12">
+                <div class="form-check flex gap-2"><input class="form-check-input checkbox-primary" id="checkout" type="checkbox"><label class="form-check-label" for="checkout">Check me out</label></div>
+              </div>
+              <div class="col-span-12"><button class="btn btn-primary text-white" type="submit" data-bs-dismiss="modal">Sign in </button></div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+}

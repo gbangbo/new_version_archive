@@ -1,0 +1,10 @@
+<app-card [headerTitle]="'Disabled'" [border]="true" [header]="'pb-0'" [padding]="false">
+  <p class="f-m-light mt-1" header5>
+    Use <code>ngx-slider</code> to create a range slider that can be disabled. In this example, the slider is configured with a <code>value</code> of 550 and a range from <code>floor</code> 100 to <code>ceil</code> 1000. The <code>disabled</code> option is set to <code>true</code>, which prevents any interaction with the slider.
+  </p>
+    <div class="form-group grid grid-cols-12 py-1 justify-center">
+      <div class="col-span-10 md:col-span-12">
+        <ngx-slider [(value)]="value" [options]="options"></ngx-slider>
+      </div>
+    </div>
+</app-card>

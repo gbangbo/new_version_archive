@@ -1,0 +1,13 @@
+<app-card [cardClass]="'widget-11 widget-hover'">
+  <div class="common-align justify-start">
+    <div class="analytics-tread bg-light-{{ details.color }}">
+        <app-svg-icon [icon]="details.icon" [class]="'fill-'+details.color"></app-svg-icon>
+    </div>
+    <div>
+      <span class="c-o-light">{{ details.title }}</span>
+      <h4 class="counter">
+        <app-counter [counter]="details.value | number"></app-counter>
+      </h4>
+    </div>
+  </div>
+</app-card>

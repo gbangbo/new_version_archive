@@ -1,0 +1,50 @@
+<div class="offcanvas show" [ngClass]="positionClass" (clickOutside)="close()">
+  <div class="offcanvas-header pb-0">
+      <h5 class="offcanvas-title" id="offcanvasTopLabel">{{ title }}</h5>
+      <button class="btn-close" type="button" (click)="close()"></button>
+  </div>
+  <div class="offcanvas-body custom-input custom-scrollbar">
+      <form class="grid grid-cols-12 gap-4">
+        <div class="col-span-4 md:col-span-12">
+          <label class="form-label" for="validationDefault03">First name</label>
+          <input class="form-control" id="validationDefault03" type="text" value="Mark">
+        </div>
+        <div class="col-span-4 md:col-span-12">
+          <label class="form-label" for="validationDefault02">Last name</label>
+          <input class="form-control" id="validationDefault02" type="text" value="Otto">
+        </div>
+        <div class="col-span-4 md:col-span-12">
+          <label class="form-label" for="validationDefaultUsername1">Username</label>
+          <div class="input-group flex flex-nowrap"><span class="input-group-text rounded-none !rounded-l-md" id="inputGroupPrepend2">&#64;</span>
+            <input class="form-control rounded-none !rounded-r-md " id="validationDefaultUsername1" type="text" aria-describedby="inputGroupPrepend2">
+          </div>
+        </div>
+        <div class="col-span-6 md:col-span-12">
+          <label class="form-label" for="validationDefaultCity">City</label>
+          <input class="form-control" id="validationDefaultCity" type="text">
+        </div>
+        <div class="col-span-3 md:col-span-12">
+          <label class="form-label" for="validationCountry">Country</label>
+          <select class="form-select" id="validationCountry">
+            <option selected="" disabled="" value="">Choose...</option>
+            <option>US </option>
+            <option>UK </option>
+            <option>Africa</option>
+          </select>
+        </div>
+        <div class="col-span-3 md:col-span-12">
+          <label class="form-label" for="validationZip">Zip</label>
+          <input class="form-control" id="validationZip" type="text">
+        </div>
+        <div class="col-span-12">
+          <div class="form-check checkbox-checked flex gap-2">
+            <input class="form-check-input" id="termsCondition4" type="checkbox" value="">
+            <label class="form-check-label" for="termsCondition4">Agree to terms and conditions</label>
+          </div>
+        </div>
+        <div class="col-span-12">
+          <button class="btn btn-primary text-white" type="submit">Submit</button>
+        </div>
+      </form>
+  </div>
+</div>

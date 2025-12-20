@@ -1,0 +1,52 @@
+<app-card [cardClass]="'portfolio-card'" [headerTitle]="myPortfolio.title" [padding]="false"
+          [dropdownType]="'classic'" [options]="myPortfolio.dropdownOption">
+
+  <div class="grid grid-cols-12 card-gap">
+    <div class="col-span-12 xxl:col-span-7 xl:col-span-6 sm:col-span-12 box-col-6">
+      <div class="portfolio-chart-container">
+        <div id="portfolio-chart">
+          <apx-chart
+            [series]="myPortfolio.series"
+            [chart]="myPortfolio.chart"
+            [plotOptions]="myPortfolio.plotOptions"
+            [colors]="myPortfolio.colors"
+            [labels]="myPortfolio.labels"
+            [fill]="myPortfolio.fill"
+            [responsive]="myPortfolio.responsive">
+          </apx-chart>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-span-12 xxl:col-span-5 xl:col-span-6 sm:col-span-12 box-col-6">
+      <div class="portfolio-table recent-table overflow-x-auto">
+        <table class="table">
+          <tbody>
+            @for(details of myPortfolio.chart_details; track details) {
+              <tr>
+                <td>
+                  <div class="flex items-center gap-2">
+                    <div class="currency-icon" [ngClass]="details.icon_color">
+                      <app-svg-icon [icon]="details.currency_symbol"></app-svg-icon>
+                    </div>
+                    <div>
+                      <h6 class="f-14 mb-1">{{ details.currency_name }}</h6>
+                      <div class="flex items-center gap-1">
+                        <span class="status bg-{{ details.profit_type == 'profit' ? 'success' : 'danger' }}"></span>
+                        <span class="f-light">{{ details.currency_code }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td class="text-end">
+                  <h6 class="f-14 font-normal mb-1">{{ details.value }}</h6>
+                  <span class="font-{{ details.profit_type == 'profit' ? 'success' : 'danger' }}">${{ details.total_price }}</span>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</app-card>

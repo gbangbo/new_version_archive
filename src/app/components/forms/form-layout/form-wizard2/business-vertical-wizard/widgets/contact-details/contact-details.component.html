@@ -1,0 +1,39 @@
+<form class="grid grid-cols-12 gap-4 needs-validation" novalidate="" [formGroup]="formValidation" (ngSubmit)="next()">
+    <div class="col-span-12">
+      <h6>Contact Details</h6>
+      <p>Please visit the documentation page if you require further information.</p>
+    </div>
+    <div class="col-span-6 sm:col-span-12">
+      <label class="form-label" for="validationCustom-select">Organization Name</label>
+      <input class="form-control" id="validationCustom-select" type="text" placeholder="Gekko &amp; Co." formControlName="organizationName"
+      [ngClass]="{ 'is-invalid' : formValidation.controls['organizationName'].touched && formValidation.controls['organizationName'].errors?.['required'] , 'is-valid' : formValidation.controls['organizationName'].valid}">
+      @if(formValidation.controls['organizationName'].touched && formValidation.controls['organizationName'].errors?.['required']) {
+       <div class="valid-feedback">Looks good!</div>
+     }
+    </div>
+    <div class="col-span-6 sm:col-span-12">
+      <label class="form-label">Email</label>
+      <input class="form-control" type="text" placeholder="org@support.com" formControlName="email"
+      [ngClass]="{ 'is-invalid' : formValidation.controls['email'].touched && formValidation.controls['email'].errors?.['required'] , 'is-valid' : formValidation.controls['email'].valid}">
+      @if(formValidation.controls['email'].touched && formValidation.controls['email'].errors?.['required']) {
+       <div class="valid-feedback">Looks good!</div>
+     }
+    </div>
+    <div class="col-span-12">
+      <label class="form-label" for="validationCustom-select">Join Organization Type</label>
+      <select2 [data]="contactDetails" placeholder="Join Organization Type"></select2>
+    </div>
+    <div class="col-span-12"> 
+      <label class="form-label" for="organizationDescription">Organization Description</label>
+      <textarea class="form-control" id="organizationDescription" placeholder="Share your problems and another issues" formControlName="description"
+      [ngClass]="{ 'is-invalid' : formValidation.controls['description'].touched && formValidation.controls['description'].errors?.['required'] , 'is-valid' : formValidation.controls['description'].valid}">
+      @if(formValidation.controls['email'].touched && formValidation.controls['email'].errors?.['required']) {
+        <div class="invalid-feedback">Please enter a message in the box.</div>
+      } 
+    </textarea>
+    </div>
+    <div class="col-span-12 common-flex justify-end"> 
+      <button class="btn btn-primary text-white" (click)="previous()">Previous</button>
+      <button class="btn btn-primary text-white" type="submit">Continue </button>
+    </div>
+</form>

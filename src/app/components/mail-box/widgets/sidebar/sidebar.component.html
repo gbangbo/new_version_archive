@@ -1,0 +1,57 @@
+<div class="md-sidebar">
+   <button class="btn btn-primary md-sidebar-toggle text-white" (click)="toggleSidebar()">email filter</button>
+  <div class="md-sidebar-aside job-left-aside custom-scrollbar" [class.open]="sidebarOpen">
+    <div class="email-left-aside">
+      <div class="card">
+        <div class="card-body">
+          <div class="email-app-sidebar">
+            <button class="btn btn-primary emailbox text-white" type="button" (click)="composeEmail()">
+              <i class="fa-solid fa-plus"></i>Compose Email
+            </button>
+            <ul class="tab-links main-menu email-category" id="email-pills-tab" role="tablist">
+              @for(item of emailSidebar; track item) {
+                <li>
+                  <a class="tab-link" [class.active]="activeTab == item.value" (click)="handleTabChange(item.value)">
+                    <app-svg-icon [icon]="item.icon" [class]="'stroke-icon'"></app-svg-icon>
+                    <div>{{ item.title }}
+                      @if(item.tag) {
+                        <span class="badge badge-light-primary inline-block">{{ item.tag }}</span>
+                      }
+                    </div>
+                  </a>
+                </li>
+              }
+
+              <li>
+                <ul>
+                  @for(tag of emailTags; track tag) {
+                    <li>
+                      <a href="javascript:void(0)">
+                        <app-svg-icon [icon]="'pintag'" [class]="'stroke-icon stroke-' + tag.color"></app-svg-icon>
+                        {{ tag.title }}
+                      </a>
+                    </li>
+                  }
+                </ul>
+              </li>
+              <li>
+                <a class="btn" href="javascript:void(0)" (click)="openLabelModal()">
+                  <i class="fa-solid fa-plus"></i>
+                  Add Label
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+@if(emailModalOpen) {
+  <app-compose-email-modal (modalOpen)="handleModalOpen($event)"></app-compose-email-modal>
+}
+
+@if(labelModalOpen) {
+  <app-add-label-modal (modalOpen)="handleModalOpen($event)"></app-add-label-modal>
+}

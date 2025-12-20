@@ -1,0 +1,27 @@
+<app-card [cardClass]="'visits-wrapper'" [headerTitle]="allVisitsChart.title" [padding]="false"
+    [dropdownType]="'classic'" [options]="cardToggleOption" [dropdownClass]="'custom-dropdown'" [cardBodyClass]="'pt-0'">
+
+    <div class="common-flex">
+        <h6>{{ allVisitsChart.total_visitors }}</h6>
+        <div class="flex"> 
+          <p>( <span class="txt-success font-medium me-1">{{ allVisitsChart.last_week_visitors }}</span>vs last week)</p>
+        </div>
+    </div>
+    <div class="common-m-chart">
+        <div id="visit-chart">
+            <apx-chart 
+                [series]="allVisitsChart.series"
+                [chart]="allVisitsChart.chart"
+                [colors]="allVisitsChart.colors"
+                [stroke]="allVisitsChart.stroke"
+                [xaxis]="allVisitsChart.xaxis"
+                [yaxis]="allVisitsChart.yaxis"
+                [grid]="allVisitsChart.grid"
+                [tooltip]="allVisitsChart.tooltip"
+                [fill]="allVisitsChart.fill"
+                [annotations]="allVisitsChart.annotations"
+                [responsive]="allVisitsChart.responsive">
+            </apx-chart>
+        </div>
+    </div>
+</app-card>

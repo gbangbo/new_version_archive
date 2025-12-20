@@ -1,0 +1,13 @@
+<app-card [headerTitle]="'Animated Avatar'" [header]="'pb-0'" [border]="true" [padding]="false">
+
+    <p class="f-m-light mt-1" header5>Use<code> animation-ping </code>class with avatar to indicate <code>active/offline/dnd</code> status.</p>
+
+    <div class="avatars avatar-showcase">
+        @for(avatar of animatedAvatar; track avatar) {
+            <div class="avatar">
+                <img class="rounded-full" [ngClass]="avatar.class" [src]="avatar.profile" alt="avatar">
+                <div class="status bg-{{ avatar.status }} animation-ping"></div>
+            </div>
+        }
+    </div>
+</app-card>

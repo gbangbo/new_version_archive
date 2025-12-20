@@ -1,0 +1,35 @@
+<app-card [headerTitle]="'School Finance'" [padding]="false" [cardBodyClass]="'pt-0 '" [dropdownType]="'simple'" [options]="cardToggleOption">
+    <div class="income-wrapper">
+        <ul>
+            @for(details of schoolFinance.details; track details) {
+              <li>
+                <div class="income-dot dot-{{ details.class }}"></div>
+                <span class="text-muted">{{ details.title }}</span>
+                <h6>
+                  $<span class="counter" data-target="57143">
+                    <app-counter [counter]="details.count"></app-counter>
+                  </span>
+                </h6>
+              </li>
+            }
+        </ul>
+        <div class="main-income-chart">
+          <div id="income_chart">
+            <apx-chart
+              [series]="schoolFinance.series"
+              [chart]="schoolFinance.chart"
+              [grid]="schoolFinance.grid"
+              [colors]="schoolFinance.colors"
+              [stroke]="schoolFinance.stroke"
+              [markers]="schoolFinance.markers"
+              [tooltip]="schoolFinance.tooltip"
+              [xaxis]="schoolFinance.xaxis"
+              [fill]="schoolFinance.fill"
+              [yaxis]="schoolFinance.yaxis"
+              [legend]="schoolFinance.legend"
+              [responsive]="schoolFinance.responsive">
+            </apx-chart>
+          </div>
+        </div>
+      </div>
+</app-card>

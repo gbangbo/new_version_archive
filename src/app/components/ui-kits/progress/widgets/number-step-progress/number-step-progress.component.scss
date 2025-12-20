@@ -1,0 +1,24 @@
+.circle {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: #fff;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
+    text-align: center;
+    z-index: 1;
+  }
+  
+  .circle:first-child {
+    left: 0;
+  }
+  
+  .circle:nth-child(2) {
+    left: 33.33%; /* Adjust based on the percentage */
+  }
+  
+  .circle:nth-child(3) {
+    left: 66.66%; /* Adjust based on the percentage */
+  }

@@ -1,0 +1,64 @@
+@if(product) {
+  <div class="card">
+    <div class="product-box">
+      <div class="product-img">
+        @if(product.tag == 'Sale'){
+          <div class="ribbon ribbon-danger">{{ product.tag }}</div>
+        }@else if(product.tag == 'discount'){
+          <div class="ribbon ribbon-success ribbon-right">{{ product.discount + '%' }}</div>
+        }@else if(product.tag == 'Hot'){
+          <div class="ribbon ribbon-clip ribbon-warning">{{ product.tag }}</div>
+        }@else if(product.tag == 'heart'){
+          <div class="ribbon ribbon-bookmark ribbon-vertical-right ribbon-info"><i class="icofont icofont-love"></i></div>
+        }@else if(product.tag == 'gift'){
+          <div class="ribbon ribbon-secondary ribbon-vertical-left"><i class="icon-gift"></i></div>
+        }
+        <img class="max-w-full" [src]="product.image" [alt]="product.product_name">
+        <div class="product-hover">
+          <ul>
+            <li>
+              <a class="btn" href="javascript:void(0)" [routerLink]="['/cart']">
+                <i class="fa-solid fa-cart-shopping"></i>
+              </a>
+            </li>
+            <li>
+              <a class="btn" href="javascript:void(0)" (click)="openModal()">
+                <i class="fa-solid fa-eye"></i>
+              </a>
+            </li>
+            <li>
+              <a class="btn" href="javascript:void(0)">
+                <i class="fa-solid fa-code-compare fa-rotate-90"></i>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      @if(modalOpen) {
+        <app-product-details-modal [productDetail]="product" (modalOpen)="handleModalOpen($event)"></app-product-details-modal>
+      }
+      <div class="product-details">
+        <div class="rating">
+          <bar-rating [rate]="product.rating" [readonly]="true" [max]="5">
+            <ng-template ratingActive>
+              <i class="fa-solid fa-star" style="color: #ffb829"></i>
+            </ng-template>
+            <ng-template ratingInactive>
+              <i class="fa-solid fa-star" style="color: #d2d2d2"></i>
+            </ng-template>
+            <ng-template ratingFraction>
+              <i class="fa-solid fa-star-half-stroke" style="color: #ffb829"></i>
+            </ng-template>
+          </bar-rating>
+        </div>
+        <a href="javascript:void(0)">
+          <h4>{{ product.product_name }}</h4>
+        </a>
+        <p>{{ product.sort_description }}</p>
+        <div class="product-price">${{ product.discount_price | number: '1.2-2' }}
+          <del>${{ product.price | number: '1.2-2' }} </del>
+        </div>
+      </div>
+    </div>
+  </div>
+}

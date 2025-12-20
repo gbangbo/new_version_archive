@@ -1,0 +1,38 @@
+<app-card [cardClass]="'follower-wrap'" [headerTitle]="facebookCampaign.title" [headerClass]="'mb-1'" [cardBodyClass]="'pt-0 papernote-wrap'">
+
+    <div class="d-inline-block badge badge-light-{{ facebookCampaign.tag_color }} rounded-full inline-block" header5>{{ facebookCampaign.tag }}</div>
+
+    <span class="c-o-light">
+      {{ facebookCampaign.description }}
+    </span>
+
+    <ul class="campaign-list">
+      @for(details of facebookCampaign.details; track details) {
+        <li>
+          <div class="campaign-box">
+            <h5 class="mb-1 counter">
+              <app-counter [counter]=" details.value | number"></app-counter>
+              </h5>
+            <span class="f-light">{{ details.title }}</span>
+          </div>
+        </li>
+      }
+    </ul>
+
+    <div class="customers">
+      <ul class="flex">
+        @for(profile of facebookCampaign.userProfiles | slice: 0: showImage; track profile) {
+          <li class="d-inline-block">
+            <img class="img-40 rounded-full" [src]="profile.image_url" alt="user">
+          </li>
+        }
+        @if((facebookCampaign.userProfiles.length - showImage) >= 1){
+          <li class="d-inline-block">
+            <div class="light-card">
+              <span class="font-medium">+{{ facebookCampaign.userProfiles.length - showImage }}</span>
+            </div>
+          </li>
+        }
+      </ul>
+    </div>
+</app-card>

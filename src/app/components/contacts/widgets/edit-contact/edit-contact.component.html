@@ -1,0 +1,112 @@
+<form class="custom-input">
+  <div class="grid grid-cols-12 gap-4">
+    <div class="col-span-12 mb-4 mt-0">
+      <label>Name</label>
+      <div class="grid grid-cols-12 gap-4">
+        <div class="col-span-6 xxl:col-span-12">
+          <input class="form-control" id="first_name1" type="text" [value]="activeContact ? activeContact.first_name : ''" placeholder="First Name" value="first_name1">
+        </div>
+        <div class="col-span-6 xxl:col-span-12">   
+          <input class="form-control" id="last_name1" type="text" [value]="activeContact ? activeContact.last_name : ''" placeholder="Last Name" value="last_name1">
+        </div>
+      </div>
+    </div>
+    <div class="col-span-12 mb-4 mt-0">
+      <label>Email Address</label>
+      <input class="form-control" id="email_add1" type="text" [value]="activeContact ? activeContact.email : ''" autocomplete="off">
+    </div>
+    <div class="col-span-12 mb-4 mt-0">
+      <label>Phone</label>
+      <div class="grid grid-cols-12 gap-4">
+        <div class="col-span-6 xxl:col-span-12">
+          <input class="form-control" id="mobile_num1" type="text" [value]="activeContact ? activeContact.contact_number : ''" autocomplete="off">
+        </div>
+        <div class="col-span-6 xxl:col-span-12">
+          <select2 [data]="contactTypes" placeholder="Select contact type" noResultMessage="No contactTypes" resettable [value]="activeContact && activeContact.contact_type"></select2>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="grid grid-cols-12 gap-4 more-data" [ngClass]="{ 'block': moreInformation, 'hidden': !moreInformation }">
+    <div class="col-span-12 mb-4 mt-0">
+      <label>URLS</label>
+      <div class="grid grid-cols-12 gap-4">
+        <div class="col-span-6 xxl:col-span-12 xl-100">
+          <input class="form-control" id="url_add1" type="url">
+        </div>
+        <div class="col-span-6 xxl:col-span-12 xl-100">
+          <select2 [data]="urlTypes" placeholder="Select url type" noResultMessage="No URLTypes" resettable> </select2>
+        </div>
+      </div>
+    </div>
+    <div class="col-span-12 mb-4 mt-0">
+      <label>Personal</label>
+      <div class="block">
+        <label class="me-3" for="edo-ani2">
+          <input class="radio_animated" id="edo-ani2" type="radio" name="rdo-ani1" [checked]="activeContact && activeContact.gender == 'Male'">
+          <span>Male</span>
+        </label>
+        <label for="edo-ani3">
+          <input class="radio_animated" id="edo-ani3" type="radio" name="rdo-ani1" [checked]="activeContact && activeContact.gender == 'Female'">
+          <span>Female</span>
+        </label>
+      </div>
+    </div>
+    <div class="col-span-12 mb-4 mt-0">
+        <div class="grid grid-cols-12 gap-4">
+          <div class="col-span-12">
+            <div class="input-group flex flex-nowrap gap-3">
+              <input class="form-control" placeholder="yyyy-mm-dd" name="dob" [(ngModel)]="selectedDate" [owlDateTime]="dob"/>
+              <button class="btn btn-outline-secondary fa-solid fa-calendar-days border m-0" (click)="dob.open()" type="button"></button>
+              <owl-date-time #dob [pickerType]="'calendar'"></owl-date-time>
+            </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-span-12 mb-4 mt-0">
+      <div class="grid grid-cols-12 gap-4">
+        <div class="col-span-6 xxl:col-span-12">
+          <label>Personality</label>
+          <input class="form-control" id="personality1" type="text" [value]="activeContact ? activeContact.personality : ''" autocomplete="off">
+        </div>
+        <div class="col-span-6 xxl:col-span-12">
+          <label>Interest</label>
+          <input class="form-control" id="interest1" type="text" [value]="activeContact ? activeContact.interest : ''" autocomplete="off">
+        </div>
+      </div>
+    </div>
+    <div class="col-span-12 mb-4">
+      <label>Home Address</label>
+      <div class="grid grid-cols-12 gap-4">
+        <div class="col-span-12">
+          <div class="mb-4">
+            <input class="form-control" type="text" placeholder="Address">
+          </div>
+        </div>
+        <div class="col-span-6 xxl:col-span-12">
+          <div class="mb-4">
+            <input class="form-control" id="city" type="text" placeholder="City" [value]="activeContact ? activeContact.city : ''">
+          </div>
+        </div>
+        <div class="col-span-6 xxl:col-span-12">
+          <div class="mb-4">
+            <input class="form-control" type="text" placeholder="State">
+          </div>
+        </div>
+        <div class="col-span-6 xxl:col-span-12">
+          <div>
+            <input class="form-control" type="text" placeholder="Country">
+          </div>
+        </div>
+        <div class="col-span-6 xxl:col-span-12">
+          <div>
+            <input class="form-control" type="text" placeholder="Postal code">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="ps-0 edit-information" href="javascript:void(0)" (click)="editMoreInformation()" [ngClass]="{ 'block': !moreInformation, 'hidden': moreInformation }">Edit more information</a>
+  <button class="btn btn-primary update-contact me-2 text-white" type="button" (click)="save()">Save</button>
+  <button class="btn button-light-primary" type="button" data-bs-dismiss="modal">Cancel</button>
+</form>

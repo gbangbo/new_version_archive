@@ -1,0 +1,40 @@
+<div class="email-sidebar md-sidebar">
+    <a class="btn btn-primary email-aside-toggle md-sidebar-toggle text-white" (click)="toggleSidebar()">To Do filter</a>
+    <div class="email-left-aside md-sidebar-aside" [class.open]="sidebarOpen">
+      <div class="card"> 
+        <div class="card-body"> 
+          <div class="email-app-sidebar left-bookmark custom-scrollbar">
+            <div class="common-flex items-center">
+              <div class="media-size-email">
+                <img class="img-40 rounded-full" [src]="userDetails.user_profile" [alt]="userDetails.name"></div>
+                <div class="grow"> 
+                  <h6>{{ userDetails.name }}</h6>
+                  <p>{{ userDetails.user_email }}</p>
+                </div>
+            </div>
+            <ul class="nav main-menu">
+              <li class="nav-item">
+                <button class="btn-primary txt-light block btn-mail w-full flex items-center">
+                    <app-feather-icon [icon]="'check-circle'" [class]="'me-2'"></app-feather-icon>
+                    To Do List
+                </button>
+              </li>
+              @for(item of sidebar; track item) {
+                <li class="nav-item">
+                  <a href="javascript:void(0)">
+                      <span class="iconbg bg-light-{{ item.color }}">
+                      <app-feather-icon [icon]="item.icon" [class]="'txt-' + item.color"></app-feather-icon>
+                      </span>
+                      <span class="title ms-2">{{ item.title }}</span>
+                      @if(item.count) {
+                        <span class="badge badge-{{ item.color }}">{{ item.count }}</span>
+                      }
+                  </a>
+                </li>
+              }
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>

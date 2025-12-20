@@ -1,0 +1,49 @@
+<div class="modal  fade show modal-backdrop">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content category-popup custom-input" (clickOutside)="closeModal()">
+      <div class="modal-header">
+        <h5 class="modal-title">Write a Review</h5>
+        <button class="btn-close" type="button" (click)="closeModal()"></button>
+      </div>
+      <div class="modal-body">
+        <form class="grid grid-cols-12 gap-4 needs-validation" [formGroup]="reviewForm" (ngSubmit)="submit()">
+          <div class="col-span-12">
+            <div class="product-review-rating mb-0 pb-0"><span>Rating</span>
+              <div class="product-rating main-star-rating">
+                <div class="common-flex star-box">
+                  <div class="rating">
+                    <bar-rating [rate]="rating" [max]="5">
+                      <ng-template ratingActive>
+                        <i class="fa-solid fa-star" [ngStyle]="{ 'color': '#ffb829'}"></i>
+                      </ng-template>
+                      <ng-template ratingInactive>
+                        <i class="fa-regular fa-star" [ngStyle]="{ 'color': '#ffb829'}"></i>
+                      </ng-template>
+                    </bar-rating>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-span-12">
+            <label class="form-label" for="validationCustom01">Name</label>
+            <input class="form-control" id="validationCustom01" type="text" placeholder="Enter your name" formControlName="name" [ngClass]="{ 'is-invalid' : reviewForm.controls['name'].touched && reviewForm.controls['name'].errors?.['required'] , 'is-valid' : reviewForm.controls['name'].valid}">
+            @if(reviewForm.controls['name'].touched && reviewForm.controls['name'].errors?.['required']) {
+              <div class="invalid-feedback">Please enter a name.</div>
+            }
+          </div>
+          <div class="col-span-12">
+            <label class="form-label" for="validationTextarea">Your Review</label>
+            <textarea class="form-control" id="validationTextarea" placeholder="Enter your review" formControlName="description" [ngClass]="{ 'is-invalid' : reviewForm.controls['description'].touched && reviewForm.controls['description'].errors?.['required'] , 'is-valid' : reviewForm.controls['description'].valid}"></textarea>
+            @if(reviewForm.controls['description'].touched && reviewForm.controls['description'].errors?.['required']) {
+              <div class="invalid-feedback">Please enter a review in the textarea.</div>
+            }
+          </div>
+          <div class="col-span-12">
+            <button class="btn btn-primary text-white" type="submit">Submit Review</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

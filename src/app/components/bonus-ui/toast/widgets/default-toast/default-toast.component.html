@@ -1,0 +1,14 @@
+<app-card [cardClass]="'height-equal'" [headerTitle]="'Default Toast'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'toast-rtl'">
+
+    <p class="f-m-light mt-1" header5>Use<code> hide </code>class to hide toast and <code>show </code>class to visible toast.</p>
+
+    <div class="toast default-show-toast toast" [ngClass]="showToast ? 'show' : 'hide'">
+        <div class="toast-header toast-img">
+            <img class="rounded-full me-2" src="assets/images/dashboard-5/profile.png" alt="profile">
+            <strong class="me-auto">Oliva Theme</strong>
+            <small class="d-sm-block hidden">10 min ago</small>
+            <button class="btn-close" type="button" (click)="closeToast()"></button>
+        </div>
+        <div class="toast-body toast-dark"><strong class="txt-success">Well done!</strong> You successfully read this important message.</div>
+    </div>
+</app-card>

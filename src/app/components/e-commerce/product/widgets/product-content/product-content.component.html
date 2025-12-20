@@ -1,0 +1,116 @@
+<app-card>
+  <div class="product-page-details">
+    <h3>Women's Top</h3>
+  </div>
+  <div class="product-price">$350.00
+    <del>$500.00 </del>
+  </div>
+  <ul class="product-color">
+    <li class="bg-primary"></li>
+    <li class="bg-secondary"></li>
+    <li class="bg-success"></li>
+    <li class="bg-info"></li>
+    <li class="bg-warning"></li>
+  </ul>
+  <hr>
+  <p>Rock paper scissors various dots half sleeves girl's regular fit t-shirt i 100% cotton t-shirt with half sleeve round neck i regular wear solid kids tees and black sleeve.</p>
+  <div class="overflow-x-auto custom-scrollbar">
+    <table class="product-page-width">
+      <tbody>
+        <tr>
+          <td> <b>Brand &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b></td>
+          <td>Pixelstrap</td>
+        </tr>
+        <tr>
+          <td> <b>Availability &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b></td>
+          <td class="txt-success f-w-700">In Stock</td>
+        </tr>
+        <tr>
+          <td> <b>Seller &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b></td>
+          <td>Hector Magana</td>
+        </tr>
+        <tr>
+          <td> <b>Material &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b></td>
+          <td>Cotton</td>
+        </tr>
+        <tr>
+          <td> <b>Fit &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b></td>
+          <td>Regular Fit</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <hr>
+  <div class="grid grid-cols-12 gap-1">
+    <div class="col-span-4 sm:col-span-12">
+      <h6 class="product-title">Share</h6>
+    </div>
+    <div class="col-span-8 sm:col-span-12">
+      <div class="product-icon">
+        <ul class="product-social flex gap-2">
+          @for(option of socialShareOptions; track option) {
+            <li class="d-inline-block">
+              <a href="{{option.link}}" target="_blank">
+                <i [class]="option.icon"></i>
+              </a>
+            </li>
+          }
+        </ul>
+      </div>
+    </div>
+  </div>
+  <hr>
+  <div class="grid grid-cols-12 gap-1">
+    <div class="col-span-4 sm:col-span-12">
+      <h6 class="product-title">Quantity</h6>
+    </div>
+    <div class="col-span-8 sm:col-span-12">
+      <div class="touchspin-wrapper flex gap-1 justify-start">
+        <button class="decrement-touchspin btn-touchspin touchspin-primary" (click)="changeValue(-1)">
+          <i class="fa-solid fa-minus"> </i>
+        </button>
+        <input class="input-touchspin spin-outline-primary" type="number" value="{{ counter }}" readonly>
+        <button class="increment-touchspin btn-touchspin touchspin-primary" (click)="changeValue(1)">
+          <i class="fa-solid fa-plus"> </i>
+        </button>
+      </div>
+    </div>
+  </div>
+  <hr>
+  <div class="grid grid-cols-12 gap-1">
+    <div class="col-span-4 sm:col-span-12">
+      <h6 class="product-title">Rate Now</h6>
+    </div>
+    <div class="col-span-8 sm:col-span-12">
+      <div class="main-star-rating common-f-start">
+        <div class="common-flex star-box">
+          <div class="rating">
+            <bar-rating [rate]="4" [formControl]="ctrl" [readonly]="readonly" [max]="5">
+              <ng-template ratingActive>
+                <i class="fa-solid fa-star" [ngStyle]="{ 'color': '#ffb829'}"></i>
+              </ng-template>
+              <ng-template ratingInactive>
+                <i class="fa-solid fa-star" [ngStyle]="{ 'color': '#52526ccc'}"></i>
+              </ng-template>
+              <ng-template ratingFraction>
+                <i class="fa-solid fa-star-half-stroke" [ngStyle]="{ 'color': '#ffb829'}"></i>
+              </ng-template>
+            </bar-rating>
+        </div>
+        </div>
+        <span>(250 review)</span>
+      </div>
+    </div>
+  </div>
+  <hr>
+  <div class="m-t-15 btn-showcase">
+    <a class="btn btn-primary btn-hover-effect text-white inline-block" [routerLink]="['/cart']"> 
+    <i class="fa-solid fa-cart-shopping me-1"></i>
+    Add To Cart
+  </a>
+    <a class="btn btn-danger btn-hover-effect text-white inline-block" [routerLink]="['/wishlist']"> 
+      <i class="fa-solid fa-heart me-1"></i>
+      Add To WishList
+    </a>
+    </div>
+</app-card>

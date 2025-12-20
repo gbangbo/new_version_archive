@@ -1,0 +1,63 @@
+<div class="container dashboard-4">
+  <div class="grid grid-cols-12 card-gap">
+    <div class="col-span-3 xxl:col-span-4 xl:col-span-12 box-col-4">
+      <div class="grid grid-cols-12 card-gap">
+        <div class="col-span-12 xl:col-span-6 sm:col-span-12">
+          <app-details-card></app-details-card>
+        </div>
+
+        @for(details of averageDayDetails; track details) {
+          <div class="col-span-12 xl:col-span-6 sm:col-span-12">
+            <app-average-day-details [details]="details"></app-average-day-details>
+          </div>
+        }
+
+        <div class="col-span-12">
+          <app-transactions></app-transactions>
+        </div>
+      </div>
+    </div>
+    <div class="col-span-6 xxl:col-span-8 xl:col-span-12 box-col-8e">
+      <div class="grid grid-cols-12 card-gap">
+        
+        @for(chart of currencyChart; track chart) {
+          <div class="col-span-4 sm:col-span-12">
+            <app-currency-chart [chart]="chart"></app-currency-chart>
+          </div>
+        }
+
+        <div class="col-span-12">
+          <app-market-graph></app-market-graph>
+        </div>
+        <div class="col-span-12">
+          <app-my-currency></app-my-currency>
+        </div>
+        <div class="col-span-6 sm:col-span-12">
+          <app-buy-coin></app-buy-coin>
+        </div>
+        <div class="col-span-6 sm:col-span-12">
+          <app-sell-coin></app-sell-coin>
+        </div>
+      </div>
+    </div>
+    <div class="col-span-3 xxl:col-span-12 box-col-12">
+      <div class="grid grid-cols-12 card-gap box-order">
+        <div class="col-span-12 xxl:col-span-6 order-1 sm:col-span-12 box-col-6 box-ord-1">
+          <app-balance></app-balance>
+        </div>
+        <div class="col-span-12 xxl:order-0 order-2 box-ord-3">
+          <app-my-portfolio></app-my-portfolio>
+        </div>
+        <div class="col-span-12 xxl:col-span-6 order-3 sm:col-span-12 box-col-6 box-ord-2">
+          <app-activities></app-activities>
+        </div>
+      </div>
+    </div>
+    <div class="col-span-6 lg:col-span-12">
+      <app-average-sale-price></app-average-sale-price>
+    </div>
+    <div class="col-span-6 lg:col-span-12">
+      <app-top-performers></app-top-performers>
+    </div>
+  </div>
+</div>

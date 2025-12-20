@@ -1,0 +1,30 @@
+<app-card [headerTitle]="'Active Tables'" [header]="'pb-0'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>
+    Highlight a table row or cell by adding a <code>table-active </code>class.</p>
+    <div class="card-block grid grid-cols-12 emphasis-table">
+      <div class="col-span-12">
+        <div class="overflow-x-auto custom-scrollbar">
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Product ID</th>
+                <th scope="col">Product Name</th>
+                <th scope="col">Category</th>
+                <th scope="col">Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for(details of activeTable; track details){
+                <tr class="table-active">
+                  <th scope="row"> <a href="javascript:void(0)">{{ details.product_id }}</a></th>
+                  <td>{{ details.product_name }}</td>
+                  <td>{{ details.category }}</td>
+                  <td>{{ details.price }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>  
+        </div>
+      </div>
+    </div>
+</app-card>

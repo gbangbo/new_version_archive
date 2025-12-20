@@ -1,0 +1,28 @@
+<div class="grid grid-cols-12 product-rating-box">
+  <div class="col-span-12">
+    <div class="common-space mb-4">
+      <h5 class="main-product-rating">{{ sellerRating.rating }}/5
+        <i class="fa-solid fa-star"></i>
+      </h5>
+      <h6 class="ms-3 c-o-light">({{ sellerRating.total_rating }})</h6>
+    </div>
+  </div>
+  <div class="col-span-12">
+    <div class="rating-box">
+      <ul>
+        @for(count of sellerRating.rating_count; track count; let i = $index) {
+          <li>
+            <div class="rating-list">
+              <h6>{{ rating[rating.length-i-1] }}
+                <i class="fa-solid fa-star"></i>
+              </h6>
+              <div class="progress">
+                <div class="progress-bar"  [ngStyle]="{ 'width': count/sellerRating.total_rating*100 + '%'}"></div>
+              </div>
+            </div>
+          </li>
+        }
+      </ul>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,28 @@
+<app-card>
+  <div class="filter-block">
+    <h5>Categories</h5>
+    <ul>
+      @for(category of productCategory; track category) {
+        <li>{{ category.label }}</li>
+      }
+    </ul>
+  </div>
+</app-card>
+
+<app-card>
+  <div class="collection-filter-block">
+    <ul class="pro-services">
+      @for(service of services; track service) {
+        <li>
+          <div class="flex">
+            <app-feather-icon [icon]="service.icon"></app-feather-icon>
+            <div class="grow">
+              <h6>{{ service.title }}</h6>
+              <span>{{ service.description }}</span>
+            </div>
+          </div>
+        </li>
+      }
+    </ul>
+  </div>
+</app-card>

@@ -1,0 +1,15 @@
+<app-card [headerTitle]="'Switch with Icons'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'common-flex switch-wrapper'">
+  <p class="f-m-light mt-1" header5>
+    Use <code>icon-state</code> class to visible icons in switches.</p>
+    @for(item of switchIcon;track item){
+      <div class="flex">
+        <label class="col-form-label m-r-10">{{ item.text }}</label>
+        <div class="grow {{ item.class }}">
+          <label class="switch">
+            <input type="checkbox" [checked]="item.value" [disabled]="item.disable">
+            <span class="switch-state"></span>
+          </label>
+        </div>
+      </div>
+    }
+</app-card>

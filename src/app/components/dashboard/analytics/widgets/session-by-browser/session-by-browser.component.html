@@ -1,0 +1,5 @@
+<app-card [headerTitle]="'Session by Browser'" [padding]="false" [cardBodyClass]="'px-0 pt-0 session-browser-table'" [dropdownType]="'simple'" [options]="cardToggleOption"> 
+    <div class="recent-table overflow-x-auto custom-scrollbar">
+        <app-table [tableConfig]="tableConfig" [search]="false" [pageSize]="10" [tableClass]="'table'" [pagination]="false"></app-table>
+    </div>
+</app-card>

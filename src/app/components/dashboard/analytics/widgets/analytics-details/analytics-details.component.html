@@ -1,0 +1,53 @@
+<div class="card analytics-tread-card {{ chart.card_class }}">
+  <div class="card-header card-no-border">
+    <div class="header-top">
+      <div>
+        <span class="c-o-light mb-1">{{ chart.title }}</span>
+        <div class="common-align">
+          <h5 class="mb-1">{{ chart.value }}</h5>
+          <span class="common-align gap-1 justify-start">
+            <app-feather-icon class="txt-{{ chart.txt_class }}" [icon]="chart.icon"></app-feather-icon>
+            <span class="txt-{{ chart.txt_class }} font-medium">{{ chart.analytics_value }}</span>
+          </span>
+        </div>
+      </div>
+      <div>
+        <div class="analytics-tread bg-light-{{ chart.image_class }}">
+          <app-svg-icon class="fill-{{ chart.image_class }}" [icon]="chart.image"></app-svg-icon>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card-body {{ chart.card_body_class }}"> 
+    <div class="{{ chart.body_div_class}}">
+      @if(chart.progress){
+        <div class="progress sm-progress-bar overflow-visible">
+          <div class="progress-bar-animated small-progressbar bg-success rounded-full" [ngStyle]="{ 'width': '75%'}">
+            <span class="progress-label">7.5</span>
+            <span class="animate-circle"></span>
+          </div>
+        </div>
+      }@else if(chart.user_progress){
+          <div class="progress-bar-animated bg-info progress-bar-striped" [ngStyle]="{ 'width': '70%'}"></div>
+        } @else {
+          <div id="{{ chart.chart_id }}">
+          <apx-chart
+              [series]="chart.chart_details.series"
+              [chart]="chart.chart_details.chart"
+              [plotOptions]="chart.chart_details.plotOptions"
+              [dataLabels]="chart.chart_details.dataLabels"
+              [xaxis]="chart.chart_details.xaxis"
+              [yaxis]="chart.chart_details.yaxis"
+              [grid]="chart.chart_details.grid"
+              [colors]="chart.chart_details.colors"
+              [responsive]="chart.chart_details.responsive"
+              [stroke]="chart.chart_details.stroke"
+              [markers]="chart.chart_details.markers"
+              [fill]="chart.chart_details.fill"
+              [title]="chart.chart_details.title">
+          </apx-chart>
+        </div>
+      }
+    </div>
+  </div>
+</div>

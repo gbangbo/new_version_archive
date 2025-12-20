@@ -1,0 +1,31 @@
+<app-card [cardClass]="'sales-report'" [headerTitle]="'Applications Overview'" [padding]="false" [dropdownType]="'simple'" [options]="cardToggleOption"
+    [cardBodyClass]="'pt-0 analytics-data application-overview'">
+   
+    <ul class="balance-data"> 
+        @for(details of applicationOverview.chart_details; track details){
+            <li>
+                <span class="circle bg-{{ details.color }}"></span>
+                <span class="c-light ms-1">{{ details.title }}</span>
+            </li>
+        }
+      </ul>
+      
+    <div class="app-overview-wrapper">
+        <div id="app-overview">
+            <apx-chart 
+                [series]="applicationOverview.chart.series"
+                [chart]="applicationOverview.chart.chart"
+                [colors]="applicationOverview.chart.colors"
+                [dataLabels]="applicationOverview.chart.dataLabels"
+                [fill]="applicationOverview.chart.fill"
+                [forecastDataPoints]="applicationOverview.chart.forecastDataPoints"
+                [stroke]="applicationOverview.chart.stroke"
+                [yaxis]="applicationOverview.chart.yaxis"
+                [xaxis]="applicationOverview.chart.xaxis"
+                [legend]="applicationOverview.chart.legend"
+                [markers]="applicationOverview.chart.markers"
+                [responsive]="applicationOverview.chart.responsive">
+            </apx-chart>
+        </div>
+    </div>
+</app-card>

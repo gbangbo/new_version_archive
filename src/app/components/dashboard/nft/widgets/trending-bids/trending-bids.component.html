@@ -1,0 +1,40 @@
+<app-card [headerTitle]="'Trending Bids'" [padding]="false" [cardBodyClass]="'pt-0'">
+    <div class="slider-wrapper arrow-round">
+        <owl-carousel-o [options]="options" class="swiper trending-slider">
+                @for(bids of trendingBids; track bids) {
+                    <ng-template carouselSlide>
+                        <div class="product-card">
+                            <div class="product-image"> 
+                                <img [src]="bids.banner" alt="nft">
+                                <a class="author-img" href="javascript:void(0)">
+                                    <img class="max-w-full" [src]="bids.owner_profile" alt="author" [ngStyle]="{ 'display': 'unset'}">
+                                </a>
+                            </div>
+                            <div class="product-nft-content">
+                                <h6 class="f-14">{{ bids.bead_name }}</h6>
+                                <p class="f-12 f-light mb-2">
+                                    Owned by
+                                     <span class="font-primary">{{ bids.bead_owner }}</span>
+                                </p>
+                                <ul> 
+                                    <li> <span class="f-12 f-light">Auction Time</span>
+                                        <span class="block f-light font-medium timer" data-date="Dec 27, 2025 04:15:01">
+                                            {{ bids.remaining_time }}
+                                        </span>
+                                    </li>
+                                    <li>
+                                         <span class="f-12 f-light">Current Bid</span>
+                                         <span class="block f-light font-medium">0.15 ETH</span>
+                                        </li>
+                                </ul>
+                                <a class="btn bg-light-primary border font-primary w-full mt-4" [routerLink]="['/job-search/companies']">
+                                    Place a Bid
+                                </a>
+                            </div>
+                        </div>
+                    </ng-template>    
+        
+                }
+        </owl-carousel-o>
+    </div>
+</app-card>

@@ -1,0 +1,16 @@
+<app-card [headerTitle]="'Open on focus'" [header]="'pb-0'" [border]="true" [padding]="false">
+  <p class="mt-1 mb-0" header5>It is possible to get the focus events with the current input value to emit results on
+    focus with a great flexibility. In this simple example, a search is done no matter the content of the input:</p>
+
+  <div class="typeahead-box" (clickOutside)="close()">
+    <input id="typeahead-focus" type="text" class="form-control" placeholder="Search For a state" [(ngModel)]="model" (focus)="onFocus($event)" (click)="onClick($event)" (input)="onInput($event)" />
+  </div>
+
+  @if(filteredStates.length > 0){
+    <ul class="list-group">
+      @for(state of filteredStates; track state){
+        <li class="list-group-item" (click)="onSelectState(state)">{{ state }}</li>
+      }
+    </ul>
+  }
+</app-card>

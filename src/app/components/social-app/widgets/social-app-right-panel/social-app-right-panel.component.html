@@ -1,0 +1,89 @@
+<div class="default-according style-1 faq-accordion job-accordion accordion">
+    <div class="grid grid-cols-12 card-gap">
+        <div class="col-span-12 xl:col-span-6 lg:col-span-12 xl-50 box-col-12 order-xxl-i">
+            @for(accordionItem of socialAppRightPanelAccordion; track accordionItem){
+                <div class="card accordion-item">
+                    <div class="card-header card-no-border accordion-header">
+                        <h2 class="accordion-button collapsed mb-0">
+                            <button class="btn btn-link" type="button" [class.collapsed]="!accordionOpen[accordionItem.id]"
+                                (click)="toggleAccordion(accordionItem.id)">{{ accordionItem.title }}</button>
+                        </h2>
+                    </div>
+                    <div class="accordion-collapse collapse" [class.show]="accordionOpen[accordionItem.id]">
+                        @if(accordionItem.value == 'profile_intro'){
+                            <div class="card-body accordion-body filter-cards-view">
+                                <div [innerHTML]="myProfile.introduction"></div>
+                                <div class="social-network theme-form">
+                                    <span>Social Networks</span>
+                                    @for(platform of myProfile.socialNetworks; track platform) {
+                                    <button class="btn social-btn btn-{{ platform.platform_class }} text-center group relative" platform="top">
+                                        <i [class]="platform.icon" [ngClass]="'m-r-5'"></i>
+                                        <app-tooltip [title]="platform.platform_name"></app-tooltip>
+                                    </button>
+                                    }
+                                </div>
+                            </div>
+                        }
+                        @if(accordionItem.value == 'followers'){
+                            <div class="card-body accordion-body social-list filter-cards-view">
+                                @for(friend of friends; track friend) {
+                                    @if(!friend.is_follower) {
+                                    <div class="flex">
+                                        <img class="img-50 max-w-full h-auto m-r-20 rounded-full" [alt]="friend.name"
+                                            [src]="friend.profile">
+                                        <div class="grow">
+                                            <span class="block">{{ friend.name }}</span>
+                                            <a href="javascript:void(0)">Add Friend</a>
+                                        </div>
+                                    </div>
+                                    }
+                                }
+                            </div>
+                        }
+                        @if(accordionItem.value == 'followings'){
+                            <div class="card-body accordion-body social-list filter-cards-view">
+                                @for(friend of friends; track friend) {
+                                    @if(!friend.is_following) {
+                                    <div class="flex">
+                                        <img class="img-50 max-w-full h-auto m-r-20 rounded-full" [alt]="friend.name"
+                                            [src]="friend.profile">
+                                        <div class="grow">
+                                            <span class="block">{{ friend.name }}</span>
+                                            <a href="javascript:void(0)">Add Friend</a>
+                                        </div>
+                                    </div>
+                                    }
+                                }
+                            </div>
+                        }
+                        @if(accordionItem.value == 'latest_photos'){
+                            <div class="card-body accordion-body photos filter-cards-view">
+                                <ul>
+                                    @for(photos of myProfile.latestPhotos; track photos) {
+                                    <li>
+                                        <img class="max-w-full" alt="post" [src]="photos.image">
+                                    </li>
+                                    }
+                                </ul>
+                            </div>
+                        }
+                        @if(accordionItem.value == 'friends'){
+                            <div class="card-body accordion-body avatar-showcase filter-cards-view flex flex-wrap">
+                                @for(friend of friends; track friend) {
+                                    <div class="d-inline-block friend-pic">
+                                        <img class="img-50 rounded-full" [src]="friend.profile" [alt]="friend.name">
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="col-span-12 xl:col-span-6 lg:col-span-12 xl-50 box-col-6 order-xxl-ii">
+            <div class="card">
+                <img class="max-w-full" src="assets/images/social-app/timeline-4.png" alt="banner">
+            </div>
+        </div>
+    </div>
+</div>

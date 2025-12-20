@@ -1,0 +1,44 @@
+<div class="header-faq">
+    <h5 class="mb-0">{{ headerTitle }}</h5>
+  </div>
+  <div class="grid grid-cols-12 card-gap">
+    @for(featured of details;track featured){
+      <div class="col-span-3 xxl:col-span-6 md:col-span-12 box-col-6">
+        <div class="card features-faq product-box">
+          <div class="faq-image product-img">
+            <img class="max-w-full h-auto" [src]="featured.image" [alt]="featured.title">
+            <div class="product-hover">
+              <ul>
+                <li>
+                  <i class="icon-link"></i>
+                </li>
+                <li>
+                  <i class="icon-import"></i>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="card-body">
+            <h6 class="pb-1"> {{ featured.title }}</h6>
+            <p class="c-light">{{ featured.description}}</p>
+          </div>
+          <div class="card-footer">
+            <span>{{ featured.date }}</span>
+            <span class="pull-right">
+             <bar-rating [rate]="featured.rating" [readonly]="true" [max]="5">
+                <ng-template ratingActive>
+                  <i class="fa-solid fa-star" [ngStyle]="{ 'color': '#ffb829'}"></i>
+                </ng-template>
+                <ng-template ratingInactive>
+                  <i class="fa-regular fa-star" [ngStyle]="{ 'color': '#ffb829'}"></i>
+                </ng-template>
+                <ng-template ratingFraction>
+                  <i class="fa-solid fa-star-half-stroke" style="color: #ffb829"></i>
+                </ng-template>
+            </bar-rating>
+            </span>
+          </div>
+        </div>
+      </div>
+    }
+  </div>

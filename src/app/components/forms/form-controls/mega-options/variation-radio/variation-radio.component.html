@@ -1,0 +1,32 @@
+<app-card [headerTitle]="'Variation Radio'" [header]="'pb-0'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5> Use <code>radio </code>attribute to create variations of radio buttons.</p>
+  <div class="grid grid-cols-12 gap-4">
+    @for(details of variationRadio; track details){
+      <div [class]="details.class">
+        <div class="card-wrapper border rounded-3 h-full checkbox-checked">
+          <h6 class="sub-title">{{ details.sub_title}}</h6>
+          @for(item of details.details;track item){
+            <div class="payment-wrapper">
+              <div class="payment-first">
+                <div class="form-check radio radio-primary">
+                  <input class="form-check-input" [id]="item.id" type="radio" [name]="item.name" value="option1" [checked]="item.check">
+                  <label class="form-check-label mb-0" [for]="item.id">{{item.label}}</label>
+                </div>
+              </div>
+              @if(item.image){
+              <div class="payment-second">
+                 <img class="max-w-full h-auto" [src]="item.image" alt="card">
+               </div>
+              }
+              @if(item.icon){
+                <div class="payment-second">
+                  <app-svg-icon [icon]="item.icon" class="mega-icons stroke-{{ item.class }}"></app-svg-icon>
+                </div> 
+              }
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </div>
+</app-card>

@@ -1,0 +1,85 @@
+<div class="container-fluid">
+    <div class="grid grid-cols-12"> 
+      <div class="col-span-12">
+        <app-card [headerTitle]="'Input Masks'" [header]="'pb-0'" [border]="true" [padding]="false">
+            <p class="f-m-light mt-1" header5>
+            Input mask is used for formatting data for consistency and readability (Phone Number, Card Number, Date, Currency...etc)</p>
+          <div class="grid grid-cols-12 gap-4"> 
+            <div class="col-span-6 sm:col-span-12"> 
+              <div class="card-wrapper border rounded-3 light-card checkbox-checked">
+                <h6 class="sub-title">Date Format</h6>
+                <form class="grid grid-cols-12 gap-4">
+                  <div class="col-span-12">
+                    <label class="col-form-label" for="cleave-date1">Date</label>
+                    <input class="form-control" id="cleave-date1" type="text" placeholder="DD-MM-YYYY" name="date" [(ngModel)]="formattedDate" (ngModelChange)="formatDate($event)" [maxlength]="10">
+                  </div>
+                  <div class="col-span-12">
+                    <label class="col-form-label" for="cleave-date2">Date Format Type</label>
+                    <input class="form-control" id="cleave-date2" type="text" placeholder="MM-YYYY" name="date2" [(ngModel)]="formattedMonthDate" (ngModelChange)="formatMonthDateDate($event)" [maxlength]="7">
+                  </div>
+                </form>
+              </div>
+            </div>
+            <div class="col-span-6 sm:col-span-12"> 
+              <div class="card-wrapper border rounded-3 light-card checkbox-checked">
+                <h6 class="sub-title">Time Format</h6>
+                <form class="grid grid-cols-12 gap-4">
+                  <div class="col-span-12">
+                    <label class="col-form-label" for="cleave-time1">Time Format Type</label>
+                    <input class="form-control" id="cleave-time1" type="text" placeholder="hh:mm:ss" name="time" [(ngModel)]="formattedTime" (ngModelChange)="formatTime($event)" maxlength="8">
+                  </div>
+                  <div class="col-span-12"> 
+                    <label class="col-form-label" for="cleave-time2">Hour/month Type</label>
+                    <input class="form-control" id="cleave-time2" type="text" placeholder="hh:mm" name="hourTime" [(ngModel)]="formattedHourTime" (ngModelChange)="formatHoutTime($event)" maxlength="5">
+                  </div>
+                </form>
+              </div>
+            </div>
+            <div class="col-span-12">
+              <div class="card-wrapper border rounded-3 light-card checkbox-checked">
+                <h6 class="sub-title">Default Input Mask</h6>
+                <form class="grid grid-cols-12 gap-4">
+                  <div class="col-span-4 xxl:col-span-6 sm:col-span-12"> 
+                    <label class="col-form-label" for="cleave-number-format">Currency</label>
+                    <input class="form-control" id="cleave-number-format" type="text" placeholder="Enter number" name="currency" [(ngModel)]="currency" (ngModelChange)="formatCurrency($event)"> 
+                  </div>
+                  <div class="col-span-4 xxl:col-span-6 sm:col-span-12"> 
+                    <label class="col-form-label" for="cleave-type-prefix">Prefix</label>
+                    <input class="form-control" id="cleave-type-prefix" type="text" placeholder="Prefix-xxxx-xxxx-xxxx" name="prefix" [(ngModel)]="prefixNumber" (ngModelChange)="formatPrefix($event)" maxLength="21">
+                  </div>
+                  <div class="col-span-4 xxl:col-span-6 sm:col-span-12"> 
+                    <label class="col-form-label" for="cleave-type-delimiter">Delimiter</label>
+                    <input class="form-control" id="cleave-type-delimiter" type="text" placeholder="xxx·xxx·xxx" name="delimiter" [(ngModel)]="delimiterNumber" (ngModelChange)="formatDelimiter($event)" maxLength="11">
+                  </div>
+                  <div class="col-span-4 xxl:col-span-6 sm:col-span-12">
+                    <label class="form-label" for="cleave-phone-number">Phone Number</label>
+                    <input class="form-control" id="cleave-phone-number" type="text" placeholder="(xxx)xxx-xxxx" name="phoneNumber" [(ngModel)]="phoneNumber" (ngModelChange)="formatPhoneNumber($event)" maxlength="14">
+                  </div>
+                  <div class="col-span-4 xxl:col-span-6 sm:col-span-12">
+                    <label class="form-label" for="cleave-card-number">Card Number</label>
+                    <input class="form-control" id="cleave-card-number" type="text" placeholder="xxxx xxxx xxxx xxxx" name="cardNumber" [(ngModel)]="cardNumber" (ngModelChange)="formatCardNumber($event)" maxlength="19">
+                  </div>
+                  <div class="col-span-4 xxl:col-span-6 sm:col-span-12">
+                    <label class="form-label" for="tailprefix">Tailprefix</label>
+                    <input class="form-control" id="tailprefix" type="text" placeholder="0000.00€" name="tailprefix" [(ngModel)]="tailPrefix" (ngModelChange)="formatTailPrefix($event)">
+                  </div>
+                  <div class="col-span-4 xxl:col-span-6 sm:col-span-12">
+                    <label class="form-label" for="cleave-ip-address">IP Address</label>
+                    <input class="form-control" id="cleave-ip-address" type="text" placeholder="192.168.38.45" name="ipAddress" [(ngModel)]="ipAddress" (ngModelChange)="formatIpAddress($event)" maxlength="13">
+                  </div>
+                  <div class="col-span-4 xxl:col-span-6 sm:col-span-12">
+                    <label class="form-label" for="cleave-multiple-delimiter">Use Multiple Delimiters</label>
+                    <input class="form-control" id="cleave-multiple-delimiter" type="text" placeholder="489.254.587-47" name="multipleDelimiter" [(ngModel)]="multipleDelimiter" (ngModelChange)="formatMultipleDelimiter($event)" maxlength="14">
+                  </div>
+                  <div class="col-span-4 xxl:col-span-6 sm:col-span-12">
+                    <label class="form-label" for="cleave-multiple-characters">Multiple Characters in Delimiter</label>
+                    <input class="form-control" id="cleave-multiple-characters" type="text" placeholder="777 | 777 | 777 | 777" name="multipleCharacters" [(ngModel)]="multipleCharacters" (ngModelChange)="formatMultipleCharacters($event)" maxlength="21">
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </app-card>
+    </div>
+ </div>
+</div>

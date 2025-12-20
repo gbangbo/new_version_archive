@@ -1,0 +1,21 @@
+<app-card [headerTitle]="'School Performance'" [padding]="false" [cardBodyClass]="'pt-0'" [dropdownType]="'classic'" [options]="cardToggleOption" [dropdownClass]="'performance-dropdown'">
+    <div class="school-performance-wrap">
+        <div id="chart-school-performance">  
+            <apx-chart 
+                [series]="schoolPerformance.series" 
+                [chart]="schoolPerformance.chart"
+                [stroke]="schoolPerformance.stroke"
+                [grid]="schoolPerformance.grid"
+                [colors]="schoolPerformance.colors"
+                [fill]="schoolPerformance.fill"
+                [labels]="schoolPerformance.labels"
+                [markers]="schoolPerformance.markers"
+                [xaxis]="schoolPerformance.xaxis"
+                [legend]="schoolPerformance.legend"
+                [yaxis]="schoolPerformance.yaxis"
+                [tooltip]="schoolPerformance.tooltip"
+                [responsive]="schoolPerformance.responsive">
+            </apx-chart>  
+       </div>
+      </div>
+</app-card>

@@ -1,0 +1,52 @@
+<app-card [headerTitle]="'Radio-checkbox Groups and Animated Buttons'" [header]="'pb-0'" [border]="true" [padding]="false">
+    <p class="f-m-light mt-1" header5>Use radio for <code>radio </code> class & checkbox for <code>checkbox </code> class used.</p>
+    <div class="grid grid-cols-12 gap-4">
+        <div class="col-span-4 xxl:col-span-6 md:col-span-12 xl-50 box-col-6">
+          <div class="card-wrapper border rounded-3 bg-light">
+            <h6 class="sub-title fw-bold">Radio Buttons</h6>
+            <div class="btn-radio">
+              <div class="btn-group" data-bs-toggle="buttons">
+                @for(button of radioButton;track button){
+                  <div class="btn button-light-primary">
+                    <div class="radio radio-primary">
+                      <input [id]="button.id" type="radio" name="radio1" value="option1" [checked]="button.checked">
+                      <label class="mb-0 !text-black" [for]="button.id">{{ button.title }}</label>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-span-4 xxl:col-span-6 md:col-span-12 xl-50 box-col-6">
+          <div class="card-wrapper border rounded-3 bg-light">
+            <h6 class="sub-title fw-bold">Checkbox Buttons</h6>
+            <div class="btn-checkbox">
+              <div class="btn-group btn-option" data-bs-toggle="buttons">
+                @for(button of checkboxButton; track button){
+                  <div class="btn button-light-dark">
+                    <div class="checkbox checkbox-dark">
+                      <input [id]="button.id" type="checkbox">
+                      <label class="!mb-0 !text-black" [for]="button.id">{{ button.title }}</label>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-span-4 xxl:col-span-12 xl-100 box-col-12">
+          <div class="card-wrapper border rounded-3 bg-light">
+            <h6 class="sub-title fw-bold">Animated Buttons</h6>
+            <div class="common-flex mix-hover-btn">
+              <button class="btn btn-border-pop btn-primary">FAQ</button>
+              <button class="btn btn-bg-slide button-light-primary text-black">Blog</button>
+              <button class="btn btn-border-bottom button-light-primary txt-dark">Icons</button>
+              <button class="button button--winona button--border-thin button--round-s" data-text="Open Project">
+                <span>Open Project</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+</app-card>

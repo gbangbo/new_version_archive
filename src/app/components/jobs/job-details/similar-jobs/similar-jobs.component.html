@@ -1,0 +1,7 @@
+<div class="grid grid-cols-12 card-gap">
+    @for(details of jobCardsDetails | slice:0:4; track details){
+        <div class="col-span-6 xl:col-span-12 xl-100">
+            <app-common-card [jobCard]="details"></app-common-card>
+        </div>
+    }
+</div>

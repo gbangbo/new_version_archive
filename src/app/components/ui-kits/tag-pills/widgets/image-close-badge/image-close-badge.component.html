@@ -1,0 +1,17 @@
+<app-card [headerTitle]="'Image with Close Badges'" [header]="'pb-0'" [border]="true" [padding]="false">
+
+    <p class="f-m-light mt-1" header5>Use<code> badge-l-* </code>classes to provide background-color. and <code>vr </code>classes to partitions.</p>
+
+    <div class="badge-spacing image-badges">
+        @for(badge of imageBadge; track badge) {
+            <span class="badge common-align txt-{{ badge.color }} rounded-full badge-l-{{ badge.color }} border border-{{ badge.color }}">
+                <img class="rounded-full me-1" [src]="badge.profile" alt="user">
+                {{ badge.text }}
+                <span class="vr mx-2"></span>
+                <a href="javascript:void(0)">
+                    <app-feather-icon [icon]="'x-circle'" [class]="'stroke-'+badge.color"></app-feather-icon>
+                </a>
+            </span>
+        }
+    </div>
+</app-card>

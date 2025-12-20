@@ -1,0 +1,20 @@
+<app-card [cardType]="'classic'" [headerTitle]="task_overViewChart.title" [sortDescription]="task_overViewChart.sort_description" 
+    [cardBodyClass]="'pt-0'" [buttonText]="'View All'" [path]="'/task'">
+
+    <div class="task-overview">
+        <apx-chart
+            [series]="task_overViewChart.series"
+            [chart]="task_overViewChart.chart"
+            [stroke]="task_overViewChart.stroke"
+            [xaxis]="task_overViewChart.xaxis"
+            [grid]="task_overViewChart.grid"
+            [yaxis]="task_overViewChart.yaxis"
+            [dataLabels]="task_overViewChart.dataLabels"
+            [legend]="task_overViewChart.legend"
+            [colors]="task_overViewChart.colors"
+            [fill]="task_overViewChart.fill"
+            [markers]="task_overViewChart.markers"
+            [responsive]="task_overViewChart.responsive">
+        </apx-chart>
+    </div>
+</app-card>

@@ -1,0 +1,49 @@
+<app-card [headerTitle]="'Sales Statistical Overview'" [cardBodyClass]="'pt-0'" [dropdownType]="'classic'" [dropdownClass]="'custom-dropdown'" [options]="cardToggleOptions" [padding]="false">
+  <div class="grid grid-cols-12 m-0 overall-card">
+    <div class="col-span-12 p-0">
+      <div class="chart-right">
+        <div class="grid grid-cols-12">
+          <div class="col-span-12">
+            <div class="card-body p-0 statistical-card">
+              <ul class="flex m-b-15">
+                <li>
+                  <h5 class="counter">
+                    <app-counter [counter]="'19,897'"></app-counter>
+                  </h5>
+                  <span class="f-light">Total Cost</span>
+                </li>
+                <li>
+                  <h5>
+                    <span class="counter">
+                      <app-counter [counter]="'$8,49,058'"></app-counter>
+                    </span>
+                  </h5>
+                  <span class="f-light">Total Revenue</span>
+                </li>
+              </ul>
+              <div class="current-sale-container">
+                <div id="chart-currently">
+                  <apx-chart
+                    [series]="salesStatisticalChart.series"
+                    [chart]="salesStatisticalChart.chart"
+                    [plotOptions]="salesStatisticalChart.plotOptions"
+                    [grid]="salesStatisticalChart.grid"
+                    [dataLabels]="salesStatisticalChart.dataLabels"
+                    [stroke]="salesStatisticalChart.stroke"
+                    [fill]="salesStatisticalChart.fill"
+                    [legend]="salesStatisticalChart.legend"
+                    [states]="salesStatisticalChart.states"
+                    [colors]="salesStatisticalChart.colors"
+                    [yaxis]="salesStatisticalChart.yaxis"
+                    [xaxis]="salesStatisticalChart.xaxis"
+                    [responsive]="salesStatisticalChart.responsive">
+                  </apx-chart>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</app-card>

@@ -1,0 +1,24 @@
+<app-card [headerTitle]="'Summary'" [padding]="false" [rightSideDetails]="true" [cardBodyClass]="'pt-0'">
+  <a class="btn btn-primary text-white" [routerLink]="['/invoice-2']" header3>
+    <i class="fa-regular fa-file-lines pe-2 f-14"></i>
+    Invoice
+  </a>
+
+  <ul class="tracking-total">
+    <li>
+      <h6>Subtotal </h6><span> ${{ billing_details.sub_total | number: '1.2-2' }}</span>
+    </li>
+    <li>
+      <h6>Coupon Discount</h6><span>(-){{ billing_details.coupon_discount | number: '1.2-2' }}</span>
+    </li>
+    <li>
+      <h6>Tax</h6><span>{{ billing_details.tax | number: '1.2-2' }}</span>
+    </li>
+    <li>
+      <h6>Shipping </h6><span class="txt-primary">{{ billing_details.shipping }}</span>
+    </li>
+    <li>
+      <h6>Total</h6><span>${{ billing_details.total | number: '1.2-2' }}</span>
+    </li>
+  </ul>
+</app-card>

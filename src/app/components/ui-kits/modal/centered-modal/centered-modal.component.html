@@ -1,0 +1,27 @@
+<app-card [headerTitle]="'Centered Modal'" [header]="'pb-0'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>Use<code> modal-dialog-centered </code>through centered modal</p>
+
+  <button class="btn btn-success text-white" type="button" (click)="openModal()">Vertically Centered</button>
+
+  @if(modalOpen){
+    <div class="modal  fade show modal-backdrop">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content" (clickOutside)="closeModal()">
+          <div class="modal-body">
+            <div class="modal-toggle-wrapper">
+              <ul class="modal-img">
+                <li> 
+                  <img src="assets/images/gif/danger.gif" alt="error">
+                </li>
+              </ul>
+              <h4 class="text-center pb-2">Ohh! Something went wrong!</h4>
+              <p class="text-center c-light">Attackers on malicious activity may trick you into doing something Dangerous like installing software or revealing your personal Information.</p>
+              <button class="btn btn-secondary flex m-auto text-white" type="button" (click)="closeModal()">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+</app-card>

@@ -1,0 +1,59 @@
+<div class="col-auto" (clickOutside)="clickOutside()">
+  <div class="form-group w-full">
+    <div class="Typeahead Typeahead--twitterUsers">
+      <div class="u-posRelative">
+        <input
+          class="demo-input Typeahead-input form-control-plaintext w-full"
+          type="text"
+          placeholder="Search Anything Here..."
+          [(ngModel)]="text"
+          [ngModelOptions]="{ standalone: true }"
+          (keyup)="searchTerm(text)"
+          title=""
+          autofocus
+        />
+        <div class="spinner-border Typeahead-spinner" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+        <app-feather-icon
+          class="close-search"
+          [icon]="'x'"
+          (click)="closeSearch()"
+        ></app-feather-icon>
+      </div>
+      @if(menuItems.length){
+      <div
+        class="Typeahead-menu custom-scrollbar"
+        [class.is-open]="searchResult"
+      >
+        @for(menuItem of menuItems | slice : 0 : 8; track menuItem){
+        <div class="ProfileCard u-cf">
+          <div class="ProfileCard-avatar"></div>
+          <div class="ProfileCard-details">
+            <div class="ProfileCard-realName">
+              <app-svg-icon [icon]="'stroke-' + menuItem.icon"></app-svg-icon>
+              @if(menuItem && menuItem.title) {
+                <a
+                  [routerLink]="menuItem?.path"
+                  class="realname"
+                  (click)="removeFix()">
+                  {{ menuItem.title | translate }}
+                </a>
+              }
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+      }
+      <div
+        class="Typeahead-menu custom-scrollbar"
+        [class.is-open]="searchResultEmpty"
+      >
+        <div class="ProfileCard u-cf">
+          <div class="EmptyMessage">Opps!! There are no result found.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

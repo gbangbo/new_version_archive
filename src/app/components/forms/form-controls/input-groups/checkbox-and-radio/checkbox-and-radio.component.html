@@ -1,0 +1,16 @@
+<app-card [headerTitle]="'Checkboxes and Radios'" [header]="'pb-0'" [border]="true" [padding]="false" [cardClass]="'height-equal'" [cardBodyClass]="'checkbox-checked card-wrapper input-group-wrapper'">
+  <p class="f-m-light mt-1" header5>
+    Place any checkbox or radio option within an input group's addon instead of text. We recommend adding <code>mt-0</code> to the <code>form-check-input</code> when there's no visible text next to the input.</p>
+    <div class="input-group">
+      <div class="input-group-text !rounded-l-lg !rounded-none">
+        <input  class="form-check-input mt-0" type="checkbox" value=""  aria-label="Checkbox for following text input">
+      </div>
+      <input class="form-control !rounded-r-lg !rounded-none" type="text" aria-label="Text input with checkbox">
+  </div>
+  <div class="input-group">
+      <div class="input-group-text !rounded-l-lg !rounded-none">
+        <input class="form-check-input mt-0" type="radio" value="" aria-label="Radio button for following text input" checked="">
+      </div>
+      <input class="form-control !rounded-r-lg !rounded-none" type="text" aria-label="Text input with radio button">
+  </div>
+</app-card>

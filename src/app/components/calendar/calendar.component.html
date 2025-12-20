@@ -1,0 +1,154 @@
+<div class="card calender-basic">
+  <div class="card-body">
+    <div class="grid grid-cols-12 card-gap md:gap-4">
+      <div class="col-span-4 md:col-span-12 text-start md:text-center">
+        <div class="btn-group">
+          <div class="btn btn-outline-primary rounded-s-lg rounded-none" mwlCalendarPreviousView [view]="view" [(viewDate)]="viewDate"
+            (viewDateChange)="closeOpenMonthViewDay()">
+            Previous
+          </div>
+          <div class="btn btn-outline-primary rounded-none border-l-0 border-r-0" mwlCalendarToday [(viewDate)]="viewDate">
+            Today
+          </div>
+          <div class="btn btn-outline-primary rounded-e-lg rounded-none" mwlCalendarNextView [view]="view" [(viewDate)]="viewDate"
+            (viewDateChange)="closeOpenMonthViewDay()">
+            Next
+          </div>
+        </div>
+      </div>
+      <div class="col-span-4 md:col-span-12 text-center">
+        <h3>{{ viewDate | calendarDate:(view + 'ViewTitle'):'en' }}</h3>
+      </div>
+      <div class="col-span-4 md:col-span-12 text-end md:text-center">
+        <div class="btn-group">
+          <div class="btn btn-outline-primary rounded-s-lg rounded-none" (click)="setView(CalendarView.Month)"
+            [class.active]="view === CalendarView.Month">
+            Month
+          </div>
+          <div class="btn btn-outline-primary rounded-none border-l-0 border-r-0" (click)="setView(CalendarView.Week)"
+            [class.active]="view === CalendarView.Week">
+            Week
+          </div>
+          <div class="btn btn-outline-primary rounded-e-lg rounded-none" (click)="setView(CalendarView.Day)"
+            [class.active]="view === CalendarView.Day">
+            Day
+          </div>
+        </div>
+      </div>
+    </div>
+    <br />
+    <div>
+      @switch(view){
+        @case(CalendarView.Month){
+          <mwl-calendar-month-view [viewDate]="viewDate" [events]="events" [refresh]="refresh"
+            [activeDayIsOpen]="activeDayIsOpen" (dayClicked)="dayClicked($event.day)"
+            (eventClicked)="handleEvent('Clicked', $event.event)" (eventTimesChanged)="eventTimesChanged($event)">
+          </mwl-calendar-month-view>
+        }
+
+      @case(CalendarView.Week){
+        <mwl-calendar-week-view [viewDate]="viewDate" [events]="events" [refresh]="refresh"
+          (eventClicked)="handleEvent('Clicked', $event.event)" (eventTimesChanged)="eventTimesChanged($event)">
+        </mwl-calendar-week-view>
+      }
+
+      @case(CalendarView.Day) {
+        <mwl-calendar-day-view [viewDate]="viewDate" [events]="events" [refresh]="refresh"
+          (eventClicked)="handleEvent('Clicked', $event.event)" (eventTimesChanged)="eventTimesChanged($event)">
+        </mwl-calendar-day-view>
+      }
+      }
+    </div>
+
+    <br/><br/><br/>
+
+    <h3 class="mb-sm-3 mb-4">
+      Edit events
+      <button class="btn btn-primary float-end text-white" (click)="addEvent()">
+        Add new
+      </button>
+      <div class="clearfix"></div>
+    </h3>
+
+    <div class="table-responsive custom-scrollbar overflow-x-auto">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Primary color</th>
+            <th>Secondary + text color</th>
+            <th>Starts at</th>
+            <th>Ends at</th>
+            <th>Remove</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for(event of events; track event){
+            <tr>
+              <td>
+                <input type="text" class="form-control" [(ngModel)]="event.title" (keyup)="refresh.next()" />
+              </td>
+              <td>
+                @if(event.color){
+                  <input type="color" [(ngModel)]="event.color.primary" (change)="refresh.next()" />
+                }
+              </td>
+              <td>
+                @if(event.color){
+                  <input type="color" [(ngModel)]="event.color.secondary" (change)="refresh.next()" />
+                }
+
+                @if(event.color){
+                  <input type="color" [ngModel]="event.color.secondaryText ?? '#404040'"
+                    (ngModelChange)="event.color.secondaryText = $event" (change)="refresh.next()" />
+                }
+              </td>
+              <td>
+                <input class="form-control" type="text" mwlFlatpickr [(ngModel)]="event.start"
+                  (ngModelChange)="refresh.next()" dateFormat="Y-m-dTH:i" altFormat="F j, Y H:i" placeholder="Not set" />
+              </td>
+              <td>
+                <input class="form-control" type="text" mwlFlatpickr [(ngModel)]="event.end"
+                  (ngModelChange)="refresh.next()" dateFormat="Y-m-dTH:i" altFormat="F j, Y H:i" placeholder="Not set" />
+              </td>
+              <td>
+                <button class="btn btn-danger text-white" (click)="deleteEvent(event)">
+                  Delete
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    @if(modalOpen){
+      <div class="modal  fade show modal-backdrop">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+          <div class="modal-content create-event" (clickOutside)="modalClose()">
+            <div class="modal-header">
+              <h5 class="mb-0">Event action occurred</h5>
+              <button type="button" class="close btn-close" (click)="modalClose()">
+              </button>
+            </div>
+            <div class="modal-body">
+              <div>
+                Action:
+                <pre>{{ modalDetails.action }}</pre>
+              </div>
+              <div>
+                Event:
+                <pre>{{ modalDetails.event | json }}</pre>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-outline-secondary" (click)="modalClose()">
+                OK
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</div>

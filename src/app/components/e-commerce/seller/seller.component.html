@@ -1,0 +1,58 @@
+<div class="container">
+    <div class="grid grid-cols-12 seller-wrapper">
+        <div class="col-span-12">
+            <div class="card">
+                <div class="card-header common-space">
+                    <div class="common-f-start">
+                        <span class="seller-filter" [class.active]="!activeCategory" (click)="filterStore()">All</span>
+                        @for(category of storesCategory; track category) {
+                            <span class="seller-filter" (click)="filterStore(category.id)" [class.active]="activeCategory === category.id">{{ category.name }}</span>
+                        }
+                    </div>
+                    <div class="right-vendor">
+                        <div class="input-group common-searchbox">
+                            <span class="input-group-text">
+                                <app-feather-icon [icon]="'search'" class="search-icon text-gray"></app-feather-icon>
+                            </span>
+                            <input class="form-control" type="text" placeholder="Search..." [(ngModel)]="searchQuery" (input)="searchStores()">
+                        </div>
+                        <a class="btn btn-primary text-white" (click)="openModal()" ><i class="me-2 fa-solid fa-plus"></i>Add Seller</a>
+                        @if(modalOpen) {
+                          <app-create-store-modal (modalOpen)="handleModalOpen($event)"></app-create-store-modal>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-span-12">
+          <ul class="seller-cards">
+            @for(store of filteredStores; track store) {
+              <li class="seller-box" data-filter="professional_service">
+                <div>
+                  <img [src]="store.store_logo">
+                  <div>
+                    <h5>{{store.store_name }}</h5><span class="f-light">{{ store.vendor_name }}</span>
+                  </div>
+                </div>
+                <ul class="seller-profits">
+                  <li>
+                    <div class="common-space"><span>Total Orders</span><span>{{ store.total_order }}</span></div>
+                  </li>
+                  <li>
+                    <div class="common-space"><span>Total Products </span><span>{{ store.total_product }}</span></div>
+                  </li>
+                  <li>
+                    <div class="common-space"><span> Total Earnings</span><span>${{ store.total_earning }}</span></div>
+                  </li>
+                </ul><a class="btn btn-primary btn-hover-effect" [routerLink]="['/seller/' + store.id]">View</a>
+              </li>
+            }
+          </ul>
+          @if(!(filteredStores && filteredStores.length)) {
+            <span class="flex justify-center">
+              No store found.
+            </span>
+          }
+        </div>
+    </div>
+</div>

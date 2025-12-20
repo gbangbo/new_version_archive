@@ -1,0 +1,38 @@
+<div class="card overflow-hidden analytics-tread-card">
+    <div class="card-header card-no-border">
+      <div class="header-top">
+        <div>
+          <span class="c-o-light mb-1">{{ totalUsersChart.title }}</span>
+          <div class="common-align">
+            <h5 class="mb-1">{{ totalUsersChart.value }}</h5>
+            <span class="common-align gap-1 justify-content-start">
+                <app-feather-icon [icon]="'trending-up'" [class]="'txt-success'"></app-feather-icon>
+                <span class="txt-success font-medium">+{{ totalUsersChart.increase_user }}</span>
+              </span>
+          </div>
+        </div>
+        <div>
+          <div class="analytics-tread bg-light-{{ totalUsersChart.color }}">
+            <app-svg-icon [icon]="totalUsersChart.icon" [class]="'fill-' + totalUsersChart.color"></app-svg-icon>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body pt-0"> 
+      <div class="user-analytics-wrapper">
+        <div id="user-analytics">
+            <apx-chart 
+                [series]="totalUsersChart.series"
+                [chart]="totalUsersChart.chart"
+                [plotOptions]="totalUsersChart.plotOptions"
+                [dataLabels]="totalUsersChart.dataLabels"
+                [xaxis]="totalUsersChart.xaxis"
+                [yaxis]="totalUsersChart.yaxis"
+                [grid]="totalUsersChart.grid"
+                [colors]="totalUsersChart.colors"
+                [responsive]="totalUsersChart.responsive">
+            </apx-chart>
+        </div>
+      </div>
+    </div>
+</div>

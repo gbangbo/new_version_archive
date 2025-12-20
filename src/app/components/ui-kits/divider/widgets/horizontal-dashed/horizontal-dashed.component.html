@@ -1,0 +1,12 @@
+<app-card [headerTitle]="'Horizontal Dashed Divider'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'main-divider'">
+
+    <p class="mb-0 mt-1" header5>Use <code>divider-body-2</code> class for dashed divider.</p>
+
+    @for(divider of horizontalDashedDivider; track divider) {
+        <div class="divider-body divider-body-2 divider-{{ divider.color }} flex items-center mb-[16px] gap-[calc(14px_+_(30_-_14)_*_((100vw_-_320px)_/_(1920_-_320)))]"> 
+            <div class="divider-circle bg-light-{{ divider.color }}">
+                <i class="{{ divider.icon }} txt-{{ divider.color }}"></i>
+            </div>
+        </div>
+    }
+</app-card>

@@ -1,0 +1,103 @@
+<div class="container">
+    <div class="email-wrap bookmark-wrap">
+        <div class="grid grid-cols-12 card-gap main-bookmark tabs">
+            <div class="col-span-3 xxl:col-span-12 box-col-6">
+                <app-sidebar (currentTab)="handleCurrentTab($event)"></app-sidebar>
+            </div>
+            <div class="col-span-9 xxl:col-span-12 box-col-12">
+                <div class="email-right-aside bookmark-tabcontent contacts-tabs">
+                    <div class="card email-body radius-left dark-contact">
+                        <div class="ps-0">
+                            <div class="tab-content">
+                                <div class="tab-pane fade active show">
+                                    <div class="card mb-0">
+                                        <div class="card-header card-no-border flex">
+                                            <h5>{{ contactService.currentTab.title }}</h5>
+                                            <span class="f-14 pull-right mt-0">{{ contactService.filteredContact()?.length }} Contacts</span>
+                                        </div>
+                                        <div class="card-body p-0">
+                                            <div class="grid grid-cols-12 gap-4 list-persons tabs" id="addcon">
+                                                @if(contactService.filteredContact() && contactService.filteredContact()?.length) {
+                                                    <div class="col-span-4 xl:col-span-5 md:col-span-12 xl-50">
+                                                        <div class="nav flex-col tab-links" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                                                            @for(contact of contactService.filteredContact(); track contact) {
+                                                                <a class="contact-tab-0 tab-link" [class.active]="contact.id == contactService.activeContact.id" (click)="handleContact(contact)">
+                                                                    <div class="flex">
+                                                                        <img class="max-w-full m-r-20 rounded-full update_img_0" [src]="contact.profile" [alt]="contact.first_name">
+                                                                      <div class="grow">
+                                                                        <h6> 
+                                                                            <span class="first_name_0">{{ contact.first_name }}</span>
+                                                                            <span class="last_name_0">{{ contact.last_name }}</span>
+                                                                        </h6>
+                                                                        <p class="email_add_0">{{ contact.email }}</p>
+                                                                      </div>
+                                                                    </div>
+                                                                </a>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-span-8 xl:col-span-7 md:col-span-12 xl-50">
+                                                        <div class="tab-content" [ngStyle]="{ 'display': edit ? 'none' : 'block' }">
+                                                            <div class="tab-pane contact-tab-0 tab-content-child fade show active">
+                                                                @if(contactService.activeContact && contactService.filteredContact() && contactService.filteredContact()?.length) {
+                                                                    <div class="profile-mail">
+                                                                        <div class="flex">
+                                                                            <img class="img-100 max-w-full m-r-20 rounded-full update_img_0" [src]="contactService.activeContact.profile" [alt]="contactService.activeContact.first_name">
+                                                                            <input class="updateimg" type="file" name="img" accept="image/*">
+                                                                            <div class="grow mt-0">
+                                                                                <h5><span class="first_name_0">{{ contactService.activeContact.first_name }} </span><span class="last_name_0">{{ contactService.activeContact.last_name }}</span></h5>
+                                                                                <p class="email_add_0">{{ contactService.activeContact.email }}</p>
+                                                                                <ul class="main-contact-option">
+                                                                                <li><a href="javascript:void(0)" (click)="editContact()">Edit</a></li>
+                                                                                <li><a href="javascript:void(0)" (click)="deleteContact(contactService.activeContact)">Delete</a></li>
+                                                                                <li><a href="javascript:void(0)" (click)="showHistory()">History</a></li>
+                                                                                <li><a href="javascript:void(0)" (click)="printContact()">Print</a></li>
+                                                                                </ul>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="email-general">
+                                                                          <h6 class="mb-4">General</h6>
+                                                                          <ul>
+                                                                            <li> <span>Name</span><span class="font-primary first_name_0">{{ contactService.activeContact.first_name }}</span></li>
+                                                                            <li> <span>Gender</span><span class="font-primary">{{ contactService.activeContact.gender }}</span></li>
+                                                                            <li> <span>Birthday</span><span class="font-primary"> {{ contactService.activeContact.DOB }}</span></li>
+                                                                            <li> <span>Personality</span><span class="font-primary personality_0">{{ contactService.activeContact.personality }}</span></li>
+                                                                            <li> <span>City</span><span class="font-primary city_0">{{ contactService.activeContact.city }}</span></li>
+                                                                            <li> <span>Mobile No</span><span class="font-primary mobile_num_0">{{ contactService.activeContact.contact_number }}5</span></li>
+                                                                            <li> <span>Email Address</span><span class="font-primary email_add_0">{{ contactService.activeContact.email }} </span></li>
+                                                                            <li> <span>Website</span><span class="font-primary url_add_0">{{ contactService.activeContact.website }}</span></li>
+                                                                            <li> <span>Interest</span><span class="font-primary interest_0">{{ contactService.activeContact.interest }}</span></li>
+                                                                          </ul>
+                                                                        </div>
+                                                                    </div>
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                        <div class="contact-editform ps-0" [ngStyle]="{ 'display': edit ? 'block' : 'none' }">
+                                                            <app-edit-contact (edit)="handleEdit($event)" [activeContact]="contactService.activeContact"></app-edit-contact>
+                                                        </div>
+                                                    </div>
+                                                } @else {
+                                                    <div class="col-span-12 p-10 text-center">
+                                                        No Contact Found.
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="right-history" [class.show]="history">
+                                    <app-contact-history (history)="handleHistory($event)"></app-contact-history>
+                                </div>
+
+                                @if(modalOpen) {
+                                    <app-print-contact-modal [activeContact]="contactService.activeContact" (modalOpen)="handleOpenModal($event)"></app-print-contact-modal>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

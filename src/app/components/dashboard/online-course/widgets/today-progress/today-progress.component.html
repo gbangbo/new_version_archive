@@ -1,0 +1,20 @@
+<app-card [cardClass]="'get-card'" [headerTitle]="todayProgress.title" [padding]="false" [cardBodyClass]="'pt-0'">
+    <span class="f-14 font-medium f-ligh" header5>
+        {{ todayProgress.description }}
+    </span>
+
+    <div class="progress-chart-wrap">
+        <div id="progresschart">
+            <apx-chart
+                [series]="todayProgress.series"
+                [chart]="todayProgress.chart"
+                [plotOptions]="todayProgress.plotOptions"
+                [colors]="todayProgress.colors"
+                [labels]="todayProgress.labels"
+                [stroke]="todayProgress.stroke"
+                [legend]="todayProgress.legend"
+                [responsive]="todayProgress.responsive">
+        </apx-chart>
+        </div>
+    </div>
+</app-card>

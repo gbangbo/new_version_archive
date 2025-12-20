@@ -1,0 +1,12 @@
+<app-card [headerTitle]="'Lists with Checkbox'" [header]="'pb-0'" [border]="true" [padding]="false">
+    <p class="f-m-light mt-1" header5>Use<code> form-check-input </code>to check your checkbox.</p>
+    
+    <ul class="list-group">
+        @for(list of checkboxList;track list){
+            <li class="list-group-item gap-1 flex items-center">
+              <input class="custom-checkbox me-2 checkbox-{{ list.class }}" [id]="list.id" type="checkbox" value="" [checked]="list.checked">
+              <label class="form-check-label txt-{{ list.class }} mb-0" [for]="list.id">{{ list.title }}</label>
+            </li>
+        }
+      </ul>
+</app-card>

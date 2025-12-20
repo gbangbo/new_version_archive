@@ -1,0 +1,34 @@
+<app-card [headerTitle]="'Inverse Table'" [border]="true" [padding]="false" [cardBodyClass]="'p-0'">
+  <p class="f-m-light mt-1" header5>Use <code>table-inverse</code> class inside table element.</p>
+  
+  <div class="overflow-x-auto custom-scrollbar">
+    <table class="table table-inverse">
+      <thead>
+        <tr class="border-bottom-light">
+          <th scope="col">Id</th>
+          <th scope="col">First Name</th>
+          <th scope="col">Last Name</th>
+          <th scope="col">Office</th>
+          <th scope="col">Position</th>
+          <th scope="col">Salary</th>
+          <th scope="col">Join Date	</th>
+          <th scope="col">Age</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for(details of inverseTable;track details){
+          <tr>
+            <th scope="row">{{ details.id }}</th>
+            <td>{{ details.first_name }}</td>
+            <td>{{ details.last_name }}</td>
+            <td>{{ details.office }}</td>
+            <td>{{ details.position }}</td>
+            <td>{{ details.salary }}	</td>
+            <td>{{ details.join_date }}	</td>
+            <td>{{ details.age }}	</td>
+          </tr>
+        }
+      </tbody>
+    </table> 
+   </div>
+</app-card>

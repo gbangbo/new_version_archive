@@ -1,0 +1,77 @@
+<app-card [headerTitle]="'Material Style Left Tabs'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'main-vertical-tab'">
+    <p class="mt-1 f-m-light" header5>
+        Use <code>nav-link</code> with the <code>active</code> class to switch between tabs.  
+    </p>
+    
+        
+    <div class="tabs-responsive-side">
+        <div class="material-wrapper tabs">
+            <div class="flex">
+                <div class="tab-links nav-secondary border-tab nav-left">
+                    <div class="tab-link nav-effect" [class.active]="activeTab == 'home'" (click)="handleTab('home')">Home</div>
+                    <div class="tab-link nav-effect" [class.active]="activeTab == 'profile'" (click)="handleTab('profile')">Profile</div>
+                    <div class="tab-link nav-effect" [class.active]="activeTab == 'inbox'" (click)="handleTab('inbox')">Inbox</div>
+                    <div class="tab-link nav-effect pb-0" [class.active]="activeTab == 'settings'" (click)="handleTab('settings')">Settings</div>
+                </div>
+            </div>
+            <div class="material-content">
+                <div class="tab-content">
+                    <div class="tab-pan fade show active">
+                        @if(activeTab == 'home') {
+                            <p>This product is meant for educational purposes only. Any resemblance to real persons,
+                                living or dead is purely coincidental. Void where prohibited. Some assembly required. List
+                                each check separately by bank number. Batteries not included.Google Web Designer gives you
+                                the power to create beautiful and compelling videos, images and HTML5 ads. Use animation
+                                and interactive elements to build out your creative vision, then scale your content for
+                                different sizes or audiences with responsive and dynamic workflows.
+                            </p>
+                        } @else if(activeTab == 'profile') {
+                            <div class="flex-space flex-wrap items-center">
+                                <img class="tab-img" src="assets/images/ecommerce/08.jpg" alt="profile">
+                                <ul class="flex flex-col gap-1">
+                                    <li> <strong> Name: </strong> Jake Catlin</li>
+                                    <li><strong>Visit Us: </strong> 50006 Ehrenberg/Parker,Arkansas-85334</li>
+                                    <li><strong>Mail Us:</strong> Jake.&#64;gmail.com</li>
+                                    <li><strong>Contact Number: </strong> (928) 923-7940</li>
+                                </ul>
+                            </div>
+                        } @else if(activeTab == 'inbox') {
+                            <div class="card-body p-0">
+                                <div class="main-inbox">
+                                  <div class="header-inbox justify-start gap-2">
+                                    <div class="header-left-inbox">
+                                      <div class="inbox-img"><img src="assets/images/ecommerce/07.jpg" alt="profile">
+                                      </div>
+                                    </div>
+                                    <div class="inbox-content">
+                                      <h6>Dalbult Caslin </h6>
+                                      <p class="text-muted">stroman.rogers&#64;gmail.com</p>
+                                    </div>
+                                  </div>
+                                  <div class="body-inbox mt-2">
+                                    <div class="body-h-wrapper"><i
+                                        class="me-2 tab-space icofont icofont-star"></i>
+                                        <em>Compare Prices Find the Best Computer Assessors Fronted Issue.</em>
+                                    </div>
+                                    <p class="pt-2">Site speed and design are two of the most important ranking factors
+                                      Google takes into consideration, as they have the biggest effect of customer staying
+                                      on site as the website respond faster.
+                                    </p>
+                                  </div>
+                                </div>
+                            </div>
+                        } @else if(activeTab == 'settings') {
+                            <p><strong>In this situation, you would probably do two things:</strong> exit the page, or
+                                look for the trusty search bar. If you decide to stick around, a proper search function
+                                should take your query and send you to your destination. Problem solved. It's not a
+                                perfect experience, but it's a hard one to avoid on larger websites that simply can't link
+                                to every piece of content from the homepage.
+                            </p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</app-card>

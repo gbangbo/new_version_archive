@@ -1,0 +1,74 @@
+<div class="container">
+  <div class="email-wrap email-main-wrapper tabs">
+    <div class="grid grid-cols-12 card-gap">
+      <div class="col-span-3 xxl:col-span-4 xl:col-span-12 box-col-12">
+        <app-sidebar (currentTab)="handleCurrentTab($event)"></app-sidebar>
+      </div>
+      <div class="col-span-9 xxl:col-span-8 xl:col-span-12 box-col-12">
+        <div class="email-right-aside">
+          <div class="card email-body email-list" [class.hide]="isOpenMail">
+              <app-mail-header (emailType)="handleEmailType($event)"></app-mail-header>
+            <div class="tab-content block-wrapper relative" id="email-pills-tabContent">
+              <div class="tab-pane fade show active">
+                <div class="mail-body-wrapper">
+                  <ul class="mail-header-tabs">
+                    @for(email of getFilteredEmails(); track email) {
+                      <li class="inbox-data project">
+                        <div class="inbox-user">
+                          <div class="form-check form-check-inline m-0">
+                            <input class="form-check-input checkbox-primary" id="emailCheckbox1" type="checkbox" value="option1">
+                            <label class="form-check-label" for="emailCheckbox1"></label>
+                          </div>
+                          <app-svg-icon [icon]="'fill-star'" [class]="'important-mail ' + (email.is_favorite ? 'active' : '')" (click)="addToFavorite(email)"></app-svg-icon>
+                          @if(this.currentTab == 'sent') {
+                            To:
+                          }
+                          <div class="rounded-border">
+                            @if(email.user_profile) {
+                              <img class="max-w-full h-auto" [src]="email.user_profile" [alt]="email.user_name">
+                            } @else {
+                              <div class="circle-{{ getTextColor(getUserText(email.user_name)) }}">
+                                <p class="txt-{{ getTextColor(getUserText(email.user_name)) }}">{{ getUserText(email.user_name) }}</p>
+                              </div>
+                            }
+                          </div>
+                          <p>{{ email.user_name }}</p>
+                        </div>
+                        <div class="inbox-message">
+                          <div class="email-data" (click)="openEmail(email)">
+                            <span>{{ email.email_title }}
+                              <span>{{ email.description }}</span>
+                            </span>
+                            @if(email.tag) {
+                              <div class="badge badge-light-light inline-block">{{ email.tag }}</div>
+                            }
+                          </div>
+                          <div class="email-timing">
+                            <span>{{ email.time }}</span>
+                          </div>
+                          <div class="email-options">
+                            <i class="fa-regular" [ngClass]="email.is_read ? 'fa-envelope-open envelope-2' : 'fa-envelope envelope-1'" (click)="email.is_read =! email.is_read"></i>
+                            <i class="fa-regular fa-trash-can trash-3" (click)="deleteMail(email)"></i>
+                          </div>
+                        </div>
+                      </li>
+                    } @empty {
+                      <li class="empty-box">
+                        No {{ currentTab }} mails are there in {{ emailType }}.
+                      </li>
+                    }
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+          @if(isOpenMail) {
+            <div class="card email-body email-read" [class.show]="isOpenMail">
+              <app-mail-details [mailDetails]="currentMailDetails" (isMailOpen)="handleMailDetails($event)"></app-mail-details>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

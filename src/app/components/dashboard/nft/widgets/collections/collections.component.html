@@ -1,0 +1,40 @@
+<app-card [headerTitle]="'NFT Collections'" [padding]="false" [cardBodyClass]="'pt-0 nft-collection'"
+         [dropdownType]="'simple'" [options]="cardToggleOption">
+
+    <div class="swiper gallery-thumbs swiper-container">
+        <owl-carousel-o [options]="productThumbSlider" #thumbnailCarousel>
+            @for(collection of collections; track collection) {
+                <ng-template carouselSlide [id]="collection.id.toString()">
+                    <div class="swiper-slide" [class.active]="collection.id.toString() === activeSlide" (click)="owlCar.to(activeSlide = collection.id.toString())">
+                        <img class="max-w-full h-auto" [src]="collection.banner" alt="nft">
+                    </div>
+                </ng-template>
+            }
+        </owl-carousel-o>
+    </div>
+    <owl-carousel-o class="swiper gallery-top swiper-container" [options]="productMainThumbSlider" #owlCar id="thumbnailCarousel" (initialized)="onCarouselLoad()" (changed)="onSlideChange($event)">
+        @if(collections && collections.length) {
+            @for(collection of collections; track collection) {
+                <ng-template carouselSlide [id]="collection.id.toString()">
+                    <img class="max-w-full h-auto" [src]="collection.banner" [alt]="collection.title" />
+                    <div class="nft-user-info">
+                    <div class="common-space">
+                        <h5>{{ collection.title }}</h5>
+                        <div>
+                            <i class="icon-heart me-1"></i>
+                            <span>{{ collection.likes }}</span>
+                        </div>
+                    </div>
+                    <div class="user-desc">
+                        <span>{{ collection.items }} items</span>
+                        <i class="fa-solid fa-circle"></i> 
+                        Created by
+                        <img class="max-w-full" [src]="collection.profile" [alt]="collection.created_by" />
+                        {{ collection.created_by }}
+                    </div>
+                    </div>
+                </ng-template>
+            }
+        }
+    </owl-carousel-o>
+</app-card>

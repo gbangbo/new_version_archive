@@ -1,0 +1,32 @@
+<div class="container dashboard-13">
+    <div class="grid grid-cols-12 card-gap">
+
+        @for(overview of overviews; track overview) {
+        <div class="col-span-3 xl:col-span-6 sm:col-span-12">
+            <app-overview [overview]="overview"></app-overview>
+        </div>
+        }
+        
+        <div class="col-span-7 xl:col-span-12">
+            <app-shipment-tracking></app-shipment-tracking>
+        </div>
+        <div class="col-span-5 xl:col-span-6 md:col-span-12">
+            <app-avg-delivery-duration></app-avg-delivery-duration>
+        </div>
+        <div class="col-span-4 xl:col-span-6 md:col-span-12">
+            <app-shipment-details></app-shipment-details>
+        </div>
+        <div class="col-span-4 xl:col-span-6 md:col-span-12">
+            <app-fleet-status></app-fleet-status>
+        </div>
+        <div class="col-span-4 xl:col-span-6 md:col-span-12">
+            <app-open-sales-order></app-open-sales-order>
+        </div>
+        <div class="col-span-5 xl:col-span-6 lg:col-span-12">
+            <app-profit-by-country></app-profit-by-country>
+        </div>
+        <div class="col-span-7 xl:col-span-6 lg:col-span-12">
+            <app-vehicles-overview></app-vehicles-overview>
+        </div>
+    </div>
+</div>

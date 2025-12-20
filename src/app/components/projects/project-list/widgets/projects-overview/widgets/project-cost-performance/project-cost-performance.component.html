@@ -1,0 +1,34 @@
+<div class="main-card-box bg-10-primary h-full">
+    <div class="p-20 main-cost-performance">
+      <h5>{{ projectCostPerformance.title }}</h5>
+      <div class="common-space p-t-10">
+        <div>
+          <div class="cost-performance-wrapper">
+            <div id="cost-performance">
+                <apx-chart
+                    [labels]="projectCostPerformance.labels"
+                    [series]="projectCostPerformance.series"
+                    [chart]="projectCostPerformance.chart"
+                    [plotOptions]="projectCostPerformance.plotOptions"
+                    [grid]="projectCostPerformance.grid"
+                    [legend]="projectCostPerformance.legend"
+                    [dataLabels]="projectCostPerformance.dataLabels"
+                    [colors]="projectCostPerformance.colors"
+                    [responsive]="projectCostPerformance.responsive">
+                </apx-chart>
+            </div>
+          </div>
+        </div>
+        <div class="cost-right-data">
+          <ul> 
+            <li>
+              <h6>${{ projectCostPerformance.total_budget }}</h6><span>Total Budget</span>
+            </li>
+            <li> 
+              <h6>${{ projectCostPerformance.actual_cost }}</h6><span>Actual Cost</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+</div>

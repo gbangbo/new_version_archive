@@ -1,0 +1,88 @@
+<div class="tab-pan fade show">
+  <form class="grid grid-cols-12 gap-4 needs-validation custom-input" novalidate="" [formGroup]="formValidation" (ngSubmit)="next()">
+    <div class="col-span-6 xxl:col-span-12">
+      <div class="card-wrapper border rounded-3 checkbox-checked">
+        <h6 class="sub-title">Select your payment method</h6>
+        <div class="radio-form">
+          @for(radio of cartInfo;track radio){
+            <div class="form-check flex gap-1">
+              <input class="form-check-input" [id]="radio.id" type="radio" name="flexRadioDefault-a"
+                [checked]="radio.checked">
+              <label class="form-check-label" [for]="radio.id">{{ radio.title }}</label>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+    <div class="col-span-6 xxl:col-span-12">
+      <div class="grid grid-cols-12">
+        <div class="col-span-12">
+          <div class="input-group mb-4 flex !flex-nowrap">
+            <input class="form-control !rounded-l-md !rounded-none" type="text" placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="button-addon2">
+            <button class="btn btn-outline-secondary border" id="button-addon2" type="button">Submit</button>
+          </div>
+        </div>
+        <div class="col-span-12">
+          <div class="input-group flex !flex-nowrap">
+            <span class="input-group-text !rounded-l-md !rounded-none" id="basic-addon1">&#64;</span>
+            <input class="form-control" type="text" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-span-4 md:col-span-6 sm:col-spn-12">
+      <label class="form-label" for="txtCardNumber1">Card Number</label>
+      <input class="form-control" id="txtCardNumber1" type="number" placeholder="xxxx xxxx xxxx xxxx" formControlName="cardNumber"
+        [ngClass]="{ 'is-invalid' : formValidation.controls['cardNumber'].touched && formValidation.controls['cardNumber'].errors?.['required'] , 'is-valid' : formValidation.controls['cardNumber'].valid}">
+      @if(formValidation.controls['cardNumber'].valid) {
+        <div class="valid-feedback">Looks good!</div>
+      } @else if(formValidation.controls['cardNumber'].touched && formValidation.controls['cardNumber'].errors?.['required']) {
+        <div class="invalid-feedback">Please enter your valid number</div>
+      }
+    </div>
+    <div class="col-span-4 md:col-span-6 sm:col-spn-12">
+      <label class="form-label" for="validationDates">Expiration(MM/YY)</label>
+      <input class="form-control" id="validationDates" type="number" placeholder="xx/xx" formControlName="expiration"
+        [ngClass]="{ 'is-invalid' : formValidation.controls['expiration'].touched && formValidation.controls['expiration'].errors?.['required'] , 'is-valid' : formValidation.controls['expiration'].valid}">
+      @if(formValidation.controls['expiration'].valid) {
+        <div class="valid-feedback">Looks good!</div>
+      } @else if(formValidation.controls['expiration'].touched && formValidation.controls['expiration'].errors?.['required']) {
+        <div class="invalid-feedback">Please enter your valid expiration MM/YY</div>
+      }
+    </div>
+    <div class="col-span-4 md:col-span-6 sm:col-spn-12">
+      <label class="form-label" for="cvvNumber-b">CVV</label>
+      <input class="form-control" id="cvvNumber-b" type="number" formControlName="cvv"
+        [ngClass]="{ 'is-invalid' : formValidation.controls['cvv'].touched && formValidation.controls['cvv'].errors?.['required'] , 'is-valid' : formValidation.controls['cvv'].valid}">
+      @if(formValidation.controls['cvv'].valid) {
+        <div class="valid-feedback">Looks good!</div>
+      } @else if(formValidation.controls['cvv'].touched && formValidation.controls['cvv'].errors?.['required']) {
+        <div class="invalid-feedback">Please enter your valid CVV</div>
+      }
+    </div>
+    <div class="col-span-12 md:col-span-6 sm:col-span-12">
+      <label class="form-label" for="formFile2">Upload Documentation</label>
+      <input class="form-control" id="formFile2" type="file" aria-label="file example" formControlName="uploadDocument"
+        [ngClass]="{ 'is-invalid' : formValidation.controls['uploadDocument'].touched && formValidation.controls['uploadDocument'].errors?.['required'] , 'is-valid' : formValidation.controls['uploadDocument'].valid}">
+      @if(formValidation.controls['uploadDocument'].touched && formValidation.controls['uploadDocument'].errors?.['required']) {
+        <div class="invalid-feedback">Invalid form file selected</div>
+      }
+    </div>
+    <div class="col-span-12">
+      <div class="form-check mb-0 flex gap-2">
+        <input class="form-check-input" id="invalidCheck-b" type="checkbox" value="" formControlName="agree"
+          [ngClass]="{ 'is-invalid' : formValidation.controls['agree'].touched && formValidation.controls['agree'].errors?.['required'] , 'is-valid' : formValidation.controls['agree'].valid}">
+        @if(formValidation.controls['agree'].touched && formValidation.controls['agree'].errors?.['required']) {
+          <div class="invalid-feedback">You must agree before submitting.</div>
+        }
+        <label class="form-check-label" for="invalidCheck-b">All the above information is correct</label>
+      </div>
+    </div>
+    <div class="col-span-12">
+      <div class="flex gap-2 justify-end">
+        <button class="btn btn-primary text-white" (click)="previous()">Previous</button>
+        <button class="btn btn-primary text-white">Next</button>
+      </div>
+  </div>
+  </form>
+</div>

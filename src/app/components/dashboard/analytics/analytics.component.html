@@ -1,0 +1,46 @@
+<div class="container dashboard-10">
+    <div class="grid grid-cols-12 card-gap">
+        <div class="col-span-5 xxl:col-span-4 xl:col-span-6 md:col-span-12 ord-md-i box-col-4">
+            <app-all-visits></app-all-visits>
+        </div>
+        <div class="col-span-3 xxl:col-span-4 xl:col-span-6 md:col-span-12 ord-md-ii box-col-4">
+            <app-referrals-visit></app-referrals-visit>
+        </div>
+        <div class="col-span-4 xl:col-span-6 sm:col-span-12 ord-md-vii box-col-4">
+            <app-session-by-countries></app-session-by-countries>
+        </div>
+        <div class="col-span-6 xl:col-span-12 ord-md-iii">
+            <app-website-analytics></app-website-analytics>
+        </div>
+        <div class="col-span-6 xl:col-span-12 ord-md-iv">
+            <div class="grid grid-cols-12 card-gap">
+                @for(chart of analyticsDetailsChart | slice:0:2; track chart){
+                    <div class="col-span-6 sm:col-span-12">
+                        <app-analytics-details [chart]="chart"></app-analytics-details>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="col-span-6 xl:col-span-12 ord-md-viii">
+            <app-page-analytics></app-page-analytics>
+        </div>
+        <div class="col-span-6 xl:col-span-12 ord-md-v">
+            <div class="grid grid-cols-12 card-gap">
+                @for(chart of analyticsDetailsChart | slice:2:6; track chart){
+                    <div class="col-span-6 sm:col-span-12">
+                        <app-analytics-details [chart]="chart"></app-analytics-details>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="col-span-4 xl:col-span-6 md:col-span-12 ord-md-ix"> 
+            <app-live-user></app-live-user>
+        </div>
+        <div class="col-span-5 xl:col-span-6 md:col-span-12 ord-md-x box-col-4"> 
+            <app-session-by-device [type]="'classic'"></app-session-by-device>
+        </div>
+        <div class="col-span-3 xl:col-span-6 sm:col-span-12 ord-md-vi box-col-4"> 
+            <app-session-by-browser></app-session-by-browser>
+        </div>
+    </div>
+</div>

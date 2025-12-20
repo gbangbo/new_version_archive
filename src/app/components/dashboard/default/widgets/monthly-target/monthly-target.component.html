@@ -1,0 +1,31 @@
+<app-card [cardClass]="'monthly-header'" [headerTitle]="'Monthly Target'" [dropdownType]="'simple'" [options]="cardToggleOptions" [padding]="false">
+    <div class="monthly-target">
+        <div class="relative" id="monthly_target">
+            <apx-chart
+                [series]="monthlyTargetChart.series"
+                [chart]="monthlyTargetChart.chart"
+                [plotOptions]="monthlyTargetChart.plotOptions"
+                [grid]="monthlyTargetChart.grid"
+                [fill]="monthlyTargetChart.fill"
+                [labels]="monthlyTargetChart.labels"
+                [responsive]="monthlyTargetChart.responsive">
+            </apx-chart>
+        </div>
+    </div>    
+    <div class="target-content">
+        <p>{{ monthlyTargetChart.description }}</p>
+        <div class="common-box">
+            <ul class="common-flex">
+                @for(details of monthlyTargetChart.targetDetails; track details){
+                    <li>
+                        <h6>{{ details.title }}</h6>
+                        <span class="common-space badge badge-light-{{ details.badge_color }}">
+                            <app-feather-icon [icon]="details.icon" [class]="'me-1'"></app-feather-icon>
+                            {{ details.value }}
+                        </span>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+</app-card>

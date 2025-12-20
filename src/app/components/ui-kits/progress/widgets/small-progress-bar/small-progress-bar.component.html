@@ -1,0 +1,32 @@
+<app-card [cardClass]="'height-equal'" [header]="'pb-0'" [headerTitle]="'Small Progress Bars'" [border]="true" [padding]="false" [cardBodyClass]="'progress-showcase progress-b-space'">
+    <p class="f-m-light mt-1" header5>Use <code> sm-progress-bar</code> class to change progress size to small.</p>
+
+    <div class="grid grid-cols-12">
+        <div class="col-span-12">
+            <div class="progress sm-progress-bar !overflow-visible mt-4">
+                <div class="progress-bar-animated small-progressbar bg-primary rounded-full progress-bar-striped" [ngStyle]="{ 'width': '30%'}">
+                    <span class="txt-primary progress-label">30 MB Data</span>
+                    <span class="animate-circle"></span>
+                </div>
+            </div>
+            <div class="progress sm-progress-bar !overflow-visible">
+                <div class="progress-bar-animated small-progressbar bg-primary rounded-full progress-bar-striped" [ngStyle]="{ 'width': '50%'}">
+                    <span class="txt-primary progress-label">50 MB Data</span>
+                    <span class="animate-circle"></span>
+                </div>
+            </div>
+            <div class="progress sm-progress-bar !overflow-visible">
+                <div class="progress-bar-animated small-progressbar bg-primary rounded-full progress-bar-striped" [ngStyle]="{ 'width': '75%'}">
+                    <span class="txt-primary progress-label">75 MB Data</span>
+                    <span class="animate-circle"></span>
+                </div>
+            </div>
+            <div class="progress sm-progress-bar !overflow-visible">
+                <div class="progress-bar-animated small-progressbar bg-primary rounded-full progress-bar-striped" [ngStyle]="{ 'width': '90%'}">
+                    <span class="txt-primary progress-label">90 MB Data</span>
+                    <span class="animate-circle"> </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</app-card>

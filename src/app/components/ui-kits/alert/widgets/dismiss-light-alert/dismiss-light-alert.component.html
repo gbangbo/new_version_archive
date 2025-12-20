@@ -1,0 +1,17 @@
+<app-card [headerTitle]="'Dismissing Light Alert'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'dark-alert-msg'">
+
+    <p class="f-m-light mt-1" header5>
+        Use the <code>alert-bg-warning</code> class to create a warning alert with a background color.    
+        Clicking the close button will hide the alert.
+    </p>
+
+    <div class="alert alert-bg-warning alert-dismissible fade" [ngClass]="alertVisible ? 'show' : 'hide'">
+        <app-feather-icon [icon]="'bell'"></app-feather-icon>
+        <p>The 
+            <a class="alert-link txt-warning" href="javascript:void(0)">"alert-bg-warning" </a>
+            class can be used to create an alert like this one.
+        </p>
+        <button class="btn-close" type="button" (click)="closeAlert()"></button>
+    </div>
+
+</app-card>

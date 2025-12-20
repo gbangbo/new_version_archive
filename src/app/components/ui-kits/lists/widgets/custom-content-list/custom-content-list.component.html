@@ -1,0 +1,22 @@
+<app-card [headerTitle]="'Custom Content Lists'" [header]="'pb-0'" [border]="true" [padding]="false">
+    <p class="f-m-light mt-1" header5>Use <code> list-group-item</code> through make custom design of all lists.</p>
+
+    <div class="list-group main-lists-content !pt-0">
+        @for(details of customContent; track details){
+            <a class="list-group-item list-group-item-action block" [ngClass]="details.active ? 'active bg-primary' : 'list-hover-primary'" href="javascript:void(0)">
+              <div class="flex w-full justify-between items-center">
+                <div class="list-wrapper">
+                  <img class="list-img me-0" [src]="details.img" alt="profile">
+                  <div class="list-content">
+                    <h6>{{ details.name }}</h6>
+                    <p>{{ details.email }}</p>
+                  </div>
+                </div>
+                <small class="text-white">{{ details.time }}</small>
+              </div>
+              <p class="mb-1">{{ details.description }}</p>
+              <small [ngClass]="details.active ? '!text-white' : 'text-muted'">{{ details.followers }} Followers</small>
+            </a>
+          }       
+         </div>
+</app-card>

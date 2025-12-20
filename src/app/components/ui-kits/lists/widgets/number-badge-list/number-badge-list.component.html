@@ -1,0 +1,13 @@
+<app-card [headerTitle]="'Numbered & Badge Lists'" [header]="'pb-0'" [border]="true" [padding]="false">
+    <p class="f-m-light mt-1" header5>
+        Use<code>  list-group-numbered</code> modifier class to  numbered list group items.Numbers are generated via CSS for better placement inside list group items.
+    </p>
+        <ol class="list-group list-group-numbered badge-list">
+            @for(details of numberBadgeList; track details){
+                <li class="list-group-item">
+                  <div>{{ details.name }}</div>
+                  <span class="badge badge-{{ details.tag_color }} text-white rounded-full p-2">{{ details.tag_text }}</span>
+                </li>
+              }
+      </ol>
+</app-card>

@@ -1,0 +1,50 @@
+<form class="grid grid-cols-12 gap-4 needs-validation" novalidate=""  [formGroup]="formValidation" (ngSubmit)="next()">
+    <div class="col-span-6 md:col-span-12">
+      <label class="form-label" for="AccountName">Account Name</label>
+      <input class="form-control" id="AccountName" type="text" formControlName="account_name"
+      [ngClass]="{ 'is-invalid' : formValidation.controls['account_name'].touched && formValidation.controls['account_name'].errors?.['required'] , 'is-valid' : formValidation.controls['account_name'].valid}">
+      @if(formValidation.controls['account_name'].touched && formValidation.controls['account_name'].errors?.['required']) {
+       <div class="valid-feedback">Looks good!</div>
+     }
+    </div>
+    <div class="col-span-6 md:col-span-12">
+      <label class="form-label">Email</label>
+      <input class="form-control" type="text" placeholder="org@superrito.com" formControlName="email"
+      [ngClass]="{ 'is-invalid' : formValidation.controls['email'].touched && formValidation.controls['email'].errors?.['required'] , 'is-valid' : formValidation.controls['email'].valid}">
+      @if(formValidation.controls['email'].touched && formValidation.controls['email'].errors?.['required']) {
+       <div class="valid-feedback">Looks good!</div>
+     }
+    </div>
+    <div class="col-span-12"> 
+      <label class="form-label" for="example-description">Select a project and write a description for it</label>
+      <textarea class="form-control" id="example-description" rows="3"></textarea>
+    </div>
+    <div class="col-span-12"> 
+      <section class="main-upgrade">
+        <div>
+          <i class="fa-solid fa-rocket"></i>
+          <h5 class="mb-4 mt-sm-3 mt-2">Select team size with 
+            <span class="txt-primary">projects</span>
+          </h5>
+          <p class="text-muted mb-4">Agile teams are cross-functional and made up of 5-11 on a regular basis team member.</p>
+        </div>
+        <div class="variation-box">
+          @for(item of businessSettings;track item){
+            <div class="selection-box">
+              <input type="checkbox" [checked]="item.checked">
+              <div class="custom--mega-checkbox">
+                <ul class="flex flex-col">
+                  <li>{{ item.title }} </li>
+                  <li class="txt-primary">{{ item.member }} Members </li>
+                </ul>
+              </div>
+            </div>
+          }
+        </div>
+      </section>
+    </div>
+    <div class="col-span-12 common-flex justify-end"> 
+      <button class="btn btn-primary text-white" (click)="previous()">Previous</button>
+      <button class="btn btn-primary text-white" type="submit">Continue</button>
+    </div>
+  </form>

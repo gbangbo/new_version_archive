@@ -1,0 +1,25 @@
+<div class="card-header card-no-border">
+    <div class="header-top">
+      <h5 class="m-0">Income</h5>
+      <div class="card-header-right-icon">
+        <app-card-dropdown-button [dropdownType]="'classic'" [options]="cardToggleOption"></app-card-dropdown-button>
+      </div>
+    </div>
+</div>
+<div class="card-body pt-0">
+    <div class="income-chart-wrapper"> 
+      <div id="income-chart">
+        <apx-chart 
+            [series]="incomeChart.series"
+            [chart]="incomeChart.chart"
+            [dataLabels]="incomeChart.dataLabels"
+            [stroke]="incomeChart.stroke"
+            [xaxis]="incomeChart.xaxis"
+            [yaxis]="incomeChart.yaxis"
+            [grid]="incomeChart.grid"
+            [colors]="incomeChart.colors"
+            [fill]="incomeChart.fill">
+        </apx-chart>
+      </div>
+    </div>
+</div>

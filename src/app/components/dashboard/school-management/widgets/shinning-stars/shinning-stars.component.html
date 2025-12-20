@@ -1,0 +1,26 @@
+<app-card [headerTitle]="'Shinning Stars'" [padding]="false" [cardBodyClass]="'pt-0'" [dropdownType]="'simple'" [options]="cardToggleOption | slice:0:3">
+    <div class="student-leader-wrapper">
+        @for(details of shiningStar;track details){
+            <div class="student-leader-content {{ details.class }}">
+              <div class="flex items-center gap-2">
+                @if(details.number){
+                    <h5>
+                      {{ details.number }}
+                      <sup>{{ details.text }}</sup>
+                    </h5>
+                }@else {
+                    <img [src]="details.image" alt="rank-1">
+                }
+                <img class="leader-img" [src]="details.user_image" alt="user 1">
+                <div class="leader-content-height">
+                  <h6>
+                    {{ details.name }}
+                    <span class="c-o-light f-14 font-normal ps-1">(Grade {{ details.grade }}) </span>
+                </h6>
+                </div>
+              </div>
+              <span class="f-14 txt-primary">{{ details.percentage }}%</span>
+            </div>
+        }
+      </div>
+</app-card>

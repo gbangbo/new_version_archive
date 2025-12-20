@@ -1,0 +1,17 @@
+<app-card [headerTitle]="'Scrollable Lists'" [header]="'pb-0'" [border]="true" [padding]="false">
+    <p class="f-m-light mt-1" header5>Use property <code>overflow:auto </code>through scrollable lists.</p>
+    <div class="list-group main-lists-content pt-0 scrollbar-wrapper custom-scrollbar">
+        @for(details of scrollableList; track details){
+            <a class="list-group-item list-group-item-action list-hover-primary" [class.active]="details.active" href="javascript:void(0)">
+              <div class="list-wrapper gap-0">
+                <img class="list-img" [src]="details.img" alt="profile">
+                <div class="list-content">
+                  <h6>{{ details.name }}</h6>
+                  <p class="f-light">{{ details.email }}</p>
+                  <small class="f-light">{{ details.time }}</small>
+                </div>
+              </div>
+            </a>
+          }
+    </div>
+</app-card>

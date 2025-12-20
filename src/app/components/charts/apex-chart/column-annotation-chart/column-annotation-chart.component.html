@@ -1,0 +1,9 @@
+<app-card [headerTitle]="'Column Chart'" [border]="true" [header]="'pb-0'" [padding]="false">
+  <div id="annotationchart">
+    <apx-chart [annotations]="columnChart.annotations" [chart]="columnChart.chart" [dataLabels]="columnChart.dataLabels"
+               [stroke]="columnChart.stroke" [grid]="columnChart.grid" [series]="columnChart.series"
+               [title]="columnChart.title" [labels]="columnChart.labels" [xaxis]="columnChart.xaxis"
+               [colors]="columnChart.colors">
+    </apx-chart>
+  </div>
+</app-card>

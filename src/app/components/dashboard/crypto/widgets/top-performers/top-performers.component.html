@@ -1,0 +1,5 @@
+<app-card [headerTitle]="'Top Performers'" [cardBodyClass]="'px-0 pt-0'" [padding]="false" [dropdownType]="'simple'" [options]="cardToggleOption">
+  <div class="recent-table overflow-x-auto currency-table performer-table custom-scrollbar">
+    <app-table [tableConfig]="tableConfig" [pageSize]="4" [paginateDetails]="true"></app-table>
+  </div>
+</app-card>

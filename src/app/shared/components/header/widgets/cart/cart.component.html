@@ -1,0 +1,62 @@
+<div class="cart-box">
+  <app-svg-icon [icon]="'stroke-ecommerce'"></app-svg-icon>
+  @if(cartService.cartItems && cartService.cartItems.length) {
+    <span class="badge rounded-full badge-danger text-white">{{ cartService.cartItems.length }}</span>
+  }
+</div>
+
+<div class="cart-dropdown onhover-show-div">
+  <h6 class="mb-0 dropdown-title f-[18px]">Cart</h6>
+  <ul class="custom-scrollbar">
+    @if(cartService.cartItems && cartService.cartItems.length) {
+      @for(item of cartService.cartItems; track item) {
+        <li>
+          <div class="flex relative">
+            <img class="max-w-full h-auto me-3 w-14 rounded-[5px]" [src]="item.product_image" alt="{{ item.product_name }}">
+            <div class="grow">
+              <span>{{ item.product_name }}</span>
+              <div class="qty-box">
+                <div class="input-group flex">
+                  <span class="input-group-prepend">
+                    <button class="btn quantity-left-minus" type="button"(click)="cartService.updateQuantity(-1, item)">-</button>
+                    </span>
+                  <input class="form-control input-number" type="text" name="quantity" [value]="item.quantity">
+                  <span class="input-group-prepend">
+                    <button class="btn quantity-right-plus" type="button" (click)="cartService.updateQuantity(1, item)">+</button>
+                  </span>
+                </div>
+              </div>
+              <h6 class="font-primary">${{ (item.discount_price ? item.discount_price : item.price) * item.quantity | number:
+                '1.2-2' }}</h6>
+            </div>
+            <div class="close-circle">
+              <a class="bg-danger" href="javascript:void(0)" (click)="cartService.deleteCartItem(item)">
+                <app-feather-icon [icon]="'x'"></app-feather-icon>
+              </a>
+            </div>
+          </div>
+        </li>
+      }
+    } @else {
+      <li class="empty-cart">
+        <img src="assets/images/svg/empty-cart.svg" class="img-fluid">
+        <h4>Oops!&nbsp;&nbsp;Empty cart!</h4>
+      </li>
+    }
+  </ul>
+  
+  @if(cartService.cartItems && cartService.cartItems.length) {
+    <ul>
+      <li class="total">
+        <h6 class="mb-0">Total Order : 
+          <span class="f-right">{{ cartService.getSubTotal() }}</span>
+        </h6>
+      </li>
+      <li class="text-center">
+        <a class="block view-cart font-bold btn btn-primary text-white w-full hover:text-white" href="javascript:void(0)" [routerLink]="'/cart'">View
+          Cart</a>
+        <a class="view-checkout btn btn-primary text-white w-full font-bold hover:text-white" href="javascript:void(0)" [routerLink]="'/checkout'">Checkout</a>
+      </li>
+    </ul>
+  }
+</div>

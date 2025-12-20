@@ -1,0 +1,101 @@
+<div class="container">
+  <div class="grid grid-cols-12 gap-4">
+      <div class="col-span-12">
+          <div class="site">
+              <div class="site-bd">
+                  <div class="wrapper">
+                      <div class="card">
+                          <div class="card-header language-header card-no-border pb-0">
+                              <h5>Internationalization</h5>
+                              <div class="main" role="main">
+                                  <select class="langChoice js-languageSelect" (change)="handleChange($event)">
+                                      @for(language of languages; track language) {
+                                        <option [value]="language.code">{{ language.name }}</option>
+                                      }
+                                  </select>
+                              </div>
+                          </div>
+                          <div class="card-body grid grid-cols-12 card-gap">
+                            <div class="col-span-6 sm:col-span-12">
+                              <h5 class="hdg hdg_main js-languagePageHdg pb-2">{{ 'static_sub_nav' | translate }}</h5>
+                              <div class="masthead" role="banner">
+                                <ul class="icon-lists border navs-icon hList hList_loose masthead-nav js-languageList">
+                                  @for(item of internationalizationMenu; track item) {
+                                    <div *ngTemplateOutlet="recursiveMenu; context: { $implicit: item, isChild: false }"></div>
+                                  }
+                                  
+                                  <ng-template #recursiveMenu let-item let-isChild="isChild">
+                                    @if(item) {
+                                      <li [ngClass]="{ 'ps-4': isChild }">
+                                        <a href="javascript:void(0)">
+                                          <span> {{ item.title | translate }}</span>
+                                        </a>
+                                        @if(item.child) {
+                                          <ul class="hList hList_loose masthead-nav js-languageList">
+                                            @for(subItem of item.child; track subItem) {
+                                              <div *ngTemplateOutlet="recursiveMenu; context: { $implicit: subItem, isChild: true }"></div>
+                                            }
+                                          </ul>
+                                        }
+                                      </li>
+                                    }
+                                  </ng-template>
+                                </ul>
+                              </div>
+                            </div>
+
+                              <div class="col-span-6 sm:col-span-12 language-xs">
+                                  <h5 class="hdg hdg_main js-languagePageHdg pb-2">{{ 'static_sub_nav' | translate }}</h5>
+                                  <div class="masthead" role="banner">
+                                    <ul class="icon-lists border navs-icon hList hList_loose masthead-nav js-languageList">
+                                      @for(item of internationalizationMenu2; track item) {
+                                        <div *ngTemplateOutlet="recursiveMenu2; context: { $implicit: item, isChild: false }"></div>
+                                      }
+                                      
+                                      <ng-template #recursiveMenu2 let-item let-isChild="isChild">
+                                        @if(item) {
+                                          <li [ngClass]="{ 'ps-4': isChild }">
+                                            <a href="javascript:void(0)">
+                                              <span> {{ item.title | translate }}</span>
+                                              @if(item.badge) {
+                                                <span class="float-end badge badge-primary text-white">{{ item.badgeText | translate }}</span>
+                                              }
+                                            </a>
+                                            @if(item.child) {
+                                              <ul class="hList hList_loose masthead-nav js-languageList">
+                                                @for(subItem of item.child; track subItem) {
+                                                  <div *ngTemplateOutlet="recursiveMenu2; context: { $implicit: subItem, isChild: true }"></div>
+                                                }
+                                              </ul>
+                                            }
+                                          </li>
+                                        }
+                                      </ng-template>
+                                    </ul>
+                                  </div>
+                              </div>
+
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+      <div class="col-span-12">
+        <div class="card">
+          <div class="card-header card-no-border pb-0">
+            <h5>How to use it</h5>
+          </div>
+          <div class="card-body">
+            <div class="language">
+              <p class="mb-[16px]">The <code>TranslateModule</code> is part of the <code>ngx-translate</code> library, which provides internationalization (i18n) support in Angular applications. It enables the dynamic translation of text content without requiring a page reload.</p>
+
+              <p>This module works by loading translation files (typically in JSON format) and applying translations using the <code>translate</code> pipe <code>(| translate)</code> or the <code>TranslateService</code>. It supports <code>lazy loading</code>, fallback languages, and runtime language switching.</p>
+
+              <p>Developers can configure <code>TranslateModule</code> to fetch translations from external files via HTTP or define them directly in TypeScript. The module is widely used to create multilingual applications with structured, maintainable translation files.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+  </div>
+</div>

@@ -1,0 +1,113 @@
+/**=====================
+  2.22 Popover CSS Start
+==========================**/
+// popover
+.popover {
+  background-color: $white;
+  border: none;
+  -webkit-box-shadow: 0 0 20px rgba($primary-color, 0.1);
+  box-shadow: 0 0 20px rgba($primary-color, 0.1);
+  .popover-arrow {
+    height: 15px;
+    width: 15px;
+    background-color: $white;
+    border: 1px solid rgba($black, 0.15);
+    position: absolute;
+    top: -7px;
+    left: 50%;
+    z-index: -1;
+    transform: translateX(-50%) rotate(45deg);
+    &.right {
+      top: 50%;
+      left: 0;
+      border-right: none;
+      border-top: none;
+    }
+    &.bottom{
+      bottom: -6px;
+      left: 50%;
+      border-top: none;
+      border-left: none;
+      top: unset;
+    }
+    &.left {
+      top: 50%;
+      right: -14px;
+      left: unset;
+      border-left: none;
+      border-bottom: none;
+    }
+  }
+  .popover-header {
+    background-color: $theme-medium-color;
+    color: $primary-color;
+    border-bottom: none;
+    padding: 8px 16px;
+    border-radius: 5px 5px 0 0;
+    font-weight: 500;
+  }
+
+  .popover-body {
+    padding: 16px;
+    color: rgba(43, 43, 43, 0.7);
+    border-radius: 0 0 5px 5px;
+    position: relative;
+    z-index: 2;
+  }
+}
+
+.popover.show {
+  display: block;
+}
+.popover {
+  position: absolute;
+  display: none;
+  z-index: 1000;
+  max-width: 275px;
+  font-size: 14px;
+  border-radius: 5px;
+}
+.popover-main {
+  .btn-showcase {
+    a {
+      color: $white;
+    }
+
+    button {
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+}
+
+.svg-tooltip {
+  .common-flex {
+    > div {
+      width: calc(40px + (50 - 40) * ((100vw - 320px) / (1920 - 320)));
+      height: calc(40px + (50 - 40) * ((100vw - 320px) / (1920 - 320)));
+      @include pixelstrap-flex(flex, center, center);
+      border-radius: 10px;
+      border: 1px solid;
+
+      i {
+        font-size: calc(18px + (20 - 18) * ((100vw - 320px) / (1920 - 320)));
+      }
+
+      &:hover {
+        i {
+          stroke: var(--white) !important;
+        }
+      }
+    }
+
+    svg {
+      width: calc(18px + (20 - 18) * ((100vw - 320px) / (1920 - 320)));
+      height: calc(18px + (20 - 18) * ((100vw - 320px) / (1920 - 320)));
+    }
+  }
+}
+
+/**=====================
+  2.22 Popover CSS Ends
+==========================**/

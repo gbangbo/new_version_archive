@@ -1,0 +1,40 @@
+<div class="container manage-review-wrapper">
+  <div class="grid grid-cols-12 card-gap">
+    <div class="col-span-12">
+      <app-card [cardBodyClass]="'px-0 pt-0'">
+        <div class="top-body">
+          <div class="grid grid-cols-12 gap-4">
+            <div class="col-span-6 md:col-span-12">
+              <div class="form-group">
+                <label class="form-label flex items-center gap-2">Rating
+                  <select2 [data]="rating" [templates]="template" placeholder="Select Rating" (update)="handleUpdate($event, 'rating')" noResultMessage="No Data Found" resettable>
+                    <ng-template #template let-item="label">
+                      <span class="rating">
+                        <i class="fa-solid fa-star txt-warning"></i>
+                      </span> | {{ item }}
+                    </ng-template>
+                  </select2>
+                </label>
+              </div>
+            </div>
+            <div class="col-span-6 md:col-span-12">
+              <div class="form-group">
+                <label class="form-label flex items-center gap-2">Status
+                  <select2 [data]="reviewStatus" placeholder="Select status" (update)="handleUpdate($event, 'status')" noResultMessage="No Data Found" resettable></select2>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="manage-review">
+          <div class="recent-table overflow-x-auto custom-scrollbar">
+            <app-table [hasCheckbox]="true" [rowDetails]="true" [tableConfig]="tableConfig"
+              [pageSize]="10" [paginateDetails]="true" [downloadReports]="true" [selectedRows]="true" [searchPlaceholder]="'Search here... '"
+              (action)="handleAction($event)">
+            </app-table>
+          </div>
+        </div>
+      </app-card>
+    </div>
+  </div>
+</div>

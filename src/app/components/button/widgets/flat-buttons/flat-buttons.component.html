@@ -1,0 +1,7 @@
+<app-card [headerTitle]="'Flat Buttons'" [border]="true" [header]="'pb-0'" [padding]="false" [cardBodyClass]="'common-flex'">
+    <p class="f-m-light mt-1" header5>Use<code> btn-square</code> class for square button.</p>
+    
+    @for(button of flatButton;track button){
+        <button class="btn btn-square btn-{{ button.class }}">{{ button.title }} Button</button>
+    }
+</app-card>

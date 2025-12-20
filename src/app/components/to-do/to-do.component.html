@@ -1,0 +1,35 @@
+<div class="container email-wrap bookmark-wrap todo-wrap">
+    <div class="grid grid-cols-12 card-gap">
+        <div class="col-span-3 xxl:col-span-4 xl:col-span-12 box-col-30">
+            <app-sidebar></app-sidebar>
+        </div>
+        <div class="col-span-9 xxl:col-span-8 xl:col-span-12 box-col-12">
+            <div class="card todo-tasks">
+              <div class="card-header card-no-border pb-0">
+                <div class="input-group flex !flex-nowrap">
+                  <input class="form-control rounded-r-none" id="new-task-input" type="text" placeholder="write your task..." [(ngModel)]="taskValue" (keypress)="handleKeyPress($event)">
+                  <button class="btn btn-primary whitespace-nowrap rounded-l-none" id="add-task-button" type="button" (click)="addTask()">Add Task</button>
+                </div>
+              </div>
+              <div class="card-body custom-scrollbar">
+                <ul class="checkbox-checked text-center" id="task-list">
+                    @for(todo of todos; track todo) {
+                        <li>
+                            <input type="checkbox" class="form-check-input checkbox-primary" [checked]="todo.status == 'completed'" (change)="updateStatus($event, todo)">
+                            <span [class.completed]="todo.status == 'completed'">{{ todo.task }}</span>
+                            <div class="task-date">
+                                <span class="c-o-light">{{ todo.date }}</span>
+                                <button class="delete-button" (click)="deleteTask(todo)">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </div>
+                        </li>
+                    } @empty {
+                        No Task Found
+                    }
+                </ul>
+              </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,6 @@
+<app-card [headerTitle]="'Square Rating Bar'" [header]="'pb-0'" [border]="true" [padding]="false">
+    <p class="f-m-light mt-1" header5>Use<code> bar-rating </code> with <code>theme="square"</code> to display a square-shaped rating bar. The <code>[(rate)]</code> binding allows users to select a rating dynamically.</p>
+    <div class="rating-container">
+        <bar-rating theme="square" [(rate)]="squareRate" [max]="5"></bar-rating>
+    </div>
+</app-card>

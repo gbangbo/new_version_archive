@@ -1,0 +1,10 @@
+<app-card [headerTitle]="'Background Color Opacity'" [header]="'pb-0'" [border]="true" [padding]="false" [cardClass]="'height-equal'" [cardBodyClass]="'bg-opacity-wrapper'">
+    <p class="f-m-light mt-1" header5>Use <code>bg-opacity-* (10,25,50,75)</code> class to background opacity links.</p>
+
+    <div class="bg-primary p-2 mb-4"><a href="javascript:void(0)" class="text-white">This is default success background</a></div>
+    @for(bgColor of bgColor; track bgColor) {
+        <div class="p-2 mb-4 text-{{ bgColor.color }} bg-opacity-{{ bgColor.opacity }}">
+            <a href="javascript:void(0)" class="text-{{ bgColor.color }}">This is {{ bgColor.opacity}}% opacity success background</a>
+        </div>
+    }
+</app-card>

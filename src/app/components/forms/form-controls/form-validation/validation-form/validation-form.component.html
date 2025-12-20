@@ -1,0 +1,116 @@
+<app-card [cardClass]="'height-equal'" [header]="'pb-0'" [headerTitle]="'Validation Form'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>
+    Custom feedback styles apply custom colors, borders, focus styles, and background icons to better communicate feedback.Background icons for 
+    <code>&lt;select&gt;</code>s are only available with <code>form-select</code> and not <code>form-control.</code>
+  </p>
+    <form class="grid grid-cols-12 gap-4 needs-validation custom-input" novalidate="" [formGroup]="validationForm" (ngSubmit)="submitForm()">
+      <div class="col-span-12">
+        <label class="form-label" for="validationCustom01">First Name</label>
+        <input class="form-control" id="validationCustom01" type="text" placeholder="Mark" formControlName="firstName"
+              [ngClass]="{ 'is-invalid' : validationForm.controls['firstName'].touched && 
+              validationForm.controls['firstName'].errors?.['required'] , 'is-valid' : validationForm.controls['firstName'].valid}">
+        @if(validationForm.controls['firstName'].valid) {
+          <div class="valid-feedback">Looks's Good!</div>        
+          } @else if(validationForm.controls['firstName'].touched && validationForm.controls['firstName'].errors?.['required']) {
+            <div class="invalid-feedback">Please enter your valid </div>
+        }
+      </div>
+      <div class="col-span-12">
+        <label class="col-sm-12 col-form-label" for="inputPassword1">Password</label>
+        <input class="form-control" id="inputPassword1" type="password" formControlName="password"
+              [ngClass]="{ 'is-invalid' : validationForm.controls['password'].touched && 
+              validationForm.controls['password'].errors?.['required'] , 'is-valid' : validationForm.controls['password'].valid}">
+         @if(validationForm.controls['password'].touched && validationForm.controls['password'].errors?.['required']) {
+          <div class="invalid-feedback">Please enter your valid password</div>
+        }
+      </div>
+      <div class="col-span-12">
+        <label class="form-label" for="validationCustom04">State</label>
+        <select2 [data]="selectState" formControlName="state" placeholder="Choose.."
+                [ngClass]="{ 'is-invalid' : validationForm.controls['state'].touched && 
+                validationForm.controls['state'].errors?.['required'] , 'is-valid' : validationForm.controls['state'].valid}"></select2>
+        @if(validationForm.controls['state'].valid) {
+          <div class="valid-feedback">Looks's Good!</div>        
+          } @else if(validationForm.controls['state'].touched && validationForm.controls['state'].errors?.['required']) {
+            <div class="invalid-feedback">Please select a valid state.</div>
+          }
+      </div>
+      <div class="col-span-6 md:col-span-12">
+        <label class="form-label" for="validationCustom03">City</label>
+        <input class="form-control" id="validationCustom03" type="text"formControlName="city"
+              [ngClass]="{ 'is-invalid' : validationForm.controls['city'].touched && 
+              validationForm.controls['city'].errors?.['required'] , 'is-valid' : validationForm.controls['city'].valid}">
+        @if(validationForm.controls['city'].valid) {
+          <div class="valid-feedback">Looks's Good!</div>        
+          } @else if(validationForm.controls['city'].touched && validationForm.controls['city'].errors?.['required']) {
+            <div class="invalid-feedback">Please provide a valid city.</div>            
+          }
+      </div>
+      <div class="col-span-6 md:col-span-12">
+        <label class="form-label" for="validationCustom05">Zip</label>
+        <input class="form-control" id="validationCustom05" type="text" formControlName="zip"
+              [ngClass]="{ 'is-invalid' : validationForm.controls['zip'].touched && 
+              validationForm.controls['zip'].errors?.['required'] , 'is-valid' : validationForm.controls['zip'].valid}">
+        @if(validationForm.controls['zip'].valid) {
+          <div class="valid-feedback">Looks's Good!</div>        
+          } @else if(validationForm.controls['zip'].touched && validationForm.controls['zip'].errors?.['required']) {
+            <div class="invalid-feedback">Please provide a valid zip.</div>
+          }
+      </div>
+      <div class="col-span-12"> 
+        <div class="card-wrapper border rounded-3 checkbox-checked">
+          <h6 class="sub-title">Select Your Payment Method</h6>
+          <div class="radio-form">
+            <div class="form-check flex gap-2">
+              <input class="form-check-input" id="validationFormCheck25" type="radio" name="radio-stacked">
+              <label class="form-check-label" for="validationFormCheck25">MaterCard</label>
+            </div>
+            <div class="form-check flex gap-2">
+              <input class="form-check-input" id="validationFormCheck23" type="radio" name="radio-stacked">
+              <label class="form-check-label" for="validationFormCheck23">VISA</label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-span-12"> 
+        <select2 [data]="selectTheme" formControlName="selectTheme" placeholder="Select Your Favorite Pixelstrap theme"
+                [ngClass]="{ 'is-invalid' : validationForm.controls['selectTheme'].touched && 
+                validationForm.controls['selectTheme'].errors?.['required'] , 'is-valid' : validationForm.controls['selectTheme'].valid}"></select2>
+        @if(validationForm.controls['selectTheme'].touched && validationForm.controls['selectTheme'].errors?.['required']) {
+          <div class="invalid-feedback">Invalid select feedback</div>
+        }
+      </div>
+      <div class="col-span-12"> 
+        <label class="form-label" for="formFile1">Choose File</label>
+        <input class="form-control" id="formFile1" type="file" aria-label="file example" formControlName="selectFile"
+              [ngClass]="{ 'is-invalid' : validationForm.controls['selectFile'].touched && 
+              validationForm.controls['selectFile'].errors?.['required'] , 'is-valid' : validationForm.controls['selectFile'].valid}">
+         @if(validationForm.controls['selectFile'].touched && validationForm.controls['selectFile'].errors?.['required']) {
+          <div class="invalid-feedback">Invalid form file selected</div>
+        }
+      </div>
+      <div class="col-span-12"> 
+        <label class="form-label" for="validationTextarea">Description</label>
+        <textarea class="form-control" id="validationTextarea" placeholder="Enter your comment" formControlName="description"
+                  [ngClass]="{ 'is-invalid' : validationForm.controls['description'].touched && 
+                  validationForm.controls['description'].errors?.['required'] , 'is-valid' : validationForm.controls['description'].valid}"></textarea>
+         @if(validationForm.controls['description'].touched && validationForm.controls['description'].errors?.['required']) {
+          <div class="invalid-feedback">Please enter a message in the textarea.</div>
+        }
+      </div>
+      <div class="col-span-12">
+        <div class="form-check flex gap-2">
+          <input class="form-check-input" id="invalidCheck" type="checkbox" value="" formControlName="condition"
+                [ngClass]="{ 'is-invalid' : validationForm.controls['condition'].touched && 
+                validationForm.controls['condition'].errors?.['required'] , 'is-valid' : validationForm.controls['condition'].valid}">
+          <label class="form-check-label" for="invalidCheck">Agree to terms and conditions</label>
+          @if(validationForm.controls['condition'].touched && validationForm.controls['condition'].errors?.['required']) {
+            <div class="invalid-feedback">You must agree before submitting.</div>
+          }
+        </div>
+      </div>
+      <div class="col-span-12">
+        <button class="btn btn-primary text-white" type="submit">Submit form</button>
+      </div>
+    </form>
+</app-card>

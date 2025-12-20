@@ -1,0 +1,22 @@
+<app-card [headerTitle]="'Customer Details'" [padding]="false" [cardBodyClass]="'pt-0'">
+  <ul class="customer-details">
+    <li>
+      <h6>Name </h6><span>{{ customer_details.name }}</span>
+    </li>
+    <li>
+      <h6>Email Address:</h6><span>{{ customer_details.email }}</span>
+    </li>
+    <li>
+      <h6>Billing Address:</h6><span>{{ customer_details.billing_address }}</span>
+    </li>
+    <li>
+      <h6>Shipping Address:</h6><span>{{ customer_details.shipping_address }}</span>
+    </li>
+    <li>
+      <h6>Delivery Slot:</h6><span>{{ customer_details.delivery_slot }}</span>
+    </li>
+    <li>
+      <h6>Payment Mode:</h6><span>{{ customer_details.payment_method }}</span>
+    </li>
+  </ul>
+</app-card>

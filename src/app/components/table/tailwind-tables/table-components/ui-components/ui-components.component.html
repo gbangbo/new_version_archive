@@ -1,0 +1,97 @@
+<app-card [headerTitle]="'UI Components'" [padding]="false" [cardBodyClass]="'p-0'">
+  <div class="carblock grid grid-cols-12">
+    <div class="col-span-12">
+      <div class="overflow-x-auto custom-scrollbar">
+        <table class="table table-bordered">
+          <tbody>
+            <tr>
+              <td>Button</td>
+              <td class="w-50">
+                <button class="btn text-white btn-primary">Default Button</button>
+              </td>
+              <td>
+                <span>Tailwind includes six predefined button styles, each serving its own semantic purpose.</span>
+              </td>
+            </tr>
+            <tr>
+              <td>Round Buttons</td>
+              <td>
+                <button class="btn text-white btn-pill btn-primary">Default Button</button>
+              </td>
+              <td>
+                <span>Use <code>.btn-pill</code> class to button for round buttons.</span>
+              </td>
+            </tr>
+            <tr>
+              <td>Button Dropdowns</td>
+              <td>
+                <div class="dropdown w-fit">
+                  <button class="btn text-white btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" (click)="openMenu()">Primary</button>
+                  <div class="dropdown-menu dropdown-block" [class.show]="open">
+                    <h6 class="dropdown-header p-2">Dropdown Header</h6>
+                    <a class="dropdown-item !block" href="javascript:void(0)">Action</a>
+                    <a class="dropdown-item !block" href="javascript:void(0)">Another action</a>
+                    <a class="dropdown-item !block" href="javascript:void(0)">Something else here</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item !block" href="javascript:void(0)">Separated link</a>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span>Use <code>.dropdown-toggle</code> class to button for dropdown-toggle.</span>
+              </td>
+            </tr>
+            <tr>
+              <td>Basic Button Group</td>
+              <td>
+                <div class="btn-group">
+                  <button class="btn text-white btn-primary !rounded-l-md !rounded-none">Primary</button>
+                  <button class="btn text-white btn-secondary !rounded-none">Secondary</button>
+                  <button class="btn text-white btn-success !rounded-r-md !rounded-none">Success</button>
+                </div>
+              </td>
+              <td>
+                <span>Use <code>btn-group</code> class to button for <code>div</code>.</span>
+              </td>
+            </tr>
+            <tr>
+              <td>Buttons with Icon</td>
+              <td>
+                <button class="btn text-white btn-primary">
+                  <i class="fa-solid fa-circle-info"></i>
+                   Primary
+                </button>
+              </td>
+              <td>
+                <span>Tailwind includes six predefined button styles, each serving its own semantic purpose.</span>
+              </td>
+            </tr>
+            <tr>
+              <td>Icon Button</td>
+              <td>
+                <button class="btn text-white btn-primary">
+                  <i class="fa-solid fa-camera"></i>
+                </button>
+              </td>
+              <td>
+                <span>Simple icon button</span>
+              </td>
+            </tr>
+            <tr>
+              <td>Loading Buttons</td>
+              <td>
+                <button class="btn text-white btn-primary">
+                  <i class="fa-solid fa-spin fa-spinner me-2"></i>
+                  Expand UP
+                </button>
+              </td>
+              <td>
+                <span>Expand animation buttons</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</app-card>

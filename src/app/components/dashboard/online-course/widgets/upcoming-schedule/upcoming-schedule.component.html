@@ -1,0 +1,24 @@
+<app-card [cardClass]="'schedule-card'" [headerTitle]="'Upcoming Schedule'" [padding]="false" [rightSideDetails]="true" [cardBodyClass]="'pt-0'">
+  <a class="btn btn-light-primary" href="javascript:void(0)" [routerLink]="['/courses/courses-list']" header3>+ Create</a>
+
+  <ul class="schedule-list">
+    @for(schedule of upcomingSchedule; track schedule) {
+      <li [class]="schedule.color">
+        <img [src]="schedule.user_profile" alt="profile">
+        <div>
+          <h6 class="mb-1">{{ schedule.course_name }}</h6>
+          <ul>
+            <li class="f-light">
+              <app-svg-icon [icon]="'bag'" [class]="'fill-icon f-light'"></app-svg-icon>
+              <span>{{ schedule.date }}</span>
+            </li>
+            <li class="f-light">
+              <app-svg-icon [icon]="'clock'" [class]="'fill-icon f-success'"></app-svg-icon>
+              <span> {{ schedule.time }}</span>
+            </li>
+          </ul>
+        </div>
+      </li>
+    }
+  </ul>
+</app-card>

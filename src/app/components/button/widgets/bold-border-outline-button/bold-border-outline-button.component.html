@@ -1,0 +1,6 @@
+<app-card [headerTitle]="'Bold Border Outline Buttons'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'common-flex'">
+    <p class="f-m-light mt-1" header>Use <code> btn-outline-*-2x</code> class for bold outline buttons.</p>
+    @for(button of boldBorder; track button){
+        <button class="btn btn-outline-{{ button.class }}">{{ button.title }}</button>
+    }
+</app-card>

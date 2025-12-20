@@ -1,0 +1,85 @@
+<div class="md-sidebar"><a class="btn btn-primary md-sidebar-toggle text-white" href="javascript:void(0)" (click)="toggleFilter()">task filter</a>
+    <div class="md-sidebar-aside job-left-aside" [class.open]="sidebarOpen">
+      <div class="email-left-aside">
+        <div class="card">
+          <div class="card-body custom-scrollbar">
+            <div class="email-app-sidebar left-bookmark task-sidebar">
+              <div class="common-flex items-center">
+                <div class="media-size-email">
+                    <img class="rounded-full" [src]="userDetails.user_profile" [alt]="userDetails.name">
+                </div>
+                <div class="grow">
+                  <h6>{{ userDetails.name }}</h6>
+                  <p>{{ userDetails.user_email }}</p>
+                </div>
+              </div>
+              <ul class="nav main-menu" role="tablist">
+                <li class="nav-item">
+                  <button class="badge-light-primary btn-block btn-mail w-full flex items-center" type="button" (click)="openModal()">
+                    <app-feather-icon [icon]="'check-circle'" [class]="'me-2'"></app-feather-icon>
+                    New Task
+                  </button>
+                </li>
+                <li> 
+                  <form class="grid grid-cols-12 gap-4 needs-validation">
+                    <div class="col-span-12">
+                      <label class="form-label">Task Status</label>
+                      <select2 [data]="taskStatus" placeholder="Select task status" noResultMessage="No Task status found" resettable (update)="handleTaskStatus($event)"></select2>
+                    </div>
+                    <div class="col-span-12"> 
+                      <label class="form-label">Task Importance</label>
+                      <select2 [data]="taskImportance" placeholder="Select task importance" noResultMessage="No Task importance found" resettable (update)="handleImportance($event)"></select2>
+                    </div>
+                    <div class="col-span-12"> 
+                      <label class="form-label" for="validationTextarea">Task Due Date</label>
+                      <input [owlDateTime]="dueDate" [owlDateTimeTrigger]="dueDate" class="form-control" placeholder="yyyy-mm-dd" name="dueDate"/>
+                      <owl-date-time #dueDate [pickerType]="'calendar'"></owl-date-time>
+                    </div>
+                  </form>
+                </li>
+                <li> 
+                  <div class="grid grid-cols-12 task-stats gap-4">
+                    <div class="col-span-12">
+                      <div class="common-align justify-start">
+                        <div class="bg-primary">
+                          <i class="fa-solid fa-list-check"></i>
+                        </div>
+                        <div> <span class="c-o-light">Today's Tasks</span>
+                          <h4>20</h4>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-span-12">
+                      <div class="common-align justify-start">
+                        <div class="bg-primary">
+                          <i class="fa-solid fa-hourglass-half"></i>
+                        </div>
+                        <div> 
+                          <span class="c-o-light">Incomplete Tasks</span>
+                          <h4>45</h4>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-span-12">
+                      <div class="common-align justify-start">
+                        <div class="bg-primary">
+                          <i class="fa-regular fa-clock"></i>
+                        </div>
+                        <div>
+                           <span class="c-o-light">Today's Focus Time</span>
+                          <h4>8:45</h4>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+@if(modalOpen){
+  <app-add-task-modal (modalOpen)="handleModalOpen($event)"></app-add-task-modal>
+}

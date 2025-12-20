@@ -1,0 +1,109 @@
+<div class="container common-cart">
+  <div class="grid grid-cols-12 card-gap">
+    <div class="col-span-9 xl:col-span-12 xl-100 box-col-8">
+      <app-card [cardBodyClass]="'shopping-cart-table'">
+        <div class="recent-table overflow-x-auto custom-scrollbar">
+          <table class="table" id="cart-table">
+            <thead>
+              <tr>
+                <th>
+                  <input type="checkbox" [checked]="(cartService.cartItems && cartService.cartItems.length && selected && selected.length == cartService.cartItems.length) || false" (change)="checkUncheckAll($event)">
+                </th>
+                <th> 
+                  <span class="c-o-light font-semibold">Shopping Cart 
+                    <span class="badge badge-dark rounded-full text-white">
+                      {{ cartService.cartItems && cartService.cartItems.length ? cartService.cartItems.length : 0 }}
+                    </span>
+                  </span>
+                </th>
+                <th> <span class="c-o-light font-semibold"> </span></th>
+                <th> <span class="c-o-light font-semibold"> </span></th>
+                <th> <span class="c-o-light font-semibold"></span></th>
+                <th>
+                  <span class="c-o-light font-semibold" (click)="cartService.clearCart()">Clear All
+                    <app-svg-icon [icon]="'trash1'"></app-svg-icon>
+                  </span>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              @if(cartService.cartItems && cartService.cartItems.length) {
+                @for(item of cartService.cartItems; track item) {
+                  <tr class="inbox-data" [class.selected]="selected && selected.length && selected.includes(item.id)">
+                    <td>
+                      <input type="checkbox" [value]="item?.id"
+                      [checked]="selected && selected.length && selected.includes(item.id)" (change)="onItemChecked($event)">
+                    </td>
+                    <td>
+                      <div class="product-names">
+                        <div class="light-product-box">
+                          <img class="max-w-full" [src]="item.product_image" alt="{{ item.product_name }}">
+                        </div>
+                        <ul>
+                          <li>
+                            <h6>{{ item.product_name }}</h6>
+                          </li>
+                          <li>
+                            <p>{{ item.brand }}</p>
+
+                            @if(item.color) {
+                              <span class="common-dot"></span>
+                              <span>Color:<span> {{ item.color }}</span></span>
+                            }
+                          </li>
+                        </ul>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="cart-price">
+                        <h5>${{ item.discount_price | number: '1.2-2' }}</h5>
+                        <del class="c-o-light">${{ item.price| number: '1.2-2' }}</del>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="touchspin-wrapper">
+                        <button class="decrement-touchspin btn-touchspin touchspin-primary" (click)="cartService.updateQuantity(-1, item)">
+                          <i class="fa-solid fa-minus"> </i>
+                        </button>
+                        <input class="input-touchspin spin-outline-primary" type="number" [value]="item.quantity">
+                        <button class="increment-touchspin btn-touchspin touchspin-primary" (click)="cartService.updateQuantity(1, item)">
+                          <i class="fa-solid fa-plus"></i>
+                        </button>
+                      </div>
+                    </td>
+                    <td>
+                      <h4 class="txt-primary">${{ (item.discount_price ? item.discount_price : item.price) * item.quantity | number: '1.2-2' }} </h4>
+                    </td>
+                    <td>
+                      <div class="product-action">
+                        <a class="relative group inline-block square-white" [routerLink]="['/wishlist']">
+                          <app-svg-icon [icon]="'fill-wishlist'"></app-svg-icon>
+
+                          <app-tooltip [title]="'Wishlist'"></app-tooltip>
+                        </a>
+                        <a class="square-white trash-3 relative group inline-block" href="javascript:void(0)" (click)="cartService.deleteCartItem(item)">
+                          <app-svg-icon [icon]="'trash1'"></app-svg-icon>
+
+                          <app-tooltip [title]="'Delete'"></app-tooltip>
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                }
+              } @else {
+                <tr class="inbox-data">
+                  <td colspan="6" class="empty-cart text-center">
+                    <img src="assets/images/svg/empty-cart.svg" class="max-w-full">
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </app-card>
+    </div>
+    <div class="col-span-3 xl:col-span-12 xl-100 box-col-4e">
+      <app-cart-sidebar></app-cart-sidebar>
+    </div>
+  </div>
+</div>

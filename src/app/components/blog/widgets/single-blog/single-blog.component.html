@@ -1,0 +1,14 @@
+<div class="card">
+  <div class="blog-box blog-shadow">
+    <img class="max-w-full h-auto" [src]="blog.image" [alt]="blog.title">
+    <div class="blog-details">
+      <p>{{ blog.date }} {{ blog.year }}</p>
+      <h5 class="text-white">{{ blog.title }}</h5>
+      <ul class="blog-social">
+        <li><i class="icofont icofont-user"></i>{{ blog.created_by }}</li>
+        <li><i class="icofont icofont-thumbs-up"></i>{{ blog.hits }} Hits</li>
+        <li><i class="icofont icofont-ui-chat"></i>{{ blog.comment }} Comments</li>
+      </ul>
+    </div>
+  </div>
+</div>

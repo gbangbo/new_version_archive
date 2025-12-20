@@ -1,0 +1,19 @@
+<div class="main-card-box bg-10-{{ totalProjects.card_color }} h-full">
+    <div class="p-20 common-space">
+        <div>
+            <h5>{{ totalProjects.total_project }}</h5>
+            <span class="c-o-light">{{ totalProjects.title }}</span>
+        </div>
+        <div class="project-right-icon bg-10-{{ totalProjects.card_color }}">
+            <i class="fa-solid fa-{{ totalProjects.icon }} fa-fade txt-{{ totalProjects.card_color }}"></i>
+        </div>
+    </div>
+    <div class="project-list-card">
+        @for(details of totalProjects.details; track details) {
+            <div class="common-space">
+                <span class="font-medium">{{ details.title }}</span>
+                <span>{{ details.value }}</span>
+            </div>
+        }
+    </div>
+</div>

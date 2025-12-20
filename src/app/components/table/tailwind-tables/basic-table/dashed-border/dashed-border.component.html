@@ -1,0 +1,33 @@
+<app-card [headerTitle]="'Dashed Border '" [header]="'pb-0'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1">Use <code>table-dashed</code> class for dash border for dotted border use class<code> table-dotted</code> for double border use class<code> table-double</code>.</p>
+  <div class="card-block grid grid-cols-12">
+    <div class="col-span-12">
+      <div class="overflow-x-auto custom-scrollbar">
+        <table class="table table-dashed">
+          <thead>
+            <tr>
+              <th scope="col">Id </th>
+              <th scope="col">Classname</th>
+              <th scope="col">Type</th>
+              <th scope="col">Hours</th>
+              <th scope="col">Trainer</th>
+              <th scope="col">Spots</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for(details of dashedBorderTable;track details){
+              <tr>
+                <th scope="row">{{ details.id }}</th>
+                <td>{{ details.class_name }}</td>
+                <td>{{ details.type }}</td>
+                <td>{{ details.hours }}</td>
+                <td>{{ details.trainer }}	</td>
+                <td>{{ details.spots }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+     </div>
+    </div>
+  </div>
+</app-card>

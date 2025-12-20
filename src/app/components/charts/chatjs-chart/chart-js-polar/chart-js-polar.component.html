@@ -1,0 +1,5 @@
+<app-card [headerTitle]="'Polar Chart'" [border]="true" [padding]="false" [header]="'pb-0'" [cardBodyClass]="'chart-block chart-vertical-center'">
+  <canvas id="myPolarGraph" baseChart class="chart" [datasets]="polarChartData" [labels]="polarChartLabels"
+          [options]="polarChartOptions" [legend]="polarChartLegend" [type]="polarChartType">
+  </canvas>
+</app-card>

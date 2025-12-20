@@ -1,0 +1,102 @@
+/**=====================
+2.6 Breadcrumb CSS Start
+==========================**/
+.breadcrumb-colored {
+	padding: 12px 16px !important;
+	border-radius: 4px !important;
+
+	li {
+		a {
+			color: $breadcrumb-anchor-color;
+		}
+
+		&.active {
+			color: $breadcrumb-anchor-color;
+			opacity: 0.7;
+		}
+	}
+
+	.breadcrumb-item {
+		&:before {
+			color: $breadcrumb-anchor-color;
+		}
+	}
+
+	.breadcrumb-item.txt-dark {
+		&:before {
+			color: $breadcrumb-anchor-dark-color;
+		}
+	}
+}
+
+.breadcrumb-icon {
+	--bs-breadcrumb-divider: '>';
+
+	li {
+		display: inline-block;
+	}
+}
+
+.breadcrumb-no-divider {
+	--bs-breadcrumb-divider: '';
+}
+
+.breadcrumb-item {
+	&.active {
+		text-transform: capitalize;
+		color: var(--theme-default);
+		font-weight: 500;
+
+	}
+}
+
+.breadcrumb-space {
+	.breadcrumb-item {
+		&::before {
+			padding-right: 0;
+		}
+	}
+}
+
+.breadcrumb-item+.breadcrumb-item {
+	&::before {
+		float: left;
+		padding-right: 8px;
+		color: $light-text;
+		content: var(--bs-breadcrumb-divider, "/");
+	}
+}
+.breadcrumb-colored {
+	.breadcrumb-item+.breadcrumb-item {
+		&::before {
+			color: $white; 
+			content: var(--bs-breadcrumb-divider, "/");
+		}
+	}
+}
+
+.breadcrumb-item+.breadcrumb-item {
+	padding-left: 8px;
+}
+
+.breadcrumb {
+    --tw-breadcrumb-padding-x: 0;
+    --tw-breadcrumb-padding-y: 0;
+    --tw-breadcrumb-margin-bottom: 16px;
+    --tw-breadcrumb-bg: ;
+    --tw-breadcrumb-border-radius: ;
+    --tw-breadcrumb-divider-color: rgba($secondary-color,0.3);
+    --tw-breadcrumb-item-padding-x: 8px;
+    --tw-breadcrumb-item-active-color: rgba($secondary-color,0.3);
+    display: flex;
+    flex-wrap: wrap;
+    padding: 6px 1px;
+    margin-bottom: 16px;
+    font-size: var(--tw-breadcrumb-font-size);
+    list-style: none;
+    background-color: var(--tw-breadcrumb-bg);
+    border-radius: var(--tw-breadcrumb-border-radius);
+}
+/**=====================
+	2.6 Breadcrumb CSS ends
+==========================**/

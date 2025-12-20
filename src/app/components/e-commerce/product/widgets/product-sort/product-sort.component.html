@@ -1,0 +1,61 @@
+<div class="grid grid-cols-12 gap-4">
+  <div class="col-span-6 md:col-span-12 products-total">
+
+    <div class="square-product-setting d-inline-block">
+      <a class="icon-grid grid-layout-view" href="javascript:void(0)" (click)="productService.gridOpen()">
+        <app-feather-icon [icon]="'grid'"></app-feather-icon>
+      </a>
+    </div>
+    <div class="square-product-setting d-inline-block">
+      <a class="icon-grid m-0 list-layout-view" href="javascript:void(0)" (click)="productService.listOpen()">
+        <app-feather-icon [icon]="'list'"></app-feather-icon>
+      </a>
+    </div>
+
+    <div class="grid-options d-inline-block">
+      <ul>
+        <li (click)="productService.grid2()">
+          <a class="product-2-layout-view" href="javascript:void(0)">
+            <span class="line-grid line-grid-1 bg-primary"></span>
+            <span class="line-grid line-grid-2 bg-primary"></span>
+          </a>
+        </li>
+        <li (click)="productService.grid3()">
+          <a class="product-3-layout-view" href="javascript:void(0)">
+            <span class="line-grid line-grid-3 bg-primary"></span>
+            <span class="line-grid line-grid-4 bg-primary"></span>
+            <span class="line-grid line-grid-5 bg-primary"></span>
+          </a>
+        </li>
+        <li (click)="productService.grid4()">
+          <a class="product-4-layout-view" href="javascript:void(0)">
+            <span class="line-grid line-grid-6 bg-primary"></span>
+            <span class="line-grid line-grid-7 bg-primary"></span>
+            <span class="line-grid line-grid-8 bg-primary"></span>
+            <span class="line-grid line-grid-9 bg-primary"></span>
+          </a>
+        </li>
+        <li (click)="productService.grid6()">
+          <a class="product-6-layout-view" href="javascript:void(0)">
+            <span class="line-grid line-grid-10 bg-primary"></span>
+            <span class="line-grid line-grid-11 bg-primary"></span>
+            <span class="line-grid line-grid-12 bg-primary"></span>
+            <span class="line-grid line-grid-13 bg-primary"></span>
+            <span class="line-grid line-grid-14 bg-primary"></span>
+            <span class="line-grid line-grid-15 bg-primary"></span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="col-span-6 md:col-span-12 text-end md:text-start">
+    <span class="font-semibold m-r-5 sm:mb-2 sm:block">Showing Products 1 - 24 Of 200 Results</span>
+    <div class="inline-block dropdown-product">
+      <select class="form-select">
+        <option value="1">Featured</option>
+        <option value="2">Lowest Prices</option>
+        <option value="3">Highest Prices</option>
+      </select>
+    </div>
+  </div>
+</div>

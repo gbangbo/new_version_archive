@@ -1,0 +1,24 @@
+<app-card [headerTitle]="'Offcanvas Variation'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'common-flex common-offcanvas'">
+
+    <p class="f-m-light mt-1" header5>
+        Control the offcanvas panel behavior using different options:  <br>
+        - <code>Enable Body Scrolling</code>: Allows content scrolling while the panel is open. <br>
+        - <code>Enable Both Scrolling & Backdrop</code>: Enables scrolling with a backdrop overlay. <br> 
+        - <code>Toggle Static Offcanvas</code>: Prevents closing when clicking outside the panel.  
+    </p>
+          
+    <button class="btn btn-info" type="button" (click)="openScrolling()">Enable Body Scrolling</button>
+
+    <button class="btn btn-warning" type="button" (click)="openBackdropScrolling()">Enable Both Scrolling &amp; Backdrop</button>
+
+    <button class="btn btn-info" type="button" (click)="openStatic()">Toggle Static Offcanvas</button>
+
+    @if(scrollingCanvasVisible || backdropScrollingVisible || staticCanvasVisible) {
+        <app-project-form [title]="title" [positionClass]="'offcanvas-start'" [outsideClick]="staticCanvasVisible ? false : true" (closeOffcanvas)="handleOffcanvas($event)"></app-project-form>
+    }
+
+    @if(backdropScrollingVisible || staticCanvasVisible) {
+        <div class="offcanvas-backdrop"></div>
+    }
+    
+</app-card>

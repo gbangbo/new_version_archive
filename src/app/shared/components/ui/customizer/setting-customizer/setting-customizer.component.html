@@ -1,0 +1,383 @@
+<div class="customizer-header">
+  <div class="theme-title">
+    <div>
+      <h4>Preview Settings</h4>
+      <p class="mb-0">
+        Try It Real Time<i class="fa-solid fa-thumbs-up fa-fw"></i>
+      </p>
+    </div>
+    <div class="flex-grow-1">
+      <a
+        class="icon-btn btn-outline-light button-effect pull-right cog-close"
+        id="cog-close"
+        (click)="closeCustomizer()"
+      >
+        <i class="fa-solid fa-xmark fa-fw"></i>
+      </a>
+    </div>
+  </div>
+</div>
+<div class="customizer-body custom-scrollbar">
+  <h6>Layout Type</h6>
+  <ul class="layout-grid main-layout">
+    <li
+      [class.active]="layoutService.config.settings.layout_type == 'ltr'"
+      data-attr="ltr"
+      (click)="handleLayoutType('ltr')"
+    >
+      <div class="bg-light header">
+        <ul>
+          <li></li>
+          <li></li>
+          <li></li>
+        </ul>
+      </div>
+      <div class="body">
+        <ul>
+          <li class="bg-light sidebar"></li>
+          <li class="bg-light body">
+            <span class="badge badge-primary">LTR</span>
+          </li>
+        </ul>
+      </div>
+    </li>
+    <li
+      [class.active]="layoutService.config.settings.layout_type == 'rtl'"
+      data-attr="rtl"
+      (click)="handleLayoutType('rtl')"
+    >
+      <div class="bg-light header">
+        <ul>
+          <li></li>
+          <li></li>
+          <li></li>
+        </ul>
+      </div>
+      <div class="body">
+        <ul>
+          <li class="bg-light body">
+            <span class="badge badge-primary">RTL</span>
+          </li>
+          <li class="bg-light sidebar"></li>
+        </ul>
+      </div>
+    </li>
+    <li
+      class="box-layout px-3"
+      [class.active]="layoutService.config.settings.layout_type == 'box'"
+      (click)="handleLayoutType('box')"
+    >
+      <div class="bg-light header">
+        <ul>
+          <li></li>
+          <li></li>
+          <li></li>
+        </ul>
+      </div>
+      <div class="body">
+        <ul>
+          <li class="bg-light sidebar"></li>
+          <li class="bg-light body">
+            <span class="badge badge-primary">Box</span>
+          </li>
+        </ul>
+      </div>
+    </li>
+  </ul>
+  <h6>Sidebar Type</h6>
+  <ul class="layout-grid sidebar-type">
+    <li data-attr="normal-sidebar" (click)="handleSidebarType('horizontal')">
+      <div class="bg-light header">
+        <ul>
+          <li></li>
+          <li></li>
+          <li></li>
+        </ul>
+      </div>
+      <div class="body">
+        <ul>
+          <li class="sidebar bg-dark"></li>
+          <li class="bg-light body"></li>
+        </ul>
+      </div>
+    </li>
+    <li data-attr="compact-sidebar" (click)="handleSidebarType('vertical')">
+      <div class="bg-light header">
+        <ul>
+          <li></li>
+          <li></li>
+          <li></li>
+        </ul>
+      </div>
+      <div class="body">
+        <ul>
+          <li class="sidebar bg-dark compact"></li>
+          <li class="bg-light body"></li>
+        </ul>
+      </div>
+    </li>
+  </ul>
+  <h6>Unlimited Color</h6>
+  <ul class="layout-grid unlimited-color-layout">
+    <input
+      id="ColorPicker1"
+      name="Background"
+      type="color"
+      value="#7366ff"
+      [(ngModel)]="primary"
+    />
+    <input
+      id="ColorPicker2"
+      name="Background"
+      type="color"
+      value="#838383"
+      [(ngModel)]="secondary"
+    />
+    <button
+      class="color-apply-btn btn btn-primary text-white"
+      type="button"
+      (click)="applyColor()"
+    >
+      Apply
+    </button>
+  </ul>
+  <h6>Light layout</h6>
+  <ul class="layout-grid customizer-color">
+    <li
+      class="color-layout"
+      data-attr="color-1"
+      (click)="handleColorLayout('light-only', '#7366ff', '#838383')"
+    >
+      <div></div>
+    </li>
+    <li
+      class="color-layout"
+      data-attr="color-2"
+      (click)="handleColorLayout('light-only', '#4831D4', '#ea2087')"
+    >
+      <div></div>
+    </li>
+    <li
+      class="color-layout"
+      data-attr="color-3"
+      (click)="handleColorLayout('light-only', '#d64dcf', '#8e24aa')"
+    >
+      <div></div>
+    </li>
+    <li
+      class="color-layout"
+      data-attr="color-4"
+      (click)="handleColorLayout('light-only', '#4c2fbf', '#2e9de4')"
+    >
+      <div></div>
+    </li>
+    <li
+      class="color-layout"
+      data-attr="color-5"
+      (click)="handleColorLayout('light-only', '#7c4dff', '#7b1fa2')"
+    >
+      <div></div>
+    </li>
+    <li
+      class="color-layout"
+      data-attr="color-6"
+      (click)="handleColorLayout('light-only', '#3949ab', '#4fc3f7')"
+    >
+      <div></div>
+    </li>
+  </ul>
+  <h6>Dark Layout</h6>
+  <ul class="layout-grid customizer-color dark">
+    <li
+      class="color-layout"
+      data-attr="color-1"
+      (click)="handleColorLayout('dark-only', '#4466f2', '#1ea6ec')"
+    >
+      <div></div>
+    </li>
+    <li
+      class="color-layout"
+      data-attr="color-2"
+      (click)="handleColorLayout('dark-only', '#4831D4', '#ea2087')"
+    >
+      <div></div>
+    </li>
+    <li
+      class="color-layout"
+      data-attr="color-3"
+      (click)="handleColorLayout('dark-only', '#d64dcf', '#8e24aa')"
+    >
+      <div></div>
+    </li>
+    <li
+      class="color-layout"
+      data-attr="color-4"
+      (click)="handleColorLayout('dark-only', '#4c2fbf', '#2e9de4')"
+    >
+      <div></div>
+    </li>
+    <li
+      class="color-layout"
+      data-attr="color-5"
+      (click)="handleColorLayout('dark-only', '#7c4dff', '#7b1fa2')"
+    >
+      <div></div>
+    </li>
+    <li
+      class="color-layout"
+      data-attr="color-6"
+      (click)="handleColorLayout('dark-only', '#3949ab', '#4fc3f7')"
+    >
+      <div></div>
+    </li>
+  </ul>
+  <h6>Sidebar Icon</h6>
+  <ul class="layout-grid sidebar-setting">
+    <li
+      [ngClass]="{ active: icon == 'stroke-svg' }"
+      (click)="changeIcon('stroke-svg')"
+    >
+      <div class="bg-light header">
+        <ul>
+          <li></li>
+          <li></li>
+          <li></li>
+        </ul>
+      </div>
+      <div class="bg-light body">
+        <span class="badge badge-primary">Stroke</span>
+      </div>
+    </li>
+    <li
+      [ngClass]="{ active: icon == 'fill-svg' }"
+      (click)="changeIcon('fill-svg')"
+    >
+      <div class="bg-light header">
+        <ul>
+          <li></li>
+          <li></li>
+          <li></li>
+        </ul>
+      </div>
+      <div class="bg-light body">
+        <span class="badge badge-primary">Fill</span>
+      </div>
+    </li>
+  </ul>
+  <h6>Mix Layout</h6>
+  <ul class="layout-grid customizer-mix">
+    <li
+      class="color-layout active"
+      data-attr="light-only"
+      (click)="handleLayout('light-only')"
+    >
+      <div class="bg-light header">
+        <ul>
+          <li></li>
+          <li></li>
+          <li></li>
+        </ul>
+      </div>
+      <div class="body common-layout">
+        <span class="badge badge-secondary text-white">Light</span>
+        <ul>
+          <li class="bg-light sidebar"></li>
+          <li class="bg-light body"></li>
+        </ul>
+      </div>
+    </li>
+    <li
+      class="color-layout"
+      data-attr="dark-sidebar"
+      (click)="handleLayout('dark-sidebar')"
+    >
+      <div class="bg-light header">
+        <ul>
+          <li></li>
+          <li></li>
+          <li></li>
+        </ul>
+      </div>
+      <div class="body common-layout">
+        <span class="badge badge-secondary text-white">Sidebar</span>
+        <ul>
+          <li class="sidebar bg-dark"></li>
+          <li class="bg-light body"></li>
+        </ul>
+      </div>
+    </li>
+    <li
+      class="color-layout"
+      data-attr="dark-only"
+      (click)="handleLayout('dark-only')"
+    >
+      <div class="header bg-dark">
+        <ul>
+          <li></li>
+          <li></li>
+          <li></li>
+        </ul>
+      </div>
+      <div class="body common-layout">
+        <span class="badge badge-secondary text-white">Dark</span>
+        <ul>
+          <li class="sidebar bg-dark"></li>
+          <li class="body bg-dark"></li>
+        </ul>
+      </div>
+    </li>
+    <li
+      class="color-layout"
+      id="auto-layout"
+      (click)="handleLayout('dark-only auto-only')"
+    >
+      <div class="bg-light header">
+        <ul>
+          <li></li>
+          <li></li>
+          <li></li>
+        </ul>
+      </div>
+      <div class="body common-layout">
+        <span class="badge badge-secondary text-white">Auto</span>
+        <ul>
+          <li class="sidebar bg-dark"></li>
+          <li class="bg-light body"></li>
+        </ul>
+      </div>
+    </li>
+  </ul>
+  <h6>Links</h6>
+  <ul class="layout-link">
+    <li>
+      <a href="https://support.pixelstrap.com/" target="_blank">
+        <i class="icon-headphone-alt"></i>
+        <span>Support</span>
+      </a>
+    </li>
+    <li>
+      <a
+        href="https://docs.pixelstrap.com/cuba-tailwind/angular/document/"
+        target="_blank"
+      >
+        <i class="icon-file"></i>
+        <span>Document</span>
+      </a>
+    </li>
+    <li>
+      <a
+        href="https://admin.pixelstrap.net/cuba_tailwind/template/landing-page.html#frameworks"
+        target="_blank"
+      >
+        <i class="icon-panel"></i>
+        <span>Features</span>
+      </a>
+    </li>
+    <li>
+      <a href="https://1.envato.market/3GVzd" target="_blank">
+        <i class="icon-shopping-cart-full"></i>
+        <span>Buy Now</span>
+      </a>
+    </li>
+  </ul>
+</div>

@@ -1,0 +1,32 @@
+<div class="tab-content custom-input">
+  <div class="sidebar-body common-form">
+    <div class="custom-dropzone">
+      <div class="product-upload">
+        <p>Product Thumbnail Image 
+          <span class="c-o-light !inline-block">&lpar;Main Image&rpar;</span>
+        </p>
+        <form class="dropzone dropzone-secondary">
+          <dropzone class="dropzone-container flex" [config]="config" [message]="text">
+          </dropzone>
+        </form>
+      </div>
+    </div>
+    <div class="custom-dropzone">
+      <div class="product-upload dropzone-2">
+        <p>Product Gallery</p>
+        <form class="dropzone dropzone-secondary" id="multiFileUpload">
+          <dropzone class="dropzone-container flex" [config]="config" [message]="text">
+          </dropzone>
+        </form>
+      </div>
+    </div>
+    <div class="product-buttons">
+      <button class="btn" type="button" (click)="previous()">
+        <app-svg-icon [icon]="'back-arrow'"></app-svg-icon>Previous
+      </button>
+      <button class="btn" type="button" (click)="next()">Next
+        <app-svg-icon [icon]="'front-arrow'"></app-svg-icon>
+      </button>
+    </div>
+  </div>
+</div>

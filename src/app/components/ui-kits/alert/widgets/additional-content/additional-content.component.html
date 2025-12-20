@@ -1,0 +1,11 @@
+<app-card [headerTitle]="'Additional Contents'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'dark-alert alert-addition-content'">
+
+    <p class="f-m-light mt-1" header5>Use<code> alert </code> utility class to provide additional content within any alerts.</p>
+
+    @for(alert of alertAdditionalContent; track alert) {
+        <div class="alert bg-light-{{ alert.color }}">
+            <h5 class="alert-heading pb-2 txt-{{ alert.color }}">{{ alert.title }}</h5>
+            <p [innerHTML]="alert.description"></p>
+        </div>
+    }
+</app-card>

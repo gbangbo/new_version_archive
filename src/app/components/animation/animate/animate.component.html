@@ -1,0 +1,49 @@
+<div class="container">
+    <div class="grid grid-cols-12 card-gap">
+      <div class="col-span-12">
+        <div class="card animate-wrapper">
+          <div class="card-body">
+            <div class="grid grid-cols-12 card-gap">
+              <div class="col-start-4 xl:col-span-8 md:col-span-12 md:col-span-0 col-span-6 xl:col-start-3">
+                <div id="animation-box" [ngClass]="animated && animation ? 'animated' + ' ' + animation  :''">
+                  <div class="card">
+                    <div class="animate-widget">
+                      <div>
+                        <img class="max-w-full h-auto" src="assets/images/banner/3.jpg" alt="banner">
+                      </div>
+                      <div class="text-center p-25">
+                        <p class="text-muted">Denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <form class="theme-form text-center mt-4">
+                  <div class="mb-4">
+                    <select2 class="input input--dropdown js-animations" [data]="animationValues" name="in" [(ngModel)]="animation" resetSelectedValue="bounceIn" placeholder="Select Value" noResultMessage="No Value Found." listPosition="above"></select2>
+                  </div>
+                  <button class="js-triggeraNimation btn btn-primary text-white" (click)="animate()">Animate it</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-span-12">
+        <div class="card">
+          <div class="card-header card-no-border pb-0">
+            <h5>How to use it?</h5>
+            <p class="f-m-light mt-1">All you have to do is to add animation name class attribute to html element, like :<code>Fade</code></p>
+          </div>
+          <div class="card-body options">
+            @for(list of animationValues; track list) {
+              @for(item of list.options; track item) {
+                <div>
+                  {{ item.label }}
+                </div>
+              }
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+</div>

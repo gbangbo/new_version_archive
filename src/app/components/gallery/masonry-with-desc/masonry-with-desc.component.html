@@ -1,0 +1,25 @@
+<div class="container">
+    <div class="grid grid-cols-12 masonry-gallery-box">
+        <div class="col-span-12">
+            <app-card [headerTitle]="'MASONRY GALLERY WITH DESCRIPTION'" [border]="true" [header]="'pb-0'" [padding]="false" [cardBodyClass]="'product-wrapper-grid'">
+                <div class="my-gallery grid gallery-with-description" id="aniimated-thumbnials" itemscope="">
+                    <ngx-masonry [options]="masonryOptions" [ordered]="true">
+                            <div class="grid grid-cols-12 card-gap gallery-with-description">
+                            @for(image of masonryImageDesc; track image; let i = $index){
+                                <figure class="col-span-3 xl:col-span-6 sm:col-span-12" itemprop="associatedMedia" itemscope="" ngxMasonryItem >
+                                    <a (click)="openInFullScreen(i)">
+                                        <img class="img-thumbnail" [src]="image.src_url" itemprop="thumbnail" alt="Image description">
+                                    <div class="caption">
+                                      <h4>Portfolio Title</h4>
+                                      <p>Expert photographers have a thorough grasp of their gear and know how to get the best results by experimenting with different lenses, lighting setups, and post-processing software.</p>
+                                    </div>
+                                </a>
+                                </figure>
+                            }
+                        </div>
+                    </ngx-masonry>
+                </div>
+            </app-card>
+        </div>
+    </div>
+</div>

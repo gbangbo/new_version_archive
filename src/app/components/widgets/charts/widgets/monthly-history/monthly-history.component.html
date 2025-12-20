@@ -1,0 +1,21 @@
+<app-card [cardClass]="'o-hidden'" [header]="'pb-0'" [headerTitle]="'Monthly History'" [border]="true" [padding]="false" [cardBodyClass]="'bottom-content'">
+    <div class="grid grid-cols-12">
+        <div class="col-span-12">
+            <div id="chart-widget4">
+                <apx-chart 
+                    [series]="monthlyHistoryChart.series"
+                    [chart]="monthlyHistoryChart.chart"
+                    [plotOptions]="monthlyHistoryChart.plotOptions"
+                    [dataLabels]="monthlyHistoryChart.dataLabels"
+                    [stroke]="monthlyHistoryChart.stroke"
+                    [xaxis]="monthlyHistoryChart.xaxis"
+                    [yaxis]="monthlyHistoryChart.yaxis"
+                    [colors]="monthlyHistoryChart.colors"
+                    [fill]="monthlyHistoryChart.fill"
+                    [tooltip]="monthlyHistoryChart.tooltip"
+                    [responsive]="monthlyHistoryChart.responsive">
+                </apx-chart>
+            </div>
+        </div>
+    </div>
+</app-card>

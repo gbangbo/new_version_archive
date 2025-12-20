@@ -1,0 +1,9 @@
+<app-card [headerTitle]="'Simple Horizontal Divider'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'main-divider'">
+
+    <p class="mb-0 mt-1" header5>Use <code>divider-h-line</code> class for horizontal divider.</p>
+
+    @for(divider of simpleDivider; track divider) {
+        <div class="divider-h-line bg-{{ divider.color }}"></div>
+    }
+    
+</app-card>

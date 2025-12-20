@@ -1,0 +1,12 @@
+<app-card [headerTitle]="'Sizes'" [header]="'pb-0'" [border]="true" [padding]="false">
+
+    <p class="f-m-light mt-1" header5>Use size of avatar like <code>img-* (70/80/90/100)</code> class.</p>
+
+    <div class="avatars avatar-showcase">
+        @for(avatar of sizeAvatar; track avatar) {
+            <div class="avatar">
+                <img class="rounded-full" [ngClass]="avatar.size_class" [src]="avatar.profile" alt="avatar">
+            </div>
+        }
+    </div> 
+</app-card> 

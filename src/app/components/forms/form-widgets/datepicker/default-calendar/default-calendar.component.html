@@ -1,0 +1,11 @@
+<app-card [headerTitle]="'Default Calendar'" [header]="'pb-0'" [cardBodyClass]="'card-wrapper pt-1'" [border]="true" [padding]="false">
+    <p class="f-m-light mt-1" header5>Display the calendar in an always-open state with the<code> inline </code>option.</p>
+
+    <div class="grid grid-cols-12 gap-4">
+        <div class="col-span-12">
+            <div class="input-group main-inline-calender default-calendar-box">
+                <owl-date-time-inline [pickerType]="'calendar'" [(ngModel)]="selectedMoment"></owl-date-time-inline>
+            </div>
+        </div>
+    </div>
+</app-card>

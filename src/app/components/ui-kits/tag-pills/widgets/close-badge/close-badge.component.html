@@ -1,0 +1,15 @@
+<app-card [headerTitle]="'Close Badges'" [header]="'pb-0'" [border]="true" [padding]="false">
+
+    <p class="f-m-light mt-1" header5>Use<code> badge-l-*</code>classes to provide background-colors and <code>border-* </code>classes to provide border-colors.</p>
+
+    <div class="badge-spacing image-badges">
+        @for(color of colors; track color) {
+            <span class="badge common-align txt-{{ color.color }} rounded-full badge-l-{{ color.color }} border border-{{ color.color }}">
+                {{ color.color | titlecase }}
+                <a href="javascript:void(0)">
+                    <app-feather-icon [icon]="'x-circle'" [class]="'ms-1 stroke-'+color.color"></app-feather-icon>
+                </a>
+            </span>
+        }
+    </div>
+</app-card>

@@ -1,0 +1,14 @@
+<div class="card">
+  <div class="blog-box blog-grid text-center">
+    <img class="max-w-full h-auto top-radius-blog" [src]="blog.image" [alt]="blog.title">
+    <div class="blog-details-main">
+      <ul class="blog-social">
+        <li>{{ blog.date }} {{ blog.year }}</li>
+        <li>by: {{ blog.created_by }}</li>
+        <li>{{ blog.hits }} Hits</li>
+      </ul>
+      <hr>
+      <h6 class="blog-bottom-details">{{ blog.title }}</h6>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,31 @@
+<app-card [headerTitle]="'Flat Input Style'" [header]="'pb-0'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>
+    Use <code>btn-square </code>to define 0px border-radius.
+  </p>
+  <form class="form theme-form dark-inputs">
+    <div class="grid grid-cols-12">
+      <div class="col-span-12">
+        <div class="mb-4">
+          <label class="form-label" for="exampleFormControlSelect12">Select Your Favorite Roman Number</label>
+          <select2 [data]="selectNumber" placeholder="I"></select2>
+        </div>
+      </div>
+    </div>
+    <div class="grid grid-cols-12">
+      <div class="col-span-12">
+        <div class="mb-4">
+          <label class="form-label" for="exampleFormControlSelect13">Select Your Multiple Paintings</label>
+          <select2 [data]="selectPainting" [multiple]="true" placeholder="Landscape"></select2>
+        </div>
+      </div>
+    </div>
+    <div class="grid grid-cols-12">
+      <div class="col-span-12">
+        <div>
+          <label class="form-label" for="exampleFormControlTextarea14">Please Do Comments</label>
+          <textarea class="form-control btn-square" id="exampleFormControlTextarea14" rows="3"></textarea>
+        </div>
+      </div>
+    </div>
+  </form>
+</app-card>

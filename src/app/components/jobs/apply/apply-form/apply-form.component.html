@@ -1,0 +1,52 @@
+<div class="card">
+    <div class="job-search">
+        <div class="card-body pb-0">
+            <div class="flex">
+                <img class="img-40 max-w-full h-auto m-r-20" src="assets/images/job-search/1.jpg" alt="pc">
+                <div class="grow">
+                    <h6>
+                        <a href="javascript:void(0)">UI Designer</a>
+                        <span class="pull-right">
+                            <button class="btn btn-primary text-white" type="button">
+                                <span>
+                                    <i class="fa-solid fa-check text-white me-1"></i>
+                                </span>
+                                Save this job
+                            </button>
+                            </span>
+                        </h6>
+                    <p class="mt-0">
+                        Endless Telecom & Technologies , NY
+                        <span>
+                            <bar-rating  [rate]="5" [readonly]="true" [max]="5">
+                                <ng-template ratingActive>
+                                  <i class="fa-solid fa-star" style="color: #ffb829"></i>
+                                </ng-template>
+                                <ng-template ratingInactive>
+                                  <i class="fa-solid fa-star" style="color: #d2d2d2"></i>
+                                </ng-template>
+                                <ng-template ratingFraction>
+                                  <i class="fa-solid fa-star-half-stroke" style="color: #ffb829"></i>
+                                </ng-template>
+                              </bar-rating>
+                        </span>
+                    </p>
+                </div>
+            </div>
+            <div class="job-description">
+                <h6 class="mb-0">Personal Details </h6>
+                    <app-personal-details></app-personal-details>
+                <h6 class="mb-0">Your Education</h6>
+                    <app-education-form></app-education-form>
+                <h6 class="mb-0">Your Experience</h6>
+                    <app-experience-form></app-experience-form>
+                <h6 class="mb-0">Upload Your Files</h6>
+                    <app-upload-files></app-upload-files>
+            </div>
+        </div>
+        <div class="card-footer common-flex justify-end">
+            <button class="btn btn-primary text-white" type="submit">Submit</button>
+            <input class="btn btn-light" type="reset" value="Cancel">
+        </div>
+    </div>
+</div>

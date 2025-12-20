@@ -1,0 +1,10 @@
+<app-card [headerTitle]="'Min Max Value'" [header]="'pb-0'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>
+    Use <code>ngx-slider</code> to create a range slider where you can set both minimum and maximum values. The slider's <code>value</code> starts at 100, and the <code>highValue</code> is initially set to 70. The range is defined with a <code>floor</code> of 0 and a <code>ceil</code> of 200, allowing you to adjust the values within this range.
+  </p>
+    <div class="form-group grid grid-cols-12 py-1 justify-center">
+      <div class="col-span-10 md:col-span-12">
+        <ngx-slider [(value)]="value" [(highValue)]="maxValue" [options]="options"></ngx-slider>
+      </div>
+    </div>
+</app-card>

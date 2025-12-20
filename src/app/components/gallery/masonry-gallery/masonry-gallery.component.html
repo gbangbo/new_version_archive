@@ -1,0 +1,21 @@
+<div class="container">
+    <div class="grid grid-cols-12 masonry-gallery-box">
+        <div class="col-span-12 box-col-12">
+            <app-card [headerTitle]="'MASONRY GALLERY'" [border]="true" [padding]="false" [header]="'pb-0'" [cardBodyClass]="'product-wrapper-grid'">
+                <div class="my-gallery grid gallery" id="aniimated-thumbnials" itemscope="">
+                    <ngx-masonry [options]="masonryOptions" [ordered]="true">
+                        <div class="grid grid-cols-12">
+                            @for( image of masonryImage; track image; let i = $index ){
+                                <figure class="col-span-3 md:col-span-6 sm:col-span-12" itemprop="associatedMedia" itemscope="" ngxMasonryItem>
+                                    <a (click)="openInFullScreen(i)">
+                                        <img class="img-thumbnail" [src]="image.src_url" itemprop="thumbnail" alt="Image description">
+                                    </a>
+                                  </figure>
+                            }
+                        </div>
+                    </ngx-masonry>
+                </div>
+            </app-card>
+        </div>
+    </div>
+</div>

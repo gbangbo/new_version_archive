@@ -1,0 +1,23 @@
+<app-card [headerTitle]="'Block Level Buttons'" [header]="'pb-0'" [border]="true" [padding]="false">
+    <p class="f-m-light mt-1" header5>Use<code> btn </code>class for buttons and <code>d-grid </code>used for block level buttons.</p>
+    <div class="grid grid-cols-12 gap-4">
+        @for(details of blockButton; track details){
+            <div class="col-span-12"> 
+             <div class="card-wrapper border rounded-3">
+               <h6 class="sub-title fw-bold">{{ details.title }}</h6>
+               <div class="gap-2 buttons-box {{ details.class }}">
+                @for(button of details.buttons; track button){
+                    @if(button.btn_class){
+                        <div class="col-span-6 col-start-3">
+                            <button class="btn {{ button.class }}" type="button">{{ button.text}}</button>
+                        </div>
+                    } @else { 
+                        <button class="btn {{ button.class }}" type="button">{{ button.text}}</button>
+                    }
+                }
+               </div>
+             </div>
+           </div>
+        }       
+    </div>
+</app-card>

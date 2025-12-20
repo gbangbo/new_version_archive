@@ -1,0 +1,80 @@
+<div class="container">
+  <div class="grid grid-cols-12 card-gap shipping-form">
+    <div class="col-span-8 xl:col-span-12">
+      <app-card [cardClass]="'checkout-cart'" [cardBodyClass]="'basic-wizard important-validation'">
+        <div class="stepper-horizontal custom-scrollbar" id="stepper1">
+          @for(tab of checkoutTabs; track tab) {
+            <div class="stepper-one step" [ngClass]="{'active done': tab.id < activeTab }">
+              <div class="step-circle"><span>{{ tab.id }}</span></div>
+              <div class="step-title">{{ tab.title }}</div>
+              <div class="step-bar-left"></div>
+              <div class="step-bar-right"></div>
+            </div>
+          }
+        </div>
+        <div class="shipping-content" id="msform">
+          <div [ngStyle]="{ 'display': (activeTab === 1 ? 'block' : 'none') }">
+            <app-information></app-information>
+          </div>
+
+          <div [ngStyle]="{ 'display': (activeTab === 2 ? 'block' : 'none') }">
+            <app-shipping></app-shipping>
+          </div>
+
+          <div [ngStyle]="{ 'display': (activeTab === 3 ? 'block' : 'none') }">
+            <app-payment></app-payment>
+          </div>
+
+          <div [ngStyle]="{ 'display': (activeTab === 4 ? 'block' : 'none') }">
+            <app-completed></app-completed>
+          </div>
+        </div>
+
+        <div class="wizard-footer flex gap-2 justify-end mt-3">
+          <button class="btn button-light-primary" id="backbtn" (click)="handleStep(-1)" [disabled]="activeTab == 1"> Back</button>
+          <button class="btn btn-primary text-white" id="nextbtn" (click)="activeTab == checkoutTabs.length ? placeOrder() : handleStep(1)">{{ activeTab == checkoutTabs.length ? 'Finish' : 'Next' }}</button>
+        </div>
+      </app-card>
+    </div>
+    <div class="col-span-4 xl:col-span-12">
+      <app-card [headerTitle]="'Order Details'" [border]="true" [padding]="false">
+        <ul class="summery-contain">
+          @for(product of orderDetails.products; track product) {
+            <li>
+              <img class="max-w-full" [src]="product.product_image" [alt]="product.product_name">
+              <h6>
+                {{ product.product_name }}
+                <span>
+                  X {{ product.quantity }}
+                </span>
+              </h6>
+              <h6 class="price">${{ product.discount_price ? product.discount_price : product.price }}</h6>
+            </li>
+          }
+        </ul>
+        <ul class="summary-total">
+          <li>
+            <h6>Subtotal</h6>
+            <h6 class="price">${{ orderDetails.billing_details.sub_total }}</h6>
+          </li>
+          <li>
+            <h6>Shipping</h6>
+            <h6 class="price">{{ orderDetails.billing_details.shipping }}</h6>
+          </li>
+          <li>
+            <h6>Tax</h6>
+            <h6 class="price">${{ orderDetails.billing_details.tax }}</h6>
+          </li>
+          <li>
+            <h6>Coupon Code</h6>
+            <h6 class="price">$-{{ orderDetails.billing_details.coupon_discount }}</h6>
+          </li>
+          <li class="list-total">
+            <h6>Total </h6>
+            <h6 class="price">${{ orderDetails.billing_details.total }}</h6>
+          </li>
+        </ul>
+      </app-card>
+    </div>
+  </div>
+</div>

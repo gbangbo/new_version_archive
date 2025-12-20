@@ -1,0 +1,21 @@
+<app-card [headerTitle]="'Default Switches'" [header]="'pb-0'" [border]="true" [padding]="false" [cardClass]="'default-switches'">
+  <p class="f-m-light mt-1" header5>
+    Use <code>form-switch</code> and <code>form-check-label </code>for switches.
+  </p>
+    <div class="grid grid-cols-12 gap-4">
+      @for(switch of defaultSwitch; track switch){
+        <div class="{{ switch.class }}">
+          <div class="card-wrapper border rounded-3 rtl-input checkbox-checked">
+            <h6 class="sub-title">{{ switch.title }} </h6>
+            @for(item of switch.details;track item){
+              <div class="form-check flex gap-2 form-switch" [class.form-check-reverse]="switch.id == 3">
+                <input class="form-check-input" [id]="item.id" type="checkbox" role="switch"
+                  [checked]="item.value" [disabled]="item.disable">
+                <label class="form-check-label" [for]="item.id">{{ item.text }}</label>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+</app-card>

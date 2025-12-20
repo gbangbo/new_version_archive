@@ -1,0 +1,33 @@
+.text-danger {
+  color: rgb(252 86 74) !important;
+}
+
+.icofont-spinner-alt-5 {
+  font-size: 20px; /* Ajuste la taille de l'icône */
+  display: inline-block;
+  animation: spin 1s linear infinite; /* Animation de rotation */
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg); /* Commence à 0 degré */
+  }
+  100% {
+    transform: rotate(360deg); /* Termine à 360 degrés (rotation complète) */
+  }
+}
+
+.login-card .login-main {
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, .04), 0 4px 16px -4px rgba(0, 0, 0, .16) !important;
+  height: 592px !important;
+}
+
+.btnCnx {
+  //background: #062878 !important;
+  height: 42px;
+  font-size: 16px;
+  margin-top: 12% !important;
+}
+.logoTaille{
+  width: 50px !important;
+}

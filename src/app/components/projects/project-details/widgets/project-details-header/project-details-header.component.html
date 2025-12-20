@@ -1,0 +1,53 @@
+<div class="common-project-header common-space m-b-20">
+  <div class="common-space">
+    <div class="pe-3 sm:pe-0">
+      <h5 class="mb-2">{{ projectDetailsHeader.title }}
+        <span class="badge badge-light-warning ms-2">{{ projectDetailsHeader.project_status }}</span>
+      </h5>
+      <span class="c-o-light">{{ projectDetailsHeader.description }}</span>
+    </div>
+    <div class="common-align">
+      <div class="customers">
+        <ul class="flex">
+          @for(customer of projectDetailsHeader.customers; track customer) {
+            @if(customer.image_url) {
+              <li class="d-inline-block">
+                <img class="img-40 rounded-full" [src]="customer.image_url" alt="user">
+              </li>
+            } @else if(customer.name) {
+              <li class="d-inline-block">
+                <div class="common-circle bg-lighter-{{ chatService.getTextColor(chatService.getUserText(customer.name))}}">
+                  {{ chatService.getUserText(customer.name, 'singleText') }}</div>
+              </li>
+            }
+          }
+
+          <li class="d-inline-block">
+            <div class="bg-lighter-dark common-circle">
+              <span class="font-medium">{{ projectDetailsHeader.total_customer - projectDetailsHeader.customers.length }}+</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <h6>All tasks : {{ projectDetailsHeader.all_task }}</h6>
+    </div>
+  </div>
+  <div class="common-align">
+    <ul class="common-align">
+      <li class="flex">
+        <span class="pe-1">Create Date &colon;</span>
+        <app-svg-icon [icon]="'vector-calendar'"></app-svg-icon>
+        <span>{{ projectDetailsHeader.created_date }}</span>
+      </li>
+      <li class="flex"> 
+        <span>Due Date &colon;</span>
+        <app-svg-icon [icon]="'vector-calendar'"></app-svg-icon>
+        <span>{{ projectDetailsHeader.due_date }}</span>
+      </li>
+    </ul>
+    <a class="btn btn-primary border text-white" href="javascript:void(0)" [routerLink]="['/project/create-project']">
+      <i class="fa-solid fa-plus"></i> 
+      Add Project
+     </a>
+  </div>
+</div>

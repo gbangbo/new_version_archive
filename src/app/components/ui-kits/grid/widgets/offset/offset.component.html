@@ -1,0 +1,30 @@
+<app-card [headerTitle]="'Offset'" [header]="'pb-0'" [border]="true" [padding]="false">
+  <p class="mt-1 f-m-light" header5>Move columns to the right using <code>sm:col-start-* </code>classes. These classes
+    increase the left margin of a column by <code>* </code>columns.</p>
+
+  <div class="grid grid-cols-12 grid-showcase">
+    <div class="col-span-5 sm:col-span-4 col-start-3 sm:col-start-3"><span>col-5 offset-sm-3</span>
+    </div>
+    <div class="col-span-4 sm:col-span-4 col-start-10 sm:col-start-2"><span>col-2 offset-sm-2</span>
+    </div>
+    <div class="col-span-4 sm:col-span-5 col-start-2"><span>col-4 offset-sm-2</span></div>
+    <div class="col-span-3 sm:col-span-4 col-start-8"><span>col-3 offset-sm-2</span></div>
+  </div>
+
+  <div class="card-footer" details>
+    <div class="overflow-x-auto grid-footer">
+      <table class="w-full">
+        <tbody>
+          <tr>
+            <th> Class</th>
+            <th>Value of the class</th>
+          </tr>
+          <tr>
+            <td><code>.sm:col-start-*</code></td>
+            <td> 1 / 2 / ... / 10 / 11</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</app-card>

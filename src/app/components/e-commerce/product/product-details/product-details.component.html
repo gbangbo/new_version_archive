@@ -1,0 +1,58 @@
+<div class="container">
+  <div>
+    <div class="grid grid-cols-12 card-gap product-page-main">
+      <div class="col-span-4 xxl:col-span-6 md:col-span-12 box-col-6">
+        <app-card>
+          <div class="product-slider">
+            <owl-carousel-o [options]="productMainThumbSlider" #owlCar id="thumbnailCarousel" (initialized)="onCarouselLoad()" (changed)="onSlideChange($event)">
+              @if(images && images.length){
+                <ng-container>
+                  @for(image of images; track image){
+                    <ng-container>
+                      <ng-template carouselSlide [id]="image.id.toString()">
+                        <div class="item">
+                          <lib-ngx-image-zoom
+                            [thumbImage]="image.img"
+                            [fullImage]="image.img"
+                            [lensHeight]="250"
+                            [lensWidth]="250"
+                            [enableLens]="true"
+                            [zoomMode]="'click'"
+                            [magnification]="2"
+                            [enableScrollZoom]="true">
+                          </lib-ngx-image-zoom>
+                        </div>
+                      </ng-template>
+                    </ng-container>
+                  }
+                </ng-container>
+              }
+            </owl-carousel-o>
+          </div>
+          
+          <owl-carousel-o [options]="productThumbSlider" #thumbnailCarousel>
+            @for(image of images; track image){
+              <ng-container>
+                <ng-template carouselSlide [id]="image.id.toString()">
+                  <div class="item" [class.active]="image.id.toString() === activeSlide" (click)="owlCar.to(activeSlide = image.id.toString())">
+                    <img class="max-w-full" [src]="image.img" alt="image">
+                  </div>
+                </ng-template>
+              </ng-container>
+            }
+          </owl-carousel-o>
+        </app-card>
+      </div>
+
+      <div class="col-span-5 xxl:col-span-12 box-col-12 order-0 xxl:order-1 box-ord-1">
+        <app-product-content></app-product-content>
+      </div>
+
+      <div class="col-span-3 xxl:col-span-6 md:col-span-12 box-col-6">
+        <app-product-details-sidebar></app-product-details-sidebar>
+      </div>
+    </div>
+  </div>
+
+  <app-product-details-tab></app-product-details-tab>
+</div>

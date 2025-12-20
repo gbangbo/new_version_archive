@@ -1,0 +1,25 @@
+<app-card [headerTitle]="'Tooltip Directions'" [header]="'pb-0'" [border]="true" [padding]="false">
+    <p class="f-m-light mt-1" header5> To create tooltips with different directions, use <code>absolute</code> positioning along with <code>transform</code> classes. Adjust placement using <code>top-full</code>, <code>bottom-full</code>, <code>left-full</code>, or <code>right-full</code> to position the tooltip accordingly. </p>
+    <div class="common-flex">
+        <span class="group relative">
+            <button class="mb-0 me-0 btn btn-primary text-white">Tooltip on top</button>
+
+            <app-tooltip [title]="'Tooltip on top'"></app-tooltip>
+        </span>
+        <span class="group relative">
+            <button class="mb-0 me-0 btn btn-secondary text-white">Tooltip on right</button>
+
+            <app-tooltip [title]="'Tooltip on right'" [direction]="'right'"></app-tooltip>
+        </span>
+        <span class="group relative">
+            <button class="mb-0 me-0 btn btn-success text-white">Tooltip on bottom</button>
+
+            <app-tooltip [title]="'Tooltip on bottom'" [direction]="'bottom'"></app-tooltip>
+        </span>
+        <span class="group relative">
+            <button class="mb-0 me-0 btn btn-warning text-white">Tooltip on left</button>
+
+            <app-tooltip [title]="'Tooltip on left'" [direction]="'left'"></app-tooltip>
+        </span>
+    </div>
+</app-card>

@@ -1,0 +1,29 @@
+<app-card [headerTitle]="'Table Head Options'" [header]="'pb-0'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>Similar to tables , use the modifier classes<code> table-[color]</code>  to make <code>thead</code> appear in any color.</p>
+  <div class="card-block grid grid-cols-12">
+    <div class="col-span-12">
+      <div class="overflow-x-auto custom-scrollbar">
+        <table class="table">
+          <thead class="table-dark">
+            <tr class="table-inverse">
+              <th scope="col">Id</th>
+              <th scope="col">First Name</th>
+              <th scope="col">Last Name</th>
+              <th scope="col">Username</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for(details of tableHeadOption;track details){
+              <tr>
+                <th scope="row">{{ details.id }}</th>
+                <td>{{ details.first_name }}</td>
+                <td>{{ details.last_name }}</td>
+                <td>{{details.user_name }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>     
+       </div>
+    </div>
+  </div>
+</app-card>

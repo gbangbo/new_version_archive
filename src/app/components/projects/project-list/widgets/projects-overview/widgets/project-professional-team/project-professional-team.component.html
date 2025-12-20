@@ -1,0 +1,29 @@
+<div class="main-card-box bg-10-{{ projectTeam.card_color }} h-100">
+    <div class="p-20 common-space">
+        <div>
+            <h5>{{ projectTeam.total_member }}</h5>
+            <span class="c-o-light">{{ projectTeam.title }}</span>
+        </div>
+        <div class="project-right-icon bg-10-{{ projectTeam.card_color }}">
+            <i class="fa-solid fa-{{ projectTeam.icon }} fa-fade txt-{{ projectTeam.card_color }}"></i>
+        </div>
+    </div>
+    <div class="p-20">
+        <h6 class="mb-sm-3 mb-4">View Team Members</h6>
+        <ul class="common-f-start">
+            @for(member of projectTeam.team_members; track member) {
+                <li class="relative group inline-block">
+                    <img class="common-circle" [src]="member.profile" alt="user">
+              
+                    <app-tooltip [title]="member.name"></app-tooltip>
+                </li>
+            } 
+
+            <li class="relative group inline-block"> 
+                <div class="common-circle bg-lighter-secondary">{{ projectTeam.total_member - projectTeam.team_members.length }}+</div>
+
+                <app-tooltip [title]="projectTeam.total_member - projectTeam.team_members.length + '+ More'"></app-tooltip>
+            </li>
+        </ul>
+    </div>
+</div>

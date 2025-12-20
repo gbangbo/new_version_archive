@@ -1,0 +1,13 @@
+<div class="card">
+    <div class="card-body authentication-body">
+      <div class="authentication-wrapper">
+        <h5>Two-factor Authentication</h5>
+        <p>Click on the authentication button below and scan the QR code</p>
+        <img src="assets/images/forms/qr-scan.png" alt="qr-scan">
+      </div>
+      <button class="btn btn-primary mt-5 text-white" data-bs-toggle="modal" href="javascript:void(0)" role="button" (click)="openModal()">2 Factor Authentication</button>
+      @if(modalOpen){
+        <app-two-factor-authentication-modal (modalOpen)="handleOpenModal($event)"></app-two-factor-authentication-modal>
+      }
+    </div>
+</div>

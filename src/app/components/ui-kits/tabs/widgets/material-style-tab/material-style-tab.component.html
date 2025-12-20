@@ -1,0 +1,127 @@
+<app-card [headerTitle]="'Material Style Tabs'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'bottom-border-tab tabs'">
+    <p class="mt-1 f-m-light" header5>
+        Use the <code>class="tab-links flex"</code> create tab navigation in Angular with <code>"Ico" </code>icons.  
+    </p>
+        
+    <ul class="tab-links flex border-tab border-0 mb-0 nav-secondary">
+      <li class="tab-link nav-border rounded-none pt-0 txt-secondary nav-secondary" [class.active]="activeTab == 'user'" (click)="handleTab('user')">
+        <i class="icofont icofont-man-in-glasses"></i>User
+      </li>
+      <li class="tab-link nav-border txt-secondary rounded-none nav-secondary" [class.active]="activeTab == 'description'" (click)="handleTab('description')">
+        <i class="icofont icofont-file-document"></i>Description
+      </li>
+      <li class="tab-link nav-border txt-secondary rounded-none nav-secondary" [class.active]="activeTab == 'review'" (click)="handleTab('review')">
+        <i class="icofont icofont-star"></i>Review
+      </li>
+
+    </ul>
+    <div class="card-body px-0 pb-0">
+      <div class="tab-content">
+        <div class="tab-pan fade show active">
+          <div class="card-body px-0 pb-0">
+            @if(activeTab == 'user') {
+              <div class="user-header pb-2">
+                <h6 class="fw-bold">User Details:</h6>
+              </div>
+              <div class="user-content">
+                <div class="overflow-x-auto custom-scrollbar">
+                  <table class="table mb-0">
+                    <thead>
+                      <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Country</th>
+                        <th scope="col">Contact No</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <th scope="row">1</th>
+                        <td>Neha</td>
+                        <td>India </td>
+                        <td>5698741236</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">2</th>
+                        <td>Jacklin</td>
+                        <td>Thailand</td>
+                        <td>7800030320</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            } @else if(activeTab == 'description') {
+              <div class="user-header pb-2">
+                <h6 class="fw-bold">Description:</h6>
+              </div>
+              <div class="user-content">
+                <div class="overflow-x-auto custom-scrollbar">
+                  <table class="table mb-0">
+                    <thead>
+                      <tr>
+                        <th scope="col">Technology</th>
+                        <th scope="col">Interests </th>
+                        <th scope="col">Salary Expected </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>Web Designer</td>
+                        <td>HTML,CSS,JS,SCSS</td>
+                        <td>45000</td>
+                      </tr>
+                      <tr>
+                        <td>UX Designer</td>
+                        <td>Figma,Photoshop,Sketch</td>
+                        <td>20000</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            } @else if(activeTab == 'review') {
+              <div class="user-header pb-2">
+                <h6 class="fw-bold">Review:</h6>
+              </div>
+              <div class="user-content">
+                <div class="overflow-x-auto custom-scrollbar">
+                  <table class="table mb-0">
+                    <thead>
+                      <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Country</th>
+                        <th scope="col">Rating </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <th scope="row">1</th>
+                        <td>Neha</td>
+                        <td>India </td>
+                        <td> <i class="ico-color icofont icofont-star"></i><i
+                            class="ico-color icofont icofont-star"></i><i
+                            class="ico-color icofont icofont-star"></i><i
+                            class="ico-color icofont icofont-star"></i><i
+                            class="ico-color icofont icofont-star"></i></td>
+                      </tr>
+                      <tr>
+                        <th scope="row">2</th>
+                        <td>Irfan</td>
+                        <td>India</td>
+                        <td> <i class="ico-color icofont icofont-star"></i><i
+                            class="ico-color icofont icofont-star"></i><i
+                            class="ico-color icofont icofont-star"></i></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+
+</app-card>

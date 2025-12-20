@@ -1,0 +1,15 @@
+<app-card [headerTitle]="'Default Touchspin'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'common-flex'">
+  <p class="f-m-light mt-1" header5>Use <code>decrement-touchspin </code>and <code>increment-touchspin </code>class for default style item.</p>
+  
+      @for(details of touchSpinDetails; track details){
+        <div class="touchspin-wrapper">
+          <button class="decrement-touchspin btn-touchspin touchspin-{{ details.color }}" (click)="changeValue(details.id,-1)">
+            <i class="fa-solid fa-minus"> </i>
+          </button>
+          <input class="input-touchspin spin-outline-{{ details.color }}" type="number" [value]="details.default_value">
+          <button class="increment-touchspin btn-touchspin touchspin-{{ details.color }}" (click)="changeValue(details.id,1)">
+            <i class="fa-solid fa-plus"> </i>
+          </button>
+        </div>
+      }
+</app-card>

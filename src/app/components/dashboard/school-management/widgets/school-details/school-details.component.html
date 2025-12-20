@@ -1,0 +1,19 @@
+<app-card [headerTitle]="details.title" [cardClass]="'widget-hover overflow-hidden'" [cardBodyClass]="'pt-0 count-student'">
+    <div class="school-wrapper"> 
+        <div class="school-header">
+          <h4 class="txt-{{ details.class }} counter" data-target="1098">
+            <app-counter [counter]="details.count"></app-counter>
+           </h4>
+          <div class="flex gap-1  items-center flex-wrap pt-xxl-0">
+            <i class="icon-arrow-{{ details.icon }} f-light"></i>
+            <span class="font-medium f-light">{{ details.percentage }}</span>
+        </div>
+        </div>
+        <div class="school-body"> 
+            <img [src]="details.image" [alt]="details.alt">
+            <div class="right-line">
+                <img src="assets/images/dashboard-7/line.png" alt="line">
+            </div>
+        </div>
+    </div>
+</app-card>

@@ -1,0 +1,21 @@
+<div class="modal  fade show modal-backdrop">
+  <div class="modal-dialog">
+    <div class="modal-content custom-input">
+      <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel1">Add Category</h5>
+          <button class="btn-close" type="button" (click)="closeModal()"></button>
+        </div>
+        <div class="modal-body">
+          <form class="form-bookmark">
+            <div class="grid grid-cols-12 gap-2">
+              <div class="col-span-12">
+                <input class="form-control" type="text" placeholder="Enter category name" autocomplete="off">
+              </div>
+            </div>
+            <button class="btn btn-primary me-2 text-white" type="button">Save</button>
+            <button class="btn button-light-primary" type="button" (click)="closeModal()">Cancel</button>
+          </form>
+      </div>
+    </div>
+  </div>
+</div>

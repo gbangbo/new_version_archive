@@ -1,0 +1,446 @@
+
+
+<div class="container job-apply-wrapper">
+
+
+    <nz-splitter>
+        <nz-splitter-panel nzDefaultSize="40%" nzMin="20%" nzMax="70%">
+            <div class="box">
+
+                <form class="w-full p-[15px]">
+
+                    <div class="max-w-3xl mx-auto p-4">
+                        <!-- Archives et Statut en colonne -->
+                        <div class="space-y-4">
+                            <!-- Archives Section -->
+                            <div>
+                                <div class="flex items-center gap-2 mb-3">
+                                    <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
+                                    </svg>
+                                    <h3 class="text-base font-semibold text-gray-800">Archives</h3>
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-3">
+                                    <label class="flex items-start p-3 border-2 rounded-lg cursor-pointer transition-all duration-200 hover:border-blue-400 hover:shadow-sm"
+                                           [class.border-blue-500]="archiveStatus === 'courante'"
+                                           [class.bg-blue-50]="archiveStatus === 'courante'"
+                                           [class.border-gray-200]="archiveStatus !== 'courante'"
+                                           [class.bg-white]="archiveStatus !== 'courante'">
+                                        <input type="radio"
+                                               value="courante"
+                                               [(ngModel)]="archiveStatus"
+                                               [ngModelOptions]="{standalone: true}"
+                                               class="mt-0.5 w-4 h-4 text-blue-600 focus:ring-blue-500">
+                                        <div class="ml-3 flex-1">
+                                            <div class="flex items-center justify-between">
+                                                <span class="font-medium text-sm text-gray-900">Courante</span>
+                                                <svg *ngIf="archiveStatus === 'courante'" class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                                </svg>
+                                            </div>
+                                            <p class="text-xs text-gray-600 mt-0.5">Documents actifs</p>
+                                        </div>
+                                    </label>
+
+                                    <label class="flex items-start p-3 border-2 rounded-lg cursor-pointer transition-all duration-200 hover:border-blue-400 hover:shadow-sm"
+                                           [class.border-blue-500]="archiveStatus === 'definitive'"
+                                           [class.bg-blue-50]="archiveStatus === 'definitive'"
+                                           [class.border-gray-200]="archiveStatus !== 'definitive'"
+                                           [class.bg-white]="archiveStatus !== 'definitive'">
+                                        <input type="radio"
+                                               value="definitive"
+                                               [(ngModel)]="archiveStatus"
+                                               [ngModelOptions]="{standalone: true}"
+                                               class="mt-0.5 w-4 h-4 text-blue-600 focus:ring-blue-500">
+                                        <div class="ml-3 flex-1">
+                                            <div class="flex items-center justify-between">
+                                                <span class="font-medium text-sm text-gray-900">Définitive</span>
+                                                <svg *ngIf="archiveStatus === 'definitive'" class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                                </svg>
+                                            </div>
+                                            <p class="text-xs text-gray-600 mt-0.5">Documents archivés</p>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Statut Section -->
+                            <div>
+                                <div class="flex items-center gap-2 mb-3">
+                                    <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                                    </svg>
+                                    <h3 class="text-base font-semibold text-gray-800">Statut du document</h3>
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-3">
+                                    <label class="flex items-start p-3 border-2 rounded-lg cursor-pointer transition-all duration-200 hover:border-blue-400 hover:shadow-sm"
+                                           [class.border-blue-500]="documentStatus === 'privee'"
+                                           [class.bg-blue-50]="documentStatus === 'privee'"
+                                           [class.border-gray-200]="documentStatus !== 'privee'"
+                                           [class.bg-white]="documentStatus !== 'privee'">
+                                        <input type="radio"
+                                               value="privee"
+                                               [(ngModel)]="documentStatus"
+                                               [ngModelOptions]="{standalone: true}"
+                                               class="mt-0.5 w-4 h-4 text-blue-600 focus:ring-blue-500">
+                                        <div class="ml-3 flex-1">
+                                            <div class="flex items-center justify-between">
+                                                <span class="font-medium text-sm text-gray-900">Privée</span>
+                                                <svg *ngIf="documentStatus === 'privee'" class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                                </svg>
+                                            </div>
+                                            <p class="text-xs text-gray-600 mt-0.5">Accès restreint</p>
+                                        </div>
+                                    </label>
+
+                                    <label class="flex items-start p-3 border-2 rounded-lg cursor-pointer transition-all duration-200 hover:border-blue-400 hover:shadow-sm"
+                                           [class.border-blue-500]="documentStatus === 'public'"
+                                           [class.bg-blue-50]="documentStatus === 'public'"
+                                           [class.border-gray-200]="documentStatus !== 'public'"
+                                           [class.bg-white]="documentStatus !== 'public'">
+                                        <input type="radio"
+                                               value="public"
+                                               [(ngModel)]="documentStatus"
+                                               [ngModelOptions]="{standalone: true}"
+                                               class="mt-0.5 w-4 h-4 text-blue-600 focus:ring-blue-500">
+                                        <div class="ml-3 flex-1">
+                                            <div class="flex items-center justify-between">
+                                                <span class="font-medium text-sm text-gray-900">Public</span>
+                                                <svg *ngIf="documentStatus === 'public'" class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                                </svg>
+                                            </div>
+                                            <p class="text-xs text-gray-600 mt-0.5">Accessible à tous</p>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Checkbox Option - Pleine largeur -->
+                            <div>
+                                <label class="flex items-start p-3 border-2 rounded-lg cursor-pointer transition-all duration-200 hover:border-green-400 hover:shadow-sm"
+                                       [class.border-green-500]="notifyBeneficiary"
+                                       [class.bg-green-50]="notifyBeneficiary"
+                                       [class.border-gray-200]="!notifyBeneficiary"
+                                       [class.bg-white]="!notifyBeneficiary">
+                                    <input type="checkbox"
+                                           [(ngModel)]="notifyBeneficiary"
+                                           [ngModelOptions]="{standalone: true}"
+                                           class="mt-0.5 w-4 h-4 text-green-600 rounded focus:ring-green-500">
+                                    <div class="ml-3 flex-1">
+                                        <div class="flex items-center gap-2">
+                                            <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                            </svg>
+                                            <span class="font-medium text-sm text-gray-900">Informer les services bénéficiaire par mail</span>
+                                        </div>
+                                        <p class="text-xs text-gray-600 mt-0.5">Notification automatique par email</p>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="w-full mb-4">
+                        <label class="form-label block text-left mb-2">
+                            Service bénéficiaire
+                        </label>
+<!--                        <select2 class="w-full block"-->
+<!--                                 style="width: 100% !important;"-->
+<!--                                 [data]="addBlogCategory"-->
+<!--                                 multiple="true">-->
+<!--                        </select2>-->
+
+                        <nz-select nzShowSearch
+                                   nzAllowClear
+                                   nzPlaceHolder="Select a person"
+                                   nzMode="multiple"
+                                   [nzSize]="'default'">
+                            <nz-option nzLabel="Jack" nzValue="jack"></nz-option>
+                            <nz-option nzLabel="Lucy" nzValue="lucy"></nz-option>
+                            <nz-option nzLabel="Tom" nzValue="tom"></nz-option>
+                        </nz-select>
+                    </div>
+                    <div class="w-full mb-4">
+                        <label class="form-label block text-left mb-2">
+                            Type de document
+                        </label>
+                        <nz-select nzShowSearch
+                                   nzAllowClear
+                                   nzPlaceHolder="Selectionner le type de document"
+                                   name="uidTypeDocument"
+                                   [(ngModel)]="uidTypeDocument"
+                                   (ngModelChange)="changeType($event)"
+                                   [nzSize]="'default'">
+                            <nz-option [nzLabel]="item.libelle_type_docs" [nzValue]="item.uid" *ngFor="let item of dataTypeDocument"></nz-option>
+                        </nz-select>
+                    </div>
+<!--                    <div class="w-full mb-4">-->
+<!--                        <label class="form-label block text-left mb-2" for="validationMetaTitle1">-->
+<!--                            Meta Title-->
+<!--                            <span class="text-red-500">*</span>-->
+<!--                        </label>-->
+<!--                        <input class="form-control w-full block"-->
+<!--                               style="width: 100% !important;"-->
+<!--                               id="validationMetaTitle1"-->
+<!--                               type="text"-->
+<!--                               placeholder="Enter meta title">-->
+<!--                    </div>-->
+<!--                    <div class="w-full mb-4">-->
+<!--                        <label class="form-label block text-left mb-2" for="validationKeywords">-->
+<!--                            <span>Meta Keywords</span>-->
+<!--                            <span class="text-red-500">*</span>-->
+<!--                            <span class="text-gray-400 ml-2 text-sm">(In comma separated)</span>-->
+<!--                        </label>-->
+<!--                        <input class="form-control w-full block"-->
+<!--                               style="width: 100% !important;"-->
+<!--                               id="validationKeywords"-->
+<!--                               type="text"-->
+<!--                               placeholder="Enter meta keywords">-->
+<!--                    </div>-->
+                    <div *ngFor="let item of ligneTypeOfDoc.dataPro">
+
+
+                        @if (item.type_proprietes_docs === 'date') {
+                        <div class="w-full mb-4">
+                            <label class="form-label block text-left mb-2" for="validationKeywords">
+                                <span>{{item.lib_proprietes_docs}}</span>
+                            <span class="text-red-500">*</span>
+                        </label>
+                        <nz-date-picker [(ngModel)]="ndate" name="{{item.lib_proprietes_docs}}" ></nz-date-picker>
+                         </div>
+                        } @else {
+
+                        <div class="w-full mb-4" *ngIf="!item.define_proprietes_docs">
+                        <label class="form-label block text-left mb-2" for="validationKeywords">
+                            <span>{{item.lib_proprietes_docs}}</span>
+                            <span class="text-red-500">*</span>
+                        </label>
+                        <input class="form-control w-full block"
+                               style="width: 100% !important;"
+                               type="{{item.type_proprietes_docs}}"
+                               placeholder="">
+                    </div>
+                        <div class="w-full mb-4" *ngIf="item.define_proprietes_docs==1">
+                            <label class="form-label block text-left mb-2" for="validationKeywords">
+                                <span>{{item.lib_proprietes_docs}}</span>
+                                <span class="text-red-500">*</span>
+                            </label>
+                            <nz-select nzShowSearch
+                                       nzAllowClear
+                                       nzPlaceHolder="Selectionner le/la {{item.lib_proprietes_docs}}"
+                                       name="{{item.lib_proprietes_docs}}"
+                                       [(ngModel)]="devis"
+                                       [nzSize]="'default'">
+                                <nz-option [nzLabel]="data.value_proprietes_docs" [nzValue]="data.uid" *ngFor="let data of item.dataValueSelectPro"></nz-option>
+                            </nz-select>
+                    </div>
+                        }
+
+
+
+
+                    </div>
+                </form>
+
+            </div>
+        </nz-splitter-panel>
+        <nz-splitter-panel>
+            <div class="box">
+
+
+                <div class="container">
+                    <div class="grid grid-cols-12">
+                        <div class="col-span-12">
+                            <app-card class="noBorder"
+                                      [headerTitle]="'Téléverser un fichier'"
+                                      [border]="false"
+                                      [header]="'pb-0'"
+                                      [padding]="false"
+                                      [cardBodyClass]="'add-post'">
+
+                                <div class="blog-dropzone">
+                                    <div class="custom-dropzone">
+                                        <form class="dropzone dropzone-secondary" id="multiFileUpload">
+                                            <!--                                        <dropzone [config]="config"  [message]="text"></dropzone>-->
+                                            <dropzone
+                                                    [config]="config2"
+                                                    [message]="text"
+                                                    (init)="onDropzoneInit($event)"
+                                                    (sending)="onSending($event)"
+                                                    (success)="onSuccess($event)"
+                                                    (uploadProgress)="onUploadProgress($event)"
+                                                    (error)="onError($event)">
+                                            </dropzone>
+
+                                            <div class="upload-progress" *ngIf="isUploading">
+                                                <div class="progress-bar">
+                                                    <div class="progress-fill" [style.width.%]="uploadProgress"></div>
+                                                </div>
+                                                <div class="progress-text">
+                                                    {{ uploadProgress }}% - {{ currentFileName }}
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <form class="grid grid-cols-12 gap-4 e-category">
+                                    <div class="col-span-12">
+                                        <div class="main-divider">
+                                            <div class="divider-body">
+                                                <h6>Prévisualisation </h6>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+
+
+                                            <div class="col-span-12">
+                                                <nz-tree-view [nzTreeControl]="treeControl" [nzDataSource]="dataSource" [nzDirectoryTree]="true">
+                                                    <nz-tree-node *nzTreeNodeDef="let node" nzTreeNodePadding>
+                                                        <nz-tree-node-toggle nzTreeNodeNoopToggle></nz-tree-node-toggle>
+                                                        <nz-tree-node-option
+                                                                [nzDisabled]="node.disabled"
+                                                                [nzSelected]="selectListSelection.isSelected(node)"
+                                                                (nzClick)="onNodeClick(node)"
+                                                        >
+
+                                                            <nz-icon
+                                                                    *ngIf="node?.extension === 'pdf'"
+                                                                    nzType="file-pdf"
+                                                                    nzTheme="twotone"
+                                                                    [nzTwotoneColor]="'#ff4d4f'"
+                                                                    class="file-icon pdf-icon"
+                                                            />
+                                                            <nz-icon
+                                                                    *ngIf="['jpg','JPG','jpeg','JPEG','png','PNG'].includes(node?.extension)"
+                                                                    nzType="file-image"
+                                                                    nzTheme="twotone"
+                                                                    [nzTwotoneColor]="'#52c41a'"
+                                                                    class="file-icon image-icon"
+                                                            />
+                                                            <nz-icon
+                                                                    *ngIf="['doc','docx'].includes(node?.extension)"
+                                                                    nzType="file-word"
+                                                                    nzTheme="twotone"
+                                                                    [nzTwotoneColor]="'#1890ff'"
+                                                                    class="file-icon word-icon"
+                                                            />
+                                                            <nz-icon
+                                                                    *ngIf="node?.extension === 'excel'"
+                                                                    nzType="file-excel"
+                                                                    nzTheme="twotone"
+                                                                    [nzTwotoneColor]="'#52c41a'"
+                                                                    class="file-icon excel-icon"
+                                                            />
+                                                            <nz-icon
+                                                                    *ngIf="node?.extension === 'ppt'"
+                                                                    nzType="file-ppt"
+                                                                    nzTheme="twotone"
+                                                                    [nzTwotoneColor]="'#fa8c16'"
+                                                                    class="file-icon ppt-icon"
+                                                            />
+                                                            <nz-icon
+                                                                    *ngIf="node?.extension === 'other'"
+                                                                    nzType="file"
+                                                                    nzTheme="outline"
+                                                                    class="file-icon"
+                                                            />
+
+
+<!--                                                            <nz-icon nzType="file" nzTheme="outline" />-->
+<!--                                                            <span nz-icon [nzType]="'file'"></span>-->
+                                                            {{ node.name }}{{'.'+node?.extension}}
+                                                        </nz-tree-node-option>
+                                                    </nz-tree-node>
+
+                                                    <nz-tree-node *nzTreeNodeDef="let node; when: hasChild" nzTreeNodePadding>
+                                                        <nz-tree-node-toggle>
+                                                            <nz-icon nzType="caret-down" nzTreeNodeToggleRotateIcon />
+                                                        </nz-tree-node-toggle>
+                                                        <nz-tree-node-option
+                                                                [nzDisabled]="node.disabled"
+                                                                [nzSelected]="selectListSelection.isSelected(node)"
+                                                                (nzClick)="selectListSelection.toggle(node)"
+                                                        >
+                                                            <nz-icon class="windows-folder"  [nzType]="treeControl.isExpanded(node) ? 'folder-open' : 'folder'" nzTheme="outline" />
+                                                            {{ node.name }}
+                                                        </nz-tree-node-option>
+                                                    </nz-tree-node>
+                                                </nz-tree-view>
+                                            </div>
+                                            <div class="col-span-12">
+                                                <div class="email-right-aside">
+                                                    <!-- Prévisualisation pour Images -->
+                                                    <div *ngIf="selectedFile && ['jpg','JPG','jpeg','JPEG','png','PNG'].includes(selectedFile?.extension)" class="preview-content">
+                                                        <img [src]="selectedFile.url" [alt]="selectedFile.name" class="image-preview" />
+                                                    </div>
+
+                                                    <!-- Prévisualisation pour PDF -->
+                                                    <div *ngIf="selectedFile && selectedFile.extension === 'pdf'" class="preview-content">
+<!--                                                        <iframe-->
+<!--                                                                [src]="getSafeUrl(selectedFile.url_file)"-->
+<!--                                                                class="document-preview"-->
+<!--                                                                frameborder="0"-->
+<!--                                                        ></iframe>-->
+<!--                                                        <embed-->
+<!--                                                                [src]="selectedFile.url"-->
+<!--                                                                type="application/pdf"-->
+<!--                                                                class="document-preview"-->
+<!--                                                        />-->
+                                                        <canvas id="pdf-canvas"></canvas>
+<!--                                                        <iframe id="fraDisabled" type="application/pdf"-->
+<!--                                                                style="width:100%;height:800px;"  [src]="getSafeUrl(selectedFile.url_file)">-->
+<!--                                                        </iframe>-->
+                                                    </div>
+
+                                                    <!-- Prévisualisation pour Word (via Office Online ou Google Docs Viewer) -->
+                                                    <div *ngIf="selectedFile && ( ['doc','docx'].includes(selectedFile?.extension))" class="preview-content">
+                                                        <iframe
+                                                                [src]="getGoogleDocsViewerUrl(selectedFile.url_file)"
+                                                                class="document-preview"
+                                                                frameborder="0"
+                                                        ></iframe>
+                                                    </div>
+
+                                                    <!-- Message par défaut -->
+                                                    <div *ngIf="!selectedFile" class="preview-placeholder">
+                                                        <nz-icon nzType="file-search" nzTheme="outline" style="font-size: 48px; color: #d9d9d9;"></nz-icon>
+                                                        <p>Sélectionnez un fichier pour le prévisualiser</p>
+                                                    </div>
+
+                                                    <!-- Type de fichier non supporté -->
+                                                    <div *ngIf="selectedFile && getFileType(selectedFile.name) === 'other'" class="preview-placeholder">
+                                                        <nz-icon nzType="file-unknown" nzTheme="outline" style="font-size: 48px; color: #d9d9d9;"></nz-icon>
+                                                        <p>Prévisualisation non disponible pour ce type de fichier</p>
+                                                        <a [href]="selectedFile.url" download class="download-link">
+                                                            <nz-icon nzType="download"></nz-icon> Télécharger le fichier
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+
+
+                                </form>
+                                <div class="common-flex justify-end mt-3">
+                                    <button class="btn btn-primary text-white" type="submit">Post</button>
+                                    <input class="btn btn-secondary text-white" type="reset" value="Discard">
+                                </div>
+                            </app-card>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </nz-splitter-panel>
+    </nz-splitter>
+
+
+</div>

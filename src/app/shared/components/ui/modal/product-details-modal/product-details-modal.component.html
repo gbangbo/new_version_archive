@@ -1,0 +1,59 @@
+<div class="modal  fade show modal-backdrop">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="product-box grid grid-cols-12 gap-4" (clickOutside)="closeModal()">
+          <div class="col-span-6 lg:col-span-12 product-img">
+            <img class="max-w-full" [src]="productDetail.image" [alt]="productDetail.product_name">
+          </div>
+          <div class="col-span-6 lg:col-span-12 text-start">
+            <div class="product-details">
+              <a [routerLink]="['/product/details']" (click)="closeModal()">
+                {{ productDetail.product_name }}
+              </a>
+              <div class="product-price">${{ productDetail.discount_price }}
+                <del>${{ productDetail.price }}</del>
+              </div>
+              <div class="product-view">
+                <h6 class="font-medium">Product Details</h6>
+                <p class="mb-0">{{ productDetail.description }}</p>
+              </div>
+              <div class="product-size">
+                <ul class="common-flex">
+                  <li>
+                    <button class="btn" type="button">M</button>
+                  </li>
+                  <li>
+                    <button class="btn" type="button">L</button>
+                  </li>
+                  <li>
+                    <button class="btn" type="button">Xl</button>
+                  </li>
+                </ul>
+              </div>
+              <div class="product-qnty">
+                <h6 class="font-medium">Quantity</h6>
+                <fieldset class="!border-0">
+                  <div class="touchspin-wrapper">
+                    <button class="decrement-touchspin btn-touchspin touchspin-primary" (click)="changeValue(-1)">
+                      <i class="fa-solid fa-minus"> </i>
+                    </button>
+                    <input class="input-touchspin spin-outline-primary" type="number" value="{{ counter }}" readonly>
+                    <button class="increment-touchspin btn-touchspin touchspin-primary" (click)="changeValue(1)">
+                      <i class="fa-solid fa-plus"> </i>
+                    </button>
+                  </div>
+                </fieldset>
+              </div>
+              <div>
+                <a class="btn btn-primary text-white !inline-block !rounded-lg" href="javascript:void(0)" (click)="closeModal()" [routerLink]="['/cart']">Add to Cart</a>
+                <a class="btn btn-primary text-white ms-2 !inline-block !rounded-lg" href="javascript:void(0)" (click)="closeModal()" [routerLink]="['/product/details']">View Details</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="btn-close" type="button" (click)="closeModal()"></button>
+      </div>
+    </div>
+  </div>
+</div>

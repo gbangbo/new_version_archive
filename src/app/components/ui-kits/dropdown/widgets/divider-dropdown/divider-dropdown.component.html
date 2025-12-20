@@ -1,0 +1,42 @@
+<app-card [headerTitle]="'Divider Dropdowns'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'rtl-dropdown'">
+  <p class="f-m-light mt-1" header5>Use <code>dropdown-divider </code>class through separate groups of related menu items with a divider.</p>
+
+  <div class="common-flex">
+    <div class="btn-group" (clickOutside)="clickOutside(1)">
+      <button class="btn btn-success border rounded-full dropdown-toggle text-white" type="button" (click)="toggleDropdown(1)">Wishlist</button>
+      <ul class="dropdown-menu dropdown-block" [class.show]="dropdownOpen[1]">
+        <li><a class="dropdown-item" href="javascript:void(0)">Shoes </a></li>
+        <li><a class="dropdown-item" href="javascript:void(0)">Bag</a></li>
+        <li><a class="dropdown-item" href="javascript:void(0)">Clothes</a></li>
+        <li>
+          <hr class="dropdown-divider">
+        </li>
+        <li><a class="dropdown-item" href="javascript:void(0)">Separated link</a></li>
+      </ul>
+    </div>
+    <div class="btn-group" (clickOutside)="clickOutside(2)">
+      <button class="btn btn-primary border rounded-full dropdown-toggle text-white" type="button" (click)="toggleDropdown(2)">Sports </button>
+      <ul class="dropdown-menu dropdown-block" [class.show]="dropdownOpen[2]">
+        <li><a class="dropdown-item" href="javascript:void(0)">Badminton</a></li>
+        <li><a class="dropdown-item" href="javascript:void(0)">Cricket</a></li>
+        <li><a class="dropdown-item" href="javascript:void(0)">Kho-Kho</a></li>
+        <li>
+          <hr class="dropdown-divider">
+        </li>
+        <li><a class="dropdown-item" href="javascript:void(0)">Separated link</a></li>
+      </ul>
+    </div>
+    <div class="btn-group" (clickOutside)="clickOutside(3)">
+      <button class="btn btn-secondary border rounded-full dropdown-toggle text-white" type="button" (click)="toggleDropdown(3)">Colors</button>
+      <ul class="dropdown-menu dropdown-block" [class.show]="dropdownOpen[3]">
+        <li><a class="dropdown-item" href="javascript:void(0)">Orange</a></li>
+        <li><a class="dropdown-item" href="javascript:void(0)">Yellow </a></li>
+        <li><a class="dropdown-item" href="javascript:void(0)">Red </a></li>
+        <li>
+          <hr class="dropdown-divider">
+        </li>
+        <li><a class="dropdown-item" href="javascript:void(0)">Separated link</a></li>
+      </ul>
+    </div>
+  </div>
+</app-card>

@@ -1,0 +1,23 @@
+<app-card [headerTitle]="'Template for result'" [header]="'pb-0'" [border]="true" [padding]="false">
+  <p class="mt-1 mb-0" header5> A typeahead example that uses a custom template for results display, an object as the model, and the highlight directive to highlight the term inside the custom template.
+  </p>
+
+  <ng-template #rt let-r="result" let-t="term">
+    <img [src]="'https://upload.wikimedia.org/wikipedia/commons/thumb/' + r['flag']" class="max-w-full" [ngStyle]="{'width': '20px', 'height': '15px'}" />
+    <span [innerHTML]="highlight(r.name, term)"></span>
+  </ng-template>
+
+  <div class="typeahead-box" (clickOutside)="close()">
+      <input id="typeahead-template" type="text" class="form-control col" placeholder="Search for a state"
+        [(ngModel)]="model" (input)="onSearch($event)" />
+  </div>
+  @if(filteredStates.length > 0){
+    <ul class="list-group">
+      @for(state of filteredStates; track state){
+        <li class="list-group-item" (click)="onSelect(state)">
+          <ng-container *ngTemplateOutlet="rt; context: { result: state, term: model }"></ng-container>
+        </li>
+      }
+    </ul>
+  }
+</app-card>

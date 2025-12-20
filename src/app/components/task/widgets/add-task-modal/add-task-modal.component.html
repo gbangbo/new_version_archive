@@ -1,0 +1,101 @@
+<div class="modal fade modal-bookmark modal-backdrop show">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content custom-input">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Add Task</h5>
+        <button class="btn-close" type="button" (click)="closeModal()"></button>
+      </div>
+      <div class="modal-body">
+        <form class="form-bookmark needs-validation" id="bookmark-form" [formGroup]="taskForm" (ngSubmit)="addTask()">
+          <div class="grid grid-cols-12 card-gap">
+            <div class="col-span-12 mb-4">
+              <label class="form-label" for="task-title">Task Name</label>
+              <input class="form-control" id="task-title" type="text" formControlName="taskName" autocomplete="off" placeholder="Enter your task name"
+                [ngClass]="{ 'is-invalid' : taskForm.controls['taskName'].touched && taskForm.controls['taskName'].errors?.['required'] , 'is-valid' : taskForm.controls['taskName'].valid}">
+              @if(taskForm.controls['taskName'].touched && taskForm.controls['taskName'].errors?.['required']) {
+              <label class="error">Please enter task name.</label>
+              }
+            </div>
+            <div class="col-span-12 mb-4">
+              <label class="form-label" for="validationTextarea">Task Details</label>
+              <textarea class="form-control" id="validationTextarea" placeholder="Enter your task details..." autocomplete="off" formControlName="taskDetails"
+                [ngClass]="{ 'is-invalid' : taskForm.controls['taskDetails'].touched && taskForm.controls['taskDetails'].errors?.['required'] , 'is-valid' : taskForm.controls['taskDetails'].valid}">  </textarea>
+              @if(taskForm.controls['taskDetails'].touched && taskForm.controls['taskDetails'].errors?.['required']) {
+              <label class="error">Please enter task description.</label>
+              }
+            </div>
+            <div class="col-span-6 md:col-span-12 mb-4">
+              <label class="form-label" for="validationTextarea">Task Due Date</label>
+              <input class="form-control" type="date" name="dueDate" formControlName="dueDate"
+                  [ngClass]="{ 'is-invalid' : taskForm.controls['dueDate'].touched && taskForm.controls['dueDate'].errors?.['required'] , 'is-valid' : taskForm.controls['dueDate'].valid}">
+              @if(taskForm.controls['dueDate'].touched && taskForm.controls['dueDate'].errors?.['required']) {
+                <label class="error">Please select due date.</label>
+              }
+            </div>
+            <div class="col-span-6 md:col-span-12 mb-4">
+              <label class="form-label" for="validationTextarea">Task Due Time</label>
+              <select class="form-control">
+                <option>7:00 am</option>
+                <option>7:30 am</option>
+                <option>8:00 am</option>
+                <option>8:30 am</option>
+                <option>9:00 am</option>
+                <option>9:30 am</option>
+                <option>10:00 am</option>
+                <option>10:30 am</option>
+                <option>11:00 am</option>
+                <option>11:30 am</option>
+                <option>12:00 pm</option>
+                <option>12:30 pm</option>
+                <option>1:00 pm</option>
+                <option>2:00 pm</option>
+                <option>3:00 pm</option>
+                <option>4:00 pm</option>
+                <option>5:00 pm</option>
+                <option>6:00 pm</option>
+              </select>
+              <div class="valid-feedback">Looks good!</div>
+              <div class="invalid-feedback">Please select a task due date.</div>
+            </div>
+            <div class="col-span-12 mb-4">
+              <label class="form-label">Assign To</label>
+              <select2 [data]="teamMembers" placeholder="Select team members" noResultMessage="No team member found"  multiple="true" resettable formControlName="assignTo"
+                [ngClass]="{ 'is-invalid' : taskForm.controls['assignTo'].touched && taskForm.controls['assignTo'].errors?.['required'] , 'is-valid' : taskForm.controls['assignTo'].valid}">
+              </select2>
+              @if(taskForm.controls['assignTo'].touched && taskForm.controls['assignTo'].errors?.['required']) {
+              <label class="error">Please enter task description.</label>
+              }
+            </div>
+            <div class="col-span-6 md:col-span-12 mb-4">
+              <label class="form-label" for="validationSelectStatus">Task Status</label>
+              <select2 [data]="taskStatus" placeholder="Select task status" noResultMessage="No Task status found" resettable formControlName="status"
+                [ngClass]="{ 'is-invalid' : taskForm.controls['status'].touched && taskForm.controls['status'].errors?.['required'] , 'is-valid' : taskForm.controls['status'].valid}">
+              </select2>
+              @if(taskForm.controls['status'].touched && taskForm.controls['status'].errors?.['required']) {
+              <label class="error">Please enter task description.</label>
+              }
+            </div>
+            <div class="col-span-6 md:col-span-12 mb-4">
+              <label class="form-label" for="validationSelectImportance">Task Importance</label>
+              <select2 [data]="taskImportance" placeholder="Select task importance" noResultMessage="No Task importance found" resettable formControlName="importance"
+                [ngClass]="{ 'is-invalid' : taskForm.controls['importance'].touched && taskForm.controls['importance'].errors?.['required'] , 'is-valid' : taskForm.controls['importance'].valid}">
+              </select2>
+              @if(taskForm.controls['importance'].touched && taskForm.controls['importance'].errors?.['required']) {
+              <label class="error">Please enter task description.</label>
+              }
+            </div>
+            <div class="col-span-12">
+              <label class="form-label" for="formFileMultiple">Attach Files</label>
+              <input class="form-control" id="formFileMultiple" type="file" multiple="">
+              <div class="valid-feedback">Looks good!</div>
+              <div class="invalid-feedback">Please select your files.</div>
+            </div>
+          </div>
+          <input id="index_var" type="hidden" value="6">
+          <button class="btn btn-secondary me-2 text-white" id="Bookmark" type="submit">Save</button>
+          <button class="btn btn-primary text-white" type="button" (click)="closeModal()">Cancel</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

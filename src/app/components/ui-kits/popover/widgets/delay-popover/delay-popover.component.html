@@ -1,0 +1,14 @@
+<app-card [headerTitle]="'Delay Popover'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'common-flex popover-wrapper'">
+
+    <p class="mb-0 mt-1" header5>To create a delayed popover, use <code>setTimeout</code> inside the <code>showPopover()</code> function to control its visibility with a specified delay.</p>
+    <div class="relative group inline-block" (clickOutside)="handlePopover()">
+        <button class="btn btn-primary example-popover mb-0 me-0 text-white" (click)="showPopover()">Delay Popover</button>
+    
+        <div [class.show]="popoverVisible" class="popover absolute left-1/2 top-[85%] -translate-x-1/2 mt-2 w-max bg-white text-sm rounded opacity-100 visible transition-opacity duration-300 shadow-lg">
+            <div class="popover-arrow"></div>
+            <div class="popover-header">Popover Title</div>
+            <div class="popover-body">And here's some amazing content. It's very engaging. Right?</div>
+        </div>
+    </div>
+
+</app-card>

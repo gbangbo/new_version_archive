@@ -1,0 +1,112 @@
+<div class="left-sidebar-chat">
+  <div class="input-group flex flex-nowrap">
+    <span class="input-group-text m-0 border-0 rounded-r-none">
+      <app-feather-icon [icon]="'search'" [class]="'search-icon text-gray'"></app-feather-icon>
+    </span>
+    <input class="form-control" type="text" placeholder="Search here..">
+  </div>
+</div>
+
+<div class="advance-options tabs">
+  <ul class="nav tab-links border-tab">
+    @for(tab of chatTabs; track tab) {
+      <li>
+        <a class="tab-link" [class.active]="activeTab == tab.value" (click)="handleTab(tab.value)">{{ tab.title }}</a>
+      </li>
+    }
+  </ul>
+  <div>
+    @if (activeTab == 'chats') {
+      <div class="common-space">
+        <p>Recent chats</p>
+        <div class="header-top">
+          <a class="btn badge-light-primary font-medium" href="javascript:void(0)">
+            <i class="fa-solid fa-plus"></i>
+          </a>
+        </div>
+      </div>
+      <ul class="chats-user">
+          @for(chat of recentChats; track chat) {
+            <li class="common-space" [class.active]="activeChat == chat.id" (click)="handleChat(chat)">
+              @if(groupChat) {
+                <div class="chat-time">
+                  <div class="active-profile">
+                    @if(chat.group_profile && chat.group_name) {
+                      <img class="max-w-full rounded-full" [src]="chat.group_profile" [alt]="chat.group_name">
+                    }
+                  </div>
+                  <div> 
+                    <span>{{ chat.group_name }}</span>
+                    <p>{{ chat.last_message }}</p>
+                  </div>
+                </div>
+              } @else {
+                <div class="chat-time">
+                  <div class="active-profile">
+                    @if(chat.user_profile && chat.user_name) {
+                      <img class="max-w-full rounded-full" [src]="chat.user_profile" [alt]="chat.user_name">
+                    }
+                    <div class="status bg-{{ chat.user_status == 'Online' ? 'success' : 'warning' }}"></div>
+                  </div>
+                  <div> 
+                    <span>{{ chat.user_name }}</span>
+                    <p class="content">{{ chat.last_message }}</p>
+                  </div>
+                </div>
+              }
+              <div>
+                <p class="timing">{{ chat.message_time }}</p>
+                @if(chat.unread_message) {
+                  <div class="badge badge-light-success">{{ chat.unread_message }}</div>
+                }
+              </div>
+            </li>
+          }
+      </ul>
+    } @else if (activeTab == 'contact') {
+      <div class="common-space">
+        <p>Contacts</p>
+        <div class="header-top">
+          <a class="btn badge-light-primary font-medium" href="javascript:void(0)">
+          <i class="fa-solid fa-plus"></i>
+          </a>
+        </div>
+      </div>
+      <div class="search-contacts">
+        <input class="form-control" type="text" placeholder="Name and phone number">
+        <app-svg-icon [icon]="'stroke-search'"></app-svg-icon>
+        <app-feather-icon class= "mic-search" [icon]="'mic'"></app-feather-icon>
+      </div>
+      <div class="contact-wrapper">
+        @for(group of objectKeys(getContactGroup()); track group; let index = $index) {
+          <p>{{ group }} </p>
+          <ul class="border-0" [class.contacts-dropdown]="objectKeys(getContactGroup()).length === (index + 1)">
+            @for(contact of getContactGroup()[group]; track contact; let i = $index) {
+              <li class="common-space">
+                <div class="chat-time">
+                  @if(contact.user_profile) {
+                    <img class="max-w-full rounded-full" [src]="contact.user_profile" [alt]="contact.user_name">
+                  } @else {
+                    <div class="custom-name bg-light-{{ chatService.getTextColor(chatService.getUserText(contact.user_name)) }}">
+                      <p class="txt-{{ chatService.getTextColor(chatService.getUserText(contact.user_name)) }} font-medium">{{ chatService.getUserText(contact.user_name) || '#' }}</p>
+                    </div>
+                  }
+                  <div> <span>{{ contact.user_name }}</span>
+                    <p>{{ contact.contact_number }}</p>
+                  </div>
+                </div>
+                <div class="contact-edit dropdown" (clickOutside)="clickOutside(contact.id)">
+                  <app-svg-icon [icon]="'menubar'" (click)="toggleDropdown(contact.id)"></app-svg-icon>
+                  <div class="dropdown-menu dropdown-menu-end" [class.show]="dropdownOpen[contact.id]">
+                    <a class="dropdown-item" href="javascript:void(0)" (click)="toggleDropdown(contact.id)">View Details</a>
+                    <a class="dropdown-item" href="javascript:void(0)" (click)="toggleDropdown(contact.id)">Send Messages</a>
+                    <a class="dropdown-item" href="javascript:void(0)" (click)="toggleDropdown(contact.id)">Add To Favorites</a></div>
+                </div>
+              </li>
+            }
+          </ul>
+        }
+      </div>
+    }
+  </div>
+</div>

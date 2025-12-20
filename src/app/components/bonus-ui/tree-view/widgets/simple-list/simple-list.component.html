@@ -1,0 +1,11 @@
+<app-card [headerTitle]="'Simple Lists'" [header]="'pb-0'" [border]="true" [padding]="false"  [cardClass]="'height-equal'">
+  <p class="f-m-light mt-1" header5> Use the <code>cdkDropList</code> directive to create a basic draggable list, where items can be reordered by dragging and dropping. The <code>cdkDrag</code> directive is applied to individual list items, making them draggable within the container. The <code>cdkDropListDropped</code> event handler, triggered by the <code>drop()</code> method, updates the order of items when they are dropped in a new position.</p>
+
+  <div cdkDropList #list="cdkDropList" [cdkDropListData]="simpleList" (cdkDropListDropped)="drop($event)">
+    @for(list of simpleList; track list){
+      <ul class="list-group" cdkDrag>
+        <li class="list-group-item">{{ list }}</li>
+      </ul>
+    }
+  </div>
+</app-card>

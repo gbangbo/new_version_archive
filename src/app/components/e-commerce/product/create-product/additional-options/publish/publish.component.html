@@ -1,0 +1,21 @@
+<form class="grid grid-cols-12 gap-4 common-form !static">
+  <div class="col-span-6 xxl:col-span-12 xl:col-span-6 md:col-span-12">
+    <label class="form-label" for="publishStatus">Publish Status</label>
+    <select2 [data]="publishStatus" placeholder="Publish"> </select2>
+  </div>
+  <div class="col-span-6 xxl:col-span-12 xl:col-span-6 md:col-span-12">
+    <label class="form-label" for="datetime-local1">Publish Date & Time</label>
+    <div class="input-group flatpicker-calender product-date">
+      <input class="form-control" [owlDateTime]="dt1" [owlDateTimeTrigger]="dt1">
+      <owl-date-time #dt1></owl-date-time>
+    </div>
+  </div>
+  <div class="col-span-12 product-buttons">
+    <button class="btn" type="button" (click)="previous()">
+      <app-svg-icon [icon]="'back-arrow'"></app-svg-icon>Previous
+    </button>
+    <button class="btn sweet-15" type="button" (click)="showSuccess()">Submit
+      <app-svg-icon [icon]="'front-arrow'"></app-svg-icon>
+    </button>
+  </div>
+</form>

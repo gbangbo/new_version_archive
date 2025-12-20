@@ -1,0 +1,15 @@
+<app-card [cardBodyClass]="'projects-wrapper'">
+    <div class="tab-content" id="top-tabContent">
+        <div class="tab-pane fade show active">
+            <div class="grid grid-cols-12 gap-4">
+                @for(project of projects; track project) {
+                  @if(activeTab == 'all' || project.status == activeTab) {
+                    <div class="col-span-3 xxl:col-span-6 md:col-span-12 col-ed-4 box-col-6">
+                        <app-project-details [project]="project"></app-project-details>
+                    </div>
+                  }
+                }
+            </div>
+        </div>
+    </div>
+</app-card>

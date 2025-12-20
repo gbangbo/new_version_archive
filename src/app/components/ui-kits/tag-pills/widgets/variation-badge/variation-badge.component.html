@@ -1,0 +1,19 @@
+<div class="badge-spacing">
+    @for(badge of badgeDetails; track badge; let i = $index) {
+        @if(type == 'outline') {
+            <span class="badge badge-b-{{ badge.color }}" [class.rounded-full]="rounded" [ngClass]="badge.color == 'light' ? 'txt-dark' : 'txt-'+badge.color">{{ badge.color | titlecase }}</span>
+        } @else if(type == 'number') {
+            <a class="badge badge-{{ badge.color }} text-white" href="javascript:void(0)" [class.txt-dark]="badge.color == 'light'" [ngClass]="{'rounded-full badge-p-space': rounded}">{{ i + 1 }}</a>
+        } @else if(type == 'icon') {
+            @for(icon of badgeIcons; track icon; let index = $index) {
+                @if(index == i) {
+                    <a class="badge badge-{{ badge.color }} text-white" href="javascript:void(0)" [class.txt-dark]="badge.color == 'light'" [ngClass]="{'rounded-full p-2': rounded , 'b-ln-height':!rounded}">
+                        <app-feather-icon [icon]="icon.icon"></app-feather-icon>
+                    </a>
+                }
+            }
+        } @else {
+            <span class="badge badge-{{ badge.color }} text-white" [class.txt-dark]="badge.color == 'light'" [class.rounded-full]="rounded">{{ badge.color | titlecase }}</span>
+        }
+    }
+</div>

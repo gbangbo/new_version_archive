@@ -1,0 +1,11 @@
+<app-card [headerTitle]="'Simple Vertical Divider'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'main-divider'">
+
+    <p class="mb-0 mt-1" header5>Use <code>vr</code> class for vertical divider.</p>
+
+    <div class="common-align">
+        @for(divider of simpleDivider; track divider) {
+            <div class="vr bg-{{ divider.color }}"></div>
+        }
+    </div>
+    
+</app-card>

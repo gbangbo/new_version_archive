@@ -1,0 +1,23 @@
+<div class="container user-list-wrapper">
+    <div class="grid grid-cols-12">
+        <div class="col-span-12">
+            <div class="card">
+                <div class="card-header card-no-border text-end">
+                    <div class="card-header-right-icon">
+                        <a class="!inline-block btn btn-primary font-medium text-white" href="javascript:void(0)" [routerLink]="'/user/add-user'">
+                            <i class="fa-solid fa-plus pe-2"></i>
+                            Add User
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body pt-0 px-0">
+                    <div class="list-product user-list-table">
+                        <div class="overflow-x-auto custom-scrollbar">
+                            <app-table [hasCheckbox]="true" [tableConfig]="tableConfig" [pageSize]="10" [paginateDetails]="true" [showPaginate]="true" [selectedRows]="true" (action)="handleAction($event)" [searchPlaceholder]="'Search here... '"></app-table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,22 @@
+<app-card [headerTitle]="'Custom Forms'" [header]="'pb-0'" [border]="true" [padding]="false" [cardClass]="'input-custom-form'" [cardBodyClass]="'common-flex main-custom-form'">
+  <p class="f-m-light mt-1" header5>
+    Input groups include support for <code>custom selects and custom file inputs</code>. Browser default versions of these are not supported.</p>
+    <div class="input-group">
+      <label class="input-group-text !rounded-l-lg !rounded-none" for="inputGroupSelect01">Options</label>
+      <select2 class="form-select !rounded-r-lg !rounded-none" [data]="selectTheme" placeholder="Select Your Favorite Pixelstrap theme"></select2>
+    </div>
+    <div class="input-group">
+      <select2 class="form-select !rounded-l-lg !rounded-none" [data]="selectColor" placeholder="Select Your Favorite Pixelstrap theme"></select2>
+      <label class="input-group-text !rounded-r-lg !rounded-none" for="inputGroupSelect02">Options</label>
+    </div>
+    <div class="input-group">
+      <button class="btn btn-outline-secondary border !rounded-l-lg !rounded-none" type="button">
+         <i class="icofont icofont-credit-card"></i>
+        </button>
+      <select2 class="form-select !rounded-r-lg !rounded-none" [data]="selectChocolates" placeholder="Select Your Favorite Chocolates"></select2>
+    </div>
+    <div class="input-group">
+      <select2 class="form-select !rounded-l-lg !rounded-none" [data]="selectTheme" placeholder="Select Your Favorite Theme"> </select2>
+      <button class="btn btn-outline-secondary border !rounded-r-lg !rounded-none" type="button">Submit</button>
+    </div>
+</app-card>

@@ -1,0 +1,5 @@
+<app-card [cardClass]="'heading-space'" [headerTitle]="'Recent Transactions'" [padding]="false" [dropdownType]="'simple'" [options]="cardToggleOption" [cardBodyClass]="'px-0 pt-0 recent-transaction'">
+    <div class="recent-table overflow-x-auto custom-scrollbar">
+        <app-table [tableConfig]="tableConfig" [hasCheckbox]="true" [pageSize]="3" [paginateDetails]="true" [showPaginate]="true"></app-table>
+    </div>
+</app-card>

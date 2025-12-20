@@ -1,0 +1,14 @@
+<app-card [headerTitle]="'Dismissing Dark Alert'" [header]="'pb-0'" [border]="true" [padding]="false">
+
+    <p class="f-m-light mt-1" header5>Use <code>alert-*</code> class can be used to generate a dark alerts.</p>
+
+    <div class="alert alert-dark dark alert-dismissible fade show" [ngClass]="alertVisible ? 'show' : 'hide'">
+        <app-feather-icon [icon]="'heart'"></app-feather-icon>
+        <p class="txt-light">The 
+            <a class="alert-link txt-light" href="javascript:void(0)">"alert-dark" </a>
+            class can be used to create an alert like this one.
+        </p>
+        <button class="btn-close" type="button" (click)="closeAlert()"></button>
+    </div>
+    
+</app-card>

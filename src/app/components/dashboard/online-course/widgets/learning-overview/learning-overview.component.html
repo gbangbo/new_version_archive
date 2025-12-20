@@ -1,0 +1,23 @@
+<app-card [headerTitle]="learningOverviewChart.title" [padding]="false" [dropdownType]="'simple'" 
+          [options]="cardToggleOption" [cardBodyClass]="'pt-0'">
+    <span class="f-14 font-medium ms-1 f-light" header>{{ learningOverviewChart.description }}</span>
+
+    <div class="learning-wrap"> 
+        <div id="learning-chart">
+            <apx-chart
+                [series]="learningOverviewChart.series"
+                [chart]="learningOverviewChart.chart"
+                [grid]="learningOverviewChart.grid"
+                [colors]="learningOverviewChart.colors"
+                [stroke]="learningOverviewChart.stroke"
+                [markers]="learningOverviewChart.markers"
+                [tooltip]="learningOverviewChart.tooltip"
+                [xaxis]="learningOverviewChart.xaxis"
+                [fill]="learningOverviewChart.fill"
+                [yaxis]="learningOverviewChart.yaxis"
+                [legend]="learningOverviewChart.legend"
+                [responsive]="learningOverviewChart.responsive">
+        </apx-chart>
+        </div>
+    </div>
+</app-card>

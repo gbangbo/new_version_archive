@@ -1,0 +1,51 @@
+<div class="container main-companies">
+    <div class="grid grid-cols-12 card-gap">
+        <div class="col-span-3 xl:col-span-12 xl-4 box-col-12">
+            <app-companies-filter></app-companies-filter>
+        </div>
+        <div class="col-span-9 xl:col-span-12 xl-66 box-col-12">
+            <div class="grid grid-cols-12 card-gap">
+                @for(details of companyDetails;track details){
+                    <div class="col-span-3 xxl:col-span-4 md:col-span-6 sm:col-span-12 xl-50 box-col-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="company-box">
+                                    <app-svg-icon [icon]="details.icon"></app-svg-icon>
+                                    <div class="company-name">
+                                        <h6>{{ details.name }}</h6>
+                                        <div class="main-star-rating">
+                                            <div class="common-flex star-box justify-center">
+                                                <bar-rating  [rate]="details.rating" [readonly]="true" [max]="5">
+                                                    <ng-template ratingActive>
+                                                        <i class="fa-solid fa-star" style="color: #ffb829"></i>
+                                                    </ng-template>
+                                                    <ng-template ratingInactive>
+                                                        <i class="fa-solid fa-star" style="color: #d2d2d2"></i>
+                                                    </ng-template>
+                                                    <ng-template ratingFraction>
+                                                        <i class="fa-solid fa-star-half-stroke" style="color: #ffb829"></i>
+                                                    </ng-template>
+                                                </bar-rating>
+                                            </div>
+                                        </div>
+                                        <p class="mb-4 c-o-light">{{ details.reviews }} Reviews</p>
+                                        <div class="company-category bg-light-primary txt-primary">
+                                            <i class="fa-solid fa-tag fa-flip-horizontal"></i>
+                                            <span>{{ details.category }}</span>
+                                        </div>
+                                        <div class="company-desc">
+                                            <p>{{ details.description }}</p>
+                                        </div>
+                                        <a class="btn btn-primary btn-hover-effect" href="javascript:void(0)" [routerLink]="['/job-search/list-view']">
+                                            Jobs Posted <span>({{ details.jobs_posted }})</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

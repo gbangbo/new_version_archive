@@ -1,0 +1,45 @@
+<form class="theme-form" ngNativeValidate>
+  <h4>Create your account</h4>
+  <p>Enter your personal details to create account</p>
+  <div class="form-group">
+    <label class="col-form-label pt-0">Your Name</label>
+    <div class="grid grid-cols-12 gap-2">
+      <div class="col-span-6 sm:col-span-12">
+        <input class="form-control" type="text" required placeholder="First name">
+      </div>
+      <div class="col-span-6 sm:col-span-12">
+        <input class="form-control" type="text" required placeholder="Last name">
+      </div>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="col-form-label">Email Address</label>
+    <input class="form-control" type="email" required placeholder="test@gmail.com">
+  </div>
+  <div class="form-group">
+    <label class="col-form-label">Password</label>
+    <div class="form-input relative">
+      <input class="form-control" [type]="showPassword ?'text' : 'password'" name="login[password]" required placeholder="*********">
+      <div class="show-hide" (click)="togglePassword()">
+          <span [class.show]="!showPassword"></span>
+      </div>
+    </div>
+  </div>
+  <div class="form-group mb-0">
+    <div class="form-check flex gap-1">
+      <input class="checkbox-primary form-check-input custom-checkbox" id="checkbox1" type="checkbox">
+      <label class="text-muted form-check-label !mb-0" for="checkbox1">I agree to the terms & conditions and <a class="ms-2" href="#">Privacy Policy</a></label>
+    </div>
+    <button class="btn btn-primary btn-block w-full text-white mt-[24px]" type="submit">Create Account</button>
+  </div>
+  <h6 class="text-muted or mt-[24px]">Or create your account with</h6>
+  <div class="social mt-[24px]">
+    <div class="btn-showcase">
+      <a class="btn btn-light inline-block" href="https://www.linkedin.com/login" target="_blank"><i class="fa-brands fa-linkedin-in"></i></a>
+      <a class="btn btn-light inline-block" href="https://twitter.com/login?lang=en" target="_blank"><i class="fa-brands fa-x-twitter"></i></a>
+      <a class="btn btn-light inline-block" href="https://www.facebook.com/" target="_blank"><i class="fa-brands fa-facebook-f"></i></a>
+      <a class="btn btn-light inline-block" href="https://www.google.com/" target="_blank"><i class="fa-brands fa-google"></i></a>
+  </div>
+  </div>
+  <p class="text-center mt-[24px] !mb-0">Already have an account?<a class="ms-2" href="javascript:void(0)" [routerLink]="path">Sign in</a></p>
+</form>

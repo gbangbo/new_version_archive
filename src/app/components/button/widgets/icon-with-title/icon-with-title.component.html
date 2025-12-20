@@ -1,0 +1,10 @@
+<app-card [headerTitle]="'Icons with Title Buttons'" [border]="true" [header]="'pb-0'" [padding]="false" [cardBodyClass]="'common-flex visual-button visual-button1'">
+    <p class="f-m-light mt-1" header5>Use<code> btn-square , btn-pill , button-light-* , btn-* , .btn-outline-* , border-*</code> for icons with title buttons.</p>
+    
+    @for(button of iconTitle; track button){
+        <button [class]="button.class">
+            <app-feather-icon [icon]="button.icon"></app-feather-icon>
+            <span>{{ button.title }}</span>
+        </button>
+    }
+</app-card>

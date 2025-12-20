@@ -1,0 +1,49 @@
+<app-card [cardClass]="'height-equal'" [header]="'pb-0'" [headerTitle]="'Vertical Tabs'" [border]="true" [padding]="false" [cardBodyClass]="'main-vertical-tab'">
+    <p class="mt-1 f-m-light" header5>
+        This vertical tab layout uses <code>nav-pills</code> for styling and a flex column structure.  
+        The <code>handleTab</code> method updates the active tab, applying the <code>active</code> class for styling.  
+    </p>
+    
+    <div class="grid grid-cols-12 card-gap tabs">
+        <div class="col-span-4 md:col-span-12 col-xs-12">
+            <div class="tab-links nav-pills flex flex-col nav-secondary">
+                <a class="tab-link" [class.active]="activeTab == 'home'" (click)="handleTab('home')">Home</a>
+                <a class="tab-link" [class.active]="activeTab == 'components'" (click)="handleTab('components')">Components</a>
+                <a class="tab-link flex gap-2 sm:justify-center" [class.active]="activeTab == 'pages'" (click)="handleTab('pages')">Pages<span class="badge badge-light-light p-1 px-2">3</span></a>
+                <a class="tab-link" [class.active]="activeTab == 'settings'" (click)="handleTab('settings')">Settings</a>
+            </div>
+        </div>
+        <div class="col-span-8 md:col-span-12 col-xs-12">
+            <div class="tab-content">
+                <div class="tab-pan fade active show">
+                    @if(activeTab == 'home') {
+                        <p>This is some placeholder content the <b>Home tab's </b> associated content. Clicking
+                            another tab will toggle the visibility of this one for the next. The tab JavaScript swaps
+                            classes to control the content visibility and styling. You can use it with tabs, pills, and
+                            any other <b>.nav</b>-powered navigation.
+                        </p>
+                    } @else if(activeTab == 'components') {
+                        <p>This is some placeholder content the <b>Component tab's </b> associated content. Clicking
+                            another tab will toggle the visibility of this one for the next. The tab JavaScript swaps
+                            classes to control the content visibility and styling. You can use it with tabs, pills, and
+                            any other <b>.nav</b>-powered navigation.
+                        </p>
+                    } @else if(activeTab == 'pages') {
+                        <p>This is some placeholder content the <b>Page tab's </b> associated content. Clicking
+                            another tab will toggle the visibility of this one for the next. The tab JavaScript swaps
+                            classes to control the content visibility and styling. You can use it with tabs, pills, and
+                            any other <b>.nav</b>-powered navigation.
+                        </p>
+                    } @else if(activeTab == 'settings') {
+                        <p>This is some placeholder content the <b>Setting tab's </b> associated content. Clicking
+                            another tab will toggle the visibility of this one for the next. The tab JavaScript swaps
+                            classes to control the content visibility and styling. You can use it with tabs, pills, and
+                            any other <b>.nav</b>-powered navigation.
+                        </p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+</app-card>

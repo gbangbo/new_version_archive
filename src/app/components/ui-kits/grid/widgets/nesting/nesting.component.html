@@ -1,0 +1,32 @@
+<app-card [headerTitle]="'Nesting'" [header]="'pb-0'" [border]="true" [padding]="false">
+    <p class="mt-1 f-m-light" header5>To nest your content with the default grid, add a new<code> grid </code> and set
+        of <code>col-span-*</code> columns within an existing <code> col-span-*</code>  column.
+    </p>
+
+    <div class="grid-showcase">
+      <div class="grid grid-cols-12 gap-4 items-center">
+        <div class="col-span-3"><span>Level 1: .col-span-3</span></div>
+        <div class="col-span-9">
+          <div class="grid-wrapper">
+            <div class="grid grid-cols-12 gap-x-2">
+              <div class="col-span-5"><span class="border border-2 !mb-0">Level 2: .col-span-5</span>
+              </div>
+              <div class="col-span-7"><span class="border border-2 !mb-0">Level 2: .col-span-7</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-span-8">
+          <div class="grid-wrapper">
+            <div class="grid grid-cols-12 gap-x-2">
+              <div class="col-span-2 sm:col-span-4"><span class="border border-2 !mb-0">Level 1:
+                  .col-span-2</span></div>
+              <div class="col-span-10 sm:col-span-8"><span class="border border-2 !mb-0">Level 1:
+                  .col-span-10</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-span-4"><span>Level 2: .col-span-4</span></div>
+      </div>
+    </div>
+</app-card>

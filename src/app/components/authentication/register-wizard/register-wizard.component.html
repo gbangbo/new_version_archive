@@ -1,0 +1,66 @@
+<div class="container">
+    <div class="grid grid-cols-12">
+        <div class="col-span-12">
+            <div>
+                <div class="theme-form">
+                    <div class="wizard-4" id="wizard">
+                        <ul class="anchor">
+                            <li>
+                                <a class="logo text-start ps-0" href="javascript:void(0)" [routerLink]="['/']">
+                                    <img class="max-w-full h-auto for-light" src="assets/images/logo/logo.png" alt="logo">
+                                    <img class="max-w-full h-auto for-dark" src="assets/images/logo/logo_dark.png" alt="logo">
+                                </a>
+                            </li>
+                            @for(tab of registerTab; track tab; let i = $index) {
+                                <li>
+                                    <a href="javascript:void(0)" 
+                                        [ngClass]="tab.id == activeTab ? 'selected' : 
+                                                   tab.id < activeTab ? 'done' : 
+                                                   tab.id > activeTab ? 'disabled' : ''">
+                                        <h4>{{ i + 1 }}</h4>
+                                        <h5>{{ tab.title }}</h5>
+                                        <small>{{ tab.description  }}</small>
+                                    </a>
+                                </li>
+                            }
+                            <li>
+                                <img src="assets/images/login/signup.png" alt="image">
+                            </li>
+                        </ul>
+                        <div class="step-container login-card">
+                            <div id="step-1" [ngStyle]="{ 'display': (activeTab === 1 ? '' : 'none') }">
+                                <app-personal-info></app-personal-info>
+                            </div>
+                            <div id="step-2" [ngStyle]="{ 'display': (activeTab === 2 ? '' : 'none') }">
+                                <app-account-info></app-account-info>
+                            </div>
+                            <div id="step-3" [ngStyle]="{ 'display': (activeTab === 3 ? '' : 'none') }">
+                                <app-identity-info></app-identity-info>
+                            </div>
+                            <div id="step-4" [ngStyle]="{ 'display': (activeTab === 4 ? '' : 'none') }">
+                                <app-address-info></app-address-info>
+                            </div>
+                        </div>
+                        <div class="action-bar">
+                            <div class="loader">Loading</div>
+                            <button href="javascript:void(0)" class="btn btn-primary" (click)="showToast('success')" [disabled]="activeTab <=3">Finish</button>
+                            <button href="javascript:void(0)" class="btn btn-primary" (click)="handleStep(1)" [disabled]="activeTab == 4">Next</button>
+                            <button href="javascript:void(0)" class="btn btn-primary" (click)="handleStep(-1)" [disabled]="activeTab == 1">Previous</button>
+                        </div>
+                        <div class="toast-container position-fixed top-0 end-0 p-3 toast-index toast-rtl" >
+                            <div class="toast" [class.show]="toast['success']">
+                              <div class="common-space alert-light-priamry">
+                                <div class="toast-body">
+                                    <app-feather-icon [icon]="'check-square'" [class]="'close-search stroke-primary'"></app-feather-icon>
+                                     Congratulation ! All step Done.
+                                </div>
+                                <button class="btn-close" type="button" (click)="closeToast('success')"></button>
+                              </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

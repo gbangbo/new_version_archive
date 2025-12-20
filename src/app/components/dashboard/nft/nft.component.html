@@ -1,0 +1,63 @@
+<div class="container dashboard-6">
+    <div class="grid grid-cols-12 card-gap">
+        <div class="col-span-3 xxl:col-span-4 xl:col-span-6 md:col-span-12 custom-rs-4 box-col-6">
+            <app-trending-creator></app-trending-creator>
+        </div>
+        <div class="col-span-6 xxl:col-span-4 xl:col-span-12 custom-rs-4 explore-wrap box-col-none">
+            <app-banner></app-banner>
+        </div>
+        <div class="col-span-3 xxl:col-span-4 xl:col-span-6 md:col-span-12 custom-rs-4 box-col-6">
+            <app-welcome-card></app-welcome-card>
+        </div>
+        <div class="col-span-6 xl:col-span-12 box-col-12">
+            <div class="card income-wrap">
+                <div class="grid grid-cols-12 mx-0">
+                    <div class="col-span-6 xxl:col-span-12 xl:col-span-6 md:col-span-12">
+                        <app-income-chart></app-income-chart>
+                    </div>
+                    <div class="col-span-6 md:col-span-12 xxl:hidden xl:block">
+                        <app-artworks></app-artworks>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-span-6 xl:col-span-12 box-col-12">
+            <app-trending-bids></app-trending-bids>
+        </div>
+        <div class="col-span-3 xxl:col-span-4 xl:col-span-12 box-col-12">
+            <app-analytics-chart></app-analytics-chart>
+        </div>
+        <div class="col-span-9 xxl:col-span-8 xl:col-span-12 box-col-12">
+            <div class="grid grid-cols-12 card-gap">
+                <div class="col-span-12">
+                    <app-explore-artwork></app-explore-artwork>
+                </div>
+                <div class="col-span-8 xxl:col-span-12 lg:col-span-6 md:col-span-12">
+                    <app-top-nft></app-top-nft>
+                </div>
+                <div class="col-span-4 xxl:col-span-12 lg:col-span-6 md:col-span-12 xxl:hidden xl:block">
+                    <app-statistics></app-statistics>
+                </div>
+
+                @for(activity of activityPanel; track activity; let i = $index) {
+                    <div [ngClass]="(i === activityPanel.length - 1) ? 'col-span-4 xl:col-span-12 xxl:hidden xl:block2' : 'col-span-4 xxl:col-span-6 sm:col-span-12'">
+                        <app-activity-panel [activity]="activity"></app-activity-panel>
+                    </div>
+                }
+                
+            </div>
+        </div>
+        <div class="col-span-12">
+            <app-live-auction></app-live-auction>
+        </div>
+        <div class="col-span-4 xxl:col-span-6 sm:col-span-12 xxl:order-1 sm:order-2 box-col-6 box-ord-2">
+            <app-creators></app-creators>
+        </div>
+        <div class="col-span-4 xxl:col-span-12 xxl:order-none sm:order-1 box-col-12 box-ord-1">
+            <app-collections></app-collections>
+        </div>
+        <div class="col-span-4 xxl:col-span-6 sm:col-span-12 xxl:order-none sm:order-2 box-col-6 box-ord-3">
+            <app-artwork-table></app-artwork-table>
+        </div>
+    </div>
+</div>

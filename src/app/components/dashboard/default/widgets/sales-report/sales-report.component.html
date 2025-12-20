@@ -1,0 +1,29 @@
+<app-card [cardClass]="'sales-report'" [headerTitle]="'Sales Report'"
+          [cardBodyClass]="'pt-0 pb-0 lg:pb-4'" [dropdownType]="'simple'" [options]="cardToggleOptions"
+          [padding]="false">
+
+    <ul class="balance-data">
+      @for(marker of salesReportChart.chartMarker; track marker) {
+        <li>
+          <span class="circle bg-{{ marker.color }}"></span>
+          <span class="c-light ms-1">{{ marker.title }}</span>
+        </li>
+      }
+    </ul>
+    <div id="sale_report">
+      <apx-chart [series]="salesReportChart.series"
+                 [chart]="salesReportChart.chart"
+                 [stroke]="salesReportChart.stroke"
+                 [plotOptions]="salesReportChart.plotOptions"
+                 [colors]="salesReportChart.colors"
+                 [fill]="salesReportChart.fill"
+                 [grid]="salesReportChart.grid"
+                 [legend]="salesReportChart.legend"
+                 [markers]="salesReportChart.markers"
+                 [xaxis]="salesReportChart.xaxis"
+                 [yaxis]="salesReportChart.yaxis"
+                 [responsive]="salesReportChart.responsive">
+      </apx-chart>
+    </div>
+
+</app-card>

@@ -1,0 +1,11 @@
+<div class="card-header card-no-border ps-0 md:ps-4">
+    <div class="header-top">
+      <h5>Artworks</h5>
+      <app-card-dropdown-button [dropdownType]="'simple'" [options]="dropdownToggleOption"></app-card-dropdown-button>
+    </div>
+</div>
+<div class="card-body pt-0 sale-status-table ps-0 md:ps-4">
+    <div class="overflow-x-auto">
+        <app-table [tableConfig]="tableConfig" [pageSize]="artworks.length" [pagination]="false" [search]="false"></app-table>
+    </div>
+</div>

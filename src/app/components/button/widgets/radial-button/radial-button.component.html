@@ -1,0 +1,17 @@
+<app-card [headerTitle]="'Radial Buttons'" [header]="'pb-0'" [border]="true" [padding]="false">
+    <p class="f-m-light mt-1" header5>You can used <code>btn-*-gradien</code> class for gradien buttons.</p>
+    <div class="grid grid-cols-12 gap-4">
+        @for(details of radialButton; track details){
+            <div [class]="details.class">
+              <div class="card-wrapper border rounded-3 bg-light">
+                <h6 class="sub-title fw-bold">{{ details.title }}</h6>
+                <div class="common-flex"> 
+                    @for(button of details.details; track button){
+                        <button [class]="button.class">{{ button.text}}</button>
+                    }
+                </div>
+              </div>
+            </div>
+        }
+    </div>
+</app-card>

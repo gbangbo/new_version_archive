@@ -1,0 +1,14 @@
+<ul class="categories-list">
+    @for(category of topCategories; track category) {
+        <li class="flex"> 
+            <div class="bg-light"> 
+                <img [src]="category.image" [alt]="category.category_name"></div>
+            <div> 
+            <h6 class="mb-0">
+                <a href="javascript:void(0)" [routerLink]="['/category']">{{ category.category_name }}</a>
+            </h6>
+            <span class="f-light f-12 font-medium">({{ category.total_items | number }})</span>
+            </div>
+        </li>
+    }
+</ul>

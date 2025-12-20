@@ -1,0 +1,211 @@
+@if(tableConfig) {
+  @if(search || dateFilter || showPaginate) {
+    <div class="top-body">
+      @if(showPaginate) {
+        <select (change)="handleSelect($event)">
+          @for(pages of pageSizeOptions; track pages) {
+            <option [value]="pages.value" [selected]="pages.selected">{{ pages.title }}</option>
+          }
+        </select>
+      }
+      @if(dateFilter) {
+        <div>
+          <div class="grid grid-cols-12 gap-4">
+            <div class="col-span-4 xxl:col-span-4 xl:col-span-12">
+              <div class="flex gap-2 items-center">
+                <label class="form-label">Select Dates</label>
+                <div class="range-dropdown flatpickr-input" id="reportrange" readonly="readonly">
+                  <span (click)="handleDropdown()">{{ selectedDate ? selectedDate : 'Select' }}</span>
+                  <div id="rangeButtons" [class.range-option]="dateDropdownOpen">
+                    <button (click)="handleDateFilter('today')" [class.active]="selectedValue == 'today'">Today</button>
+                    <button (click)="handleDateFilter('yesterday')" [class.active]="selectedValue == 'yesterday'">Yesterday</button>
+                    <button (click)="handleDateFilter('7_days')" [class.active]="selectedValue == '7_days'">Last 7 Days</button>
+                    <button (click)="handleDateFilter('30_days')" [class.active]="selectedValue == '30_days'">Last 30 Days</button>
+                    <button (click)="handleDateFilter('this_month')" [class.active]="selectedValue == 'this_month'">This Month</button>
+                    <button (click)="handleDateFilter('last_month')" [class.active]="selectedValue == 'last_month'">Last Month</button>
+                    <button (click)="handleDateFilter('custom')" [class.active]="selectedValue == 'custom'">Custom Date Range</button>
+                  </div>
+              </div>
+            </div>
+              @if(selectedValue === 'custom') {
+                <owl-date-time-inline [pickerType]="'calendar'" [selectMode]="'range'" [(ngModel)]="customDate" (ngModelChange)="onDateSelection($event)"></owl-date-time-inline>
+              }
+            </div>
+          </div>
+        </div>
+      }
+      @if(search) {
+        <div id="basic-1_filter" class="dataTables_filter" search>
+          <label>Search:
+            <input type="text" name="searchTerm" [(ngModel)]="searchText" (keyup)="searchTerm(searchText)" [placeholder]="searchPlaceholder">
+          </label>
+          @if(downloadReports) {
+            <div class="dt-buttons btn-group flex-wrap">
+              <button class="dt-button buttons-copy buttons-html5 btn-outline-primary" type="button"><span>Copy</span></button>
+              <button class="dt-button buttons-csv buttons-html5 btn-outline-primary" type="button"><span>CSV</span></button>
+              <button class="dt-button buttons-excel buttons-html5 btn-outline-primary" type="button"><span>Excel</span></button>
+              <button class="dt-button buttons-pdf buttons-html5 btn-outline-primary" type="button"><span>PDF</span></button>
+              <button class="dt-button buttons-print btn-outline-primary" type="button"><span>Print</span></button>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+  <table class="table" [ngClass]="tableClass">
+    <thead>
+      <tr>
+        @if(hasCheckbox) {
+          <th class="datatable-checkbox"
+            [class.selected-checkbox]="selected.length && selected.length != tableConfig.data.length">
+            <input type="checkbox" class="cb-select-checkbox"
+              [checked]="(tableConfig && tableConfig.data.length && selected && selected.length == tableConfig.data.length) || false"
+              (change)="checkUncheckAll($event)">
+          </th>
+        }
+  
+        @if(rowDetails) {
+          <th></th>
+        }
+  
+        @for(column of tableConfig.columns; track column){
+          @if(!column.hide_column) {
+            @if(column.sort) {
+            <th [ngClass]="sortable_key == (column.sortable_key ? column.sortable_key : column.field_value) && filter['sort'] == 'asc' ? 'asc' : 
+                        sortable_key == (column.sortable_key ? column.sortable_key : column.field_value) && filter['sort'] == 'desc' ? 'desc' : ''"
+                (click)="onSort(column.sortable_key ? column.sortable_key : column.field_value)">
+                {{ column.title }}
+              <span class="cb-accending-decending"></span>
+            </th>
+            } @else {
+              <th>{{ column.title }}</th>
+            }
+          }
+        }
+  
+        @if(tableConfig.row_action) {
+          <th>{{ 'Actions' }}</th>
+        }
+      </tr>
+    </thead>
+  
+    @if(tableData && tableData.length) {
+      <tbody>
+        @for(details of tableData; track details) {
+          <tr [class.selected]="selected && selected.length && selected.includes(details.id)">
+            @if(hasCheckbox) {
+              <td class="datatable-checkbox">
+                <input type="checkbox" [attr.data-id]="details.id" [value]="details?.id" [checked]="selected && selected.length && selected.includes(details.id)" (change)="onItemChecked($event)">
+              </td>
+            }
+      
+            @if(rowDetails) {
+              <td [ngStyle]="{
+                              'background': 'url(assets/images/' + (selectedOpenRows.includes(details.id) ? 'details_close' : 'details_open') + '.png) no-repeat center center',
+                              'cursor': 'pointer'
+                            }" (click)="openRowDetails(details.id)">
+              </td>
+            }
+      
+            @for(column of tableConfig.columns; track column) {
+              @if(!column.hide_column) {
+                @if(column.type == 'qty' || column.type == 'purchase') {
+                  <td>
+                    {{ details[column.field_value] }} {{ column.type == 'qty' ? column.text ? column.text : 'QTY' : column.type == 'purchase' ? 'Purchases' : ''}}
+                  </td>
+                } @else if(column.type == 'price'){
+                  <td [ngClass]="column.class ? column.class : ''">
+                    @if(column.decimal_number) {
+                      ${{ details[column.field_value] | number: '1.2-2' }}
+                    } @else {
+                      ${{ details[column.field_value] }}
+                    }
+                  </td>
+                } @else {
+                  <td [innerHTML]="details[column.field_value]">
+                    @if(column.text) {
+                      {{ column.text }}
+                    }
+                  </td>
+                }
+              }
+            }
+      
+            @if(tableConfig.row_action) {
+              <td>
+                <div class="product-action common-align gap-2 justify-start">
+                  @for(rows of tableConfig.row_action; track rows) {
+                    @if(rows.type == 'button'){
+                      <button [class]="rows.class">{{ rows.label }}</button>
+                    }
+                    @if(rows.label == 'Create') {
+                      <button class="plus-btn">+ </button>
+                    }
+                    @else if(rows.label == 'Edit' || rows.label == 'Delete') {
+                      <a class="square-white" href="javascript:void(0)" [routerLink]="rows.path" (click)="handleAction(rows, details)">
+                        <app-svg-icon [icon]="rows.icon"></app-svg-icon>
+                      </a>
+                    } @else if(rows.label == 'View') {
+                      <a class="square-white" href="javascript:void(0)" (click)="handleAction(rows, details)" [routerLink]="rows.path">
+                        <i class="fa-solid fa-eye"></i>
+                      </a>
+                    } @else if(rows.label == 'Refresh') {
+                      <a class="square-white relative group" href="javascript:void(0)">
+                        <i class="fa-solid fa-{{ rows.icon }}"></i>
+                        <app-tooltip [title]="'Change Status'"></app-tooltip>
+                      </a>
+                    } @else if(rows.label == 'Message') {
+                      <button class="btn btn-primary relative group">
+                        <i class="text-white fa-solid fa-envelope"></i>
+                        <app-tooltip [title]="'Message'"></app-tooltip>
+                      </button>
+                    } @else if(rows.label == 'Approve') {
+                      <button class="btn btn-success relative group">
+                        <i class="text-white fa-solid fa-thumbs-up"></i>
+                        <app-tooltip [title]="'Approve'"></app-tooltip>
+                      </button>
+                    } @else if(rows.label == 'Reject') {
+                      <button class="btn btn-danger relative group">
+                        <i class="text-white fa-solid fa-circle-xmark"></i>
+                        <app-tooltip [title]="'Reject'"></app-tooltip>
+                      </button>
+                    }
+                  }
+                </div>
+              </td>
+            }
+          </tr>
+      
+          @if(rowDetails && selectedOpenRows.includes(details.id)){
+            <tr data-dt-row="8">
+              <td colspan="8">
+                <table cellpadding="5" cellspacing="0" border="0" [ngStyle]="{ 'padding-left': '50px'}">
+                  <tbody>
+                    @for(column of tableConfig.columns; track column) {
+                      <tr>
+                        <td>{{ column.title }}</td>
+                        <td [innerHTML]="details[column.field_value]"></td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    } @else if(!tableData.length){
+      <tbody>
+        <tr [attr.data-dt-row]="getColSpan()">
+          <td [attr.colspan]="getColSpan()" class="empty-data">{{emptyTexte}}</td>
+        </tr>
+      </tbody>
+    }
+  </table>
+  
+  @if(tableConfig.data.length && pagination) {
+    <app-pagination [total]="tableConfig.data.length" [paginate]="paginate" (setPage)="setPage($event)"
+      [paginateDetails]="paginateDetails" [selectedRows]="selectedRows" [selectedItems]="selected.length">
+    </app-pagination>
+  }
+}

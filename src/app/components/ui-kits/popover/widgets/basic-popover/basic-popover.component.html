@@ -1,0 +1,27 @@
+<app-card [headerTitle]="'Basic Popover'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'common-flex popover-wrapper'">
+
+    <p class="mb-0 mt-1" header5>To create popovers using Tailwind, wrap the button in a <code>`relative group inline-block`</code> container and use <code>`group-hover`</code> for <code>hover-based</code> visibility or <code>toggle classes</code> for click-based popovers.</p>    
+    <div class="relative group inline-block" (clickOutside)="handlePopover()">
+        <button class="btn btn-primary example-popover mb-0 me-0 text-white" (click)="showPopover()">Hurry Up!</button>
+    
+        <div [class.show]="popoverVisible" class="popover absolute left-1/2 top-[85%] -translate-x-1/2 mt-2 w-max bg-white text-sm rounded opacity-100 visible transition-opacity duration-300 shadow-lg">
+            <div class="popover-arrow"></div>
+            <div class="popover-header">Popover Title</div>
+            <div class="popover-body">And here's some amazing content.</div>
+        </div>
+    </div>
+
+    <div class="relative group inline-block">
+        <button 
+            class="example-popover btn btn-success mb-0 me-0 text-white" 
+            type="button">Hover Popover
+        </button>
+
+        <div class="popover show absolute left-1/2 top-[85%] mt-2 w-max -translate-x-1/2 bg-white text-sm rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-300 shadow-lg">
+            <div class="popover-arrow"></div>
+            <div class="popover-header">Hover Popover</div>
+            <div class="popover-body">Several utility instruction sets have been featured in the Bootstrap 4 to promote very easy learning for beginners in the business of web building.</div>
+        </div>
+    </div>
+
+</app-card>

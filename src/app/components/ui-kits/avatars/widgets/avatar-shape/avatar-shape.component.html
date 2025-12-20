@@ -1,0 +1,12 @@
+<app-card [headerTitle]="'Shapes'" [header]="'pb-0'" [border]="true" [padding]="false">
+
+    <p class="f-m-light mt-1" header5>Use shapes of avatar like<code> b-r-* (8/30/35/25)</code></p>
+
+    <div class="avatars avatar-showcase">
+        @for(avatar of shapeAvatar; track avatar) {
+            <div class="avatar">
+                <img [class]="avatar.class" [src]="avatar.profile" alt="javascript:void(0)">
+            </div>
+        }
+    </div>
+</app-card>

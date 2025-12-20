@@ -1,0 +1,24 @@
+<app-card [headerTitle]="'File Input'" [header]="'pb-0'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>
+    For default file/multiple file/disabled file/small file/large file input for use <code>&lt;input&gt; </code>with <code>(type='file')</code>.</p>
+  <div class="mb-4">
+    <label class="form-label" for="formFile">Default File Input Example</label>
+    <input class="form-control" id="formFile" type="file">
+  </div>
+  <div class="mb-4">
+    <label class="form-label" for="formFileMultiple">Multiple Files Input Example</label>
+    <input class="form-control" id="formFileMultiple" type="file" multiple="">
+  </div>
+  <div class="mb-4">
+    <label class="form-label" for="formFileDisabled">Disabled File Input Example</label>
+    <input class="form-control" id="formFileDisabled" type="file" disabled="">
+  </div>
+  <div class="mb-4">
+    <label class="form-label" for="formFileSm">Small File Input Example</label>
+    <input class="form-control form-control-sm" id="formFileSm" type="file">
+  </div>
+  <div>
+    <label class="form-label" for="formFileLg">Large File Input Example</label>
+    <input class="form-control form-control-lg" id="formFileLg" type="file">
+  </div>
+</app-card>

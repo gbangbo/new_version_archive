@@ -1,0 +1,24 @@
+<app-card [headerTitle]="'Block Loading'" [header]="'pb-0'" [headerClass]="'mb-0'" [border]="true" [padding]="false" [cardClass]="'height-equal'">
+  <p class="f-m-light mt-1" header5>Use <code>&lt;ngx-spinner&gt;</code> to display a loading spinner. Customize the background with the <code>bdColor</code> property, adjust the size using <code>size</code>, and change the spinner color with <code>color</code>. To set different spinner styles, use the <code>[type]</code> input. Supported types include <code>ball-clip-rotate</code>, <code>ball-fall</code>, and <code>ball-spin-clockwise</code>. Control its display mode with <code>[fullScreen]</code> as needed.</p>  <div class="block-main-wrapper">
+    
+    <div class="block-main-wrapper">
+      <div class="block-wrapper">
+        <img class="card-img-top1 max-w-full" src="assets/images/other-images/profile-style-img3.png" alt="nature">
+        <div class="p-t-10">
+          <h5 class="card-title">Sunrise Mountain</h5>
+          <p class="card-text c-light">" Ascending sunrise mountain will take you on an incredible adventure with breath-taking views around every corner. Savour the beauty of the natural world and find tranquilly at the top of this magnificent peak."</p>
+        </div>
+  
+        @if(loadingShow) {
+          <ngx-spinner bdColor="rgba(255, 255, 255, .8)" size="default" color="#343a40" [type]="type" [fullScreen]="false"></ngx-spinner>
+        }
+  
+      </div>
+      <div class="common-flex">
+        <button class="button text-white btn btn-primary block-btn-1" (click)="loading('ball-clip-rotate')">Block Loader 1</button>
+        <button class="button text-white btn btn-primary block-btn-2" (click)="loading('ball-fall')">Block Loader 2 </button>
+        <button class="button text-white btn btn-primary block-btn-3" (click)="loading('ball-spin-clockwise')">Block Loader 3</button>
+      </div>
+    </div>
+  </div>
+</app-card>

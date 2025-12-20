@@ -1,0 +1,11 @@
+<div #swiperContainer class="notification-slider">
+    <div class="swiper-wrapper">
+        @for(item of notice; track item) {
+            <div  class="swiper-slide">
+                <div>
+                    <div class="h-full !flex items-center" [innerHTML]="item"></div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

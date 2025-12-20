@@ -1,0 +1,41 @@
+<app-card [headerTitle]="'Time Picker'" [header]="'pb-0'" [cardBodyClass]="'main-flatpickr'" [border]="true" [padding]="false">
+    <p class="f-m-light mt-1" header5>Flatpickr has numerous options that accept time values in a variety of formats. Those are:</p>
+
+    <div class="card-wrapper border rounded-3">
+        <form class="timepicker-wrapper">
+            <div class="grid grid-cols-12 gap-4 mb-4">
+                <div class="col-span-3 xxl:col-span-12 box-col-12">
+                    <label class="text-start">Time Picker</label>
+                </div>
+                <div class="col-span-9 xxl:col-span-12 box-col-12">
+                    <div class="input-group">
+                        <input class="form-control" [owlDateTimeTrigger]="dt1" [owlDateTime]="dt1">
+                        <owl-date-time #dt1 [pickerType]="'timer'" [hour12Timer]="true"></owl-date-time>
+                    </div>
+                </div>
+            </div>
+            <div class="grid grid-cols-12 gap-4 mb-4">
+                <div class="col-span-3 xxl:col-span-12 box-col-12"> 
+                    <label class="text-start">24-hour Time Picker</label>
+                </div>
+                <div class="col-span-9 xxl:col-span-12 box-col-12">
+                    <div class="input-group">
+                        <input class="form-control" [owlDateTimeTrigger]="dt2" [owlDateTime]="dt2">
+                        <owl-date-time #dt2 [pickerType]="'timer'"></owl-date-time>
+                    </div>
+                </div>
+            </div>
+            <div class="grid grid-cols-12 gap-4 mb-4">
+                <div class="col-span-3 xxl:col-span-12 box-col-12"> 
+                    <label class="text-start">Date With Time</label>
+                </div>
+                <div class="col-span-9 xxl:col-span-12 box-col-12">
+                    <div class="input-group flatpicker-calender">
+                        <input class="form-control" [owlDateTimeTrigger]="dt3" [owlDateTime]="dt3">
+                        <owl-date-time #dt3></owl-date-time>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</app-card>

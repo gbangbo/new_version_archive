@@ -1,0 +1,47 @@
+<div class="card hovercard text-center common-user-image">
+    <div class="cardheader">
+        <div class="user-image">
+          <div class="avatar">
+            <div class="common-align">
+              <div>
+                 @if(userProfile.profile){
+                   <img [src]="userProfile.profile" alt="Profile Image" id="output" />
+                 }
+                <input type="file" accept="image/*" (change)="onFileSelected($event)" #fileInput hidden />
+                @if(myProfile.profile){
+                  <div class="icon-wrapper" id="cancelButton" (click)="removeProfile()">
+                    <i class="icofont icofont-error"></i>
+                  </div>
+                }
+                @if(myProfile.profile){
+                  <div class="icon-wrapper" (click)="fileInput.click()">
+                    <i class="icofont icofont-pencil-alt-5"></i>
+                  </div>
+                }
+              </div>
+            </div>
+            <ul class="share-icons">
+              <li><a class="social-icon bg-primary" href="javascript:void(0)"><i class="fa-regular fa-face-smile fa-flip"></i></a></li>
+              <li><a class="social-icon bg-secondary" href="javascript:void(0)"><i class="fa-brands fa-weixin fa-flip"></i></a></li>
+              <li><a class="social-icon bg-warning" href="javascript:void(0)"><i class="fa-solid fa-share-nodes fa-flip"></i></a></li>
+            </ul>
+          </div>
+        </div>
+    </div>
+    <div class="info market-tabs">
+        <ul class="nav tab-links border-tab tabs-social" id="top-tab" role="tablist">
+            @for(tab of socialAppTab; track tab; let i = $index) {
+                @if(i == 2) {
+                    <li>
+                        <div class="user-designation"></div>
+                        <div class="title"><a target="_blank" href="">{{ myProfile.name }}</a></div>
+                        <div class="desc mt-2">{{ myProfile.designation }}</div>
+                    </li>
+                }
+                <li (click)="handleActiveTab(tab.value)">
+                    <a class="tab-link" href="javascript:void(0)" [class.active]="tab.value == activeTab">{{ tab.title }}</a>
+                </li>
+            }
+        </ul>
+    </div>
+</div>

@@ -1,0 +1,26 @@
+<div class="card compare-order">
+    <div class="card-header card-no-border">
+      <div class="header-top"> 
+        <div class="compare-icon shadow-{{ details.color }}">
+            <app-svg-icon [icon]="details.icon" [class]="'fill-' + details.color"></app-svg-icon>
+        </div>
+        <app-card-dropdown-button [dropdownType]="'simple'" [options]="cardToggleOption"></app-card-dropdown-button>
+      </div>
+    </div>
+    <div class="card-body pt-0"> 
+        <span class="f-w-500 c-o-light">{{ details.title }}</span>
+        <h4 class="mb-2">
+            $<span class="counter">
+                <app-counter [counter]="details.value | number"></app-counter>
+            </span>
+        </h4>
+        <div class="progress" >
+            <div class="progress-bar bg-{{ details.color }}" [ngStyle]="{'width': details.progress + '%'}"></div>
+        </div>
+        <span class="user-growth f-12 f-w-500">
+            <i class="icon-arrow-{{ details.profit_type == 'profit' ? 'up' : 'down' }} txt-{{ details.profit_type == 'profit' ? 'success' : 'danger' }}"></i>
+            <span class="txt-{{ details.profit_type == 'profit' ? 'success' : 'danger' }}">{{ details.profit_type == 'profit' ? '+' : '-' }}{{ details.profit }}%</span>
+        </span>
+        <span class="user-text">last month</span>
+    </div>
+</div>

@@ -1,0 +1,49 @@
+<app-card [headerTitle]="'Custom Radio Buttons'" [header]="'pb-0'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>
+    Use <code>form-check-input </code>and <code>form-check-label </code>for custom radio buttons.
+   </p>
+   <div class="grid grid-cols-12 gap-4">
+    <div class="col-span-4 xl:col-span-6 sm:col-span-12">
+      <div class="card-wrapper border rounded-3 h-full checkbox-checked">
+        <h6 class="sub-title">Bordered Radio</h6>
+        @for(item of borderedRadio;track item){
+          <div class="form-check radio radio-{{ item.class }}">
+            <input class="form-check-input" id="{{ item.id}}" type="radio" name="radio1" value="option1"
+              [checked]="item.check">
+            <label class="form-check-label" for="{{ item.id}}">{{ item.text }} </label>
+          </div>
+        }
+      </div>
+    </div>
+    <div class="col-span-4 xl:col-span-12 order-xl-0 order-sm-1">
+      <div class="card-wrapper border rounded-3 h-full checkbox-checked">
+        <h6 class="sub-title">Icons Radio</h6>
+        <div class="form-check radio radio-primary ps-0 main-icon-radio">
+          <ul class="radio-wrapper">
+            @for(item of iconsRadio;track item){
+              <li>
+                <input class="form-check-input" id="{{ item.id }}" type="radio" name="radio2" value="option2"
+                  [checked]="item.check">
+                <label class="form-check-label" for="{{ item.id }}">
+                  <i class="fa fa-{{ item.icon }}"></i>
+                  <span>{{ item.text }}</span>
+                </label>
+              </li>
+            }
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="col-span-4 xl:col-span-6 sm:col-span-12">
+      <div class="card-wrapper border rounded-3 fill-radios h-full checkbox-checked">
+        <h6 class="sub-title">Filled Radio</h6>
+        @for(item of filledRadio;track item){
+          <div class="form-check radio radio-{{ item.class }}">
+            <input class="form-check-input" id="{{ item.id }}" type="radio" name="radio3" value="option1" [checked]="item.check">
+            <label class="form-check-label" for="{{ item.id }}">{{ item.text }}</label>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</app-card>

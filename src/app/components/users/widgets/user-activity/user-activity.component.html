@@ -1,0 +1,59 @@
+<app-card [headerTitle]="'Recent Activity'" [border]="true" [header]="'pb-0'" [padding]="false" [cardBodyClass]="'dark-timeline'">
+    <ul>
+        @for(activity of userRecentActivity; track activity; let i = $index) {
+            <li class="flex">
+                <div class="activity-dot-{{ getColor(i) }}"></div>
+                <div class="w-full ms-4">
+                  <p class="flex justify-between mb-4">
+                    <span class="date-content light-background">{{ activity.date }}</span>
+                    <span>{{ activity.time }}</span>
+                </p>
+                <h6>{{ activity.title }}
+                    <span class="dot-notification"></span>
+                </h6>
+                <span [innerHTML]="activity.description"></span>
+                @if(activity.images) {
+                    <div class="recent-images">
+                        <ul>
+                            @for(image of activity.images; track image) {
+                                <li> 
+                                    <div class="recent-img-wrap">
+                                        <img [src]="image.image" [alt]="image.title">
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                }
+
+                @if(activity.members) {
+                    <div class="project-teammate">
+                        <ul class="common-f-start">
+                            @for(member of activity.members; track member) {
+                                @if(member.profile) {
+                                    <li class="group relative">
+                                        <img class="common-circle" [src]="member.profile" alt="user">
+
+                                        <app-tooltip [title]="member.name"></app-tooltip>
+                                    </li>
+                                } @else {
+                                  <li class="group relative"> 
+                                    <div class="common-circle bg-lighter-{{ chatService.getTextColor(chatService.getUserText(member.name)) }}">{{ chatService.getUserText(member.name, 'singleText') }}</div>
+
+                                    <app-tooltip [title]="member.name"></app-tooltip>
+                                  </li>
+                                }
+                            }
+                            <li class="group relative"> 
+                                <div class="common-circle bg-lighter-primary">{{ activity.total_member - 4 }}+</div>
+
+                                <app-tooltip [title]="activity.total_member - 4 + '+ More'"></app-tooltip>
+                            </li>
+                        </ul>
+                    </div>
+                }
+                </div>
+            </li>
+        }
+    </ul>
+</app-card>

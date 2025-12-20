@@ -1,0 +1,7 @@
+<app-card [headerTitle]="'Dashed Border'" [border]="true" [header]="'pb-0'" [padding]="false" [cardBodyClass]="'common-flex'">
+    <p class="f-m-light mt-1" header5>Use <code>border-dashed-*</code> &<code> txt-*</code> for dashed border.</p>
+    
+    @for(button of dashedBorder; track button){
+        <button class="btn border-dashed-{{ button | lowercase }}">{{ button }}</button>
+    }
+</app-card>

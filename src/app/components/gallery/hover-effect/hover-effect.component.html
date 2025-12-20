@@ -1,0 +1,45 @@
+<div class="container gallery-hover">
+    @for(details of imgDetails; track details){
+        <div class="grid grid-cols-12">
+            <div class="col-span-12">
+                <app-card [headerTitle]="'Hover Effect ' + details.hover_digits" [header]="'pb-0'"  [border]="true" [padding]="false" >
+                    <div class="grid grid-cols-12 card-gap my-gallery gallery" itemscope="">
+                        @for(img of details.images; track img; let i = $index ){
+                            @if(details.text){
+                                <figure class="col-span-3 md:col-span-6 img-hover" itemprop="associatedMedia" itemscope="">
+                                    <a class="{{ details.hover_class }}" (click)="openInFullScreen(i,details.images)" itemprop="contentUrl">
+                                        <div>
+                                            <img [src]="img.src_url" itemprop="thumbnail" alt="Image description">
+                                        </div>
+                                        <div class="overlay-hover">
+                                            <div class="overlay-content">
+                                                <h5>{{ img.title}}</h5>
+                                                <p>{{ img.description}}
+                                                </p>
+                                                <div class="common-align gap-2">
+                                                    @for(button of img.buttons; track button) {
+                                                        <div class="btn btn-{{ button.color }} text-white">{{ button.title }}</div>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </figure>
+                            } @else {
+                                <figure class="col-span-3 md:col-span-6 img-hover {{ details.hover_class }}">
+                                    <a href="javascript:void(0)"(click)="openInFullScreen(i, details.images)" itemprop="contentUrl">
+                                        <div class="overflow-hidden">
+                                            <img [src]="img.src_url">
+                                        </div>
+                                    </a>
+                                </figure>
+                            }
+                        }
+                    </div>
+                </app-card>
+            </div>
+        </div>
+    }
+</div>
+
+

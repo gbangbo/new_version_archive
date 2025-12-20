@@ -1,0 +1,55 @@
+<app-card [headerTitle]="'Hovering Timeline '" [header]="'pb-0'" [border]="true" [padding]="false">
+    <p class="f-m-light mt-1" header5> Use<code> square-timeline </code> main class to create new variations of the timeline.</p>
+      <ul class="square-timeline">
+        @for(details of hoveringTimeline;track details){
+          <li class="timeline-event">
+            <label class="timeline-event-icon"></label>
+            <div class="timeline-event-wrapper">
+              <p class="timeline-thumbnail">{{ details.event }}</p>
+              <h5>{{ details.title }}</h5>
+              <div class="f-light">{{ details.text }}
+                @if(details.list){
+                  <div class="list-group main-lists-content">
+                    <a class="list-group-item list-group-item-action border-0 p-0 mb-4" href="#" aria-current="true">
+                      <div class="flex w-full justify-between items-center">
+                        <div class="list-wrapper">
+                            <img class="list-img me-0" src="assets/images/user/1.jpg" alt="profile">
+                          <div class="list-content"> 
+                            <h6>Molly Boake</h6>
+                            <p>MollyBoake&#64;rhyta.com</p>
+                          </div>
+                        </div>
+                        <div class="timeline-icon">
+                            <i class="icon-facebook"></i>
+                            <i class="icon-google"> </i>
+                            <i class="icon-twitter-alt"></i>
+                        </div>
+                      </div>
+                      <p class="mb-1">Next step is to choose a tone of voice for your content type.</p>
+                    </a>
+                </div>
+                }
+                @if(details.profile){
+                  <div class="designer-details">
+                    @for(profile of details.profile; track profile){
+                      <div class="designer-profile"> 
+                        <div class="designer-wrap">
+                          <img class="designer-img" [src]="profile.image" alt="profile">
+                          <div class="designer-content"> 
+                            <h6>{{ profile.name }}</h6>
+                            <p>{{ profile.contact_number }}</p>
+                          </div>
+                        </div>
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+              @if(details.description){
+                <p class="pt-3 mb-4">{{ details.description }}</p>
+              }
+          </div>
+        </li>
+      }
+  </ul>
+</app-card>

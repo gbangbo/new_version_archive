@@ -1,0 +1,24 @@
+<app-card [cardClass]="'widget-1'">
+  <div class="widget-content">
+      <div class="widget-round {{ detail.color }}">
+          <div class="bg-round">
+            <app-svg-icon [icon]="detail.icon" [class]="detail.class ? detail.class : ''"></app-svg-icon>
+            <app-svg-icon [icon]="'halfcircle'" [class]="'half-circle svg-fill'"></app-svg-icon>
+          </div>
+      </div>
+      <div>
+          <h4>
+            <span class="counter">
+              <app-counter [counter]="detail.count"></app-counter>
+            </span>
+          </h4>
+          <span class="f-light">{{ detail.title }}</span>
+      </div>
+  </div>
+    <div class="font-{{ detail.margin_type == 'profit' ? 'success' : 'danger'}} font-medium">
+      <app-feather-icon [class]="'bookmark-search me-1'" [icon]="detail.margin_type == 'profit' ? 'trending-up' : 'trending-down'"></app-feather-icon>
+        <span class="txt-{{ detail.margin_type == 'profit' ? 'success' : 'danger'}}">
+          {{ detail.margin_type == 'profit' ? '+' : '-'}}{{ detail.margin }}
+        </span>
+      </div>
+</app-card>

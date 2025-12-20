@@ -1,0 +1,39 @@
+<div class="grid grid-cols-12 card-gap review-box">
+  <div class="col-span-12">
+    <div class="md-sidebar">
+      <a class="btn btn-primary md-sidebar-toggle text-white" href="javascript:void(0)" (click)="toggleSidebar()">seller profile</a>
+      <div class="md-sidebar-aside job-left-aside custom-scrollbar" [class.open]="sidebarOpen">
+        <div class="email-left-aside">
+          <div class="card">
+            <div class="card-body">
+              <div class="accordion seller-profile">
+                @for(accordionItem of sellerDetailsAccordion; track accordionItem) {
+                  <div class="accordion-item">
+                    <h2 class="accordion-header">
+                      <button class="accordion-button" [class.collapsed]="!accordionOpen[accordionItem.id]" (click)="toggleAccordion(accordionItem.id)">{{ accordionItem.title }}</button>
+                    </h2>
+                    <div class="accordion-collapse collapse" [class.show]="accordionOpen[accordionItem.id]">
+                      <div class="accordion-body">
+                        @if(accordionItem.value == 'details') {
+                          <app-seller-details></app-seller-details>
+                        } @else if(accordionItem.value == 'rating') {
+                          <app-seller-rating></app-seller-rating>
+                        } @else if(accordionItem.value == 'notification') {
+                          <app-seller-notifications></app-seller-notifications>
+                        } @else if(accordionItem.value == 'policy') {
+                          <app-seller-policies></app-seller-policies>
+                        } @else if(accordionItem.value == 'review') {
+                          <app-seller-product-review></app-seller-product-review>
+                        }
+                      </div>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

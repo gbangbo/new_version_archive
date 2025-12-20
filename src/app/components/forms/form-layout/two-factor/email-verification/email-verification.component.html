@@ -1,0 +1,26 @@
+<app-card [cardBodyClass]="'email-verify'">
+    <div class="grid grid-cols-12 gap-4">
+        <div class="col-span-6 md:col-span-12">
+          <div class="card-wrapper border rounded-3 h-full">
+            <div class="grid grid-cols-12 gap-4"> 
+              <div class="col-span-4 xxl:col-span-12 box-col-6">
+                <div class="authenticate">
+                    <img class="max-w-full" src="assets/images/forms/email.png" alt="email">
+                </div>
+              </div>
+              <div class="col-span-8 xxl:col-span-12 box-col-7">
+                <h5>Email Verification</h5>
+                <p>A verification code has been sent to your email. This code will be valid for 15 minutes.</p>
+                <div class="input-group mb-4 !flex-nowrap flex gap-0">
+                  <input class="form-control !rounded-l-md !rounded-none" type="text" placeholder="Please enter the code here" aria-label="basic-addon2" aria-describedby="basic-addon2">
+                  <span class="input-group-text bg-primary text-white m-[-2px]" id="basic-addon2">Verify</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-span-6 md:col-span-12">
+          <app-verification-code></app-verification-code>
+        </div>
+      </div>
+</app-card>

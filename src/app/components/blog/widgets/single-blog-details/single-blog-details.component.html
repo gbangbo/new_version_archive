@@ -1,0 +1,33 @@
+<div class="card">
+  <div class="card-body">
+    <div class="blog-single">
+      <div class="blog-box blog-details">
+        <img class="max-w-full h-auto w-full" [src]="details.image" alt="blog-main">
+        <div class="blog-details">
+          <ul class="blog-social">
+            <li>{{ details.date }} {{ details.year }}</li>
+            <li>
+              <i class="icofont icofont-user"></i>
+              {{ details.name }}
+            </li>
+            <li>
+              <i class="icofont icofont-thumbs-up"></i>
+              {{ details.hits}} Hits
+            </li>
+            <li>
+              <i class="icofont icofont-ui-chat"></i>
+              {{ details.comment }} Comments
+            </li>
+          </ul>
+          <h5>{{ details.text }}</h5>
+          <div class="single-blog-content-top">
+            @for(details of details.description;track details){
+              <p>{{details.title}}</p>
+            }
+          </div>
+        </div>
+      </div>
+        <app-comment-blog-details [comment]="comment"></app-comment-blog-details>
+    </div>
+  </div>
+</div>

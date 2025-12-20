@@ -1,0 +1,5 @@
+<app-card [headerTitle]="'Upcoming Deadlines'" [padding]="false" [cardBodyClass]="'px-0 pt-0 upcoming-datatable'" [dropdownType]="'simple'" [options]="cardToggleOption">
+    <div class="recent-table overflow-x-auto custom-scrollbar">
+        <app-table [tableConfig]="tableConfig" [hasCheckbox]="true" [search]="false" [pageSize]="5" [tableClass]="'table'"></app-table>
+    </div>
+</app-card>

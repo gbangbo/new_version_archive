@@ -1,0 +1,9 @@
+<app-card [headerTitle]="'Column Chart'" [border]="true" [header]="'pb-0'" [padding]="false">
+  <div id="column-chart">
+    <apx-chart [chart]="columnChart.chart" [plotOptions]="columnChart.plotOptions" [dataLabels]="columnChart.dataLabels"
+               [stroke]="columnChart.stroke" [series]="columnChart.series" [xaxis]="columnChart.xaxis"
+               [yaxis]="columnChart.yaxis" [fill]="columnChart.fill" [tooltip]="columnChart.tooltip"
+               [colors]="columnChart.colors">
+    </apx-chart>
+  </div>
+</app-card>

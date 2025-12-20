@@ -1,0 +1,56 @@
+<app-card [headerTitle]="'Dropdown Sizing'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'dark-dropdown-box'">
+  <p class="f-m-light mt-1" header5>Use <code>btn-*</code>[ sm / lg ] class through buttons of all sizes including default and split dropdown buttons.</p>
+
+  <div class="common-flex">
+    <div class="btn-group" (clickOutside)="clickOutside(1)">
+      <button class="btn btn-dark border light btn-lg dropdown-toggle text-white" type="button" (click)="toggleDropdown(1)">Large button</button>
+      <ul class="dropdown-menu dropdown-block" [class.show]="dropdownOpen[1]">
+        <li><a class="dropdown-item" href="javascript:void(0)">Action</a></li>
+        <li><a class="dropdown-item" href="javascript:void(0)">Another action</a></li>
+        <li><a class="dropdown-item" href="javascript:void(0)">Something else here</a></li>
+        <li>
+          <hr class="dropdown-divider">
+        </li>
+        <li><a class="dropdown-item" href="javascript:void(0)">Separated link</a></li>
+      </ul>
+    </div>
+    <div class="btn-group" (clickOutside)="clickOutside(2)">
+      <button class="btn border border btn-outline-secondary btn-lg rounded-none rounded-l-lg" type="button">Large split button</button>
+      <button class="btn btn-lg btn-secondary dropdown-toggle border dropdown-toggle-split text-white" type="button" (click)="toggleDropdown(2)"></button>
+      <ul class="dropdown-menu dropdown-block" [class.show]="dropdownOpen[2]">
+        <li><a class="dropdown-item" href="javascript:void(0)">Action</a></li>
+        <li><a class="dropdown-item" href="javascript:void(0)">Another action</a></li>
+        <li><a class="dropdown-item" href="javascript:void(0)">Something else here</a></li>
+        <li>
+          <hr class="dropdown-divider">
+        </li>
+        <li><a class="dropdown-item" href="javascript:void(0)">Separated link</a></li>
+      </ul>
+    </div>
+    <div class="btn-group" (clickOutside)="clickOutside(3)">
+      <button class="btn btn-dark border light btn-sm dropdown-toggle text-white" type="button" (click)="toggleDropdown(3)">Small button</button>
+      <ul class="dropdown-menu dropdown-block" [class.show]="dropdownOpen[3]">
+        <li><a class="dropdown-item" href="javascript:void(0)">Action</a></li>
+        <li><a class="dropdown-item" href="javascript:void(0)">Another action</a></li>
+        <li><a class="dropdown-item" href="javascript:void(0)">Something else here </a></li>
+        <li>
+          <hr class="dropdown-divider">
+        </li>
+        <li><a class="dropdown-item" href="javascript:void(0)">Separated link</a></li>
+      </ul>
+    </div>
+    <div class="btn-group" (clickOutside)="clickOutside(4)">
+      <button class="btn border btn-outline-secondary btn-sm rounded-none rounded-l-lg" type="button">Small split button</button>
+      <button class="btn btn-sm btn-secondary border dropdown-toggle dropdown-toggle-split text-white" type="button" (click)="toggleDropdown(4)"></button>
+      <ul class="dropdown-menu dropdown-block" [class.show]="dropdownOpen[4]">
+        <li><a class="dropdown-item" href="javascript:void(0)">Action</a></li>
+        <li><a class="dropdown-item" href="javascript:void(0)">Another action</a></li>
+        <li><a class="dropdown-item" href="javascript:void(0)">Something else here</a></li>
+        <li>
+          <hr class="dropdown-divider">
+        </li>
+        <li><a class="dropdown-item" href="javascript:void(0)">Separated link</a></li>
+      </ul>
+    </div>
+  </div>
+</app-card>

@@ -1,0 +1,6 @@
+<app-card [headerTitle]="'Horizontal Rating Bar'" [header]="'pb-0'" [border]="true" [padding]="false" [headerClass]="'rating-header'">
+  <p class="f-m-light mt-1" header5>Use<code>  bar-rating  </code>with the <code>theme="horizontal"</code> property to display a horizontal rating bar. Setting <code>[showText]="true"</code> enables text labels for ratings.</p>
+    <div class="rating-container">
+      <bar-rating [(rate)]="rate" [max]="10" [theme]="'horizontal'" [showText]="true"></bar-rating>
+    </div>
+</app-card>

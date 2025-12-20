@@ -1,0 +1,9 @@
+<app-card [headerTitle]="details.heading" [border]="true" [padding]="false" [headerClass]="'txt-light'" [header]="details.bg_color" [cardClass]="'card-absolute'">
+  <div class="flex list-behavior-1 items-center">
+    <div class="shrink-0">
+      <img class="tab-img max-w-full" [src]="details.img " alt="home"></div>
+    <div class="grow">
+      <p class="mb-xl-0 mb-sm-4" [innerHTML]="details.text"></p>
+    </div>
+  </div>
+</app-card>

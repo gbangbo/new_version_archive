@@ -1,0 +1,56 @@
+<div class="container">
+    <div class="grid grid-cols-12 card-gap">
+      <div class="col-span-6 xl:col-span-12">
+        <div class="card">
+          <div class="card-header card-no-border pb-0">
+            <h3>Map at a specified location</h3>
+          </div>
+          <div class="card-body z-1">
+            <div class="map-js-height">
+              <google-map width="100%" height="100%" [options]="asiaMapOptions">
+                @for(marker of markers; track marker){
+                  <map-marker [position]="marker.position" [label]="marker.label"></map-marker>
+                }
+              </google-map>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-span-6 xl:col-span-12">
+        <div class="card">
+          <div class="card-header card-no-border pb-0">
+            <h3>Vector world map</h3>
+          </div>
+          <div class="card-body z-1">
+            <div class="map-js-height" id="map2">
+              <google-map width="100%" height="100%" [options]="worldMapOption"></google-map>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-span-6 xl:col-span-12">
+        <div class="card">
+          <div class="card-header card-no-border pb-0">
+            <h3>Vector USA map</h3>
+          </div>
+          <div class="card-body z-1">
+            <div class="map-js-height" id="map2">
+              <google-map width="100%" height="100%" [options]="usaMapOptions"></google-map>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-span-6 xl:col-span-12">
+        <div class="card">
+          <div class="card-header card-no-border pb-0">
+            <h3>Vector India map</h3>
+          </div>
+          <div class="card-body z-1">
+            <div class="map-js-height" id="map2">
+              <google-map width="100%" height="100%" [options]="indiaMapOptions"></google-map>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>

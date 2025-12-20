@@ -1,0 +1,18 @@
+<app-card [headerTitle]="'Horizontal Lists'" [header]="'pb-0'" [border]="true" [padding]="false" [cardClass]="'height-equal'"> 
+    <p class="f-m-light mt-1" header5>
+        Use <code> list-group-horizontal</code> to change the layout of list group items from vertical to horizontal across all breakpoints.<code> list-group-horizontal-[sm / md / lg / xl / xxl ]</code>.
+    </p>
+    <div class="horizontal-list-wrapper dark-list">
+        @for(list of horizontalList; track list){
+          <ul class="fw-bold list-group list-group-horizontal-{{ list.class }} pb-2 flex !flex-row lg:!flex-col">
+            @for(details of list.details; track details){
+              @if(details.border){
+                <li class="list-group-item border-left-{{ list.border_color }} rounded-l-md">{{ details.item }}</li>
+              }@else {
+                <li class="list-group-item">{{ details.item }}</li>
+              }
+            }
+          </ul>
+        }
+      </div>
+</app-card>

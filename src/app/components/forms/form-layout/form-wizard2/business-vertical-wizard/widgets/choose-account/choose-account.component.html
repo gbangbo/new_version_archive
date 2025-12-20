@@ -1,0 +1,27 @@
+<form class="grid grid col-sp-12 gap-4 needs-validation" novalidate="" [formGroup]="formValidation" (ngSubmit)="next()">
+    <div class="col-span-12">
+      <h5>Select The Type of Account</h5>
+      <p>It has long been known that distracting information on a page will lose a reader's attention.</p>
+    </div>
+    <div class="col-span-12"> 
+      <div class="form-check radio radio-primary ps-0 select-account">
+        <ul class="radio-wrapper">
+          @for(details of chooseAccount;track details){
+            <li> 
+              <input class="form-check-input" [id]="details.id" type="radio" name="radio2" value="option2" [checked]="details.checked">
+              <label class="form-check-label mb-0" [for]="details.id">
+                <i class="fa-solid fa-{{ details.icon }}"></i>
+                <span class="flex flex-col">
+                  <span>{{ details.title }} </span>
+                  <span>{{ details.text }}</span>
+                </span>
+              </label>
+            </li>
+          }
+        </ul>
+      </div>
+    </div>
+    <div class="col-span-12 common-flex justify-end">
+      <button class="btn btn-primary text-white" type="submit">Continue</button>
+    </div>
+</form>

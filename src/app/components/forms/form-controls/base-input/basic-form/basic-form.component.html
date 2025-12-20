@@ -1,0 +1,26 @@
+<app-card [headerTitle]="'Basic Form'" [header]="'pb-0'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>
+    Use <code>form-label </code>and <code>form-control </code>through create basic form.
+  </p>
+  <div class="card-wrapper border rounded-3">
+    <form class="grid grid-cols-12 gap-4">
+        <div class="col-span-12">
+          <label class="form-label" for="inputEmail4">Email</label>
+          <input class="form-control" id="inputEmail4" type="email" placeholder="Enter Your Email">
+        </div>
+        <div class="col-span-12">
+          <label class="form-label" for="inputPassword4">Password</label>
+          <input class="form-control" id="inputPassword4" type="password" placeholder="Enter Your Password">
+        </div>
+        <div class="col-span-12">
+            <div class="form-check checkbox-checked flex gap-2">
+              <input class="form-check-input" id="gridCheck1" type="checkbox">
+              <label class="form-check-label" for="gridCheck1">Check me out</label>
+            </div>
+        </div>
+        <div class="col-span-12">
+          <button class="btn btn-primary text-white" type="submit">Sign in </button>
+         </div>
+    </form>
+</div>
+</app-card>

@@ -1,0 +1,15 @@
+<app-card [headerTitle]="'Skill Status'" [header]="'pb-0'">
+    <div class="chart-container skill-chart">
+        <div id="circlechart">
+            <apx-chart
+                [chart]="skillStatusChart.chart"
+                [plotOptions]="skillStatusChart.plotOptions"
+                [series]="skillStatusChart.series"
+                [labels]="skillStatusChart.labels"
+                [legend]="skillStatusChart.legend"
+                [colors]="skillStatusChart.colors"
+                [responsive]="skillStatusChart.responsive">
+            </apx-chart>
+        </div>
+    </div>
+</app-card>

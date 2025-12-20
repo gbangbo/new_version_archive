@@ -1,0 +1,48 @@
+<app-card [headerTitle]="'Icons with Tabs'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'tabs'">
+    <p class="mt-1 f-m-light" header5>
+        This tab component switches content dynamically based on the selected tab.  
+        The <code>handleTab</code> method updates the active tab, with <code>"Ico" </code>icons.  
+    </p>
+        
+    <ul class="simple-wrapper flex tab-links">
+        <li class="txt-secondary tab-link" [class.active]="activeTab == 'home'" (click)="handleTab('home')">
+            <i class="icofont icofont-ui-home"></i>Home
+        </li>
+        <li class="txt-secondary tab-link" [class.active]="activeTab == 'profile'" (click)="handleTab('profile')">
+            <i class="icofont icofont-man-in-glasses"></i>Profile
+        </li>
+        <li class="txt-secondary tab-link" [class.active]="activeTab == 'contact'" (click)="handleTab('contact')">
+            <i class="icofont icofont-contacts"></i>Contact
+        </li>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pan fade show active">
+            @if(activeTab == 'home') {
+                <p class="pt-3"> This is some placeholder content the <b>home tab's</b> associated content.
+                    Clicking another tab will toggle the visibility of this one for the next. The tab JavaScript
+                    swaps classes to control the content visibility and styling. You can use it with tabs, pills,
+                    and any other .nav-powered navigation. Bootstrap provides a flexible and easy-to-use tab
+                    component that allows developers to create tabbed navigation effortlessly.</p>
+            } @else if(activeTab == 'profile') {
+                <div class="pt-3 mb-0">
+                    <div class="flex-space flex-wrap items-center"><img class="tab-img"
+                        src="assets/images/avatar/7.jpg" alt="profile">
+                      <ul class="flex flex-col gap-1">
+                        <li> <strong>Visit Us: </strong> 278 Green Avenue Oakland, CA 94612</li>
+                        <li><strong>Mail Us:</strong> MichaelMMcGowan&#64;teleworm.us</li>
+                        <li><strong>Contact Number: </strong> 510-767-0025</li>
+                      </ul>
+                    </div>
+                </div>
+            } @else if(activeTab == 'contact') {
+                <p class="pt-3">Us Technology offers web & mobile development solutions for all industry
+                    verticals.Include a short form using fields that'll help your business understand who's
+                    contacting them. 
+                </p>
+                <label class="form-label" for="exampleFormControlone">Email Address</label>
+                <input class="form-control" id="exampleFormControlone" type="email" placeholder="youremail@gmail.com">
+            }
+        </div>
+    </div>
+
+</app-card>

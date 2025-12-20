@@ -1,0 +1,23 @@
+<app-card [headerTitle]="'With Icons Accordion'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'accordion-border icons-accordion'">
+  <p class="f-m-light mt-1" header5>
+    This accordion features icons and ensures only one section stays open at a time.  
+    The <code>toggleAccordion</code> method controls visibility, with Tailwind classes managing styling and transitions.  
+  </p>
+
+  <div class="accordion dark-accordion">
+    @for(accordion of iconAccordion; track accordion) {
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button gap-2 accordion-light-secondary active txt-secondary" type="button" [class.collapsed]="!accordionOpen[accordion.id]" (click)="toggleAccordion(accordion.id)" [attr.aria-expanded]="accordionOpen[accordion.id] ? true : false">
+              <app-feather-icon [icon]="accordion.icon" [class]="'svg-wrapper'"></app-feather-icon>
+              {{ accordion.title }}
+              <app-feather-icon [icon]="'chevron-down'" [class]="'svg-color'"></app-feather-icon>
+          </button>
+        </h2>
+        <div class="accordion-collapse collapse" [class.show]="accordionOpen[accordion.id]">
+          <div class="accordion-body" [innerHTML]="accordion.description"></div>
+        </div>
+      </div>
+    }
+  </div>
+</app-card>

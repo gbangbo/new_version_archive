@@ -1,0 +1,23 @@
+<div class="container">
+    <div class="grid grid-cols-12 card-gap">
+        <div class="col-span-12">
+            <app-knowledge-base-top-data></app-knowledge-base-top-data>
+        </div>
+
+        @for(details of knowledgeBase; track details; let i = $index){
+            <div [ngClass]="(i === knowledgeBase.length - 1) ? 'col-span-4 xl:col-span-12' : 'col-span-4 xl:col-span-6 sm:col-span-12'"> 
+                <app-common-faq-details [details]="details"></app-common-faq-details>
+            </div>
+        }
+
+        <div class="col-span-12">
+            <app-browse-article-category></app-browse-article-category>
+        </div>       
+        <div class="col-span-12">
+            <app-common-featured-tutorials [details]="featuredTutorialDetails" [headerTitle]="'Featured Tutorials'"></app-common-featured-tutorials>
+        </div>
+        <div class="col-span-12">
+            <app-common-article-video [details]="articlesAndVideosDetails" [headerTitle]="'Latest Articles and Videos'"></app-common-article-video>
+        </div>
+    </div>
+</div>

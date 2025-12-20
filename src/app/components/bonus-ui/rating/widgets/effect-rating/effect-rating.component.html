@@ -1,0 +1,20 @@
+<app-card [headerTitle]="'Rating Bar With Effect'" [header]="'pb-0'" [border]="true" [padding]="false">
+    <p class="f-m-light mt-1" header5>Use<code> bar-rating </code> with the <code>effect</code> property to enable visual effects when displaying ratings.</p>
+    <div class="main-star-rating">
+        <div class="common-flex star-box justify-center">
+            <div class="rating">
+                <bar-rating [rate]="rate" [max]="5" effect>
+                    <ng-template ratingActive>
+                        <i class="fa-solid fa-star" style="color: #ffb829"></i>
+                    </ng-template>
+                    <ng-template ratingInactive>
+                        <i class="fa-solid fa-star" style="color: #d2d2d2"></i>
+                    </ng-template>
+                    <ng-template ratingFraction>
+                        <i class="fa-solid fa-star-half-stroke" style="color: #ffb829"></i>
+                    </ng-template>
+                </bar-rating>
+            </div>
+        </div>
+    </div>
+</app-card>

@@ -1,0 +1,20 @@
+<app-card [headerTitle]="'Sizes Modal'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'common-flex'">
+    <p class="mt-1 f-m-light" header5>Modals have three optional sizes, available via modifier classes to be placed on a <code>modal-dialog</code>.</p>
+
+    <button class="btn btn-secondary text-white" (click)="openModal('fullScreen')">Full Screen Modal</button>
+    @if(fullscreenModalOpen){
+        <app-size-modal (modalOpen)="handleOpenModal($event)" [title]="'Full Screen Modal'" [class]="'fullscreen'"></app-size-modal>
+    }
+    <button class="btn btn-info" (click)="openModal('extraLarge')">Extra Large Modal</button>
+    @if(extraLargeModalOpen){
+        <app-size-modal (modalOpen)="handleOpenModal($event)" [title]="'Extra Large Modal'" [class]="'xl'"></app-size-modal>
+    }
+    <button class="btn btn-success text-white" type="button" (click)="openModal('large')">Large Modal</button>
+    @if(largeModalOpen){
+        <app-size-modal (modalOpen)="handleOpenModal($event)" [title]="'Large Modal'" [class]="'lg'"></app-size-modal>
+    }
+    <button class="btn btn-primary text-white" type="button" (click)="openModal('small')">Small Modal</button>
+    @if(smallModalOpen){
+        <app-size-modal (modalOpen)="handleOpenModal($event)" [title]="'Small Modal'" [class]="'sm'"></app-size-modal>
+    }
+</app-card>

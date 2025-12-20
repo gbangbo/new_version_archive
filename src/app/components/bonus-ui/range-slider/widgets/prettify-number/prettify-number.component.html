@@ -1,0 +1,10 @@
+<app-card [headerTitle]="'Prettify Numbers'" [header]="'pb-0'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>
+    Use <code>ngx-slider</code> to create a range slider that helps prettify numeric values. The slider is configured with a <code>value</code> starting at 1000, and its range is defined between <code>floor</code> 1000 and <code>ceil</code> 10,000. The <code>tickStep</code> is set to 3000, with <code>tickValueStep</code> of 100 to display intermediate values for more precise selection.
+  </p>
+    <div class="form-group grid grid-cols-12 py-1 justify-cente">
+      <div class="col-span-10 md:col-span-12">
+        <ngx-slider [(value)]="value" [options]="options"></ngx-slider>
+      </div>
+    </div>
+</app-card>

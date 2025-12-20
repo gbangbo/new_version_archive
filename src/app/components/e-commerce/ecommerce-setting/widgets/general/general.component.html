@@ -1,0 +1,57 @@
+<div class="grid grid-cols-12 card-gap">
+  <label class="col-span-3 md:col-span-12">Meta Title</label>
+  <div class="col-span-9 md:col-span-12">
+    <input class="form-control" type="text" placeholder="Enter meta title">
+  </div>
+</div>
+
+<div class="grid grid-cols-12 card-gap">
+  <label class="col-span-3 md:col-span-12">Meta Description</label>
+  <div class="col-span-9 md:col-span-12">
+    <angular-editor></angular-editor>
+  </div>
+</div>
+
+<div class="grid grid-cols-12 card-gap">
+  <label class="col-span-3 md:col-span-12">Currency </label>
+  <div class="col-span-9 md:col-span-12">
+    <select2 [data]="currency" placeholder="Select currency" noResultMessage="No Data Found" resettable></select2>
+  </div>
+</div>
+
+<div class="grid grid-cols-12 card-gap">
+  <label class="col-span-3 md:col-span-12">Timezone </label>
+  <div class="col-span-9 md:col-span-12">
+    <select2 [data]="timezones" placeholder="Select timezone" noResultMessage="No Data Found" resettable></select2>
+  </div>
+</div>
+
+<div class="grid grid-cols-12 card-gap">
+  <label class="col-span-3 md:col-span-12">Min Order Amount</label>
+  <div class="col-span-9 md:col-span-12">
+    <div class="input-group">
+      <span class="input-group-text" id="minOrder">
+        <i class="fa-solid fa-dollar-sign"></i>
+      </span>
+      <input class="form-control" type="number" value="0" placeholder="Enter min order amount">
+    </div>
+    <div class="helper-text">
+      <p class="italic c-o-light">*Please enter the minimum amount required for an order to be processed.</p>
+    </div>
+  </div>
+</div>
+
+<div class="grid grid-cols-12 card-gap">
+  <label class="col-span-3 md:col-span-12">Min Order Free Shipping</label>
+  <div class="col-span-9 md:col-span-12">
+    <div class="input-group">
+      <span class="input-group-text" id="minOrderShipping">
+        <i class="fa-solid fa-dollar-sign"></i>
+      </span>
+      <input class="form-control" type="number" value="55" placeholder="Enter min order free shipping">
+    </div>
+    <div class="helper-text">
+      <p class="italic c-o-light">*Please enter the minimum order amount for free shipping.</p>
+    </div>
+  </div>
+</div>

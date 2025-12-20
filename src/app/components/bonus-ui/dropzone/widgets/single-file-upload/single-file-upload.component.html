@@ -1,0 +1,13 @@
+<app-card [headerTitle]="'Single File Upload'" [header]="'pb-0'" [border]="true" [padding]="false" [cardClass]="'height-equal'">
+  <p class="f-m-light mt-1" header5>Use <code>dropzone Module </code> through create upload files and with that we can upload single file by doing <code> max file </code>Size.</p>
+  <div class="custom-dropzone">
+    <form class="dropzone dropzone-secondary">
+      <div class="dz-message needsclick">
+        <i class="fa-solid fa-cloud-arrow-up fa-fade"></i>
+        <dropzone [config]="config" [message]="text"></dropzone>
+      </div>
+    </form>  
+  </div>
+</app-card>
+
+

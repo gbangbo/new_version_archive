@@ -1,0 +1,36 @@
+<app-card [cardClass]="'papernote-wrap statistics-card'" [headerTitle]="'Statistics'" [padding]="false" [cardBodyClass]="'pt-0'" [cardType]="'dataTable'">
+    <a class="f-light flex items-center gap-1" href="javascript:void(0)" header7>View 
+        <i class="font-bold icon-arrow-right"></i>
+    </a>
+
+    <ul class="flex"> 
+        <li><span class="f-light">Total art sold</span>
+          <h5 class="counter">
+            <app-counter [counter]="statistics.total_art_sold | number"></app-counter>
+           </h5>
+        </li>
+        <li><span class="f-light">Total Earning</span>
+          <h5>
+            <span class="counter">
+            <app-counter [counter]="statistics.total_earning | number"></app-counter>
+            </span> ETH
+        </h5>
+        </li>
+    </ul>
+    <div class="statistic-chart-wrap">  
+        <div id="statistic-chart">
+            <apx-chart
+                [series]="statistics.chart_details.series"
+                [chart]="statistics.chart_details.chart"
+                [dataLabels]="statistics.chart_details.dataLabels"
+                [stroke]="statistics.chart_details.stroke"
+                [xaxis]="statistics.chart_details.xaxis"
+                [yaxis]="statistics.chart_details.yaxis"
+                [grid]="statistics.chart_details.grid"
+                [colors]="statistics.chart_details.colors"
+                [fill]="statistics.chart_details.fill"
+                [responsive]="statistics.chart_details.responsive">
+            </apx-chart>
+        </div>
+    </div>
+</app-card>

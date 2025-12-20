@@ -1,0 +1,53 @@
+<div class="container dashboard-12">
+    <div class="grid grid-cols-12 card-gap">
+        <div class="col-span-6 xxl:col-span-12 box-col-12">
+            <div class="grid grid-cols-12 card-gap small-stats">
+
+                @for(details of projectDetails;track details; let i = $index){
+                    <div [ngClass]="(projectDetails.length % 2 !== 0 && i === projectDetails.length - 1) ? 'col-span-4 md:col-span-12' : 'col-span-4 md:col-span-6 sm:col-span-12'">
+                        <app-details [details]="details"></app-details>
+                    </div>
+                }
+
+                <div class="col-span-12">
+                    <app-priority-task></app-priority-task>
+                </div>
+            </div>
+        </div>
+        <div class="col-span-3 xxl:col-span-4 xl:col-span-6 md:col-span-12 ord-xl-1 box-ord-1 box-col-4">
+            <app-task-statistics></app-task-statistics>
+        </div>
+        <div class="col-span-3 xxl:col-span-4 xl:col-span-6 md:col-span-12 ord-xl-2 box-ord-2 box-col-4">
+            <app-today-task></app-today-task>
+        </div>
+        <div class="col-span-7 xxl:col-span-12 box-col-12">
+            <app-all-projects></app-all-projects>
+        </div>
+        <div class="col-span-5 xxl:col-span-6 md:col-span-12 ord-xl-5 box-ord-5 box-col-6">
+            <app-estimated-actual-chart></app-estimated-actual-chart>
+        </div>
+        <div class="col-span-4 xxl:col-span-6 md:col-span-12 ord-xl-4 box-ord-4 box-col-6">
+            <app-team-performance></app-team-performance>
+        </div>
+        <div class="col-span-4 xl:col-span-5 md:col-span-12 ord-xl-3 box-ord-3 box-col-4">
+            <div class="grid grid-cols-12 card-gap main-expenses">
+
+                @for(chart of expensesChart;track chart){
+                <div class="col-span-12 md:col-span-6 sm:col-span-12">
+                    <app-expenses-chart [chart]="chart"></app-expenses-chart>
+                </div>
+                }
+                
+            </div>
+        </div>
+        <div class="col-span-4 xxl:col-span-7 md:col-span-12 ord-xl-6 box-ord-6 box-col-6">
+            <app-upcoming-deadline></app-upcoming-deadline>
+        </div>
+        <div class="col-span-6 xxl:col-span-5 xl:col-span-12 ord-xl-7 box-ord-7 box-col-6">
+            <app-project-analysis></app-project-analysis>
+        </div>
+        <div class="col-span-6 xxl:col-span-12 ord-xl-8 box-ord-8 box-col-12">
+            <app-recent-activity></app-recent-activity>
+        </div>
+    </div>
+</div>

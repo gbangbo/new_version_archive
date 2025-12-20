@@ -1,0 +1,77 @@
+<div class="container job-details-wrapper">
+    <div class="grid grid-cols-12 card-gap">
+        <div class="col-span-3 xl:col-span-12 xl-40 box-col-12">
+            <app-job-filter></app-job-filter>
+        </div>
+        <div class="col-span-9 xl:col-span-12 xl-60 box-col-12">
+            @for(jobDetails of jobDetail;track jobDetails){
+                <div class="card">
+                    <div class="job-search">
+                        <div class="card-body">
+                            <div class="flex">
+                                <img class="img-40 max-w-full h-auto m-r-20" [src]="jobDetails.img" [alt]="jobDetails.main_title">
+                                <div class="grow">
+                                    <h6>
+                                        <a href="javascript:void(0)">{{ jobDetails.main_title }}</a>
+                                        <span class="pull-right">
+                                            <a class="hover:text-white text-white btn btn-primary" href="javascript:void(0)" [routerLink]="['/job-search/apply']">Apply</a>
+                                        </span>
+                                    </h6>
+                                    <p class="mt-0">{{ jobDetails.subtitle }}
+                                        <span class="ps-sm-1">
+                                            <bar-rating  [rate]="jobDetails.rating" [readonly]="true" [max]="5">
+                                                <ng-template ratingActive>
+                                                  <i class="fa-solid fa-star" style="color: #ffb829"></i>
+                                                </ng-template>
+                                                <ng-template ratingInactive>
+                                                  <i class="fa-solid fa-star" style="color: #d2d2d2"></i>
+                                                </ng-template>
+                                                <ng-template ratingFraction>
+                                                  <i class="fa-solid fa-star-half-stroke" style="color: #ffb829"></i>
+                                                </ng-template>
+                                              </bar-rating>
+                                        </span>
+                                    </p>
+                                </div>
+                            </div>
+                            @for(details of jobDetails.details;track details){
+                                <div class="job-description">
+                                    <h6>{{ details.title }}</h6>
+                                    @if(details.li_class){
+                                        <ul>
+                                            @for(details of details.detail; track details){
+                                            <li> {{ details.description }}</li>
+                                            }
+                                        </ul>
+                                        } @else {
+                                            @for(jobDetails of details.detail;track jobDetails){
+                                                <p class="c-o-light">{{ jobDetails.description }}</p>
+                                            }
+                                    }
+                                </div>
+                            }
+                            <div class="job-description !flex flex-wrap gap-4">
+                                <button class="btn btn-primary text-white" type="button">
+                                    <span>
+                                        <i class="fa-solid fa-check me-1"></i>
+                                    </span>
+                                    Save this job
+                                </button>
+                                <button class="btn btn-primary text-white" type="button">
+                                    <span>
+                                        <i class="fa fa-share-alt me-1"></i>
+                                    </span>
+                                    Share
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            <div class="header-faq">
+                <h5 class="mb-0 font-semibold">Similar Jobs</h5>
+            </div>
+            <app-similar-jobs></app-similar-jobs>
+        </div>
+    </div>
+</div>

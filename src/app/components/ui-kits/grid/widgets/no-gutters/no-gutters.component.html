@@ -1,0 +1,12 @@
+<app-card [headerTitle]="'No Gutters'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'no-gutter'">
+    <p class="mt-1 f-m-light" header5>Use <code>gap-0</code>  on the <code> grid </code> to eliminate spacing between columns.<code> container </code> and use <code> mx-0 </code> on the <code> grid </code> to prevent overflow.</p>
+
+    <div class="grid grid-cols-12 gap-0 text-center">
+      <div class="col-span-6 md:col-span-12 flex-behaviors">
+        <div class="p-3"> <span>sm:col-span-6 & md:col-span-8</span></div>
+      </div>
+      <div class="col-span-6 md:col-span-12 flex-behaviors">
+        <div class="p-3"><span class="col-span-6">md:col-span-4</span></div>
+      </div>
+    </div>
+</app-card>

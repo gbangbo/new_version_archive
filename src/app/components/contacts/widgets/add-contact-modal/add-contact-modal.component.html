@@ -1,0 +1,84 @@
+<div class="modal fade modal-bookmark modal-backdrop show">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content custom-input" (clickOutside)="closeModal()">
+      <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Add Contact</h5>
+          <button class="btn-close" type="button" (click)="closeModal()"></button>
+      </div>
+      <div class="modal-body">
+          <form class="form-bookmark needs-validation" id="bookmark-form" [formGroup]="contactForm" (ngSubmit)="saveContact()">
+            <div class="grid grid-cols-12 gap-4">
+              <div class="col-span-6 sm:col-span-12">
+                <label for="con-name">First Name</label>
+                <input class="form-control" id="con-name" type="text" formControlName="first_name" placeholder="Enter first name" autocomplete="off" [ngClass]="{ 'is-invalid' : contactForm.controls['first_name'].touched && contactForm.controls['first_name'].errors?.['required'] , 'is-valid' : contactForm.controls['first_name'].valid}">
+                @if(contactForm.controls['first_name'].touched && contactForm.controls['first_name'].errors?.['required']) {
+                  <label class="error">Please enter first name.</label>
+                }
+              </div>
+              <div class="col-span-6 sm:col-span-12">   
+                <label for="con-lastName">Last Name</label>
+                <input class="form-control" id="con-lastName" type="text" formControlName="last_name" placeholder="Enter last name" autocomplete="off" [ngClass]="{ 'is-invalid' : contactForm.controls['last_name'].touched && contactForm.controls['last_name'].errors?.['required'] , 'is-valid' : contactForm.controls['last_name'].valid}">
+                @if(contactForm.controls['last_name'].touched && contactForm.controls['last_name'].errors?.['required']) {
+                  <label class="error">Please enter last name.</label>
+                }
+              </div>
+              <div class="col-span-12">
+                <label for="con-mail">Email Address</label>
+                <input class="form-control" id="con-mail" type="email" formControlName="email" placeholder="pixelstrap@gmail.com" autocomplete="off" [ngClass]="{ 'is-invalid' : contactForm.controls['email'].touched && contactForm.controls['email'].errors?.['required'] || contactForm.controls['email'].errors?.['email'], 'is-valid' : contactForm.controls['email'].valid}">
+                @if(contactForm.controls['email'].touched && contactForm.controls['email'].errors?.['required']) {
+                  <label class="error">Please enter email.</label>
+                }
+                @if(contactForm.controls['email'].touched && contactForm.controls['email'].errors?.['email']) {
+                  <label class="error">Please enter valid email.</label>
+                }
+              </div>
+              <div class="col-span-12">
+                <div class="grid grid-cols-12 gap-4">
+                  <div class="col-span-6 sm:col-span-12">
+                    <label for="con-phone">Phone Number</label>
+                    <input class="form-control" id="con-phone" type="text" formControlName="contact_number" placeholder="Enter your phone number" autocomplete="off" [ngClass]="{
+                      'is-invalid': contactForm.controls['contact_number'].touched &&
+                                    (contactForm.controls['contact_number'].errors?.['required'] ||
+                                    contactForm.controls['contact_number'].errors?.['minlength'] ||
+                                    contactForm.controls['contact_number'].errors?.['maxlength'] ||
+                                    contactForm.controls['contact_number'].errors?.['pattern']),
+                      'is-valid': contactForm.controls['contact_number'].valid
+                    }">
+                    @if(contactForm.controls['contact_number'].touched) {
+                      @if(contactForm.controls['contact_number'].errors?.['required']) {
+                        <label class="error">
+                          Phone number is required.
+                        </label>
+                      }
+                      @if(contactForm.controls['contact_number'].errors?.['minlength'] || contactForm.controls['contact_number'].errors?.['maxlength']) {
+                        <label class="error">
+                          Phone number must be at least 10 digits.
+                        </label>
+                      }
+                      @if(contactForm.controls['contact_number'].errors?.['pattern']) {
+                        <label class="error">
+                          Please enter a valid phone number.
+                        </label>
+                      }
+                    }
+                  </div>
+                  <div class="col-span-6 sm:col-span-12">
+                    <label for="con-category">Contact Type</label>
+                    <select2 [data]="contactTypes" placeholder="Select contact type" noResultMessage="No contactTypes" resettable formControlName="contactType" 
+                            [ngClass]="{ 'is-invalid' : contactForm.controls['contactType'].touched && contactForm.controls['contactType'].errors?.['required'] , 'is-valid' : contactForm.controls['contactType'].valid}">
+                    </select2>
+                    @if(contactForm.controls['contactType'].touched && contactForm.controls['contactType'].errors?.['required']) {
+                      <label class="error">Please select contact type.</label>
+                    }
+                  </div>
+                </div>
+              </div>
+            </div>
+            <input id="index_var" type="hidden" value="5">
+            <button class="btn btn-primary me-2 text-white" type="submit">Save</button>
+            <button class="btn btn-secondary text-white" type="button" (click)="closeModal()">Cancel</button>
+          </form>
+      </div>
+    </div>
+  </div>
+</div>

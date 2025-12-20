@@ -1,0 +1,71 @@
+<app-card [headerTitle]="'Edges Input Style'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'theme-form dark-inputs'">
+  <p class="f-m-light mt-1" header5>
+    Use <code>btn-pill </code>to define border-radius.
+  </p>
+  <div class="grid grid-cols-12">
+    <div class="col-span-12">
+      <div class="mb-4">
+        <label class="form-label" for="exampleFormControlInput5">Email Address</label>
+        <input class="form-control btn-pill" id="exampleFormControlInput5" type="email" placeholder="name&#64;example.com">
+      </div>
+    </div>
+  </div>
+  <div class="grid grid-cols-12">
+    <div class="col-span-12">
+      <div class="mb-4">
+        <label class="form-label" for="exampleInputPassword6">Password</label>
+        <input class="form-control btn-pill" id="exampleInputPassword6" type="password" placeholder="Password">
+      </div>
+    </div>
+  </div>
+  <div class="grid grid-cols-12">
+    <div class="col-span-12">
+      <div class="mb-4">
+        <label class="form-label" for="exampleFormControlSelect7">Select Your Favorite Pixelstrap Theme</label>
+        <select2 [data]="themeSelection" placeholder="Tivo" class="edges-input-radius"></select2>
+      </div>
+    </div>
+  </div>
+  <div class="grid grid-cols-12">
+    <div class="col-span-12">
+      <div class="mb-4">
+        <label class="form-label" for="formFileSimple">Default File Input Example</label>
+        <input class="form-control btn-pill px-4" id="formFileSimple" type="file">
+      </div>
+    </div>
+  </div>
+  <div class="grid grid-cols-12">
+    <div class="col-span-12">
+      <div class="mb-4">
+        <label class="form-label">Default Input</label>
+        <input class="form-control btn-pill" type="text" placeholder="Default input" aria-label="default input example">
+      </div>
+    </div>
+  </div>
+  <div class="grid grid-cols-12">
+    <div class="col-span-12">
+      <div class="mb-4 flex gap-4 checkbox-checked">
+        <div class="form-check flex gap-2">
+          <input class="form-check-input" id="flexRadioDefault1" type="radio" name="flexRadioDefault">
+          <label class="form-check-label mb-0" for="flexRadioDefault1">Male </label>
+        </div>
+        <div class="form-check flex gap-2">
+          <input class="form-check-input" id="flexRadioDefault2" type="radio" name="flexRadioDefault" checked="">
+          <label class="form-check-label mb-0" for="flexRadioDefault2">Female</label>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="grid grid-cols-12">
+    <div class="col-span-12">
+      <div>
+        <label class="form-label" for="exampleFormControlTextarea9">Comments</label>
+        <textarea class="form-control btn-pill" id="exampleFormControlTextarea9" grid grid-cols-12s="3"></textarea>
+      </div>
+    </div>
+  </div>
+  <div class="card-footer text-end" details>
+    <button class="btn btn-primary me-3 text-white" type="submit">Submit</button>
+    <input class="btn btn-light" type="reset" value="Cancel">
+  </div>
+</app-card>

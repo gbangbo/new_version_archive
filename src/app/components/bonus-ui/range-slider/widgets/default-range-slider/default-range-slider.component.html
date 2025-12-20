@@ -1,0 +1,12 @@
+<app-card [headerTitle]="'Default Range Slider'" [header]="'pb-0'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>
+    Use <code>ngx-slider</code> to create a default range slider with a value range from <code>floor</code> 100 to <code>ceil</code> 1000. The slider's initial <code>value</code> is set to 550, allowing users to select values within this defined range.
+  </p>
+  <form class="theme-form form-label-align-right range-slider">
+    <div class="form-group grid grid-cols-12 py-1 justify-center">
+      <div class="col-span-10 md:col-span-12">
+        <ngx-slider [(value)]="value" [options]="options"></ngx-slider>
+      </div>
+    </div>
+  </form>
+</app-card>

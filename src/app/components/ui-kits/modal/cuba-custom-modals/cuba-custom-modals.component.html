@@ -1,0 +1,15 @@
+<app-card [headerTitle]="'Cuba Custom Modals'" [header]="'pb-0'" [border]="true" [padding]="false">
+    <p class="f-m-light mt-1" header5>Custom modal made by cuba.</p>
+
+    <div class="grid grid-cols-12 gap-4">
+        <div class="col-span-4 xl:col-span-6 md:col-span-12 custom-alert text-center">
+            <app-profile-modal></app-profile-modal>
+        </div>
+        <div class="col-span-4 xl:col-span-6 md:col-span-12 custom-alert text-center">
+            <app-result-modal></app-result-modal>
+        </div>
+        <div class="col-span-4 xl:col-span-12 custom-alert text-center">
+            <app-balance-modal></app-balance-modal>
+        </div>
+    </div>
+</app-card>

@@ -1,0 +1,30 @@
+<app-card [headerTitle]="'Custom Table Color with Hover and Stripped'" [header]="'pb-0'" [border]="true" [padding]="false" [cardClass]="'common-striped'">
+  <p class="f-m-light mt-1" header5>
+    Use class <code>table-hover, table-striped table-*table-info , table-success , table-success , table-info , table-danger , table-primary , table-secondary , table-light , table-active</code>  inside table element.</p>
+    <div class="overflow-x-auto custom-scrollbar">
+      <table class="table table-striped table-hover">
+        <thead class="tbl-strip-thad-bdr">
+          <tr>
+            <th scope="col">Id</th>
+            <th scope="col">Film Title</th>
+            <th scope="col">Released</th>
+            <th scope="col">Studio</th>
+            <th scope="col">Budget  </th>
+            <th scope="col">Domestic Gross</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for(details of customTable;track details){
+            <tr>
+              <th scope="row">{{details.id }}</th>
+              <td>{{ details.film_title }}	</td>
+              <td>{{ details.released }}	</td>
+              <td>{{ details.studio }}	</td>
+              <td>${{ details.budget }}</td>
+              <td>${{ details.domestic_gross }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+   </div>
+</app-card>

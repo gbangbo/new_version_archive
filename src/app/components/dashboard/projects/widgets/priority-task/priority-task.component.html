@@ -1,0 +1,42 @@
+<app-card [headerTitle]="'Priority Task'" [padding]="false" [cardClass]="'tasks-card'" [cardBodyClass]="'pt-0'" [dropdownType]="'simple'" [options]="cardToggleOption">
+    <div class="arrow-group" header>
+     
+      </div>
+      <div class="task-box">
+        <owl-carousel-o [options]="options" class="swiper recent-slider" #carousel (initialized)="onCarouselLoad()" (changed)="onSlideChange($event)">
+            @for(task of priorityTask; track task){
+              <ng-template carouselSlide>
+                <div class="task-box" [class.active-slider]="activeSlide == task.id.toString()">
+                  <div class="common-space">
+                    <h6>{{ task.title }}</h6>
+                    <span class="badge badge-b-{{ task.class }} txt-{{ task.class }} whitespace-nowrap" >{{ task.status }}</span>
+                  </div>
+                  <p class="project-link">
+                      {{ task.project_status }} 
+                      <a [href]="task.project" target="_blank">
+                        {{ task.project_name }}
+                      </a> 
+                      Project
+                  </p>
+                  <div class="project-member">
+                    <p>{{ task.complete_status }} Done</p>
+                    <ul class="customers">
+                      @for(customer of task.customer; track customer){
+                        <li class="relative group inline-block">
+                            <img class="common-circle" [src]="customer.image" alt="user">
+
+                            <app-tooltip [title]="customer.name"></app-tooltip>
+                        </li>
+                      }
+                    </ul>
+                  </div>
+                  <div class="progress" >
+                    <div class="progress-bar bg-{{ task.progress_class }}" [ngStyle]="{ 'width': task.progress }"></div>
+                  </div>
+                  <p>Due: {{ task.date }}</p>
+                </div>
+              </ng-template>
+            }
+        </owl-carousel-o>
+      </div>
+</app-card>

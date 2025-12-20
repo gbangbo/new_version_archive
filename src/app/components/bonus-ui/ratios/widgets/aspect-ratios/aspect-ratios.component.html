@@ -1,0 +1,12 @@
+<app-card [headerTitle]="'Aspect Ratios'" [header]="'pb-0'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>Aspect ratios can be customized with modifier classes. By default the following ratio classes are provided:<code>[ratio-1x1 / ratio-4x3 / ratio-16x9 / ratio-21x9]</code>.</p>
+  <div class="grid grid-cols-12 gap-4"> 
+    @for(details of aspectRatios;track details){
+      <div class="col-span-3 lg:col-span-12">
+        <div class="aspect-{{ details.class }}">
+          <iframe class="h-full w-full" src="https://www.youtube.com/embed/FjFWBcQPzSI?si=ZNk3GFvFTpZkPRlU" title="YouTube video" allowfullscreen=""></iframe>
+        </div>
+      </div>
+    }
+  </div>
+</app-card>

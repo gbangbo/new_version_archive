@@ -1,0 +1,32 @@
+<app-card [headerTitle]="'Default Radio Buttons'" [header]="'pb-0'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>
+    Use <code>form-check-input </code>and <code>form-check-label </code>for radio buttons.</p>
+    <div class="grid grid-cols-12 gap-4">
+      @for(item of defaultRadio; track item){
+        <div class="col-span-4 xl:col-span-6 sm:col-span-12">
+          <div class="card-wrapper border rounded-3 checkbox-checked">
+            <h6 class="sub-title">{{ item.title }} </h6>
+            @for(radio of item.details;track radio){
+              <div class="form-check flex gap-2">
+                <input class="form-check-input" [id]=" radio.for" type="radio" [name]="radio.name" [checked]="radio.text" [disabled]="radio.disable">
+                <label class="form-check-label" [for]="radio.for">{{ radio.text }}</label>
+              </div>
+            }
+          </div>
+        </div>
+      }
+      <div class="col-span-4 xl:col-span-12">
+        <div class="card-wrapper border rounded-3 checkbox-checked">
+          <h6 class="sub-title">Right Radios </h6>
+          <div class="form-check form-check-reverse">
+            <input class="form-check-input" id="flexRadioDefault3" type="radio" name="flexRadioDefault1">
+            <label class="form-check-label" for="flexRadioDefault3">Default radio</label>
+          </div>
+          <div class="form-check form-check-reverse">
+            <input class="form-check-input" id="flexRadioCheckedDisabled1" type="radio" name="flexRadioDisabled" checked="" disabled="">
+            <label class="form-check-label" for="flexRadioCheckedDisabled1">Disabled checked radio</label>
+          </div>
+        </div>
+      </div>
+    </div>
+</app-card>

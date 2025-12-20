@@ -1,0 +1,49 @@
+<app-card [cardClass]="'transaction-card tabs'" [headerTitle]="'Transactions'" [padding]="false" [rightSideDetails]="true" [cardBodyClass]="'pt-0 px-0'">
+
+  <ul class="tab-links nav-tabs custom-tab flex sm:!flex-row" id="myTab" role="tablist" header3>
+    @for(tab of transactionTab; track tab) {
+      <li class="tab-item" (click)="changeTab(tab.value)">
+        <button class="nav-link" [class.active]="activeTab == tab.value">{{ tab.title }}</button>
+      </li>
+    }
+  </ul>
+
+  <div class="tab-content">
+    <div class="tab-pane fade show active">
+      <div class="overflow-x-auto recent-table transaction-table custom-scrollbar">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Currency</th>
+              <th>Value</th>
+              <th>Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for(transaction of filteredTransaction; track transaction) {
+              <tr>
+                <td>
+                  <div class="flex">
+                    <app-feather-icon [icon]="transaction.profit_type == 'profit' ? 'trending-up' : 'trending-down'" [ngClass]="{
+                        'font-success me-2': transaction.profit_type == 'profit',
+                        'font-danger me-2': transaction.profit_type == 'loss',
+                        'me-2': true
+                      }">
+                    </app-feather-icon>
+
+                    <div>
+                      <h6 class="f-14 mb-0 leading-tight">{{ transaction.currency }}</h6>
+                      <span class="f-light">{{ transaction.date }}</span>
+                    </div>
+                  </div>
+                </td>
+                <td> <span class="f-light font-medium">{{ transaction.value }}</span></td>
+                <td> <span class="f-light font-medium">${{ transaction.price }}</span></td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</app-card>

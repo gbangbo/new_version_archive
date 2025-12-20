@@ -1,0 +1,25 @@
+<app-card  [cardClass]="'visitor-card'"  [headerTitle]="'Website Traffic'" [padding]="false" [dropdownType]="'simple'" [options]="cardToggleOption" [cardBodyClass]="'pt-0'" >
+    <span class="f-14 font-primary font-medium ms-1" header>
+        <app-svg-icon [icon]="'user-visitor'" [class]="'svg-fill me-1'"></app-svg-icon>
+        (+2.8)
+    </span>
+
+    <div class="visitors-container">
+        <div id="visitor-chart">
+            <apx-chart
+                [series]="websiteTrafficChart.series"
+                [chart]="websiteTrafficChart.chart"
+                [plotOptions]="websiteTrafficChart.plotOptions"
+                [dataLabels]="websiteTrafficChart.dataLabels"
+                [stroke]="websiteTrafficChart.stroke"
+                [grid]="websiteTrafficChart.grid"
+                [colors]="websiteTrafficChart.colors"
+                [xaxis]="websiteTrafficChart.xaxis"
+                [yaxis]="websiteTrafficChart.yaxis"
+                [fill]="websiteTrafficChart.fill"
+                [legend]="websiteTrafficChart.legend"
+                [responsive]="websiteTrafficChart.responsive">
+            </apx-chart>
+        </div>
+    </div>
+</app-card>

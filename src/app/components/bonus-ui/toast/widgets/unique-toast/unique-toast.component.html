@@ -1,0 +1,20 @@
+<app-card [cardClass]="'height-equal'" [header]="'pb-0'" [headerTitle]="'Unique Toast'" [border]="true" [padding]="false" [cardBodyClass]="'toast-rtl'">
+
+    <p class="f-m-light mt-1" header5>Use<code> hide </code>class to hide toast and <code>show </code>class to visible toast.</p>
+
+    <div class="toast fade"  [ngClass]="showToast ? 'show' : 'hide'">
+        <div class="toast-header toast-img">
+            <img class="rounded-full me-2" src="assets/images/dashboard-5/profile.png" alt="profile">
+            <strong class="me-auto">Poco Theme</strong>
+            <button class="btn-close" type="button" (click)="closeToast()"></button>
+        </div>
+        <div class="toast-body toast-dark">
+            <h6 class="mb-4">Your account will be permanently deleted?</h6>
+            <p class="mb-0">Do you intend to continue?</p>
+            <div class="mt-2 pt-2 border-top flex gap-2">
+                <button class="btn btn-dark btn-sm rounded-md text-white" type="button">I'm not sure</button>
+                <button class="btn btn-danger btn-sm rounded-md text-white" type="button" (click)="closeToast()">Remove My Account</button>
+            </div>
+        </div>
+    </div>
+</app-card>

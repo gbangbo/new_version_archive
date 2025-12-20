@@ -1,0 +1,70 @@
+<app-card [headerTitle]="'JavaScript Behavior'" [header]="'pb-0'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>
+    This tab component switches content dynamically based on the selected tab. The <code>handleTab</code> method updates the , <code>active tab</code> , applying the active class for styling.
+  </p>
+
+    <div class="grid grid-cols-12 card-gap tabs">
+      <div class="col-span-4 sm:col-span-12">
+        <div class="tab-links list-group flex flex-col">
+          @for(tabs of jsBehaviorTabs; track tabs){
+            <button class="list-group-item text-start tab-link" [ngClass]="{ 'active': activeTab === tabs.value, 'bg-primary': activeTab === tabs.value, 'text-white': activeTab === tabs.value, 'rounded-t-md': tabs.id === 1, 'rounded-b-md': tabs.id === jsBehaviorTabs.length }" (click)="handleTab(tabs.value)">
+              {{ tabs.title }}
+           </button>
+          }  
+        </div>
+      </div>
+          <div class="col-span-8 sm:col-span-12">
+            <div>
+              @if(activeTab == 'home'){
+                <div class="flex gap-2 mb-4 list-behavior-1">
+                    <div class="shrink-0">
+                        <img class="tab-img max-w-full" src="assets/images/blog/img.png" alt="home">
+                    </div>
+                    <div class="grow">
+                      <p class="mb-0 mb-4">We provide end to end digital solutions, right from designing your website/application development: Domain, Web Hosting, Email Hosting Registration, Search Engine Optimization and other Internet Marketing, Renewal of Services timely and effectively.</p>
+                    </div>
+                  </div>
+                  <div class="flex list-behavior-1 mb-4">
+                      <div class="grow"> 
+                          <p class="mb-0">When someone visits your homepage, your design should inspire them to stay. Therefore, your value proposition should be established on the homepage for visitors to select to stay on your website.Building trust, expressing value, and guiding visitors to the next step all depend on a page's design.</p>
+                      </div>
+                      <div class="shrink-0">
+                        <img class="tab-img max-w-full" src="assets/images/blog/blog.jpg" alt="home">
+                      </div>
+                  </div>
+            }
+            @if(activeTab == 'profile'){
+                 <div class="flex-space items-center list-light-dark contact-profile">
+                  <img class="tab-img" src="assets/images/avatar/3.jpg" alt="profile">
+                      <ul class="flex flex-col gap-2">
+                        <li><strong>Visit Us: </strong>	2600 Hollywood Blvd,Florida, United States-	33020</li>
+                        <li><strong>Mail Us:</strong>contact&#64;us&#64;gmail.com</li>
+                        <li><strong>Contact Number: </strong>(954) 357-7760</li>
+                      </ul>
+                  </div>
+            }
+            @if(activeTab == 'contact_us'){
+                  <ul class="flex flex-col gap-1">
+                    <li>Us Technology offers web & mobile development solutions for all industry verticals.Include a short form using fields that'll help your business understand who's contacting them.</li>
+                    <li><strong>Visit Us: </strong>2600 Hollywood Blvd,Florida, United States-	33020</li>
+                    <li><strong>Mail Us:</strong>contact&#64;us&#64;gmail.com</li>
+                    <li><strong>Contact Number: </strong>(954) 357-7760</li>
+                  </ul>
+            }
+            @if(activeTab == 'setting'){
+                  <ul class="flex flex-col gap-2">
+                      <li><strong>Available Pages in Theme: </strong></li>
+                      <li>
+                        --&gt; Typography: 
+                        Typography is the art of arranging letters and text in a way that makes the copy legible, clear, and visually appealing to the reader.
+                      </li>
+                      <li>
+                        --&gt; Tooltip: 
+                        A tooltip is a brief, informative message that appears when a user interacts with an element in a graphical user interface (GUI). 
+                      </li>
+                  </ul>
+            }
+            </div>
+          </div>
+      </div>
+</app-card>

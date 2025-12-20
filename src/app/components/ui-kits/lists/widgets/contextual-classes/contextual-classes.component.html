@@ -1,0 +1,15 @@
+<app-card [headerTitle]="'Contextual Classes'" [header]="'pb-0'" [border]="true" [padding]="false" [cardClass]="'height-equal'" [cardBodyClass]="'contextual-wrapper'">
+    <p class="f-m-light mt-1" header5>
+        Use contextual classes to style list items with a stateful background and colors.<code> list-light-*</code> and <code> txt-*</code>.
+    </p>
+
+    <div class="list-group">
+        @for(list of contextualClassList;track list){
+            <a class="list-group-item list-group-item-action list-light-{{ list.color_class }} block" href="javascript:void(0)">
+                This is {{ list.color_class }} bg you can use
+                 <em class="txt-{{ list.color_class }} fw-bold">.list-light-{{ list.color_class }}</em> 
+                  class.
+            </a>
+        }
+        </div>
+</app-card>

@@ -1,0 +1,15 @@
+<app-card [headerTitle]="'Stock Market'" [header]="'pb-0'" [border]="true" [padding]="false">
+    <div id="chart-widget13">
+        <apx-chart
+            [series]="stockMarketChart.series"
+            [plotOptions]="stockMarketChart.plotOptions"
+            [legend]="stockMarketChart.legend"
+            [fill]="stockMarketChart.fill"
+            [chart]="stockMarketChart.chart"
+            [stroke]="stockMarketChart.stroke"
+            [xaxis]="stockMarketChart.xaxis"
+            [grid]="stockMarketChart.grid"
+            [responsive]="stockMarketChart.responsive">
+        </apx-chart>
+    </div>
+</app-card>

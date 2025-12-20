@@ -1,0 +1,17 @@
+<app-card [headerTitle]="'Estimated vs. Actual Hours by Project'" [padding]="false" [cardBodyClass]="'pt-0'" [dropdownType]="'simple'" [options]="cardToggleOption">
+    <div class="estimated-project">
+        <div id="estimated-project">
+            <apx-chart
+                [series]="estimatedActualChart.series"
+                [chart]="estimatedActualChart.chart"
+                [plotOptions]="estimatedActualChart.plotOptions"
+                [colors]="estimatedActualChart.colors"
+                [dataLabels]="estimatedActualChart.dataLabels"
+                [xaxis]="estimatedActualChart.xaxis"
+                [yaxis]="estimatedActualChart.yaxis"
+                [grid]="estimatedActualChart.grid"
+                [responsive]="estimatedActualChart.responsive">
+            </apx-chart>
+        </div>
+      </div>
+</app-card>

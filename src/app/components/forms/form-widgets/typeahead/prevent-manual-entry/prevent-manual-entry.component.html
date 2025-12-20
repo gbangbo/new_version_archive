@@ -1,0 +1,20 @@
+<app-card [headerTitle]="'Prevent manual entry'" [header]="'pb-0'" [border]="true" [padding]="false"> 
+  <p class="mt-1 mb-0" header5>
+    Prevents manual text entry and updates the model only when an item from
+    suggestions is selected
+  </p>
+
+  <div class="typeahead-box last-typeahead-box" (clickOutside)="close()">
+    <input id="typeahead-prevent-manual-entry" type="text" class="form-control" [(ngModel)]="model" placeholder="Search for a state" (input)="onSearch($event)" />
+  </div>
+
+  @if(filteredStates.length > 0){
+    <ul class="list-group">
+      @for(state of filteredStates; track state){
+      <li class="list-group-item" (click)="onSelect(state)">
+        {{ formatter(state) }}
+      </li>
+      }
+    </ul>
+  }
+</app-card>

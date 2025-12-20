@@ -1,0 +1,7 @@
+<app-card [headerTitle]="'Button Sizes'" [border]="true" [header]="'pb-0'" [padding]="false" [cardBodyClass]="'common-flex items-center buttons-box'">
+    <p class="f-m-light mt-1" header5>Use<code> btn-lg, btn-sm, btn-xs </code>for sizes of buttons</p>
+    
+    @for(button of buttonSize; track button){
+        <button class="btn button-light-{{ button.class }}">{{ button.title }} button</button>
+    }
+</app-card>

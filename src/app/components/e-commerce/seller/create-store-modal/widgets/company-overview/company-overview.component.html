@@ -1,0 +1,50 @@
+<form class="stepper-three needs-validation custom-input" novalidate="">
+  <div class="grid grid-cols-12 gap-4 w-full">
+    <div class="col-span-12">
+      <label class="form-label" for="businessDetails">Business Details</label>
+      <textarea class="form-control" id="businessDetails" placeholder="Enter your business details" rows="3"></textarea>
+      <div class="invalid-feedback">Please enter a message in the textarea.    </div>
+    </div>
+    <div class="col-span-6 sm:col-span-12">
+      <label class="form-label">Establishment Date</label>
+      <div class="input-group flatpicker-calender product-date">
+        <input class="form-control" id="human-friendly1" type="date">
+      </div>
+    </div>
+    <div class="col-span-6 sm:col-span-12"> 
+      <label class="form-label" for="serviceArea">Business Type</label>
+      <input class="form-control" id="serviceArea" type="text" placeholder="Enter your business type">
+    </div>
+    <div class="col-span-2 lg:col-span-3 sm:col-span-12">
+      <label class="form-label" for="serviceArea">Insured?</label>
+      <div class="common-flex">
+        <div class="form-check flex gap-1">
+          <input class="form-check-input" id="flexRadioDefault1" type="radio" name="flexRadioDefault">
+          <label class="form-check-label" for="flexRadioDefault1">Yes</label>
+        </div>
+        <div class="form-check flex gap-1">
+          <input class="form-check-input" id="flexRadioDefault2" type="radio" name="flexRadioDefault" checked="">
+          <label class="form-check-label" for="flexRadioDefault2">No </label>
+        </div>
+      </div>
+    </div>
+    <div class="col-span-2 lg:col-span-3 sm:col-span-12">
+      <label class="form-label" for="serviceArea">Licensed?</label>
+      <div class="common-flex">
+        <div class="form-check flex gap-1">
+          <input class="form-check-input" id="flexRadioDefault3" type="radio" name="flexRadioDefault2">
+          <label class="form-check-label" for="flexRadioDefault3">Yes</label>
+        </div>
+        <div class="form-check flex gap-1">
+          <input class="form-check-input" id="flexRadioDefault4" type="radio" name="flexRadioDefault2" checked="">
+          <label class="form-check-label" for="flexRadioDefault4">No </label>
+        </div>
+      </div>
+    </div>
+    <div class="col-span-12"> 
+      <label class="form-label" for="additional_info">Additional Info</label>
+      <textarea class="form-control" id="additional_info" placeholder="You can write anything..." rows="3"></textarea>
+      <div class="invalid-feedback">Please enter a message in the textarea. </div>
+    </div>
+    </div>
+</form>

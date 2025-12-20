@@ -1,0 +1,36 @@
+<app-card [headerTitle]="'Colored Tooltip'" [header]="'pb-0'" [border]="true" [padding]="false">
+    <p class="f-m-light mt-1" header5> Use <code>btn-*</code> to change dark background color.</p>
+
+    <div class="common-flex">
+        <span class="group relative">
+            <button class="mb-0 me-0 btn btn-primary text-white">Primary</button>
+
+            <app-tooltip [title]="'Primary'"></app-tooltip>
+        </span>
+        <span class="group relative">
+            <button class="mb-0 me-0 btn btn-secondary text-white">Secondary</button>
+
+            <app-tooltip [title]="'Secondary'"></app-tooltip>
+        </span>
+        <span class="group relative">
+            <button class="mb-0 me-0 btn btn-warning text-white">Warning</button>
+
+            <app-tooltip [title]="'Warning'"></app-tooltip>
+        </span>
+        <span class="group relative">
+            <button class="mb-0 me-0 btn btn-success text-white">Success</button>
+
+            <app-tooltip [title]="'Success'"></app-tooltip>
+        </span>
+        <span class="group relative">
+            <button class="mb-0 me-0 btn btn-danger text-white">Danger</button>
+
+            <app-tooltip [title]="'Danger'"></app-tooltip>
+        </span>
+        <span class="group relative">
+            <button class="mb-0 me-0 btn btn-info text-white">Info</button>
+
+            <app-tooltip [title]="'Info'"></app-tooltip>
+        </span>
+    </div>
+</app-card>

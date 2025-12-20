@@ -1,0 +1,18 @@
+<app-card [headerTitle]="'Students'" [padding]="false" [dropdownType]="'classic'" [options]="cardToggleOption" [dropdownClass]="'custom-dropdown'">
+    <div class="std-class-chart">
+        <div id="student-chart">
+            <apx-chart
+                    [series]="studentChart.series"
+                    [chart]="studentChart.chart"
+                    [labels]="studentChart.labels"
+                    [plotOptions]="studentChart.plotOptions"
+                    [dataLabels]="studentChart.dataLabels"
+                    [colors]="studentChart.colors"
+                    [fill]="studentChart.fill"
+                    [legend]="studentChart.legend"
+                    [stroke]="studentChart.stroke"
+                    [responsive]="studentChart.responsive">
+            </apx-chart>
+         </div>
+      </div>
+</app-card>

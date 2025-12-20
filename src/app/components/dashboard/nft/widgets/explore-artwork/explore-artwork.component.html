@@ -1,0 +1,14 @@
+<app-card [headerTitle]="'Explore Artworks'" [header]="'pb-3'" [padding]="false" [cardBodyClass]="'pt-0'">
+    <div class="slider-wrapper arrow-round">
+        <owl-carousel-o [options]="options" class="swiper category-slider">
+            @for(artwork of exploreArtwork; track artwork) {
+                <ng-template carouselSlide>
+                    <a class="category-box" href="javascript:void(0)">
+                        <img [src]="artwork.banner" alt="nft art">
+                        <h6>{{ artwork.title }}</h6>
+                    </a>
+                </ng-template>
+            }
+        </owl-carousel-o>
+    </div>
+</app-card>

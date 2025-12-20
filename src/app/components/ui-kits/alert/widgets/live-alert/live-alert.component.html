@@ -1,0 +1,14 @@
+<app-card [headerTitle]="'Live Alert'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'live-dark'">
+
+    <p class="f-m-light mt-1" header5>Click the button below to show an alert, then dismiss (and destroy) it with the built-in close button.</p>
+
+    <div id="liveAlertPlaceholder">
+        @for(item of alerts; track item) {
+            <div class="alert !mb-4 alert-light-dark txt-dark alert-dismissible">
+                <div>Nice, you triggered this alert message!</div>
+                <button type="button" class="btn-close" (click)="close(item)"></button>
+            </div>
+        }
+    </div>
+    <button class="btn btn-dark text-white" id="liveAlertBtn" type="button" (click)="addAlert()">Show Live Alert</button>
+</app-card>

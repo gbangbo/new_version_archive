@@ -1,0 +1,55 @@
+<div class="md-sidebar">
+  <a class="btn btn-primary md-sidebar-toggle text-white" href="javascript:void(0)" (click)="toggleSidebar()">file filter</a>
+  <div class="md-sidebar-aside job-left-aside custom-scrollbar" [class.open]="sidebarOpen">
+    <div class="file-sidebar">
+      <app-card [cardBodyClass]="'custom-scrollbar'">
+        <div class="common-sort-card">
+          <h5 class="mb-4">Sort By File Type </h5>
+          <ul class="files-left-icons file-type-icons">
+            @for(files of fileTypes; track files) {
+              <li>
+                <a id="folder-files-tab" href="javascript:void(0)">
+                  <div>
+                    <app-svg-icon [icon]="files.icon"></app-svg-icon>
+                    <span>{{ files.name }}
+                      <span>({{ files.total_files }})</span>
+                    </span>
+                  </div><span>{{ files.size }}</span>
+                </a>
+              </li>
+            }
+          </ul>
+        </div>
+        <hr>
+        <ul>
+          <li>
+            <div class="btn border btn-outline-primary">
+              <app-feather-icon [icon]="'database'"></app-feather-icon>
+              Storage 
+            </div>
+            <div class="m-t-15">
+              <div class="progress sm-progress-bar mb-1">
+                <div class="progress-bar rounded-l-lg bg-primary" [ngStyle]="{ 'width': '25%'}"></div>
+              </div>
+              <p>25 GB of 100 GB used</p>
+            </div>
+          </li>
+        </ul>
+        <hr>
+        <ul>
+          @for(plan of pricingPlan; track plan) {
+            <li>
+              <div class="pricing-plan">
+                <h5>{{ plan.name }} </h5>
+                <h6>{{ plan.price }}</h6>
+                <p> {{ plan.storage }}</p>
+                <div class="btn btn-outline-primary border btn-xs">{{ plan.status }}</div>
+                <img class="bg-img" [src]="plan.image" alt="folder">
+              </div>
+            </li>
+          }
+        </ul>
+      </app-card>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,47 @@
+<app-card [headerTitle]="'Today\'s Schedule'" [padding]="false" [cardClass]="'schedule-calender'" [cardBodyClass]="'pt-0'" [rightSideDetails]="true">
+
+  <a class="btn font-medium" href="javascript:void(0)" header3>+ Add</a>
+
+  <ul class="schedule-wrapper tab-links flex flex-wrap" id="myTab" role="tablist">
+    @for(day of days; track day) {
+      <li class="nav-item">
+        <a class="tab-link" href="javascript:void(0)" [class.active]="activeDay == day.value" (click)="changeDay(day)">
+          <h6>{{ day.day }} </h6>
+          <span class="font-normal">{{ day.date }}</span>
+        </a>
+      </li>
+    }
+  </ul>
+
+  <div class="tab-content" id="myTabContent">
+    <div class="tab-pane show active">
+      <ul class="activity-update">
+        @for(schedule of filteredSchedule; track schedule) {
+          <li>
+            <div class="flex items-center b-l-{{ schedule.color_class }}">
+              <div class="left-schedule">
+                <span>{{ schedule.title }}</span>
+                <div class="common-f-start">
+                  <div class="customers">
+                    <ul class="flex">
+                      @for(details of schedule.participants;track details){
+                        <li class="d-inline-block">
+                          <img class="img-40 rounded-full" [src]="details.image" [alt]="details.alt">
+                        </li>
+                      }
+                    </ul>
+                  </div>
+                  <span class="c-o-light schedule-name">{{ schedule.schedule_name }}</span>
+                </div>
+              </div>
+              <div class="right-schedule">
+                <app-svg-icon class="fill-icon fill-success" [icon]="'clock'"></app-svg-icon>
+                <span class="c-o-light">{{ schedule.time }}</span>
+              </div>
+            </div>
+          </li>
+        }
+      </ul>
+    </div>
+  </div>
+</app-card>

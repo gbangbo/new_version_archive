@@ -1,0 +1,20 @@
+<app-card [headerTitle]="'Animated Timeline'" [border]="true" [header]="'pb-0'" [padding]="false" [cardBodyClass]="'overflow-hidden'">
+  <p class="f-m-light mt-1" header5>Use <code> animated-timeline</code> class to your animated timeline.</p>
+  <div class="animated-timeline">
+    @for(details of animatedTimeline; track details){
+      <div class="timeline-block">
+        <div class="each-year">
+          <div class="title">{{ details.year }}</div>
+          @for(timeline of details.events; track timeline; let i = $index){
+            <div class="timeline-event">
+              <div class="timeline-desc">
+                <h6 class="pb-1">{{ timeline.title }}:</h6>
+                <span>{{ timeline.description }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </div>
+</app-card>

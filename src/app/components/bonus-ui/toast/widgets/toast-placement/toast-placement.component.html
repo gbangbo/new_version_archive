@@ -1,0 +1,27 @@
+<app-card [headerTitle]="'Toast Placement'" [border]="true" [header]="'pb-0'" [padding]="false" [cardBodyClass]="'toast-rtl toast-dark'">
+
+  <p class="f-m-light mt-1" header5>Use<code> hide </code>class to hide toast and <code>show </code>class to visible toast.</p>
+
+  <form>
+    <div class="mb-4">
+      <select2 [data]="toastPosition" placeholder="Select a position..." noResultMessage="No Position Found." resettable="" (update)="handlePosition($event)"></select2>
+    </div>
+  </form>
+
+  <div class="bg-light relative bd-example-toasts">
+    <div class="toast-container p-3 absolute" id="toastPlacement" [ngClass]="positionClass ? positionClass : ''">
+      <div class="toast toast-fade show">
+        <div class="toast-header toast-img">
+          <img class="rounded-full me-2" src="assets/images/dashboard-5/profile.png" alt="profile">
+          <strong class="me-auto">Zono Theme</strong>
+          <small class="d-sm-block hidden">25 min ago</small>
+        </div>
+        <div class="toast-body toast-dark txt-dark">
+          <p class="toast-content">
+            <em class="txt-danger">Attackers</em> on malicious activity may trick you into doing something dangerous like installing software or revealing your personal information's.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</app-card>

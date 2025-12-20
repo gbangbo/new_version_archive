@@ -1,0 +1,39 @@
+<div class="card overflow-hidden analytics-tread-card">
+    <div class="card-header card-no-border">
+      <div class="header-top">
+        <div>
+            <span class="c-o-light mb-1">{{ pageViewsChart.title }}</span>
+            <div class="common-align">
+                <h5 class="mb-1">{{ pageViewsChart.value }}</h5>
+                <span class="common-align gap-1 justify-content-start">
+                    <app-feather-icon [icon]="'trending-down'" [class]="'txt-danger'"></app-feather-icon>
+                    <span class="txt-danger font-medium">{{ pageViewsChart.page_view }}</span>
+                </span>
+            </div>
+        </div>
+        <div>
+          <div class="analytics-tread bg-light-{{ pageViewsChart.color }}">
+            <app-svg-icon [icon]="pageViewsChart.icon" [class]="'fill-' + pageViewsChart.color"></app-svg-icon>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body p-0">
+      <div class="analytics-view-wrapper">
+        <div id="page-view-chart">
+            <apx-chart 
+                [series]="pageViewsChart.series"
+                [chart]="pageViewsChart.chart"
+                [stroke]="pageViewsChart.stroke"
+                [xaxis]="pageViewsChart.xaxis"
+                [grid]="pageViewsChart.grid"
+                [yaxis]="pageViewsChart.yaxis"
+                [dataLabels]="pageViewsChart.dataLabels"
+                [markers]="pageViewsChart.markers"
+                [colors]="pageViewsChart.colors"
+                [fill]="pageViewsChart.fill">
+            </apx-chart>
+        </div>
+      </div>
+    </div>
+</div>

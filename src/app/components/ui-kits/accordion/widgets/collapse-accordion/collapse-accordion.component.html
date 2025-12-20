@@ -1,0 +1,14 @@
+<app-card [headerTitle]="'Collapse Accordion'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'collapse-accordion'">
+  <p class="f-m-light mt-1" header5>
+    This collapsible section toggles visibility using the <code>toggleAccordion</code> method.  
+    The <code>collapse</code> class ensures smooth transitions, with links and buttons triggering the collapse state.  
+  </p>
+
+  <p class="common-flex">
+    <a class="btn btn-dark text-white" href="javascript:void(0)" (click)="toggleAccordion()">Link With Href</a>
+    <button class="btn btn-dark text-white" type="button" (click)="toggleAccordion()">Button With Data-bs-target</button>
+  </p>
+  <div class="collapse btn-dark" [class.show]="!isCollapsed">
+    <div class="card card-body mb-0 mt-2 dark-accordion">Some placeholder content for the collapse component. This panel is hidden by default but revealed when the user activates the relevant trigger.</div>
+  </div>
+</app-card>

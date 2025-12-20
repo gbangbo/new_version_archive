@@ -1,0 +1,7 @@
+<app-card [headerTitle]="'Outline Button Sizes'" [border]="true" [header]="'pb-0'" [padding]="false" [cardBodyClass]="'common-flex items-center'"> 
+    <p class="f-m-light mt-1" header5>Use <code>button-lg, button-sm, and button-xs </code>for size, and use the <code>"outline-*" </code>class for outline colors.</p>
+    
+    @for(button of buttonSize; track button){
+        <button class="btn btn-outline-{{ button.class }} border">{{ button.title }} button</button>
+    }
+</app-card>

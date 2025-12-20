@@ -1,0 +1,15 @@
+<app-card [cardClass]="'helper-height-equal'" [header]="'pb-0'" [headerTitle]="'Padding'" [border]="true" [padding]="false">
+
+    <p class="f-m-light mt-1" header5>Use padding classes like: <code>p-* [10 / 15 / 20 / 25 / 30 / 35 / 40/ 45 / 50]</code>.</p>
+
+    <div class="border-wrapper h-full alert-light-light dark-helper">
+        <div class="helper-common-box helper-p-wrapper">
+            @for(padding of paddings; track padding) {
+                <div class="helper-p-box p-{{ padding }} bg-light border">
+                    <span>p-{{ padding }}</span>
+                </div>
+            }
+        </div>
+    </div>
+    
+</app-card>

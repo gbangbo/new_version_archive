@@ -1,0 +1,13 @@
+<app-card [headerTitle]="'Mouse Wheel Variant'" [header]="'pb-0'" [border]="true" [padding]="false"> 
+    <p class="f-m-light mt-1" header5>
+        To create a mouse-wheel-controlled image slider, use the <code>swiper</code> package with the <code>mouseweel-swiper</code> and <code>sweeper-h</code> classes. This configuration allows users to scroll through images using the mouse wheel. The <code>Swiper</code> module is configured with mousewheel support, pagination, and smooth transitions for an interactive experience.
+    </p>
+        <div class="swiper mouseweel-swiper swiper-h" #swiperContainer>
+        <div class="swiper-wrapper">
+            @for(slider of mouseWheelVariant; track slider){
+                <div class="swiper-slide"> <img class="max-w-full h-auto" [src]="slider.image" alt="image"></div>
+            }
+        </div>
+        <div class="swiper-pagination"></div>
+      </div>
+</app-card>

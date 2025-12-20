@@ -1,0 +1,75 @@
+<div class="container">
+    <div class="grid grid-cols-12 card-gap general-widget-wrapper">
+        @for(chart of currencyChart; track chart) {
+            <div class="col-span-2 xxl:col-span-4 sm:col-span-12 box-col-4">
+              <app-currency-chart [chart]="chart"></app-currency-chart>
+            </div>
+        }
+
+        @for(details of averageDayDetails | slice: 0:2; track details) {
+            <div class="col-span-3 xxl:col-span-6 sm:col-span-12 box-col-6">
+              <app-average-day-details [details]="details"></app-average-day-details>
+            </div>
+        }
+
+        @for(detail of details; track detail; let i = $index) {
+            <div class="col-span-3 xl:col-span-6 sm:col-span-12 box-col-3">
+                <app-details [detail]="detail"></app-details>
+            </div>
+        }
+
+        <div class="col-span-3 xxl:col-span-4 xl:col-span-12 box-col-4">
+            <div class="grid grid-cols-12 card-gap">
+                @for(course of courses; track course) {
+                    <div class="col-span-12 xl:col-span-6 sm:col-span-12 box-col-12">
+                        <app-courses [course]="course"></app-courses>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="col-span-4 xxl:col-span-3 xl:col-span-6 md:col-span-12 box-col-3">
+            <app-website-traffic></app-website-traffic>
+        </div>
+        <div class="col-span-5 xl:col-span-6 md:col-span-12 box-col-5">
+            <app-session-by-device [type]="'classic'"></app-session-by-device>
+        </div>
+        <div class="col-span-12">
+            <div class="grid grid-cols-12 card-gap">
+
+              @for (details of socialMediaDetails; track details) {
+                <div class="col-span-2 s-xxl-3 box-col-4">
+                  <app-social-media-details [details]="details"></app-social-media-details>
+                </div>
+              }
+            </div>
+        </div>
+        <div class="col-span-6 xxl:col-span-12 box-col-12">
+            <div class="grid grid-cols-12 card-gap">
+
+                @for(details of lastMonthDetails; track details; let i = $index) {
+                    <div [ngClass]="(lastMonthDetails.length % 2 !== 0 && i === lastMonthDetails.length - 1) ? 'col-span-4 md:col-span-6 sm:col-span-12' : 'col-span-4 md:col-span-12'">
+                        <app-last-month-details [details]="details"></app-last-month-details>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="col-span-6 xxl:col-span-12 box-col-12">
+            <div class="grid grid-cols-12 card-gap user-tread-cards">
+                <div class="col-span-6 sm:col-span-12">
+                    <app-total-users></app-total-users>
+                </div>
+                <div class="col-span-6 sm:col-span-12">
+                    <app-page-views></app-page-views>
+                </div>
+            </div>
+        </div>
+        <div class="col-span-6 md:col-span-12 ord-md-i box-col-6">
+            <app-all-visits></app-all-visits>
+        </div>
+        <div class="col-span-6 md:col-span-12 box-col-6">
+            <app-activity-hours></app-activity-hours>
+        </div>
+    </div>
+</div>

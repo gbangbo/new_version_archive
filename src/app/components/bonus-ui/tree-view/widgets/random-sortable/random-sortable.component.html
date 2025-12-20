@@ -1,0 +1,14 @@
+<app-card [headerTitle]="'Random Sortable'" [header]="'pb-0'" [border]="true" [padding]="false">
+    <p class="f-m-light mt-1" header5>
+        Use the <code>cdkDropList</code> directive to create a grid of sortable items that can be rearranged by dragging and dropping. The <code>cdkDropListData</code> binds the data (like <code>randomSortable</code>) to the grid, allowing the items to be dynamically reordered. The <code>cdkDropListOrientation</code> is set to "mixed" to enable both horizontal and vertical dragging. Each item in the grid is made draggable with the <code>cdkDrag</code> directive. This example demonstrates how to use a grid layout where the items can be shuffled randomly by dragging, providing an interactive and flexible sorting experience. </p>
+
+    <div cdkDropList #list="cdkDropList" [cdkDropListData]="randomSortable" (cdkDropListDropped)="drop($event)" cdkDropListOrientation="mixed">
+        <div class="grid-box-wrapper" id="sortable-grids">
+            @for(list of randomSortable; track list){
+                <div class="grid-box" cdkDrag>
+                    <img [src]="list.image" alt="javascript:void(0)">
+                </div>
+            }
+        </div>
+    </div>
+</app-card>

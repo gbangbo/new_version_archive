@@ -1,0 +1,5 @@
+<app-card [headerTitle]="'Attendance Overview'" [padding]="false" [cardBodyClass]="'px-0 pt-0'" [dropdownType]="'simple'" [options]="cardToggleOption">
+    <div class="recent-table overflow-x-auto custom-scrollbar attendance-table">
+        <app-table [tableConfig]="tableConfig" [pageSize]="4" [paginateDetails]="true" [tableClass]="'table'" id="attendance-overview"></app-table>
+    </div>
+</app-card>

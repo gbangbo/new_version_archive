@@ -1,0 +1,43 @@
+<app-card [headerTitle]="'Message Toasts'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'common-flex common-toasts'">
+    <p class="f-m-light mt-1" header5>Use<code> fixed</code>  class to <code> [top/end/start/bottom]</code> toasts.</p>
+
+    <button class="btn btn-success text-white" type="button" (click)="showToast('success')">Success Toast</button>
+
+    <div class="toast-container fixed top-0 end-0 p-3 toast-index toast-rtl" >
+        <div class="toast" [class.show]="toast['success']">
+          <div class="common-space alert-light-success">
+            <div class="toast-body">
+                <app-feather-icon [icon]="'check-square'" [class]="'close-search stroke-success'"></app-feather-icon>
+                Success: We've updated your info
+            </div>
+            <button class="btn-close" type="button" (click)="closeToast('success')"></button>
+          </div>
+        </div>
+    </div>
+
+    <button class="btn btn-warning text-white" type="button" (click)="showToast('warning')">Warning Toast</button>
+    <div class="toast-container fixed top-50 end-0 p-3 toast-index toast-rtl">
+        <div class="toast" [class.show]="toast['warning']">
+        <div class="common-space alert-light-warning">
+            <div class="toast-body">
+                <app-feather-icon [icon]="'alert-triangle'" [class]="'close-search stroke-warning'"></app-feather-icon>
+                Software drivers needed to be updated in advance
+            </div>
+            <button class="btn-close" type="button" (click)="closeToast('warning')"></button>
+        </div>
+        </div>
+    </div>
+
+    <button class="btn btn-danger text-white" type="button" (click)="showToast('error')">Error Toast</button>
+    <div class="toast-container fixed bottom-0 end-0 p-3 toast-index toast-rtl">
+        <div class="toast" [class.show]="toast['error']">
+        <div class="common-space alert-light-danger">
+            <div class="toast-body">
+                <app-feather-icon [icon]="'x-circle'" [class]="'close-search stroke-danger'"></app-feather-icon>
+                A database connection error has occurred
+            </div>
+            <button class="btn-close" type="button"  (click)="closeToast('error')"></button>
+        </div>
+        </div>
+    </div>
+</app-card>

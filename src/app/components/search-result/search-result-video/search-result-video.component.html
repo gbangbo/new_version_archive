@@ -1,0 +1,26 @@
+<div class="grid grid-cols-12 gap-4">
+    <div class="col-span-12">
+        <h6 class="mb-4">About 6,000 results (0.60 seconds)</h6>
+    </div>
+    @for(video of safeVideos; track video) {
+        <div class="col-span-6 xxl:col-span-12 box-col-12">
+            <div class="flex info-block">
+                <iframe class="me-3" width="200" height="100" [src]="video.url"></iframe>
+                <div class="grow">
+                    <a [href]="video.url" target="_blank">{{video.url}}</a>
+                    <h6>{{ video.title }}</h6>
+                    <div class="star-ratings">
+                        <ul class="search-info">
+                            <li>{{ video.rating }} stars</li>
+                            <li>{{ video.votes }} votes</li>
+                            <li>{{ video.type }}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    <div class="col-span-12 mt-7">
+        <app-pagination></app-pagination>
+    </div>
+</div>

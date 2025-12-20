@@ -1,0 +1,25 @@
+<app-card [cardClass]="'multiple-collapse'" [header]="'pb-0'" [headerTitle]="'Multiple Collapse Accordion'" [border]="true" [padding]="false">
+    <p class="f-m-light mt-1" header5>
+        This accordion allows independent or simultaneous toggling of multiple collapsible sections using the `toggleCollapse` method.  
+        The collapse state is managed dynamically with `[class.show]`, ensuring smooth transitions.
+    </p>    
+    
+    <div class="common-flex">
+        <button class="btn btn-primary text-white" type="button" (click)="toggleCollapse('first')">Toggle First Element</button>
+        <button class="btn btn-secondary !text-white" type="button" (click)="toggleCollapse('second')">Toggle Second Element</button>
+        <button class="btn btn-primary !text-white" type="button" (click)="toggleCollapse()">Toggle Both Elements</button>
+    </div>
+
+    <div class="grid grid-cols-12 card-gap">
+        <div class="col-span-6 xl:col-span-12">
+            <div class="collapse multi-collapse dark-accordion" [class.show]="isCollapsedFirst">
+                <div class="card card-body mt-3 mb-0 collapse-wrapper accordion-light-primary">The collapse JavaScript plugin is used to show and hide content. Buttons or anchors are used as triggers that are mapped to specific elements you toggle. Collapsing an element will animate the height from it's current value to 0. Given how CSS handles animations, you cannot use padding on a .collapse element. Instead, use the class as an independent wrapping element.</div>
+            </div>
+        </div>
+        <div class="col-span-6 xl:col-span-12">
+            <div class="collapse multi-collapse dark-accordion" [class.show]="isCollapsedSecond">
+            <div class="card card-body mt-3 mb-0 collapse-wrapper accordion-light-secondary">This is the first item's accordion body. It is shown by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables.</div>
+            </div>
+        </div>
+    </div>
+</app-card>

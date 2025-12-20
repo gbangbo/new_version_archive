@@ -1,0 +1,132 @@
+<app-card [headerTitle]="'Button Variations'" [header]="'pb-0'" [border]="true" [padding]="false">
+    <p class="f-m-light mt-1" header5>Use<code> btn </code>class used for buttons and <code>btn-group-vertical </code>for vertical buttons and made different types of design using <code>btn-group</code>.</p>
+    <div class="grid grid-cols-12 gap-4">
+        <div class="col-span-6 xxl:col-span-12">
+          <div class="card-wrapper border rounded-3 h-full">
+            <h6 class="sub-title fw-bold">Vertical Variations</h6>
+            <div class="flex gap-4 items-end flex-wrap">
+              <div class="btn-group-vertical flex flex-col variations-color" role="group" aria-label="Vertical button group">
+                @for(button of verticalVariationColor; track button){
+                  <button class="btn btn-{{ button | lowercase}} !rounded-none text-white" type="button">{{ button }}</button>
+                }
+              </div>
+              <div class="btn-group-vertical buttons-box flex flex-col" role="group" aria-label="Vertical button group">
+                <button class="btn button-light-primary !rounded-none !rounded-t-lg" type="button">Light-primary</button>
+                <button class="btn button-light-dark !rounded-none" type="button">Light-dark</button>
+                <div class="btn-group dropdown" role="group" (clickOutside)="clickOutside(1)">
+                  <button class="btn button-light-success dropdown-toggle whitespace-nowrap !rounded-none !w-full" type="button" data-bs-toggle="dropdown" aria-expanded="false" (click)="toggleDropdown(1)">Light-success</button>
+                  <ul class="dropdown-menu" [class.show]="dropdownOpen[1]">
+                    <li>
+                      <a class="dropdown-item" href="#">Dropdown link</a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item" href="#">Dropdown link</a>
+                    </li>
+                  </ul>
+                </div>
+                <div class="btn-group dropstart" role="group" (clickOutside)="clickOutside(2)">
+                  <button class="btn button-light-danger dropdown-toggle whitespace-nowrap !rounded-none !w-full" type="button" data-bs-toggle="dropdown" aria-expanded="false" (click)="toggleDropdown(2)">Light-danger</button>
+                  <ul class="dropdown-menu" [class.show]="dropdownOpen[2]">
+                    <li>
+                      <a class="dropdown-item" href="#">Dropdown link</a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item" href="#">Dropdown link</a>
+                    </li>
+                  </ul>
+                </div>
+                <div class="btn-group dropend" role="group" (clickOutside)="clickOutside(3)">
+                  <button class="btn button-light-warning dropdown-toggle whitespace-nowrap !rounded-none !w-full" type="button" data-bs-toggle="dropdown" aria-expanded="false" (click)="toggleDropdown(3)">Light-warning</button>
+                  <ul class="dropdown-menu" [class.show]="dropdownOpen[3]">
+                    <li>
+                      <a class="dropdown-item" href="#">Dropdown link</a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item" href="#">Dropdown link</a>
+                    </li>
+                  </ul>
+                </div>
+                <div class="btn-group dropup" role="group" (clickOutside)="clickOutside(4)">
+                  <button class="btn button-light-info dropdown-toggle whitespace-nowrap !rounded-none !rounded-b-lg !w-full" type="button" data-bs-toggle="dropdown" aria-expanded="false" (click)="toggleDropdown(4)">Light-info</button>
+                  <ul class="dropdown-menu" [class.show]="dropdownOpen[4]">
+                    <li>
+                      <a class="dropdown-item" href="#">Dropdown link</a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item" href="#">Dropdown link</a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div class="btn-group-vertical flex flex-col variations-radio" role="group" aria-label="Vertical radio toggle button group">
+                @for(button of verticalVariationRadio;track button){
+                  <input class="btn-check appearance-none" [id]="button.id" type="radio" name="vbtn-radio" [checked]="button.checked">
+                  <label class="btn border btn-outline-primary whitespace-nowrap !rounded-none" [for]="button.id">{{ button.title }}</label>
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-span-6 xxl:col-span-12">
+          <div class="grid grid-cols-12 gap-4">
+            <div class="col-span-12 xl:col-span-6 sm:col-span-12"> 
+              <div class="card-wrapper border rounded-3 h-full">
+                <h6 class="sub-title fw-bold">Horizontal Variations</h6>
+                <div class="button-wrapper button-box">
+                  <div class="btn-group" role="group" aria-label="Default button group">
+                    <button class="btn border btn-outline-primary !rounded-r-none" type="button">How</button>
+                    <button class="btn border btn-outline-primary !rounded-none !border-x-0" type="button">Are</button>
+                    <button class="btn border btn-outline-primary !rounded-l-none" type="button">You?</button>
+                  </div>
+                  <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
+                    <button class="btn border btn-primary text-white !rounded-r-none" type="button">C </button>
+                    <button class="btn border btn-warning !rounded-none" type="button">U</button>
+                    <button class="btn border btn-primary text-white !rounded-none" type="button">B </button>
+                    <button class="btn border btn-warning !rounded-none" type="button">A</button>
+                    <div class="btn-group" role="group" (clickOutside)="clickOutside(5)">
+                      <button class="btn btn-primary dropdown-toggle !rounded-l-none" type="button" data-bs-toggle="dropdown" aria-expanded="false" (click)="toggleDropdown(5)">Pages</button>
+                      <ul class="dropdown-menu" [class.show]="dropdownOpen[5]">
+                        <li>
+                          <a class="dropdown-item" href="#">Gallery</a>
+                        </li>
+                        <li>
+                          <a class="dropdown-item" href="#">Blog</a>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div class="btn-group select-checkbox" role="group" aria-label="Basic checkbox toggle button group">
+                    @for(button of horizontalVariationCheckbox;track button){
+                      <input class="btn-check appearance-none" [id]="button.id" type="checkbox">
+                      <label class="btn border btn-outline-{{ button.class }} mb-0" [for]="button.id">{{ button.title }}</label>
+                    }
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-span-12 xl:col-span-6 sm:col-span-12">
+              <div class="card-wrapper border rounded-3 h-full">
+                <h6 class="sub-title fw-bold">Button Toolbar</h6>
+                <div class="btn-toolbar flex flex-wrap" role="toolbar"
+                aria-label="Toolbar with button groups">
+                <div class="btn-group" role="group" aria-label="First group">
+                  <button class="btn btn-primary text-white !rounded-r-none" type="button">I </button>
+                    <button class="btn btn-warning !rounded-none" type="button">II </button>
+                    <button class="btn btn-primary text-white !rounded-none" type="button">III</button>
+                    <button class="btn btn-warning !rounded-l-none" type="button">IV </button>
+                  </div>
+                <div class="btn-group" role="group" aria-label="Second group">
+                  <button class="btn btn-primary text-white !rounded-r-none" type="button">V </button>
+                  <button class="btn btn-warning !rounded-none" type="button">VI </button>
+                  <button class="btn btn-primary text-white !rounded-l-none" type="button">VII</button>
+                  </div>
+                <div class="btn-group" role="group" aria-label="Third group">
+                  <button class="btn btn-warning" type="button">VIII</button>
+                </div>
+              </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+</app-card>

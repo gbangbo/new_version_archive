@@ -1,0 +1,11 @@
+<app-card [headerTitle]="'Anatomy (Table Head)'" [header]="'pb-0'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>
+    Similar to tables and dark tables, use the modifier classes <code>table-light </code>or <code>table-dark </code>to make <code>&lt;thead&gt;</code>s appear light or dark gray.</p>
+    <div class="card-block grid grid-cols-12">
+      <div class="col-span-12">
+        <div class="overflow-x-auto custom-scrollbar">
+          <app-table [tableConfig]="tableConfig" [pageSize]="10" [search]="false" [pagination]="false" [tableClass]="'table table-light'"></app-table>
+        </div>
+      </div>
+    </div>
+</app-card>

@@ -1,0 +1,7 @@
+<app-card [headerTitle]="'Rounded Sizes'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'common-flex items-center'">
+    <p class="f-m-light mt-1" header5>Use<code> btn-lg, btn-sm, btn-xs </code>for sizes of buttons</p>
+    
+    @for(button of roundedSize;track button){
+        <button class="btn btn-pill btn-{{ button.class }}">{{ button.name }} button</button>
+    }
+</app-card>

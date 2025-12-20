@@ -1,0 +1,11 @@
+<app-card [headerTitle]="'Disabled Tooltip'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'fill-tooltip'">
+    <p class="f-m-light mt-1" header5> To create a tooltip for a disabled button, wrap it in a <code>span</code> or <code>div</code> since disabled elements do not trigger hover events. </p>
+
+    <div class="common-flex">
+        <span class="d-inline-block group relative">
+            <button class="btn btn-primary text-white" type="button" disabled>Disabled button</button>
+
+            <app-tooltip [title]="'Disabled Tooltip'"></app-tooltip>
+        </span>
+    </div>
+</app-card>

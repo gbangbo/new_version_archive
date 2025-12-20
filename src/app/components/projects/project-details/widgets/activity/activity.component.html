@@ -1,0 +1,133 @@
+<div class="grid grid-cols-12 card-gap">
+    <div class="col-span-12">
+        <div class="card filter-header">
+            <div class="card-body">
+                <div class="common-space">
+                    <h5>Recent Activity</h5>
+                    <app-card-dropdown-button [dropdownType]="'classic'" [options]="cardToggleOption"
+                        [dropdownClass]="'btn-group'"></app-card-dropdown-button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-span-12">
+        <app-card [cardClass]="'project-timeline'" [cardBodyClass]="'notification'">
+            <ul>
+                @for(activity of projectActivity; track activity) {
+                <li class="flex">
+                    <div class="activity-dot-{{ activity.color }}"></div>
+                    <div class="w-full ms-4">
+                        <h6 class="font-normal" [innerHTML]="activity.title"></h6>
+                        <span class="date-time">{{ activity.time }} by
+                            <span class="activity-profile">
+                                <img class="max-w-full" [src]="activity.added_by.profile" alt="user">
+                                <span>{{ activity.added_by.name }}</span>
+                            </span>
+                        </span>
+                        <div class="mt-3">
+                            @if(activity.description) {
+                            <span>{{ activity.description }}</span>
+                            }
+
+                            @if(activity.attachments) {
+                            <div class="common-flex">
+                                @for(attachment of activity.attachments; track attachment) {
+                                <div class="upload-doc">
+                                    <div class="flex">
+                                        <app-svg-icon [icon]="attachment.file_icon"></app-svg-icon>
+                                        <div>
+                                            <p class="mb-0">{{ attachment.file_name }}</p>
+                                            <p class="mb-0 c-o-light">{{ attachment.file_size }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                }
+                            </div>
+                            }
+
+                            @if(activity.images) {
+                            <div class="flowchart-wrapper">
+                                @for(image of activity.images; track image){
+                                <div>
+                                    <div class="flowchart-img">
+                                        <img class="max-w-full" [src]="image.image_url" alt="flowchart">
+                                    </div>
+                                </div>
+                                }
+                            </div>
+                            }
+
+                            @if(activity.members) {
+                            <div class="project-teammate">
+                                <ul class="common-f-start">
+                                    @for(member of activity.members; track member) {
+                                        @if(member.profile) {
+                                            <li class="d-inline-block relative group">
+                                                <img class="common-circle" [src]="member.profile" alt="user">
+
+                                                <app-tooltip [title]="member.name"></app-tooltip>
+                                            </li>
+                                        } @else {
+                                            <li class="d-inline-block relative group">
+                                                <div class="common-circle bg-lighter-{{ chatService.getTextColor(chatService.getUserText(member.name)) }}">
+                                                    {{ chatService.getUserText(member.name, 'singleText') }}</div>
+
+                                                    <app-tooltip [title]="member.name"></app-tooltip>
+                                            </li>
+                                        }
+                                    }
+                                </ul>
+                            </div>
+                            }
+
+                            @if(activity.templates) {
+                            <div class="table-responsive overflow-x-auto custom-scrollbar">
+                                <table class="table project-task-note">
+                                    <thead class="project-header">
+                                        <tr>
+                                            <th scope="col">Project </th>
+                                            <th scope="col">Task </th>
+                                            <th scope="col">Assigned To</th>
+                                            <th scope="col">Status </th>
+                                            <th scope="col">Due Date</th>
+                                            <th scope="col">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="project-content">
+                                        @for(details of activity.templates; track details) {
+                                        <tr>
+                                            <td>{{ details.project_name }}</td>
+                                            <td>{{ details.task }}</td>
+                                            <td>
+                                                <ul class="common-f-start">
+                                                    @for(image of details.assign_to; track image) {
+                                                    <li class="relative group">
+                                                        <img class="common-circle" [src]="image.profile" alt="user">
+
+                                                        <app-tooltip [title]="image.name"></app-tooltip>
+                                                    </li>
+                                                    }
+                                                </ul>
+                                            </td>
+                                            <td>
+                                                <span
+                                                    class="badge badge-light-{{ details.color }} txt-{{ details.color }}">{{
+                                                    details.status }}</span>
+                                            </td>
+                                            <td>{{ details.due_date }}</td>
+                                            <td><a class="btn text-black" href="javascript:void(0)" [routerLink]="['/project/project-list']">View</a></td>
+                                        </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                            }
+                        </div>
+                    </div>
+                </li>
+                }
+            </ul>
+        </app-card>
+    </div>
+</div>

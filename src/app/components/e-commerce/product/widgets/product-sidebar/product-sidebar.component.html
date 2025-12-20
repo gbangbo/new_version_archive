@@ -1,0 +1,88 @@
+<div class="product-sidebar">
+  <div class="filter-section">
+    <div class="card">
+      <div class="card-header" (click)="toggleSidebar()">
+        <h6 class="mb-0 font-semibold">Filters
+          <span class="pull-right">
+            <i class="fa-solid fa-chevron-down toggle-data"></i>
+          </span>
+        </h6>
+      </div>
+      <div class="left-filter custom-scrollbar">
+        <div class="card-body filter-cards-view animate-chk">
+          <div class="product-filter">
+            <h6 class="font-semibold">Category</h6>
+            <div class="checkbox-animated mt-0">
+              @for(category of category; track category) {
+                <label class="block" [for]="category.value">
+                  <input class="checkbox_animated" [id]="category.value" type="checkbox">{{ category.title }}
+                </label>
+              }
+            </div>
+          </div>
+          <div class="product-filter">
+            <h6 class="font-semibold">Brand</h6>
+            <div class="checkbox-animated mt-0">
+              @for(brand of brands; track brand) {
+                <label class="block" [for]="brand.value">
+                  <input class="checkbox_animated" [id]="brand.value" type="checkbox">{{ brand.title }}
+                </label>
+              }
+            </div>
+          </div>
+          <div class="product-filter slider-product">
+            <h6 class="font-semibold">Colors</h6>
+            <div class="color-selector">
+              <ul class="flex gap-1">
+                @for(color of colors; track color) {
+                  <li class="{{ color.value }}" [class.active]="filter['color'] == color.value" (click)="handleColor(color.value)"></li>
+                }
+              </ul>
+            </div>
+          </div>
+          <div class="product-filter pb-0 product-range">
+            <h6 class="font-semibold">Price</h6>
+            <ngx-slider [(value)]="value" [(highValue)]="maxValue" [options]="sliderOption"></ngx-slider>
+          </div>
+          <div class="product-filter pt-4">
+            <h6 class="font-semibold">Discount</h6>
+            <div class="checkbox-animated mt-0">
+              @for(discount of discount; track discount) {
+                <div class="form-check">
+                  <input class="checkbox_animated" [id]="discount.value" type="checkbox">
+                  <label class="form-check-label" [for]="discount.value">
+                    <span class="name">{{ discount.title }}</span>
+                    @if(discount.badge) {
+                      <span class="number">({{ discount.badge | number: '2.0' }})</span>
+                    }
+                  </label>
+                </div>
+              }
+            </div>
+          </div>
+          <div class="product-filter">
+            <h6 class="font-semibold">Rating</h6>
+            <div class="checkbox-animated mt-0 product-rate">
+              @for(number of rating; track number; let i = $index){
+                <div class="form-check">
+                  <input class="checkbox_animated" id="rating-{{rating[rating.length-i-1]}}" [value]="rating[rating.length-i-1]" type="checkbox" data-original-title="" title="">
+                  <label class="form-check-label" for="rating-{{rating[rating.length-i-1]}}">
+                    <bar-rating [rate]="rating[rating.length-i-1]" [readonly]="true" [max]="5">
+                      <ng-template ratingActive>
+                        <i class="fa-solid fa-star" [ngStyle]="{ 'color': '#ffb829'}"></i>
+                      </ng-template>
+                      <ng-template ratingInactive>
+                        <i class="fa-regular fa-star" [ngStyle]="{ 'color': '#ffb829'}"></i>
+                      </ng-template>
+                    </bar-rating>
+                    <span class="number">({{rating[rating.length-i-1]}} {{ 'Star' }})</span>
+                  </label>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

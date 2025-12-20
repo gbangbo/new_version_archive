@@ -1,0 +1,23 @@
+@if(dropdownType == 'simple') {
+    <div class="dropdown icon-dropdown" (clickOutside)="clickOutside()">
+        <button class="btn dropdown-toggle" type="button" (click)="toggleDropdown()">
+            <i class="icon-more-alt"></i>
+        </button>
+        <div class="dropdown-menu dropdown-menu-end" [class.show]="dropdownOpen">
+            @for(option of options; track option) {
+                <a class="dropdown-item" href="javascript:void(0)" (click)="selectItem(option.title)">{{ option.title }}</a>
+            }
+        </div>
+    </div>
+} @else if(dropdownType == 'classic') {
+    <div class="dropdown" [ngClass]="dropdownClass" (clickOutside)="clickOutside()">
+        <button class="btn dropdown-toggle" type="button" (click)="toggleDropdown()">{{ selectedItem }}</button>
+        <ul class="dropdown-menu" [class.show]="dropdownOpen">
+            @for(option of options; track option) {
+                <li>
+                    <a class="dropdown-item" href="javascript:void(0)" (click)="selectItem(option.title)">{{ option.title }}</a>
+                </li>
+            }
+        </ul>
+    </div>
+}

@@ -1,0 +1,12 @@
+<app-card [headerTitle]="'Disabled Lists'" [header]="'pb-0'" [cardClass]="'height-equal'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>
+    Use the <code>cdkDropList</code> directive to create a draggable list, but with the sorting disabled. The <code>cdkDropListDisabled</code> property is set to <code>true</code>, which prevents any dragging and sorting actions from occurring within the list. The <code>cdkDropListData</code> binds the data (like <code>disableList</code>) to the list, but since sorting is disabled, the list remains static.</p>
+
+    <div cdkDropList #list="cdkDropList" [cdkDropListData]="disableList" (cdkDropListDropped)="drop($event)" [cdkDropListDisabled]="true">
+      @for(list of disableList; track list){
+        <ul class="list-group" cdkDrag >
+          <li class="list-group-item">{{ list }}</li>
+        </ul>
+      }
+     </div>
+</app-card>

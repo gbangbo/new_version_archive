@@ -1,0 +1,66 @@
+<app-card [headerTitle]="'All Files'" [header]="'pb-0'" [border]="true" [padding]="false">
+  <p class="mb-0 f-light" header5>Recently opened files </p>
+  
+  <div class="common-file-manager">
+    <div class="filemanger">
+      <div class="top-menu">
+        <button>
+          <i class="fa-solid fa-file-circle-plus"></i>
+          Add Files
+        </button>
+        <button>
+          <i class="fa-regular fa-folder-open"></i>
+          Add Folder
+        </button>
+        <button>
+          <i class="fa-solid fa-pen-to-square"></i>
+          Rename
+        </button>
+        <button>
+          <i class="fa-solid fa-trash"></i>
+          Delete
+        </button>
+      </div>
+      <div class="top-folder-path">
+        <div class="path-action-btns">
+        <button id="backwardBtn">
+          <i class="fa-solid fa-arrow-left"></i>
+        </button>
+        <button id="forwardBtn">
+          <i class="fa-solid fa-arrow-right"></i>
+        </button>
+        <button>
+          <i class="fa-solid fa-house"></i>
+        </button>
+        </div>
+        <div class="folder-path-write">
+          <input class="folder-path-input" type="text" value="/root/main/test-folder/" pattern="[A-Za-z0-9]+/[A-Za-z0-9]+">
+          <button class="block-btn-1">
+            <i class="fa-solid fa-arrows-rotate"></i>
+          </button>
+        </div>
+      </div>
+      <div class="file-manager-grid block-wrapper">
+        @for(file of fileManager; track file){
+          <div [ngClass]="{ 'file': file.type == 'file', 'folder': file.type == 'folder' }">
+            @if(file.type == 'file'){
+              <div class="doc-icon-container">
+                <div class="doc-icon">
+                  <p>{{ file.text }}</p>
+                </div>
+              </div>
+            } 
+            @if(file.type == 'folder') {
+              <div class="folder-icon-container">
+                <div class="folder-icon"></div>
+              </div>
+            }
+            <div class="common-space">
+              <p class="folder-name">{{ file.name }}</p>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</app-card>

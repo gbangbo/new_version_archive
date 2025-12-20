@@ -1,0 +1,33 @@
+<nz-table #basicTable
+          [nzLoading]="isloading"
+          [nzSize]="'small'"
+          [nzBordered]="true"
+          [nzData]="dataTypeDocument"
+          class="min-w-[700px]">
+    <thead>
+    <tr>
+        <th class="whitespace-nowrap">Libellé</th>
+        <th class="whitespace-nowrap">Delai au serv.(ans)</th>
+        <th class="whitespace-nowrap">Cons.(ans)</th>
+        <th class="whitespace-nowrap" style="width: 5% !important;">Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let data of basicTable.data">
+        <td class="whitespace-nowrap">{{data.libelle_type_docs}}</td>
+        <td class="whitespace-nowrap">{{data.dure_prearchive}}</td>
+        <td class="whitespace-nowrap">{{data.dure_conservatoire}}</td>
+        <td class="whitespace-nowrap">
+            <button nzTooltipTitle="Modifier {{data.libelle_direction}}"
+                    nzTooltipPlacement="topRight"
+                    nz-tooltip
+                    (click)="actionBtn(data)"
+                    type="button"
+                    class="w-10 h-10 rounded-full inline-flex items-center justify-center p-0 border-0"
+                    style="background-color: #efefef !important; box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;">
+                <i class="icofont icofont-pencil-alt-2" style="font-size: 15px;"></i>
+            </button>
+        </td>
+    </tr>
+    </tbody>
+</nz-table>

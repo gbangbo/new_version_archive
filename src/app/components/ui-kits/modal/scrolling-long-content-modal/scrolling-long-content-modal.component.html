@@ -1,0 +1,39 @@
+<app-card [cardClass]="'height-equal'" [header]="'pb-0'" [headerTitle]="'Scrolling Long Content Modal'" [border]="true" [padding]="false">
+
+    <p class="f-m-light mt-1" header5>You can also create a scrollable modal that allows scrolling the modal body by adding <code> modal-dialog-scrollable </code>to <code>modal-dialog</code>.</p>
+
+    <button class="btn btn-secondary text-white" type="button" (click)="openModal()">Scrolling Modal</button>
+
+    @if(modalOpen){
+        <div class="modal  fade show modal-backdrop">
+            <div class="modal-dialog modal-dialog-scrollable" role="document">
+                <div class="modal-content" (clickOutside)="closeModal()">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Scrolling Long Modal</h5>
+                        <button class="btn-close" type="button" (click)="closeModal()"></button>
+                    </div>
+                    <div class="modal-body custom-scrollbar">
+                        @for(content of modalContent; track content) {
+                            <h6>{{ content.title }}</h6>
+
+                            @for(description of content.content; track description; let i = $index) {
+                                <div class="flex mt-3">
+                                    <div class="shrink-0">
+                                        <app-feather-icon [icon]="'arrow-right-circle'" [class]="'svg-modal'"></app-feather-icon>
+                                    </div>
+                                    <div class="grow ms-2">
+                                        <p [ngClass]="( i === content.content.length - 1) ? 'pb-4' : ''">{{ description.description}}</p>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary text-white" type="button" (click)="closeModal()">Close</button>
+                        <button class="btn btn-primary text-white" type="button">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+}
+</app-card>

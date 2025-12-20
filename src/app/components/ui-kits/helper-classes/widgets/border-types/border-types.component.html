@@ -1,0 +1,9 @@
+<app-card [headerTitle]="borderType === 'inset' ? 'Ridge Border' : (borderType | titlecase) + ' Border'" [border]="true" [header]="'pb-0'" [padding]="false">
+    <p class="f-m-light mt-1" header5>Use<code> b-width-*</code> and <code> border-s-{{ borderType }}</code> to {{ borderType }} border.</p>
+
+    <div class="helper-common-box helper-p-wrapper">
+        <div class="border-common-box border-s-{{ borderType }} b-width-1">b-width-1</div>
+        <div class="border-common-box border-s-{{ borderType }} b-width-2">b-width-2</div>
+        <div class="border-common-box border-s-{{ borderType }} b-width-3">b-width-3</div>
+    </div>
+</app-card>

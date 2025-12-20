@@ -1,0 +1,10 @@
+<app-card [headerTitle]="'Loader Buttons'" [border]="true" [header]="'pb-0'" [padding]="false" [cardBodyClass]="'common-flex loader-buttons'">
+    <p class="f-m-light mt-1" header5>Use <code>border-dashed-*</code> &<code> loader-buttons</code> for loader buttons.</p>
+    
+    @for(button of loaderButton; track button){
+        <button class="btn border-dashed-{{ button.class }}">
+            {{ button.title }}
+            <i class="fa-solid fa-{{ button.icon }}"></i>
+        </button>
+    }
+</app-card>

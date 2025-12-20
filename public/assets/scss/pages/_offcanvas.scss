@@ -1,0 +1,117 @@
+/**=====================
+     3.46. Offcanvas CSS Start
+==========================**/
+.main-offcanvas-wrapper {
+  .card-body {
+    [class*="offcanvas-"] {
+      .offcanvas-body {
+        .form-select,
+        .form-control {
+          font-size: 13px;
+          color: $badge-light-color;
+        }
+
+        .form-label {
+          color: $theme-font-color;
+        }
+      }
+    }
+  }
+}
+
+.common-offcanvas {
+  .offcanvas {
+    position: fixed;
+    background-color: var(--white);
+    z-index: 1045;
+
+    &.offcanvas-start {
+      &.show {
+        box-shadow: 8px 0 8px -2px rgba($dark-gray, 0.1);
+      }
+    }
+
+    .offcanvas-body {
+      svg {
+        color: var(--body-font-color);
+      }
+    }
+  }
+}
+.offcanvas.show:not(.hiding),
+.offcanvas.showing {
+  transform: none;
+}
+.offcanvas {
+  &.offcanvas-start {
+    top: 0;
+    left: 0;
+    width: 400px;
+    border-right: 1px solid rgba($dark-gray, 0.1);
+    transform: translateX(-100%);
+  }
+  &.offcanvas-top {
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 30vh;
+    max-height: 100%;
+    border-bottom: 1px solid rgba($dark-gray, 0.1);
+    transform: translateY(-100%);
+  }
+  &.offcanvas-end {
+    top: 0;
+    right: 0;
+    width: 400px;
+    border-right: 1px solid rgba($dark-gray, 0.1);
+    transform: translateX(100%);
+  }
+  &.offcanvas-bottom {
+    right: 0;
+    left: 0;
+    height: 30vh;
+    max-height: 100%;
+    border-bottom: 1px solid rgba($dark-gray, 0.1);
+    transform: translateY(100%);
+  }
+}
+.offcanvas {
+  position: fixed;
+  bottom: 0;
+  z-index: 1045;
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
+  color: rgba($black, 1);
+  visibility: hidden;
+  background-color: $white;
+  background-clip: padding-box;
+  outline: 0;
+  transition: transform 0.4s ease-in-out;
+  .offcanvas-header {
+    padding: 16px 16px 0 !important;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .offcanvas-body {
+    padding: 16px;
+    overflow-y: auto;
+    p {
+      margin-bottom: 16px;
+    }
+  }
+}
+.offcanvas-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1040;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba($black, 0.5);
+  transition: all 0.3s ease-in-out;
+}
+/**=====================
+    3.46. Offcanvas CSS Ends
+==========================**/

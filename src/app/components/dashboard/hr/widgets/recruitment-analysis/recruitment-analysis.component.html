@@ -1,0 +1,30 @@
+<app-card [headerTitle]="'Recruitment Analysis'" [padding]="false" [cardClass]="'sales-report project-analytics'" [dropdownType]="'simple'" 
+           [options]="cardToggleOption" [cardBodyClass]="'pt-0 analytics-data'">
+    <span class="c-o-light f-14 ps-2 font-normal inline-block" header>(Department Wise)</span>
+
+    <ul class="balance-data"> 
+        @for(details of recruitmentAnalysis.details; track details) {
+            <li>
+                <span class="circle bg-{{ details.class }}"></span>
+                <span class="c-light ms-2">{{ details.name }}</span>
+            </li>
+        }
+      </ul>
+      
+      <div class="project-analytics-wrapper">
+        <div id="project_analytics">
+            <apx-chart
+                [series]="recruitmentAnalysis.series"
+                [chart]="recruitmentAnalysis.chart"
+                [colors]="recruitmentAnalysis.colors"
+                [plotOptions]="recruitmentAnalysis.plotOptions"
+                [xaxis]="recruitmentAnalysis.xaxis"
+                [yaxis]="recruitmentAnalysis.yaxis"
+                [legend]="recruitmentAnalysis.legend"
+                [dataLabels]="recruitmentAnalysis.dataLabels"
+                [fill]="recruitmentAnalysis.fill"
+                [responsive]="recruitmentAnalysis.responsive">
+            </apx-chart>
+        </div>
+      </div>
+</app-card>

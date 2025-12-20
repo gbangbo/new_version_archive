@@ -1,0 +1,5 @@
+<app-card [headerTitle]="'Top Mentors'" [cardBodyClass]="'px-0 pt-0 t-top-mentor'" [dropdownType]="'simple'" [options]="cardToggleOptions" [padding]="false">
+    <div class="overflow-x-auto custom-scrollbar">
+      <app-table [tableConfig]="tableConfig" [hasCheckbox]="true" [pageSize]="4" [paginateDetails]="true"></app-table>
+    </div>
+</app-card>

@@ -1,0 +1,62 @@
+<div class="modal  fade show modal-backdrop">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content" (clickOutside)="closeModal()">
+      <div class="modal-header">
+        <h4 class="modal-title fs-5">Compose Message</h4>
+        <button class="btn-close" type="button" (click)="closeModal()"></button>
+      </div>
+      <div class="modal-body compose-modal">
+        <form>
+          <div class="grid grid-cols-12 gap-1 mb-4">
+            <div class="col-span-2 lg:col-span-12">
+              <label class="col-form-label" for="composeTo">To :</label>
+            </div>
+            <div class="col-span-10 lg:col-span-12">
+              <input class="form-control" id="composeTo" type="email">
+                <div class="add-bcc">
+                    <div class="flex gap-2">
+                      <a class="btn" (click)="handleFields('cc')">Cc </a>
+                      <a class="btn" (click)="handleFields('bcc')">Bcc</a></div>
+                </div>
+            </div>
+        </div>
+          <div class="grid grid-cols-12 gap-2 mb-4" id="collapseCc" [class.show]="fields['cc']">
+            <label class="col-span-2 lg:col-span-12" for="collapseCc">Cc:</label>
+            <div class="col-span-10 lg:col-span-12">
+              <input class="form-control" id="composeCc" type="email" placeholder="elanarob@gmail.com">
+            </div>
+          </div>
+          <div class="grid grid-cols-12 gap-2 mb-4" id="collapseBcc" [class.show]="fields['bcc']">
+            <label class="col-span-2 lg:col-span-12" for="collapseBcc">Bcc:</label>
+            <div class="col-span-10 lg:col-span-12">
+              <input class="form-control" id="composeBcc" type="email" placeholder="stiphen@yahoo.com">
+            </div>
+          </div>
+          <div class="grid grid-cols-12 gap-2 mb-4">
+            <div class="col-span-2 lg:col-span-12">
+              <label class="col-form-label" for="composeSubject">Subject:</label></div>
+            <div class="col-span-10 lg:col-span-12">
+              <input class="form-control" id="composeSubject" type="email">
+            </div>
+        </div>
+      
+          <div class="toolbar-box mb-lg-3 mb-4">
+            <angular-editor></angular-editor>
+          </div>
+          <div class="grid grid-cols-12 mb-4 items-center gap-1">
+            <div class="col-span-2 lg:col-span-12">
+              <label class="col-form-label" for="composeSubject">Attachments :</label>
+            </div>
+            <div class="col-span-10 lg:col-span-12">
+              <input class="form-control" id="formFileMultiple" type="file" multiple="">
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn button-light-primary" type="button">Save As Draft</button>
+        <button class="btn btn-primary text-white" type="button" (click)="closeModal()">Send</button>
+      </div>
+    </div>
+  </div>
+</div>

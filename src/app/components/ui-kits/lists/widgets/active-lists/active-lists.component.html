@@ -1,0 +1,14 @@
+<app-card [headerTitle]="'Active Lists'" [header]="'pb-0'" [border]="true" [padding]="false" [cardClass]="'list-with-icon'">
+    <p class="f-m-light mt-1" header5>
+        Add <code>active </code>to a <code>list-group-item </code>to indicate the current active selection.
+    </p>
+
+    <ul class="list-group">
+        @for(list of activeLists;track list){
+            <li class="list-group-item" [ngClass]="{ 'active bg-warning-light text-white' : list.active }">
+                <i class="icofont icofont-arrow-right"> </i>
+                {{ list.item }}
+            </li>
+        }
+      </ul>
+</app-card>

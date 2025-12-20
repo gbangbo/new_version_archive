@@ -1,0 +1,30 @@
+<app-card [headerTitle]="'Table Group Dividers'" [header]="'pb-0'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>
+    Add a thicker border, darker between table groups—<code>&lt;thead&gt;, &lt;tbody&gt;, and &lt;tfoot&gt;—with </code><code>table-group-divider</code>. Customize the color by changing the border-top-color (which we don’t currently provide a utility class for at this time).</p>
+    <div class="card-block grid grid-cols-12">
+      <div class="col-span-12">
+        <div class="overflow-x-auto custom-scrollbar">
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">First</th>
+                <th scope="col">Last</th>
+                <th scope="col">Handle</th>
+              </tr>
+            </thead>
+            <tbody class="table-group-divider">
+              @for(details of tableGroupDividers;track details){
+                <tr>
+                  <th scope="row">{{ details.id }}</th>
+                  <td>{{ details.first_name }}</td>
+                  <td>{{ details.last_name }}</td>
+                  <td>{{ details.handle }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+       </div>
+      </div>
+    </div>
+</app-card>

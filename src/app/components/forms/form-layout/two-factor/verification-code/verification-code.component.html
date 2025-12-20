@@ -1,0 +1,32 @@
+<div class="card-wrapper border rounded-3 h-full">
+  <div class="authenticate">
+    <h5 class="pb-2">Verification Code</h5>
+    <img class="max-w-full" src="assets/images/forms/authenticate.png" alt="authenticate">
+    <span>We've sent a verification code to</span>
+    <span>+91********70</span>
+    <form class="grid grid-cols-12 gap-4">
+      <div class="col-span-12"> 
+        <h5>Your OTP Code here:</h5>
+      </div>
+      <div class="col-span-12 otp-generate">
+        <input class="form-control code-input" type="text" maxlength="1" pattern="[0-9]" required>
+        <input class="form-control code-input" type="text" maxlength="1" pattern="[0-9]" required>
+        <input class="form-control code-input" type="text" maxlength="1" pattern="[0-9]" required>
+        <input class="form-control code-input" type="text" maxlength="1" pattern="[0-9]" required>
+        <input class="form-control code-input" type="text" maxlength="1" pattern="[0-9]" required>
+        <input class="form-control code-input" type="text" maxlength="1" pattern="[0-9]" required>
+      </div>
+      <div class="col-span-12"> 
+        <button class="btn btn-primary text-white w-52 m-auto" type="submit">Verify</button>
+      </div>
+      <div class="col-span-12"> 
+          <span class="m-0">Not received your code?</span>
+          <span>
+              <a href="javascript:void(0)">Resend </a>
+              OR 
+              <a href="javascript:void(0)">Call  </a>
+          </span>
+      </div>
+    </form>
+  </div>
+</div>

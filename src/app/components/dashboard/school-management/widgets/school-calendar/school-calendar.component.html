@@ -1,0 +1,5 @@
+<app-card [headerTitle]="'School Calendar'" [padding]="false" [cardClass]="'default-inline-calender'" [header]="'pb-1'" [cardBodyClass]="'pt-0 school-calender'" [dropdownType]="'simple'" [options]="cardToggleOption | slice:0:3">
+    <div class="input-group main-inline-calender flex pb-4">
+        <owl-date-time-inline [pickerType]="'calendar'" [(ngModel)]="selectedMoment"></owl-date-time-inline>
+    </div>
+</app-card>

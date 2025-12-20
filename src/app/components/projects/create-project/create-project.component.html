@@ -1,0 +1,118 @@
+<div class="container-fluid">
+  <div class="grid grid-cols-12 card-gap">
+    <div class="col-span-12">
+      <div class="card create-project-form custom-input">
+        <div class="card-body">
+          <div class="grid grid-cols-12">
+            <div class="col-span-12">
+              <form class="grid grid-cols-12 gap-4 needs-validation" novalidate="" [formGroup]="projectForm" (ngSubmit)="submitForm()">
+                <div class="col-span-6 md:col-span-12">
+                  <label class="form-label" for="projectName">Project Name</label>
+                  <input class="form-control" id="projectName" type="text" placeholder="Project Name" formControlName="projectName" [ngClass]="{ 'is-invalid' : projectForm.controls['projectName'].touched && projectForm.controls['projectName'].errors?.['required'] , 'is-valid' : projectForm.controls['projectName'].valid}">
+                  @if(projectForm.controls['projectName'].valid) {
+                    <div class="valid-feedback">Looks good!</div>
+                  } @else if(projectForm.controls['projectName'].touched && projectForm.controls['projectName'].errors?.['required']) {
+                    <div class="invalid-feedback">Project name is required</div>
+                  }
+                </div>
+                <div class="col-span-6 md:col-span-12">
+                  <label class="form-label" for="clientName">Client Name</label>
+                  <input class="form-control" id="clientName" type="text" placeholder="Client Name" formControlName="clientName" [ngClass]="{ 'is-invalid' : projectForm.controls['clientName'].touched && projectForm.controls['clientName'].errors?.['required'] , 'is-valid' : projectForm.controls['clientName'].valid}">
+                  @if(projectForm.controls['clientName'].touched && projectForm.controls['clientName'].errors?.['required']) {
+                    <div class="invalid-feedback">Client name is required</div>
+                  }
+                </div>
+                <div class="col-span-4 lg:col-span-6 md:col-span-12">
+                  <label class="form-label" for="projectCost">Cost</label>
+                  <input class="form-control" id="projectCost" type="number" placeholder="Project cost" formControlName="cost" [ngClass]="{ 'is-invalid' : projectForm.controls['cost'].touched && projectForm.controls['cost'].errors?.['required'] , 'is-valid' : projectForm.controls['cost'].valid}">
+                  @if(projectForm.controls['cost'].touched && projectForm.controls['cost'].errors?.['required']) {
+                    <div class="invalid-feedback">Please enter a project cost</div>
+                  }
+                </div>
+                <div class="col-span-4 lg:col-span-6 md:col-span-12">
+                  <label class="form-label" for="projectType">Project Type</label>
+                  <select2 [data]="projectType" formControlName="projectType" placeholder="Select projectType" [ngClass]="{ 'is-invalid' : projectForm.controls['projectType'].touched && projectForm.controls['projectType'].errors?.['required'] , 'is-valid' : projectForm.controls['projectType'].valid}"></select2>
+                  @if(projectForm.controls['projectType'].touched && projectForm.controls['projectType'].errors?.['required']) {
+                    <div class="invalid-feedback">Please select a valid project type</div>
+                  }
+                </div>
+                <div class="col-span-4 lg:col-span-6 md:col-span-12">
+                  <label class="form-label" for="projectCategory">Category</label>
+                  <select2 [data]="projectCategory" formControlName="category" placeholder="Select category" [ngClass]="{ 'is-invalid' : projectForm.controls['category'].touched && projectForm.controls['category'].errors?.['required'] , 'is-valid' : projectForm.controls['category'].valid}"> </select2>
+                  @if(projectForm.controls['category'].touched && projectForm.controls['category'].errors?.['required']) {
+                    <div class="invalid-feedback">Please select a valid category</div>
+                  }
+                </div>
+                <div class="col-span-4 xxl:col-span-6 md:col-span-12">
+                  <label class="form-label" for="projectPriority">Priority</label>
+                  <select2 [data]="projectPriority" formControlName="priority" placeholder="Select priority" [ngClass]="{ 'is-invalid' : projectForm.controls['priority'].touched && projectForm.controls['priority'].errors?.['required'] , 'is-valid' : projectForm.controls['priority'].valid}"></select2>
+                  @if(projectForm.controls['priority'].touched && projectForm.controls['priority'].errors?.['required']) {
+                    <div class="invalid-feedback">Please select a valid priority</div>
+                  }
+                </div>
+                <div class="col-span-4 xxl:col-span-6 md:col-span-12">
+                  <label class="form-label" for="selectTeamLeader">Select Team Leader</label>
+                  <select2 [data]="details" formControlName="teamLeader" placeholder="Select team leader" [ngClass]="{ 'is-invalid' : projectForm.controls['teamLeader'].touched && projectForm.controls['teamLeader'].errors?.['required'] , 'is-valid' : projectForm.controls['teamLeader'].valid}"></select2>
+                  @if(projectForm.controls['teamLeader'].touched && projectForm.controls['teamLeader'].errors?.['required']) {
+                    <div class="invalid-feedback">Please select your team leader</div>
+                  }
+                </div>
+                <div class="col-span-4 xxl:col-span-6 md:col-span-12">
+                  <div class="members-input">
+                    <label class="form-label" for="selectMember">Select Members</label>
+                    <select2 [data]="details" formControlName="teamMember" multiple="true"
+                      placeholder="Select users" [ngClass]="{ 'is-invalid' : projectForm.controls['teamMember'].touched && projectForm.controls['teamMember'].errors?.['required'] , 'is-valid' : projectForm.controls['teamMember'].valid}"></select2>
+                    @if(projectForm.controls['teamMember'].touched && projectForm.controls['teamMember'].errors?.['required']) {
+                      <div class="invalid-feedback">Please select your team members</div>
+                    }
+                  </div>
+                </div>
+                <div class="col-span-4 xxl:col-span-6 lg:col-span-12">
+                  <label class="form-label" for="projectSize">Size</label>
+                  <select2 [data]="projectSize" formControlName="size" placeholder="Select size" [ngClass]="{ 'is-invalid' : projectForm.controls['size'].touched && projectForm.controls['size'].errors?.['required'] , 'is-valid' : projectForm.controls['size'].valid}"> </select2>
+                  @if(projectForm.controls['size'].touched && projectForm.controls['size'].errors?.['required']) {
+                    <div class="invalid-feedback">Please select your project size</div>
+                  }
+                </div>
+                <div class="col-span-4 xxl:col-span-6 md:col-span-12">
+                  <label class="form-label">Start Date</label>
+                  <input class="form-control" type="date" formControlName="startDate" [ngClass]="{ 'is-invalid' : projectForm.controls['startDate'].touched && projectForm.controls['startDate'].errors?.['required'] , 'is-valid' : projectForm.controls['startDate'].valid}">
+                  @if(projectForm.controls['startDate'].touched && projectForm.controls['startDate'].errors?.['required']) {
+                    <div class="invalid-feedback">Please select your start date</div>
+                  }
+                </div>
+                <div class="col-span-4 xxl:col-span-6 md:col-span-12">
+                  <label class="form-label">End Date</label>
+                  <input class="form-control" type="date" formControlName="endDate" [ngClass]="{ 'is-invalid' : projectForm.controls['endDate'].touched && projectForm.controls['endDate'].errors?.['required'] , 'is-valid' : projectForm.controls['endDate'].valid}">
+                  @if(projectForm.controls['endDate'].touched && projectForm.controls['endDate'].errors?.['required']) {
+                    <div class="invalid-feedback">Please select your end date</div>
+                  }
+                </div>
+                <div class="col-span-12">
+                  <label class="form-label" for="validationTextarea">Details</label>
+                  <textarea class="form-control" id="validationTextarea" placeholder="Enter Project details" formControlName="details" rows="4" [ngClass]="{ 'is-invalid' : projectForm.controls['details'].touched && projectForm.controls['details'].errors?.['required'] , 'is-valid' : projectForm.controls['details'].valid}"></textarea>
+                  @if(projectForm.controls['details'].touched && projectForm.controls['details'].errors?.['required']) {
+                    <div class="invalid-feedback">Please select your project details.</div>
+                  }
+                </div>
+                <div class="col-span-12">
+                  <label class="form-label" for="formFileMultiple">Upload Documents</label>
+                  <input class="form-control" id="formFileMultiple" type="file" multiple="" formControlName="document" [ngClass]="{ 'is-invalid' : projectForm.controls['document'].touched && projectForm.controls['document'].errors?.['required'] , 'is-valid' : projectForm.controls['document'].valid}">
+                  @if(projectForm.controls['document'].touched && projectForm.controls['document'].errors?.['required']) {
+                    <div class="invalid-feedback">Please select your file.</div>
+                  }
+                </div>
+                <div class="col-span-12">
+                  <div class="common-flex justify-end">
+                    <button class="btn btn-primary text-white" type="submit">Add </button>
+                    <button class="btn btn-secondary text-white">Cancel</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

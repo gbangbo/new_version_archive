@@ -1,0 +1,41 @@
+<div class="grid grid-cols-12 card-gap">
+  @for(charts of analyticsCharts; track charts) {
+    <div class="col-span-12 xl:col-span-6 md:col-span-12 box-col-6">
+      <app-card [cardClass]="'widget-hover'" [padding]="false" [cardBodyClass]="'radial-progress-card'">
+        <div> 
+          <h6 class="mb-0">{{ charts.title }}</h6>
+          <div class="sale-details mb-1"> 
+            <h5 class="font-{{ charts.color }} mb-0">{{ charts.value }} ETH</h5>
+            <span class="f-12 f-light font-medium flex">
+                <app-feather-icon [icon]="charts.profit_type == 'profit' ? 'trending-up' : 'trending-down'" [class]="'me-1 ' + (charts.profit_type == 'profit' ? 'font-success' : 'font-danger')"></app-feather-icon>
+                {{charts.profit_type == 'profit' ? '+' : '-'}}{{ charts.profit }}%
+            </span>
+          </div>
+          <p class="f-light"> $ {{charts.price }} USD</p>
+        </div>
+        <div class="artist-chart-wrap"> 
+          <div id="artist-chart">
+            <apx-chart 
+                [series]="charts.chart_details.series"
+                [chart]="charts.chart_details.chart"
+                [grid]="charts.chart_details.grid"
+                [colors]="charts.chart_details.colors"
+                [stroke]="charts.chart_details.stroke"
+                [labels]="charts.chart_details.labels"
+                [markers]="charts.chart_details.markers"
+                [xaxis]="charts.chart_details.xaxis"
+                [yaxis]="charts.chart_details.yaxis"
+                [legend]="charts.chart_details.legend"
+                [tooltip]="charts.chart_details.tooltip"
+                [responsive]="charts.chart_details.responsive">
+            </apx-chart>
+          </div>
+        </div>
+      </app-card>
+    </div>
+  }
+
+    <div class="col-span-12 xl:col-span-6 md:col-span-12 box-col-6">
+      <app-upgrade-plan></app-upgrade-plan>
+    </div>
+</div>

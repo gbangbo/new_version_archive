@@ -1,0 +1,14 @@
+<app-card [cardClass]="'height-equal'" [header]="'pb-0'" [headerTitle]="'Horizontal Gutters'" [border]="true" [padding]="false" [cardBodyClass]="'h-gutter'">
+    <p class="mt-1 f-m-light" header5><code>gx-* </code> classes can be used to control the horizontal gutter widths. The <code> container </code> or <code> container-fluid </code> parent may need to be adjusted if larger gutters are used too to avoid unwanted overflow, using a matching padding utility.</p>
+
+    <div class="container px-4 text-center">
+      <div class="grid grid-cols-12 gap-x-12 md:gap-4">
+        <div class="col-span-6 md:col-span-12 flex-behaviors">
+          <div class="p-3"> <span>Custom column padding</span></div>
+        </div>
+        <div class="col-span-6 md:col-span-12 flex-behaviors">
+          <div class="p-3"> <span>Custom column padding</span></div>
+        </div>
+      </div>
+    </div>
+</app-card>

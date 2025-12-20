@@ -1,0 +1,48 @@
+<form class="form theme-form">
+    <div class="grid grid-cols-12 card-gap select-date custom-input">
+        <div class="col-span-6 xl:col-span-12 xl-100">
+            <div class="mb-4">
+                <label class="form-label" for="exampleFormControlInput7">
+                    Location:
+                    <span class="font-danger">*</span>
+                </label>
+                <input class="form-control" id="exampleFormControlInput7" type="text" placeholder="Enter Location">
+            </div>
+        </div>
+        <div class="col-span-6 xl:col-span-12 xl-100 xl-mt-job">
+            <label class="col-form-label text-end pt-0">
+                Period:
+                <span class="font-danger">*</span>
+            </label>
+            <div class="grid grid-cols-12 card-gap">
+                <div class="col-span-6 sm:col-span-12">
+                    <div class="input-group">
+                        <input class="datepicker-here form-control digits" type="text" data-language="en" placeholder="Start Date">
+                    </div>
+                </div>
+                <div class="col-span-6 sm:col-span-12 xs-mt-period">
+                    <div class="input-group">
+                        <input class="datepicker-here form-control digits" type="text" data-language="en" placeholder="End Date">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-span-6 xl:col-span-12 xl-100">
+            <div class="mb-4">
+                <div class="col-form-label pt-0">Position:
+                    <span class="font-danger">*</span>
+                </div>
+                <select2 class="col-sm-12 selectpicker" [data]="experience" placeholder="Choose a option" data-live-search="true"></select2>
+            </div>
+        </div>
+        <div class="col-span-6 xl:col-span-12 xl-100">
+            <div class="mb-4">
+                <label class="form-label" for="exampleFormControlInput8">
+                    Company Name:
+                    <span class="font-danger">*</span>
+                </label>
+                <input class="form-control" id="exampleFormControlInput8" type="email" placeholder="Enter Company Name">
+            </div>
+        </div>
+    </div>
+</form>

@@ -1,0 +1,32 @@
+<app-card [headerTitle]="'Striped Row with Inverse Table'" [header]="'pb-0'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>
+    Use <code>table-striped</code> to add zebra-striping to any table row within the <code></code>. This styling doesn't work in IE8 and below as :nth-child CSS selector isn't supported.</p>
+    <div class="card- grid grid-cols-12">
+      <div class="col-span-12">
+        <div class="overflow-x-auto custom-scrollbar">
+          <table class="table table-inverse table-striped">
+            <thead>
+              <tr>
+                <th scope="col">Id</th>
+                <th scope="col">Dessert</th>
+                <th scope="col">Calories</th>
+                <th scope="col">Fat</th>
+                <th scope="col">Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for(details of stripedRow;track details){
+                <tr>
+                  <th scope="row">{{ details.id }}</th>
+                  <td>{{ details.dessert }}</td>
+                  <td>{{ details.calories }}</td>
+                  <td>{{ details.price }}</td>
+                  <td>{{ details.price }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+</app-card>

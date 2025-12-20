@@ -1,0 +1,46 @@
+<div class="container dashboard-11">
+    <div class="grid grid-cols-12 card-gap">
+        <div class="col-span-8 xxl:col-span-12 box-col-12">
+            <div class="grid grid-cols-12 card-gap">
+
+                @for(details of employeeDetails; track details) {
+                <div class="col-span-3 xl:col-span-6 sm:col-span-12 col-hr-6">
+                    <app-employee-details [details]="details"></app-employee-details>
+                </div>
+                }
+                
+                <div class="col-span-6 md:col-span-12 xl-60 box-col-6">
+                    <app-project-summary-card></app-project-summary-card>
+                </div>
+                <div class="col-span-6 md:col-span-12 xl-40 box-col-6">
+                    <app-application-overview></app-application-overview>
+                </div>
+                <div class="col-span-12 xxl:col-span-6 md:col-span-12 box-col-6">
+                    <app-employee-list></app-employee-list>
+                </div>
+                <div class="col-span-8 xxl:col-span-6 md:col-span-12 box-col-6">
+                    <app-attendance-overview></app-attendance-overview>
+                </div>
+                <div class="col-span-4 xxl:col-span-5 sm:col-span-12 box-col-5">
+                    <app-today-birthday></app-today-birthday>
+                </div>
+                <div class="col-span-12 xxl:col-span-7 sm:col-span-12 box-col-7">
+                    <app-recruitment-analysis></app-recruitment-analysis>
+                </div>
+            </div>
+        </div>
+        <div class="col-span-4 xxl:col-span-12 box-col-12">
+            <div class="grid grid-cols-12 card-gap">
+                <div class="col-span-12">
+                    <app-today-schedule></app-today-schedule>
+                </div>
+                <div class="col-span-12 xxl:col-span-6 md:col-span-12 box-col-6">
+                    <app-interview-schedule></app-interview-schedule>
+                </div>
+                <div class="col-span-12 xxl:col-span-6 md:col-span-12 box-col-6">
+                    <app-leave-request></app-leave-request>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

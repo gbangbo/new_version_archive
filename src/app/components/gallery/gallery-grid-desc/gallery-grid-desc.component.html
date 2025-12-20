@@ -1,0 +1,22 @@
+<div class="container">
+    <div class="grid grid-cols-12">
+        <div class="col-span-12">
+            <app-card [headerTitle]="'IMAGE GALLERY WITH DESCRIPTION'" [header]="'pb-0'" [cardBodyClass]="' my-gallery gallery-with-description !mb-[30px]'"
+                [border]="true" [padding]="false" itemscope="" gallerize>
+                <div class="grid grid-cols-12 gap-4">
+                    @for(img of galleryGridDesc; track img){
+                        <figure class="col-span-3 xl:col-span-6 sm:col-span-12">
+                            <a href="javascript:void(0)" itemprop="contentUrl">
+                                <img [src]="img.src_url"/>
+                                <div class="caption">
+                                    <h4>{{ img.title }}</h4>
+                                    <p>{{ img.text }}</p>
+                                </div>
+                            </a>
+                        </figure>
+                    }
+                </div>
+            </app-card>
+        </div>
+    </div>
+</div>

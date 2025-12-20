@@ -1,0 +1,11 @@
+<div class="grid-cols-12 gap-4 items-end !flex xl:!grid">
+  @for(item of filterCandidate;track item){
+    <div class="flex-1 xl:col-span-4 md:col-span-6 sm:col-span-12">
+      <label class="form-label">{{ item.title }}</label>
+      <select2 [data]="item.item" placeholder="select value"></select2>
+      </div>
+    }
+    <div class="flex-1 common-f-start !mt-0">
+      <a class="btn btn-primary font-medium text-white hover:text-white" href="javascript:void(0)">Filter</a>
+    </div>
+  </div>

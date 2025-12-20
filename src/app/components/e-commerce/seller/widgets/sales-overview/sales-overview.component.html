@@ -1,0 +1,43 @@
+<app-card [cardClass]="'sales-report'" [headerTitle]="'Sales Overview'" [padding]="false"
+  [dropdownType]="'simple'" [options]="cardToggleOption" [cardBodyClass]="'pt-0'">
+
+  <div class="social-tabs tabs">
+    <ul class="tab-links custom-scrollbar flex">
+      @for(details of salesOverviewCharts; track details) {
+        <li>
+          <a class="tab-link active social-box bg-7-{{ details.color }}" href="javascript:void(0)" [class.active]="activeTab == details.value" (click)="handleTab(details.value)">
+            <div class="frame-image">
+              <div class="outline-20-{{ details.color }}">
+                <div class="bg-20-{{ details.color }}">
+                  <app-svg-icon [icon]="details.icon"></app-svg-icon>
+                </div>
+              </div>
+            </div>
+            <span>{{ details.title }}</span>
+          </a>
+        </li>
+      }
+    </ul>
+    <div class="mt-2">
+      <div>
+        <div>
+          <apx-chart
+            [series]="activeTabChart.chart_details.series"
+            [fill]="activeTabChart.chart_details.fill"
+            [chart]="activeTabChart.chart_details.chart"
+            [colors]="activeTabChart.chart_details.colors"
+            [dataLabels]="activeTabChart.chart_details.dataLabels"
+            [style]="activeTabChart.chart_details.style"
+            [stroke]="activeTabChart.chart_details.stroke"
+            [tooltip]="activeTabChart.chart_details.tooltip"
+            [markers]="activeTabChart.chart_details.markers"
+            [xaxis]="activeTabChart.chart_details.xaxis"
+            [yaxis]="activeTabChart.chart_details.yaxis"
+            [legend]="activeTabChart.chart_details.legend"
+            [responsive]="activeTabChart.chart_details.responsive">
+          </apx-chart>
+        </div>
+      </div>
+    </div>
+  </div>
+</app-card>

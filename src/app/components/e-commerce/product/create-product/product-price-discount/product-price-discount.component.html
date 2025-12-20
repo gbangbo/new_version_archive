@@ -1,0 +1,96 @@
+<div class="tab-content custom-input">
+  <form class="price-wrapper common-form grid grid-cols-12 gap-4 !static">
+    <div class="col-span-6 sm:col-span-12">
+      <label class="form-label" for="initialCost">Initial Price</label>
+      <input class="form-control" id="initialCost" type="number" placeholder="Price">
+    </div>
+    <div class="col-span-6 sm:col-span-12">
+      <label class="form-label" for="sellingPrice">Selling Price </label>
+      <input class="form-control" id="sellingPrice" type="number" placeholder="Price">
+    </div>
+    <div class="col-span-12">
+      <label class="form-label">Product Discount Options
+        <i class="icon-help-alt ms-1" data-bs-toggle="tooltip" data-bs-placement="top"
+          data-bs-title="Choose the kind of discount that will be used on that particular item."></i>
+        </label>
+      <ul class="tab-links discount-options">
+        @for(tab of productPriceTabs; track tab) {
+          <li>
+            <a class="tab-link" [class.active]="activeTab == tab.value" (click)="handleTab(tab.value)">
+              <span>{{ tab.title }}</span>
+            </a>
+          </li>
+        }
+      </ul>
+      <div class="mt-2">
+        @if(activeTab == 'fixed_price_discount') {
+          <div class="meta-body">
+            <div class="grid grid-cols-12 gap-4">
+              <div class="col-span-12">
+                <label class="form-label" for="validationDiscountPrice">Discount Price</label>
+                <input class="form-control" id="validationDiscountPrice" type="number" placeholder="Discount">
+              </div>
+            </div>
+          </div>
+        } @else if (activeTab == 'bogo') {
+          <div class="meta-body">
+            <div class="grid grid-cols-12 gap-4">
+              <div class="col-span-12">
+                <label class="form-label flex">Product Name
+                  <span class="c-o-light">&nbsp;(Free) </span>
+                </label>
+                <select2 class="selectpicker search-picker" [data]="bogoProducts" placeholder="Select product"> </select2>
+              </div>
+              <div class="col-span-6 sm:col-span-12">
+                <label class="form-label" for="validationMinQuantity">Minimum Quantity</label>
+                <input class="form-control" id="validationMinQuantity" type="number" placeholder="Quantity">
+              </div>
+              <div class="col-span-6 sm:col-span-12">
+                <label class="form-label" for="validationMaxQuantity">Maximum Quantity</label>
+                <input class="form-control" id="validationMaxQuantity" type="number" placeholder="Quantity">
+              </div>
+            </div>
+          </div>
+        } @else if (activeTab == 'percentage_discount') {
+          <div class="meta-body">
+            <div class="grid grid-cols-12 gap-4">
+              <div class="col-span-12">
+                <label class="form-label" for="validationDiscount">Discount Percentage</label>
+                <input class="form-control" id="validationDiscount" type="number" placeholder="Discount">
+              </div>
+            </div>
+          </div>
+        } @else if (activeTab == 'volume_discount') {
+          <div class="meta-body">
+            <div class="grid grid-cols-12 gap-4">
+              <div class="col-span-12">
+                <label class="form-label" for="validationQuantity">Quantity</label>
+                <input class="form-control" id="validationQuantity" type="number" placeholder="Quantity">
+              </div>
+              <div class="col-span-12">
+                <div class="grid grid-cols-12 gap-4">
+                  <div class="col-span-6 sm:col-span-12">
+                    <label class="form-label" for="projectType">Discount Type</label>
+                    <select2 class="selectpicker search-picker" [data]="priceDiscount" placeholder="Select product"> </select2>
+                  </div>
+                  <div class="col-span-6 sm:col-span-12">
+                    <label class="form-label" for="projectType">Value</label>
+                    <input class="form-control" type="number" placeholder="Discount">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+    <div class="col-span-12 product-buttons">
+      <button class="btn" type="button" (click)="previous()">
+        <app-svg-icon [icon]="'back-arrow'"></app-svg-icon>Previous
+      </button>
+      <button class="btn" type="button" (click)="next()">Next
+        <app-svg-icon [icon]="'front-arrow'"></app-svg-icon>
+      </button>
+    </div>
+  </form>
+</div>

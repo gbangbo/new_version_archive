@@ -1,0 +1,30 @@
+<app-card [headerTitle]="'Justify Contents'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'dropdown-basic m-0'">
+    <p class="f-m-light mt-1" header5>Use <code>text-start / text-center / text-end</code> to change dropdown texts.</p>
+
+    <div class="common-flex">
+        <div class="btn-group" (clickOutside)="clickOutside(1)">
+            <button class="btn btn-primary border dropdown-toggle" type="button" (click)="toggleDropdown(1)">Text-left</button>
+            <ul class="dropdown-menu dropdown-block text-start" [class.show]="dropdownOpen[1]">
+              <li><a class="dropdown-item" href="javascript:void(0)">Hello..</a></li>
+              <li><a class="dropdown-item" href="javascript:void(0)">How are you?</a></li>
+              <li><a class="dropdown-item" href="javascript:void(0)">What are you doing?</a></li>
+            </ul>
+        </div>
+        <div class="btn-group" (clickOutside)="clickOutside(2)">
+            <button class="btn btn-info border dropdown-toggle text-white" type="button" (click)="toggleDropdown(2)">Text-center</button>
+            <ul class="dropdown-menu dropdown-block text-center" [class.show]="dropdownOpen[2]">
+              <li><a class="dropdown-item" href="javascript:void(0)">Chocolate</a></li>
+              <li><a class="dropdown-item" href="javascript:void(0)">Ice-cream</a></li>
+              <li><a class="dropdown-item" href="javascript:void(0)">Trophy</a></li>
+            </ul>
+        </div>
+        <div class="btn-group" (clickOutside)="clickOutside(3)">
+            <button class="btn btn-primary border dropdown-toggle" type="button" (click)="toggleDropdown(3)">Text-right</button>
+            <ul class="dropdown-menu dropdown-block text-end" [class.show]="dropdownOpen[3]">
+              <li><a class="dropdown-item" href="javascript:void(0)">I'm fine.</a></li>
+              <li><a class="dropdown-item" href="javascript:void(0)">ohh wow!!</a></li>
+              <li><a class="dropdown-item" href="javascript:void(0)">That's the good news! </a></li>
+            </ul>
+        </div>
+    </div>
+</app-card>

@@ -1,0 +1,25 @@
+<app-card [cardClass]="'height-equal'" [header]="'pb-0'" [headerTitle]="'With Input Type'" [border]="true" [padding]="false">
+    <p class="f-m-light mt-1" header5>Use checkbox using dropdown<code>(type='checkbox'/'radio')</code>.</p>
+
+    <div class="common-flex">
+        <div class="btn-group" (clickOutside)="clickOutside()">
+            <button class="btn btn-warning" type="button" (click)="toggleDropdown()">Inputs</button>
+            <ul class="dropdown-menu dropdown-block dropdown-wrapper dark-input-type" [class.show]="dropdownOpen">
+                <li> 
+                    <div class="input-group rounded-0 border-0 shadow-none flex gap-2 flex-nowrap">
+                        <div class="input-group-text">
+                            <input class="form-check-input mt-0 checkbox-primary" type="checkbox" value="" aria-label="Checkbox for following text input">
+                        </div>
+                        <span class="f-14">Default checkbox</span>
+                    </div>
+                    <div class="input-group rounded-0 border-0 shadow-none flex gap-2 flex-nowrap">
+                        <div class="input-group-text">
+                            <input class="form-check-input mt-0 checkbox-primary" type="radio" value="" aria-label="Radio button for following text input">
+                        </div>
+                        <span class="f-14">Default radio</span>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</app-card>

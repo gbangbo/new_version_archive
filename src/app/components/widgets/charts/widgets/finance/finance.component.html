@@ -1,0 +1,19 @@
+<app-card [headerTitle]="'Finance'" [border]="true" [padding]="false">
+    <div class="chart-container column-container">
+        <div id="columnchart">
+            <apx-chart
+                [chart]="financeChart.chart"
+                [dataLabels]="financeChart.dataLabels"
+                [stroke]="financeChart.stroke"
+                [series]="financeChart.series"
+                [title]="financeChart.title"
+                [subtitle]="financeChart.subtitle"
+                [fill]="financeChart.fill"
+                [xaxis]="financeChart.xaxis"
+                [yaxis]="financeChart.yaxis"
+                [legend]="financeChart.legend"
+                [responsive]="financeChart.responsive">
+            </apx-chart>
+        </div>
+    </div>
+</app-card>

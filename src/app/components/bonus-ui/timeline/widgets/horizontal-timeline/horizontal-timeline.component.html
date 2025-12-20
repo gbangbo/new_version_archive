@@ -1,0 +1,29 @@
+<app-card [headerTitle]="'Horizontal Timeline'" [header]="'pb-0'" [border]="true" [padding]="false">
+    <p class="f-m-light mt-1" header5> Use<code> event-list </code>and <code>events</code> classes to create a new horizontal timeline.</p>
+    @for(details of horizontalTimeline; track details){
+      <div class="list-inline events timeline-list grid grid-cols-12 card-gap" [ngClass]="details.ul_class">
+        @for(timeline of details.details; track timeline){
+          <div [class]="timeline.div_class">
+            <div>
+              @if(details.vertical_line == 'top'){
+                <div class="vertical-line"></div>
+              }
+              <div class="list-inline-item event-list">
+                <div class="px-4">
+                  <div class="event-date bg-light-{{ timeline.color_class }} txt-{{ timeline.color_class }}">{{ timeline.date }}</div>
+                  <h5>{{ timeline.title }} </h5>
+                  <p class="f-light text-truncate">{{ timeline.description }}</p>
+                  <div [class]="timeline.class">
+                    <a class="btn btn-primary text-white px-3" href="javascript:void(0)">Read more</a>
+                  </div>
+                </div>
+              </div>
+              @if(details.vertical_line == 'bottom'){
+                <div class="vertical-line"></div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+  }
+</app-card>

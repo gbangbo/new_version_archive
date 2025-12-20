@@ -1,0 +1,12 @@
+<app-card [headerTitle]="'Ratios'" [header]="'pb-0'" [border]="true" [padding]="false">
+
+    <p class="f-m-light mt-1" header5>Use shape to avatar using <code>ratio</code> and <code> img-* (50/70/80/90/100)</code> class.</p>
+
+    <div class="avatars avatar-showcase">
+        @for(avatar of ratioAvatar; track avatar) {
+            <div class="avatar ratio">
+                <img [class]="avatar.class" [src]="avatar.profile" alt="avatar">
+            </div>
+        }
+    </div>
+</app-card>

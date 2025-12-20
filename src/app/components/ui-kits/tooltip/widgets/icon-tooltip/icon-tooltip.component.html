@@ -1,0 +1,26 @@
+<app-card [headerTitle]="'Icons Tooltip'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'svg-tooltip'">
+    <p class="f-m-light mt-1" header5> Use <code>btn-outline-* </code>class to alter the outline's color, and you can position the tooltip in any swing.</p>
+
+    <div class="common-flex">
+        <div class="btn-outline-primary group relative">
+            <i class="icofont icofont-envelope"></i>
+            
+            <app-tooltip [title]="'Notification'"></app-tooltip>
+        </div>
+        <div class="btn-outline-danger group relative">
+            <i class="icofont icofont-ui-text-loading"></i>
+            
+            <app-tooltip [title]="'Message'"></app-tooltip>
+        </div>
+        <div class="btn-outline-dark group relative">
+            <i class="icofont icofont-location-arrow"></i>
+            
+            <app-tooltip [title]="'Send'"></app-tooltip>
+        </div>
+        <div class="btn-outline-danger group relative">
+            <i class="icofont icofont-heart-alt"></i>
+            
+            <app-tooltip [title]="'Like'"></app-tooltip>
+        </div>
+    </div>
+</app-card>

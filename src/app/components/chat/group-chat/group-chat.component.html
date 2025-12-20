@@ -1,0 +1,53 @@
+<div class="container">
+  <div class="grid grid-cols-12 chat-page">
+    <div class="col-span-3 xxl:col-span-4 xl:col-span-5 md:col-span-12 box-col-5 xl-40">
+      <div class="left-sidebar-wrapper card">
+        <app-sidebar (currentUserChat)="handleChat($event)" [recentChats]="groupChats" [groupChat]="true" [activeId]="1"></app-sidebar>
+      </div>
+    </div>
+    <div class="col-span-9 xxl:col-span-8 xl:col-span-7 md:col-span-12 box-col-7 xl-60">
+      <div class="card right-sidebar-chat">
+        <app-chat-details-header [currentUserChat]="currentUserChat" [groupChat]="true"></app-chat-details-header>
+
+        <div class="right-sidebar-Chats">
+          <div class="msger">
+            <div class="msger-chat" #chat>
+              @for(chats of currentUserChat.chats; track chats) {
+                <div class="msg" [ngClass]="chats.is_reply ? 'right-msg' : 'left-msg'">
+                  <div class="msg-img" [ngStyle]="{ 'background-image': 'url(' + (chats.is_reply ? userDetails.user_profile : getUserProfile(currentUserChat.group_members, chats.user_name) ) + ')' }"></div>
+                  <div class="msg-bubble">
+                    <div class="msg-info">
+                      <div class="msg-info-name">{{ chats.is_reply ? userDetails.name : currentUserChat.group_name }}</div>
+                      <div class="msg-info-time">{{ chats.time }}</div>
+                    </div>
+                    <div class="msg-text">{{ chats.chat }}</div>
+                  </div>
+                </div>
+              }
+            </div>
+            <form class="msger-inputarea dropdown" [formGroup]="chatForm">
+              <div class="dropdown-form dropdown-toggle" (clickOutside)="clickOutside()">
+                <i class="icon-plus" (click)="toggleDropdown()"></i>
+                <div class="chat-icon dropdown-menu dropdown-menu-start" [class.show]="dropdownOpen">
+                  <div class="dropdown-item mb-4" (click)="toggleDropdown()">
+                    <app-svg-icon [icon]="'camera'"></app-svg-icon>
+                  </div>
+                  <div class="dropdown-item" (click)="toggleDropdown()">
+                    <app-svg-icon [icon]="'attchment'"></app-svg-icon>
+                  </div>
+                </div>
+              </div>
+              <input class="msger-input two uk-textarea" type="text" placeholder="Type Message here.." formControlName="inputMessage" (keypress)="handleKeyPress($event)">
+              <div class="open-emoji">
+                <div class="second-btn uk-button"></div>
+              </div>
+              <button class="msger-send-btn" type="submit" (click)="handleMessage()">
+                <i class="fa fa-location-arrow"></i>
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

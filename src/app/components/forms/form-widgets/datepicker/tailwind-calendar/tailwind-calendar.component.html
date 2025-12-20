@@ -1,0 +1,31 @@
+<app-card [headerTitle]="'Tailwind Calendar'" [header]="'pb-0'" [border]="true" [padding]="false" [cardClass]="'bootstrap-calendar'" [cardBodyClass]="'card-wrapper'">
+  <p class="f-m-light mt-1" header5>The Angular DateTime Picker provides a flexible and customizable date and time selection widget with a modern design. It supports both calendar and time picker modes.</p>
+
+  <div class="mb-4 grid grid-cols-12 card-gap">
+    <div class="col-span-3 md:col-span-12">
+      <label class="col-form-label">Date and Time</label>
+    </div>
+    <div class="col-span-9 md:col-span-12">
+      <input class="form-control" [owlDateTimeTrigger]="dt1" [owlDateTime]="dt1">
+      <owl-date-time #dt1></owl-date-time>
+    </div>
+  </div>
+  <div class="mb-4 grid grid-cols-12 card-gap">
+    <div class="col-span-3 md:col-span-12">
+      <label class="col-form-label">Date</label>
+    </div>
+    <div class="col-span-9 md:col-span-12">
+      <input class="form-control" [owlDateTimeTrigger]="dt2" [owlDateTime]="dt2">
+      <owl-date-time #dt2 [pickerType]="'calendar'"></owl-date-time>
+    </div>
+  </div>
+  <div class="mb-4 grid grid-cols-12 card-gap">
+    <div class="col-span-3 md:col-span-12">
+      <label class="col-form-label">Time</label>
+    </div>
+    <div class="col-span-9 md:col-span-12">
+      <input class="form-control" [owlDateTimeTrigger]="dt3" [owlDateTime]="dt3">
+      <owl-date-time #dt3 [pickerType]="'timer'"></owl-date-time>
+    </div>
+  </div>
+</app-card>

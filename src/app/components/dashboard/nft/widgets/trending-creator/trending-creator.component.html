@@ -1,0 +1,26 @@
+<app-card [cardClass]="'trending-card'" [headerTitle]="'Trending Creator'" 
+    [padding]="false" [rightSideDetails]="true" [cardBodyClass]="'pt-0 activity-card'">
+    <a href="javascript:void(0)" [routerLink]="['/seller/list']" header3>View All</a>
+
+    <div class="appointment-table customer-table overflow-x-auto">
+        <table class="table table-bordernone">
+            <tbody>
+                @for(creator of trendingCreator; track creator) {
+                    <tr>
+                        <td>
+                            <img class="max-w-full h-auto img-40 rounded-full me-2" [src]="creator.image" alt="building">
+                        </td>
+                        <td class="img-content-box">
+                            <a class="block font-medium" href="javascript:void(0)" [routerLink]="['/seller/list']">{{ creator.title }}</a>
+                            <span class="f-light">{{ creator.items }} Items</span>
+                        </td>
+                        <td class="text-end">
+                            <span class="font-medium">${{ creator.price }}</span>
+                            <span class="block f-light">Total USD</span>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</app-card>

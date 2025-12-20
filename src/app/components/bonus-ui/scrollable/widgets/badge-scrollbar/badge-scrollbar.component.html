@@ -1,0 +1,15 @@
+<app-card [headerTitle]="'Badges Scrollbar'" [header]="'pb-0'" [border]="true" [padding]="false">
+    <p class="f-m-light mt-1" header5>Use <code>ngx-scrollbar</code> to create a custom scrollbar. Use <code>badge</code> class through create more badges</p>
+    <div class="vertical-scroll scroll-demo scroll-b-none">
+        <ng-scrollbar style="height: 300px; width: 100%;">
+            <ol class="list-group list-group-numbered scroll-rtl">
+                @for(badges of badgeScrollbar; track badges) {
+                    <li class="list-group-item flex items-start flex-wrap">
+                        <div class="ms-2 me-auto">{{ badges.title }}</div>
+                        <span class="badge bg-{{ badges.badge_color }} rounded-pill p-2 text-[10px]">{{  badges.badge }}</span>
+                    </li>
+                }
+            </ol>
+          </ng-scrollbar>
+      </div>
+</app-card>

@@ -1,0 +1,26 @@
+<div class="container">
+    <div class="grid grid-cols-12 card-gap">
+        <div class="col-span-6 xl:col-span-12">
+            <app-basic-card></app-basic-card>
+        </div>
+        <div class="col-span-6 xl:col-span-12">
+            <app-flat-card></app-flat-card>
+        </div>
+        <div class="col-span-6 xl:col-span-12">
+            <app-shadow-card></app-shadow-card>
+        </div>
+        <div class="col-span-6 xl:col-span-12">
+            <app-icon-heading></app-icon-heading>
+        </div>
+        <div class="col-span-12">
+            <app-dark-color-card></app-dark-color-card>
+        </div>
+
+        @for(details of infoCard | slice:3:6 ; track details; let i = $index){
+            <div [ngClass]="(i === infoCard.length - 4) ? 'col-span-4 xl:col-span-12' : 'col-span-4 xl:col-span-6 sm:col-span-12'">
+               <app-info-card [details]="details"></app-info-card>
+            </div>
+        }
+
+    </div>
+</div>

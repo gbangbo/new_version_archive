@@ -1,0 +1,94 @@
+<app-card [headerTitle]="'Listing Typography'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'typography-list'">
+  <p class="f-m-light mt-1" header5>All typography list:- <code>&lt;ul&gt;</code>,<code>&lt;ol&gt;</code> &amp;
+    <code>&lt;dl&gt;</code></p>
+
+  <div class="grid grid-cols-12 gap-4">
+    <div class="col-span-3 xxl:col-span-6 md:col-span-12">
+      <div class="card-wrapper border rounded-3 h-full">
+        <h6 class="sub-title">Un-order List</h6>
+        <ul>
+          <li>This is a list.</li>
+          <li>It appears completely unstyled.</li>
+          <li>Structurally, it&apos;s still a list.</li>
+          <li>However, this style only applies to immediate child elements.</li>
+          <li>Nested lists:
+            <ul>
+              <li>Are unaffected by this style</li>
+              <li>Will still show a bullet</li>
+              <li>And have appropriate left margin</li>
+            </ul>
+          </li>
+          <li>This may still come in handy in some situations.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="col-span-3 xxl:col-span-6 md:col-span-12">
+      <div class="card-wrapper border rounded-3 h-full">
+        <h6 class="sub-title">Order List</h6>
+        <ol>
+          <li>This is a list.</li>
+          <li>It appears completely unstyled.</li>
+          <li>Structurally, it&apos;s still a list.</li>
+          <li>However, this style only applies to immediate child elements.</li>
+          <li>Nested lists:
+            <ol>
+              <li>Are unaffected by this style</li>
+              <li>Will still show a bullet</li>
+              <li>And have appropriate left margin</li>
+            </ol>
+          </li>
+          <li>This may still come in handy in some situations.</li>
+        </ol>
+      </div>
+    </div>
+    <div class="col-span-6 xxl:col-span-12">
+      <div class="card-wrapper border rounded-3 h-full">
+        <h6 class="sub-title">Description List</h6>
+        <dl class="grid grid-cols-12 card-gap">
+          <div class="col-span-3 sm:col-span-12">
+            <dt class="text-truncate">Description lists</dt>
+          </div>
+          <div class="col-span-9 sm:col-span-12">
+            <dd>A description list is perfect for defining terms.</dd>
+          </div>
+          <div class="col-span-3 sm:col-span-12">
+            <dt>Term</dt>
+          </div>
+          <div class="col-span-9 sm:col-span-12">
+            <dd>
+              <p>Definition for the term.</p>
+              <p>And some more placeholder definition text.</p>
+            </dd>
+          </div>
+          <div class="col-span-3 sm:col-span-12">
+            <dt>Another term</dt>
+          </div>
+          <div class="col-span-9 sm:col-span-12">
+            <dd>This definition is short, so no extra paragraphs or anything.</dd>
+          </div>
+          <div class="col-span-3 sm:col-span-12">
+            <dt class="text-truncate">Truncated term is truncated</dt>
+          </div>
+          <div class="col-span-9 sm:col-span-12">
+            <dd>This can be useful when space is tight. Adds an ellipsis at the end.</dd>
+          </div>
+          <div class="col-span-3 sm:col-span-12">
+            <dt>Nesting</dt>
+          </div>
+          <div class="col-span-9 sm:col-span-12">
+            <dd></dd>
+            <dl class="grid grid-cols-12">
+              <div class="col-span-4 sm:col-span-12">
+                <dt>Nested definition list</dt>
+              </div>
+              <div class="col-span-8 sm:col-span-12">
+                <dd>I heard you like definition lists. Let me put a definition list inside your
+                  definition list.</dd>
+              </div>
+            </dl>
+          </div>
+        </dl>
+      </div>
+    </div>
+  </div>
+</app-card>

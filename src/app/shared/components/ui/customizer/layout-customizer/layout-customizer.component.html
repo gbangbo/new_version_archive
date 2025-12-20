@@ -1,0 +1,32 @@
+<div class="customizer-header">
+    <div class="theme-title">
+        <div>
+            <h4>Preview Settings</h4>
+            <p class="mb-0">
+                Try It Real Time
+                <i class="fa-solid fa-thumbs-up fa-fw"></i>
+            </p>
+        </div>
+        <div class="flex-grow-1">
+            <a class="icon-btn btn-outline-light button-effect pull-right grip-close" id="grip-close" (click)="closeCustomizer()">
+                <i class="fa-solid fa-xmark fa-fw"></i>
+            </a>
+        </div>
+    </div>
+</div>
+<div class="customizer-body custom-scrollbar">
+    <h6>Layouts</h6>
+    <ul class="layout-grid sidebar-type layout-types">
+        @for(layout of layouts; track layout) {
+            <li>
+                <div class=layout-img>
+                    <a href=javascript:void(0) (click)="applyLayout(layout)">
+                        <img [alt]="layout.title" class="img-fluid" [src]="layout.image">
+                    </a>
+                    <h6>{{ layout.title }}</h6>
+                </div>
+            </li>
+        }
+    </ul>
+</div>
+<h6>Links</h6>

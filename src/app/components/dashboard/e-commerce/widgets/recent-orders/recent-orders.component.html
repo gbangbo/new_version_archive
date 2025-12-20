@@ -1,0 +1,59 @@
+<app-card [cardClass]="'recent-order'" [headerTitle]="'Recent Orders'" [padding]="false" [cardBodyClass]="'pt-0'">
+    <div class="recent-sliders tabs">
+        <div class="tab-links recent-order-scroll custom-scrollbar flex gap-2">
+            @for(category of categories; track category) {
+              <a class="tab tab-link active frame-box inline-block" href="javascript:void(0)" [class.active]="activeCategory == category.value" 
+                 (click)="changeCategory(category)">
+          
+                <span class="group relative">
+                  <span class="frame-image">
+                    <img [src]="category.image" [alt]="category.title">
+                  </span>
+          
+                  <app-tooltip [title]="category.title" [direction]="'bottom'"></app-tooltip>
+                </span>
+          
+              </a>
+            }
+          </div>
+          
+
+        <div class="tab-content">
+            <div class="tab-pane fade show active" id="v-pills-furniture" role="tabpanel">
+                <div class="recent-table overflow-x-auto custom-scrollbar recent-items">
+                    <table class="table">
+                        <thead> 
+                            <tr> 
+                              <th class="c-light">Item</th>
+                              <th class="c-light">Qty</th>
+                              <th class="c-light">Price</th>
+                              <th class="c-light">Total Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for(order of filteredOrders; track order) {
+                                <tr> 
+                                    <td>
+                                      <div class="product-content">
+                                        <div class="order-image">
+                                            <img [src]="order.image" [alt]="order.title"></div>
+                                        <div> 
+                                        <h6 class="f-14 mb-0">
+                                            <a href="javascript:void(0)" [routerLink]="['/order/list']">{{ order.title }}</a>
+                                        </h6>
+                                        <span class="f-light f-12">Id : #{{ order.product_id }}</span>
+                                        </div>
+                                      </div>
+                                    </td>
+                                    <td class="font-medium">{{ order.quantity }}</td>
+                                    <td class="font-medium">${{ order.price | number:'1.2-2' }}</td>
+                                    <td class="font-medium">${{ order.total_price | number:'1.2-2'}}</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</app-card>

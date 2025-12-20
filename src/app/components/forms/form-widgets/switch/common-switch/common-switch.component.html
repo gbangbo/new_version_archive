@@ -1,0 +1,14 @@
+<app-card [headerTitle]="switch.title" [border]="true" [header]="'pb-0'" [padding]="false" [cardBodyClass]="'common-flex flex-col switch-wrapper'">
+    <p class="f-m-light mt-1" [innerHTML]="switch.sub_description" header5></p>
+        @for(item of switch.item; track item){
+            <div class="flex">
+                <div class="text-end {{switch.div_class}}">
+                    <label class="switch mb-0">
+                        <input type="checkbox" [checked]="item.value">
+                        <span class="switch-state bg-{{ item.color_class }}"></span>
+                    </label>
+                </div>
+                <label class="col-form-label m-l-10">{{ item.text }}</label>
+            </div>
+            }
+</app-card>

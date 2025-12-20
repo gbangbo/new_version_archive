@@ -1,0 +1,46 @@
+<div class="currency-widget {{ chart.color }}">
+  <div class="flex">
+    <div class="currency-icon-widget">
+      <app-svg-icon [icon]="chart.currency_symbol"></app-svg-icon>
+    </div>
+    <div>
+      <h6>
+        {{ chart.currency_name }} 
+        <span class="f-light">{{ chart.currency_code }}</span>
+      </h6>
+    </div>
+  </div>
+
+  <app-card [cardBodyClass]="'flex'">
+    <div class="currency-chart-wrap">
+      <div>
+        <apx-chart
+          [series]="chart.chart_details.series"
+          [chart]="chart.chart_details.chart"
+          [grid]="chart.chart_details.grid"
+          [colors]="chart.chart_details.colors"
+          [stroke]="chart.chart_details.stroke"
+          [labels]="chart.chart_details.labels"
+          [markers]="chart.chart_details.markers"
+          [xaxis]="chart.chart_details.xaxis"
+          [yaxis]="chart.chart_details.yaxis"
+          [legend]="chart.chart_details.legend"
+          [tooltip]="chart.chart_details.tooltip"
+          [responsive]="chart.chart_details.responsive">
+        </apx-chart>
+      </div>
+    </div>
+
+    <div class="bg-light-{{ chart.color }} text-center">
+      <h5 class="mb-0">
+        $<span class="counter">
+          <app-counter [counter]="chart.price | number"></app-counter>
+          </span>
+      </h5>
+      <span class="f-12 font-medium font-{{ chart.color }}">
+        <app-feather-icon [icon]="chart.profit_type == 'profit' ? 'trending-up' : 'trending-down'" [class]="'me-1'"></app-feather-icon>
+        {{ chart.profit_type == 'profit' ? '+' : '-' }}{{ chart.profit }}%
+      </span>
+    </div>
+  </app-card>
+</div>

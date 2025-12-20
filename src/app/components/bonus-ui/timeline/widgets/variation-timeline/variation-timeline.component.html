@@ -1,0 +1,34 @@
+<app-card [headerTitle]="'Variation Timeline'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'dark-timeline'">
+    <p class="f-m-light mt-1" header5>Use <code> activity-dot-* </code>class to create rounded animations on the timeline.</p>
+    <ul> 
+      @for(details of variationTimeline;track details){
+        <li class="flex">
+          <div class="activity-dot-{{ details.class }}"></div>
+          <div class="w-full ms-4">
+            <p class="flex justify-between mb-4">
+              <span class="date-content light-background">{{ details.date }} </span>
+              <span>{{ details.time }}</span>
+            </p>
+            <h6>
+              {{ details.title }}
+              <span class="dot-notification"></span>
+              </h6>
+            <span class="f-light">{{ details.description }}</span>
+            @if(details.details){
+              <div class="recent-images"> 
+                <ul> 
+                    @for(item of details.details;track item){
+                      <li> 
+                        <div class="recent-img-wrap">
+                          <img [src]="item.image" [alt]="item.alt">
+                          </div>
+                      </li>
+                    }
+                </ul>
+              </div>
+            }
+          </div>
+        </li> 
+      }
+  </ul>
+</app-card>

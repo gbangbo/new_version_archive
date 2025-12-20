@@ -1,0 +1,108 @@
+<div class="grid grid-cols-12 gap-4 audio-wrapper">
+    <div class="col-span-12">
+        <h6 class="mb-4">About 2,000 results (0.45 seconds)</h6>
+        <div class="grid grid-cols-12 gap-4">
+            @for(audio of audios | slice: 0: 6; track audio) {
+                <div class="col-span-4 xxl:col-span-6 md:col-span-12 box-col-6">
+                    <div class="audio-box">
+                        <div class="grow common-f-start">
+                            <img class="max-w-full" [src]="audio.poster" [alt]="audio.title">
+                            <div> 
+                            <h6>{{ audio.title }}</h6>
+                            <span class="c-o-light">{{ audio.description }}</span>
+                            </div>
+                        </div>
+                        <div class="shrink-0" (click)="playAudio(audio)">
+                            <i class="fa-solid" [ngClass]="audio.is_play ? 'fa-compact-disc fa-spin' : 'fa-circle-play'"></i>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    <div class="col-span-12">
+        <div class="common-title px-0">
+            <h5>Your Top Songs </h5>
+        </div>
+        <div class="slider-wrapper arrow-round">
+            <owl-carousel-o [options]="carouselOption" class="audio-slider">
+                @for(audio of audios; track audio) {
+                    @if(audio.is_top_rated) {
+                        <ng-template carouselSlide>
+                            <div class="audio-card">
+                            <div class="audio-image">
+                                <img class="max-w-full" [src]="audio.poster" [alt]="audio.title">
+                            </div>
+                            <div class="audio-content">
+                                <div class="grow">
+                                <h6>{{ audio.title }}</h6>
+                                <span>{{ audio.description }}</span>
+                                </div>
+                                <div class="shrink-0">
+                                    <i class="fa-solid fa-circle-{{ audio.is_play ? 'pause' : 'play' }}" (click)="playAudio(audio)"></i>
+                                    <i class="fa-regular fa-heart" [class.active]="audio.is_favorite" (click)="audio.is_favorite =! audio.is_favorite"></i>
+                                </div>
+                            </div>
+                            </div>
+                        </ng-template>
+                    }
+                }
+            </owl-carousel-o>
+        </div>
+    </div>
+    <div class="col-span-12">
+        <div class="common-title common-space px-0">
+            <h5>Your Suggested Tracks </h5>
+            <a href="javascript:void(0)" [routerLink]="['/subscribed-user']"> View All</a>
+        </div>
+        <div class="overflow-x-auto custom-scrollbar">
+            <table class="table audio-table table-hover">
+                <thead>
+                    <tr>
+                      <th scope="col">Title Song</th>
+                      <th scope="col">Album</th>
+                      <th scope="col">Artist</th>
+                      <th scope="col">Release Date</th>
+                      <th scope="col">Duration</th>
+                      <th scope="col">Download</th>
+                      <th scope="col"> </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for(audio of audios; track audio) {
+                        @if(audio.is_suggested) {
+                            <tr>
+                                <td> 
+                                  <div class="common-f-start gap-2"> 
+                                    <div>
+                                        <img class="max-w-full" [src]="audio.poster" [alt]="audio.title">
+                                        <i class="fa-solid fa-circle-{{ audio.is_play ? 'pause' : 'play' }}" (click)="playAudio(audio)"></i>
+                                    </div>
+                                    <span>{{ audio.title }}</span>
+                                  </div>
+                                </td>
+                                <td>{{ audio.album }}</td>
+                                <td>{{ audio.artist }}</td>
+                                <td>{{ audio.release_date }}</td>
+                                <td>{{ audio.duration }}</td>
+                                <td><i class="fa-solid fa-download"></i></td>
+                                <td> 
+                                  <div class="common-align">
+                                    <a class="group relative" href="javascript:void(0)" placement="top">
+                                        <i class="fa-solid fa-plus"></i>
+                                        <app-tooltip [title]="'Add To Playlist'" [direction]="'left'"></app-tooltip>
+                                    </a>
+                                    <a  class="group relative" href="javascript:void(0)" placement="top">
+                                        <i class="fa-regular fa-heart" [class.active]="audio.is_favorite" (click)="audio.is_favorite =! audio.is_favorite"></i>
+                                        <app-tooltip [title]="'Add To Wishlist'" [direction]="'left'"></app-tooltip>
+                                    </a>
+                                </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

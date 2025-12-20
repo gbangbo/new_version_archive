@@ -1,0 +1,22 @@
+<app-card [cardClass]="'split-dropdown'" [header]="'pb-0'" [headerTitle]="'Split Dropdowns'" [border]="true" [padding]="false" [cardBodyClass]="'dropdown-basic m-0'">
+    <p class="f-m-light mt-1" header5> To create a split dropdown, use a button group with a primary action button and a separate dropdown toggle button. Apply the <code>show</code> class to the <code>dropdown-menu</code> to control its visibility. </p>
+    <div class="common-flex">
+        @for(dropdown of splitDropdown; track dropdown; let i = $index) {
+            <div class="btn-group" (clickOutside)="clickOutside(i)">
+                <button class="btn border btn-outline-{{ dropdown.color }}">{{ dropdown.title }}</button>
+                <div class="dropdown separated-btn">
+                    <button class="btn btn-{{ dropdown.color }} dropdown-toggle-split" (click)="toggleDropdown(i)">
+                        <i class="icofont icofont-arrow-down text-white"></i>
+                    </button>
+                    <ul class="dropdown-menu" [class.show]="dropdownOpen[i]">
+                        @for(item of dropdown.dropdown_item; track item) {
+                            <li class="dropdown-item">
+                                <a href="javascript:void(0)">{{ item.item }}</a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        }
+    </div>
+</app-card>

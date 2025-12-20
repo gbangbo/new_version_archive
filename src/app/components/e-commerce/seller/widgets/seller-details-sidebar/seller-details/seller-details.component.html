@@ -1,0 +1,40 @@
+@if(currentStore) {
+  <div class="common-f-start">
+    <img [src]="currentStore.store_logo">
+    <div>
+      <h5>{{ currentStore.store_name }}</h5>
+      <span class="c-o-light">{{ currentStore.vendor_name }}</span>
+    </div>
+  </div>
+  <ul class="seller-details">
+    <li>
+      <div>
+        <i class="fa-solid fa-location-dot"></i>
+        <h6>Location </h6>
+      </div><span>{{ details.location }}</span>
+    </li>
+    <li>
+      <div>
+        <i class="fa-solid fa-phone"></i>
+        <h6>Phone Number </h6>
+      </div>
+      <span>{{ details.phone }}</span>
+    </li>
+    <li>
+      <div>
+        <i class="fa-solid fa-envelope"></i>
+        <h6>Email</h6>
+      </div>
+      <span>{{ details.email }}</span>
+    </li>
+    <li>
+      <div>
+        <i class="fa-solid fa-square-up-right"></i>
+        <h6>URL</h6>
+      </div>
+      <a href="{{ details.url }}" target="_blank">{{ details.url }}</a>
+    </li>
+  </ul>
+} @else {
+  <span>No Store found.</span>
+}

@@ -1,0 +1,46 @@
+<div class="header-faq">
+  <h5 class="mb-0">Browse Articles By Category</h5>
+</div>
+<div class="grid grid-cols-12">
+  <div class="col-span-12">
+    <app-card [headerTitle]="'Browse Articles'" [border]="true" [padding]="false">
+      <div class="grid grid-cols-12 gap-4 browse">
+        @for(details of browseArticles;track details){
+          <div [class]="details.col_class">
+            <div class="browse-articles">
+              <h6>
+                <span>
+                  <app-feather-icon [icon]="details.title_icon"></app-feather-icon>
+                </span>{{details.title}}</h6>
+              <ul>
+                @for(item of details.details;track item){
+                  <li>
+                    <a href="javascript:void(0)">
+                      <span>
+                        <app-feather-icon [icon]="item.text_icon"></app-feather-icon>
+                      </span>
+                      <span>{{ item.list_text}}</span>
+                      @if(item.tag){
+                        <span class="badge badge-primary pull-right text-white">{{ item.tag_title }}</span>
+                      }
+                    </a>
+                  </li>
+                }
+                <li>
+                  @if(details.see_more){
+                    <a href="javascript:void(0)">
+                      <span>
+                        <app-feather-icon [icon]="'arrow-right'"></app-feather-icon>
+                      </span>
+                      <span>See More ({{ details.see_more }})</span>
+                    </a>
+                  }
+                </li>
+              </ul>
+            </div>
+          </div>
+        }
+      </div>
+    </app-card>
+  </div>
+</div>

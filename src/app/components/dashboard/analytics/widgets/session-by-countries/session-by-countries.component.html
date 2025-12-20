@@ -1,0 +1,20 @@
+<app-card [headerTitle]="'Sessions by Countries'" [padding]="false" [cardBodyClass]="'pt-0'" [dropdownType]="'simple'" [options]="cardToggleOption">
+    <div class="common-m-chart">
+        <div id="country-chart">
+            <apx-chart
+                [series]="sessionByCountries.series"
+                [chart]="sessionByCountries.chart"
+                [plotOptions]="sessionByCountries.plotOptions"
+                [grid]="sessionByCountries.grid"
+                [dataLabels]="sessionByCountries.dataLabels"
+                [stroke]="sessionByCountries.stroke"
+                [legend]="sessionByCountries.legend"
+                [colors]="sessionByCountries.colors"
+                [fill]="sessionByCountries.fill"
+                [yaxis]="sessionByCountries.yaxis"
+                [xaxis]="sessionByCountries.xaxis"
+                [responsive]="sessionByCountries.responsive">
+            </apx-chart>
+        </div>
+      </div>
+</app-card>

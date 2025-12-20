@@ -1,0 +1,55 @@
+<div class="container">
+    <div class="grid grid-cols-12">
+        <div class="col-span-12">
+            <app-card [headerTitle]="'Become a member'" [border]="true" [padding]="false">
+                <div class="grid grid-cols-12 gap-4 pricing-block">
+                    @for(details of becomeMember;track details){
+                        <div class="col-span-3 lg:col-span-6 sm:col-span-12">
+                            <div class="pricingtable">
+                                <div class="pricingtable-header">
+                                    <h3 class="title">{{ details.title }}</h3>
+                                </div>
+                                <div class="price-value">
+                                    <span class="currency">$</span>
+                                    <span class="amount">{{ details.price }}</span>
+                                    <span class="duration">/mo</span>
+                                </div>
+                                <ul class="pricing-content">
+                                    @for(item of details.details;track item){
+                                        <li>{{ item.text }}</li>
+                                    }
+                                </ul>
+                                <div class="pricingtable-signup">
+                                    <a class="btn btn-primary btn-lg inline-block text-white rounded-lg hover:text-white"  href="javascript:void(0)">Sign Up</a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </app-card>
+            <app-card [headerTitle]="'Simple Pricing Card'" [border]="true" [padding]="false" [cardBodyClass]="'pricing-content'">
+                <div class="grid grid-cols-12 gap-4">
+                    @for(details of simplePricingCard;track details){
+                        <div class="col-span-3 xxl:col-span-6 sm:col-span-12 box-col-6">
+                            <div class="card text-center pricing-simple h-full">
+                                <div class="card-body">
+                                    <h4>{{ details.title }}</h4>
+                                    <h5>${{ details.price }}</h5>
+                                    <ul class="pricing-content">
+                                        @for(item of details.details;track item){
+                                            <li>
+                                                <i class="fa-solid fa-circle-check"></i>
+                                                {{item.text}}
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                                <a class="btn btn-primary btn-lg block text-white rounded-lg hover:text-white" href="javascript:void(0)">Purchase</a>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </app-card>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,88 @@
+<div class="grid grid-cols-12 card-gap">
+    <div class="col-span-3 xl:col-span-6 lg:col-span-5 md:col-span-12 xl-40 box-col-4">
+        <app-social-app-left-panel></app-social-app-left-panel>
+    </div>
+    <div class="col-span-6 xl:col-span-6 lg:col-span-7 md:col-span-12 xl-60 box-col-8e">
+        <div class="grid grid-cols-12">
+            <div class="col-span-12">
+                @for(post of userPost; track post) {
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="new-users-social">
+                                <div class="flex">
+                                    <img class="rounded-full image-radius m-r-15" [src]="post.user_profile" [alt]="post.user_name">
+                                    <div class="grow">
+                                        <h6>{{ post.user_name }}</h6>
+                                        <p class="c-o-light">{{ post.post_date }}</p>
+                                    </div>
+                                    <span class="pull-right mt-0">
+                                        <app-feather-icon [icon]="'more-vertical'"></app-feather-icon>
+                                    </span>
+                                </div>
+                            </div>
+                            <img class="max-w-full" alt="post" [src]="post.post_image">
+                            <div class="timeline-content">
+                                <p>{{ post.description }}</p>
+                                <div class="like-content">
+                                    <span>
+                                        <i class="fa-solid fa-heart font-danger"></i>
+                                    </span>
+                                    <span class="pull-right comment-number">
+                                        <span>{{ post.comment }}</span>
+                                        <span>
+                                            <i class="fa-solid fa-share-nodes"></i>
+                                        </span>
+                                    </span>
+                                    <span class="pull-right comment-number">
+                                        <span>{{ post.share }} </span>
+                                        <span>
+                                            <i class="fa-regular fa-comments"></i>
+                                        </span>
+                                    </span>
+                                </div>
+                                <div class="social-chat">
+                                    @for(comment of post.comments; track comment) {
+                                        <div [ngClass]="comment.is_reply ? 'other-msg' : 'your-msg'">
+                                            <div class="flex">
+                                                <img class="img-50 max-w-full h-auto m-r-20 rounded-full" [alt]="comment.user_name" [src]="comment.user_profile">
+                                                <div class="grow">
+                                                    <span class="font-medium">{{ comment.user_name }} 
+                                                        <span>{{ comment.time }} ago
+                                                         <i class="fa-solid fa-reply font-primary"></i>
+                                                        </span>
+                                                    </span>
+                                                    <p>{{ comment.comment }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                        <div class="text-center">
+                                            <a href="javascript:vois(0)">More Comments</a>
+                                        </div>
+                                </div>
+                                <div class="comments-box">
+                                    <div class="flex">
+                                        <img class="img-50 max-w-full h-auto m-r-20 rounded-full" alt="user" src="assets/images/user/1.jpg">
+                                      <div class="grow">
+                                        <div class="input-group text-box !flex-nowrap">
+                                          <input class="form-control input-txt-bx" type="text" name="message-to-send" placeholder="Post your comments">
+                                          <div class="input-group-append">
+                                            <button class="btn btn-transparent" type="button">
+                                                <i class="fa-regular fa-face-smile"> </i>
+                                            </button>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-span-3 xl:col-span-12 xl-100 box-col-12">
+        <app-social-app-right-panel></app-social-app-right-panel>
+    </div>
+</div>

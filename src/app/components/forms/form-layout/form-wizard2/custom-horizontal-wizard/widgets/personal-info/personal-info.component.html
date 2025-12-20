@@ -1,0 +1,65 @@
+<div class="tab-pan fade show active">
+<form class="grid grid-cols-12 gap-4 needs-validation" novalidate="" [formGroup]="formValidation" (ngSubmit)="next()">
+    <div class="col-span-4 xl:col-span-6 sm:col-span-12">
+      <label class="form-label" for="customFirstname">First Name</label>
+      <input class="form-control" id="customFirstname" type="text" placeholder="Enter first name" formControlName="firstName"
+      [ngClass]="{ 'is-invalid' : formValidation.controls['firstName'].touched && formValidation.controls['firstName'].errors?.['required'] , 'is-valid' : formValidation.controls['firstName'].valid}">
+      @if(formValidation.controls['firstName'].touched && formValidation.controls['firstName'].errors?.['required']) {
+       <div class="valid-feedback">Looks good!</div>
+     }
+    </div>
+    <div class="col-span-4 xl:col-span-6 sm:col-span-12">
+      <label class="form-label" for="customLastname">Last Name</label>
+      <input class="form-control" id="customLastname" type="text" placeholder="Enter last name" formControlName="lastName"
+      [ngClass]="{ 'is-invalid' : formValidation.controls['lastName'].touched && formValidation.controls['lastName'].errors?.['required'] , 'is-valid' : formValidation.controls['lastName'].valid}">
+      @if(formValidation.controls['lastName'].touched && formValidation.controls['lastName'].errors?.['required']) {
+       <div class="valid-feedback">Looks good!</div>
+     }
+    </div>
+    <div class="col-span-4 xl:col-span-12">
+      <label class="form-label" for="customEmail">Email</label>
+      <input class="form-control" id="customEmail" type="email" placeholder="pixelstrap@example.com" formControlName="email"
+      [ngClass]="{ 'is-invalid' : formValidation.controls['email'].touched && formValidation.controls['email'].errors?.['required'] , 'is-valid' : formValidation.controls['email'].valid}">
+      @if(formValidation.controls['email'].touched && formValidation.controls['email'].errors?.['required']) {
+       <div class="valid-feedback">Looks good!</div>
+     }
+    </div>
+    <div class="col-span-5 xl:col-span-4 sm:col-span-12">
+      <label class="form-label" for="customState-wizard">State</label>
+      <select2 [data]="selectState" formControlName="state" id="validationTooltip04" placeholder="Choose.." formControlName="state"
+      [ngClass]="{ 'is-invalid' : formValidation.controls['state'].touched && formValidation.controls['state'].errors?.['required'] , 'is-valid' : formValidation.controls['state'].valid}"> </select2>
+      @if(formValidation.controls['state'].touched && formValidation.controls['state'].errors?.['required']) {
+        <div class="invalid-feedback">Please select a valid state.</div>
+      }
+    </div>
+    <div class="col-span-3 xl:col-span-4 sm:col-span-12">
+      <label class="form-label" for="custom-zipcode">Postal Code</label>
+      <input class="form-control" id="custom-zipcode" type="text" formControlName="postalCode"
+      [ngClass]="{ 'is-invalid' : formValidation.controls['postalCode'].touched && formValidation.controls['postalCode'].errors?.['required'] , 'is-valid' : formValidation.controls['postalCode'].valid}">
+      @if(formValidation.controls['postalCode'].touched && formValidation.controls['postalCode'].errors?.['required']) {
+        <div class="invalid-feedback">Please provide a valid postal code.</div>
+      }
+    </div>
+    <div class="col-span-4 sm:col-span-12">
+      <label class="form-label" for="customContact1">Contact Number</label>
+      <input class="form-control" id="customContact1" type="number" placeholder="Enter number" formControlName="contactNumber"
+      [ngClass]="{ 'is-invalid' : formValidation.controls['contactNumber'].touched && formValidation.controls['contactNumber'].errors?.['required'] , 'is-valid' : formValidation.controls['contactNumber'].valid}">
+      @if(formValidation.controls['contactNumber'].touched && formValidation.controls['contactNumber'].errors?.['required']) {
+        <div class="valid-feedback">Looks good!</div>
+      }
+    </div>
+    <div class="col-span-12">
+      <div class="form-check flex gap-2">
+        <input class="form-check-input checkbox-primary" id="invalid-check-wizard" type="checkbox" value="" formControlName="agree"
+        [ngClass]="{ 'is-invalid' : formValidation.controls['agree'].touched && formValidation.controls['agree'].errors?.['required'] , 'is-valid' : formValidation.controls['agree'].valid}">
+        @if(formValidation.controls['agree'].touched && formValidation.controls['agree'].errors?.['required']) {
+          <div class="invalid-feedback">You must agree before submitting.</div>    
+        }
+        <label class="form-check-label mb-0 d-block" for="invalid-check-wizard">Agree to terms and conditions</label>
+      </div>
+    </div>
+    <div class="col-span-12 common-flex justify-end">
+      <button class="btn btn-primary text-white text-white" type="submit">Continue</button>
+    </div>
+  </form>
+</div>

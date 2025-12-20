@@ -1,0 +1,16 @@
+<app-card [headerTitle]="'Pagination Alignment'" [header]="'pb-0'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>Change the alignment of pagination components with flexbox utilities. For example, with <code>justify-center:*</code>.</p>
+ 
+  <nav class="m-b-30" aria-label="Page navigation example">
+    <app-common-pagination [ul_class]="'pagination pagin-border-warning pagination-warning'" [paginationFormat]="'number'"></app-common-pagination>
+  </nav>
+
+  <nav class="m-b-30" aria-label="Page navigation example">
+    <app-common-pagination [ul_class]="'pagination justify-center pagin-border-danger pagination-danger'" [paginationFormat]="'romanUppercase'"></app-common-pagination>
+  </nav>
+
+  <nav aria-label="Page navigation example">
+    <app-common-pagination [ul_class]="'pagination justify-end pagin-border-success pagination-success'" [paginationFormat]="'romanLowercase'"></app-common-pagination>
+  </nav>
+  
+</app-card>

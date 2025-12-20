@@ -1,0 +1,35 @@
+<app-card [headerTitle]="'Hoverable Rows with Horizontal Border'" [border]="true" [padding]="false" [cardBodyClass]="'p-0'">
+  <p class="f-m-light mt-1" header5>
+    Hoverable row use a class  <code>table-hover</code> and for horizontal border use a class <code>table-border-horizontal</code> , solid border use a class <code>border-solid, table </code>classes.</p>
+    <div class="overflow-x-auto signal-table custom-scrollbar">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th scope="col">Id</th>
+            <th scope="col">Status</th>
+            <th scope="col">Signal Name	</th>
+            <th scope="col">Security</th>
+            <th scope="col">Stage</th>
+            <th scope="col">Schedule</th>
+            <th scope="col">Team Lead</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for(details of hoverAbleTable;track details){
+            <tr>
+              <th scope="row">{{ details.id }}</th>
+              <td class="flex items-center">
+                <app-feather-icon class="bg-light-{{ details.class }} font-{{ details.class }}" [icon]="'alert-triangle'"></app-feather-icon>
+                <span class="font-{{ details.class }}">{{ details.status }}</span>
+              </td>
+              <td>{{ details.signal_name }}</td>
+              <td>{{ details.security }}</td>
+              <td>{{ details.stage }}</td>
+              <td>{{ details.schedule }}</td>
+              <td>{{ details.team_lead }}	</td>
+            </tr>
+          }
+        </tbody>
+      </table>   
+   </div>
+</app-card>

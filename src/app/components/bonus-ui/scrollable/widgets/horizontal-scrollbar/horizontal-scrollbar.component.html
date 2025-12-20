@@ -1,0 +1,18 @@
+<app-card [headerTitle]="'Horizontal Scrollbar'" [header]="'pb-0'" [border]="true" [padding]="false">
+    <p class="f-m-light mt-1" header5>Use <code>ngx-scrollbar</code> to create a horizontal scrollbar Use the <code>[orientation]="'horizontal'"</code> </p>
+    <div class="horizontal-scroll scroll-demo">
+        <div class="horz-scroll-content">
+            <ng-scrollbar style="height: 300px; width: 100%;"  orientation="horizontal">
+                <div class="grid grid-cols-12 card-gap" style = "width: 1600px;">
+                    @for(images of scrollableImages; track images) {
+                        <div class="col-span-2"> 
+                            <div class="horizontal-img">
+                                <img class="max-w-full" [src]="images.image" alt="girl">
+                            </div>
+                        </div>
+                    }
+                </div>
+              </ng-scrollbar>
+        </div>
+      </div>
+</app-card>

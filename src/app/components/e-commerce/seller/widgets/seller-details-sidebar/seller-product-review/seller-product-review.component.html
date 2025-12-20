@@ -1,0 +1,32 @@
+<div class="review-people">
+  <ul class="review-list custom-scrollbar">
+    @for(review of productReview; track review) {
+      <li>
+        <div class="people-box">
+          <img class="max-w-full" [src]="review.image" [alt]="review.name">
+          <div class="people-comment">
+            <div class="people-name">
+              <a class="name" href="javascript:void(0)">{{ review.name }}</a>
+              <div class="date-time">
+                <h6 class="text-content">{{ review.product }}</h6>
+                <div class="product-rating">
+                  <div class="common-flex">
+                    <bar-rating [rate]="review.rating" [readonly]="true" [max]="5">
+                      <ng-template ratingActive>
+                        <i class="fa-solid fa-star" [ngStyle]="{ 'color': '#ffb829'}"></i>
+                      </ng-template>
+                      <ng-template ratingInactive>
+                        <i class="fa-regular fa-star" [ngStyle]="{ 'color': '#ffb829'}"></i>
+                      </ng-template>
+                    </bar-rating>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p>{{ review.review_text }}</p>
+      </li>
+    }
+  </ul>
+</div>

@@ -1,0 +1,23 @@
+<app-card [headerTitle]="'Alerts with Icons and Text Actions'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'dark-txt'">
+    <p class="f-m-light mt-1" header5>Use <code>border-*</code> class to add dismiss text instead of icon.</p>
+
+    <div class="alert border border-warning alert-dismissible fade !p-0" [ngClass]="showWarningAlert ? 'show' : 'hide'">
+        <div class="alert-arrow bg-warning">
+            <i class="icon-timer"></i>
+        </div>
+        <p>Your time Over after <strong class="txt-dark"> 5</strong> minute</p>
+        <button class="p-0 border-0 me-2 ms-auto" type="button" (click)="closeWarningAlert()">
+            <span class="bg-warning px-3 py-1">Check</span>
+        </button>
+    </div>
+
+    <div class="alert border border-danger alert-dismissible fade mb-0 !p-0" [ngClass]="showDangerAlert ? 'show' : 'hide'">
+        <div class="alert-arrow bg-danger">
+            <i class="icon-heart"></i>
+        </div>
+        <p>Oh snap! Change a few things up <strong class="txt-dark"> Notification check</strong></p>
+        <button class="p-0 border-0 me-2 ms-auto" type="button">
+            <span class="bg-danger text-white px-3 py-1" (click)="closeDangerAlert()">Alert</span>
+        </button>
+      </div>
+</app-card>

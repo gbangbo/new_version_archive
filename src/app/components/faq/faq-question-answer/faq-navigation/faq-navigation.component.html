@@ -1,0 +1,33 @@
+<div class="card card-mb-faq">
+  <div class="card-header faq-header">
+    <h5>Navigation</h5>
+    <app-feather-icon [icon]="'settings'"></app-feather-icon>
+  </div>
+  <div class="card-body faq-body">
+    <div class="navigation-btn">
+      <a class="btn btn-primary text-white hover:text-white" href="javascript:void(0)">
+        <app-feather-icon [icon]="'message-square'" [class]="'m-r-10'"></app-feather-icon>
+        Ask Question
+      </a>
+    </div>
+    <div class="navigation-option">
+      <ul>
+        @for(details of navigation; track details){
+          @if(details.section){
+            <hr>
+          } @else {
+            <li>
+              <a href="javascript:void(0)">
+                <app-feather-icon [icon]="details.icon"></app-feather-icon>
+                {{ details.title }}
+              </a>
+              @if(details.badge){
+                <span class="badge badge-primary rounded-full pull-right text-white">{{ details.badge_text }}</span>
+              }
+            </li>
+            }
+        }
+      </ul>
+    </div>
+  </div>
+</div>

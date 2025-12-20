@@ -1,0 +1,19 @@
+<app-card [cardClass]="'height-equal'" [header]="'pb-0'" [headerTitle]="'Just One Side Margin'" [border]="true" [padding]="false">
+
+    <p class="f-m-light mt-1" header5>Use all around margin classes like: <code>m-l-* / m-r-* / m-t-* / m-b-*</code>.</p>
+
+    <div class="grid grid-cols-12 gap-4">
+        @for(group of oneSideMargin; track group) {
+            <div class="col-span-3 xxl:col-span-6 sm:col-span-12">
+                <div class="border-wrapper h-full alert-light-light dark-helper">
+                    <h6 class="mb-4">{{ group.title }}</h6>
+                    <div class="common-p-box">
+                        @for(margin of margins; track margin) {
+                            <span>{{ group.class }}{{ margin }}</span>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</app-card>

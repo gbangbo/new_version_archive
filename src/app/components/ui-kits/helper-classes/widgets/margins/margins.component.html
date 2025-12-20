@@ -1,0 +1,14 @@
+<app-card [headerTitle]="'Margins'" [header]="'pb-0'" [border]="true" [padding]="false">
+
+    <p class="f-m-light mt-1" header5>Use margin classes like: <code>m-* [10 / 15 / 20 / 25 / 30 / 35 / 40 / 45 / 50]</code>.</p>
+
+    <div class="gradient-border">
+        @for(margin of margins; track margin) {
+        <div class="helper-common-box gap-0 mb-0">
+                <div class="border bg-light w-[40px] h-[40px] rounded-[25%] m-{{ margin }}"></div>
+                <span>m-{{ margin }}</span>
+            </div>
+        }
+    </div>
+    
+</app-card>

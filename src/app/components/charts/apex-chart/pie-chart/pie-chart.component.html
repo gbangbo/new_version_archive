@@ -1,0 +1,7 @@
+<app-card [headerTitle]="'Pie Chart'" [border]="true" [header]="'pb-0'" [padding]="false" [cardBodyClass]="'apex-chart'">
+  <div id="piechart">
+    <apx-chart [chart]="pieChart.chart" [labels]="pieChart.labels" [series]="pieChart.series"
+               [responsive]="pieChart.responsive" [colors]="pieChart.colors">
+    </apx-chart>
+  </div>
+</app-card>

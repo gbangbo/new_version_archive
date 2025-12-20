@@ -1,0 +1,54 @@
+<app-card [cardClass]="'height-equal'" [header]="'pb-0'" [headerTitle]="'Pills Tabs'" [border]="true" [padding]="false" [cardBodyClass]="'tabs'">
+    <p class="mt-1 f-m-light" header5>
+        This tab component features pill-shaped navigation.  
+        The <code>handleTab</code> method updates the active tab, applying the <code>active</code> class for styling.  
+    </p>
+        
+    <ul class="tab-links flex nav-primary">
+        <li class="tab-link block" [class.active]="activeTab == 'about'" (click)="handleTab('about')">About us</li>
+        <li class="tab-link block" [class.active]="activeTab == 'contact'" (click)="handleTab('contact')">Contact us</li>
+        <li class="tab-link block" [class.active]="activeTab == 'blog'" (click)="handleTab('blog')">Blog </li>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pan fade show active">
+            @if(activeTab == 'about') {
+                <p class="pt-3">The ultimate goal of every web design is to create a site that will reach its
+                    audience and be useful to them. In order to achieve that, it is necessary to befriend Google's
+                    mechanisms and algorithms. There is no use of a pretty website, if it's displayed on a 10th page
+                    of search results, because this way no one will ever find it. That brings us to the topic of
+                    Google's Website Ranking.Generally speaking, it's a list of pages and their keywords, sorted in
+                    the order of search results. The higher your place in the ranking is, the more people are likely
+                    to see your page.
+                </p>
+            } @else if(activeTab == 'contact') {
+                <ul class="flex flex-col gap-1 pt-3">
+                    <li> Create professional web page design. Responsive, fully customizable with easy drag-n-drop
+                      nice page editor. Adjust colors, fonts, header and footer, layout and other design elements,
+                      as well as content and images.
+                    </li>
+                    <li><strong>Visit Us: </strong> 4 Marigold Close, Glenmore Park, New South Wales, 2745
+                      Australia- 2745</li>
+                    <li> <strong>Mail Us:</strong> SamuelMario&#64;armyspy.com</li>
+                    <li> <strong>Contact Number: </strong> (02) 4733 6337</li>
+                </ul>
+            } @else if(activeTab == 'blog') {
+                <div class="pt-3 flex items-center gap-4 pills-blogger">
+                    <div class="blog-wrapper"> 
+                        <img class="blog-img" src="assets/images/dashboard-2/headphones.png" alt="head-phone">
+                    </div>
+                    <div class="blog-content">
+                        <p> <strong>Smart headphones</strong> — also called smart earbuds or hearable — are high-tech
+                            in-ear devices that do more than transmit audio. These headphones are usually wireless, and
+                            they can sync up with your phone, tablet, computer or other Bluetooth-enabled device. The
+                            main appeal of hearables is convenience, as they allow you to complete common tasks without
+                            directly accessing your phone or computer. Smart wireless headphones sync up to other
+                            devices using Bluetooth technology, and many of their features rely on data from your
+                            smartphone or computer.
+                        </p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+</app-card>

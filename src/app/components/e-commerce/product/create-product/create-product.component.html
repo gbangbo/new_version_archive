@@ -1,0 +1,51 @@
+<div class="container-fluid">
+  <div class="grid grid-cols-12">
+    <div class="col-span-12">
+      <div class="card">
+        <div class="card-header card-no-border pb-0">
+          <h5>Product Form</h5>
+        </div>
+        <div class="card-body">
+          <div class="grid grid-cols-12 gap-4 xl:gap-5 tabs !static">
+            <div class="col-span-3 xxl:col-span4 xl:col-span-12 box-col-4e sidebar-left-wrapper">
+              <div class="sidebar-left-icons nav tab-links">
+                @for(product of addProduct; track product; let i = $index){
+                  <div class="nav-item">
+                    <a class="tab-link" [class.active]="activeTab == product.value" (click)="handleTab(product.value)">
+                      <div class="nav-rounded">
+                        <div class="product-icons">
+                          <app-svg-icon [icon]="product.icon" [class]="'stroke-icon'"></app-svg-icon>
+                        </div>
+                      </div>
+                      <div class="product-tab-content">
+                        <h6>{{ product.title }}</h6>
+                        <p>{{ product.description }}</p>
+                      </div>
+                    </a>
+                  </div>
+                }
+              </div>
+            </div>
+            <div class="col-span-9 xxl:col-span-8 xl:col-span-12 box-col-8">
+              @if(activeTab == 'product'){
+                <app-add-product-details [active]="active" (changeTab)="changeTab($event)"></app-add-product-details>
+              }
+              @if(activeTab == 'gallery'){
+                <app-product-gallery [active]="active" (changeTab)="changeTab($event)"></app-product-gallery>
+              }
+              @if(activeTab == 'category'){
+                <app-product-categories [active]="active" (changeTab)="changeTab($event)"></app-product-categories>
+              }
+              @if(activeTab == 'pricing'){
+                <app-product-price-discount [active]="active" (changeTab)="changeTab($event)"></app-product-price-discount>
+              }
+              @if(activeTab == 'advance'){
+                <app-additional-options [active]="active" (changeTab)="changeTab($event)"></app-additional-options>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

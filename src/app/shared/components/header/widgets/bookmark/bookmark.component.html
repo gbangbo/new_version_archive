@@ -1,0 +1,103 @@
+<app-svg-icon [icon]="'star'"></app-svg-icon>
+
+<div class="onhover-show-div bookmark-flip" [class.active]="flip || bookmark">
+  <div class="flip-card">
+    <div class="flip-card-inner" [class.flipped]="flip">
+      <div class="front">
+        <h6 class="mb-0 dropdown-title f-[18px]">Bookmark</h6>
+        <ul class="bookmark-dropdown">
+          <li class="custom-scrollbar">
+            <div class="grid grid-cols-12 gap-x-3.5">
+              @for(item of bookmarkItems; track item){
+              <div class="col-span-4 text-cente">
+                <div class="bookmark-content" [routerLink]="item.path">
+                  <div class="bookmark-icon">
+                    <app-svg-icon [icon]="'stroke-' + item.icon"></app-svg-icon>
+                  </div>
+                  @if(item && item.title) {
+                    <span>{{ item.title | translate }}</span>
+                  }
+                </div>
+              </div>
+              }
+            </div>
+          </li>
+          <li class="text-center">
+            <a
+              class="flip-btn btn btn-primary w-full block  text-white font-bold hover:text-white"
+              href="javascript:void(0)"
+              (click)="flipBookmark('add')"
+              >Add Bookmark</a
+            >
+          </li>
+        </ul>
+      </div>
+      <div class="back">
+        <ul>
+          <li>
+            <div class="bookmark-dropdown flip-back-content">
+              <input
+                type="text"
+                placeholder="search..."
+                [(ngModel)]="text"
+                (keyup)="searchTerm(text)"
+              />
+              @if(menuItems.length){
+              <div
+                class="Typeahead-menu custom-scrollbar bookmark-typeahead"
+                [class.is-open]="searchResult"
+                id="boomark-search-outer"
+              >
+                @for(item of menuItems | slice : 0 : 8; track item){
+                <div class="ProfileCard u-cf">
+                  <div class="ProfileCard-avatar">
+                    <app-svg-icon [icon]="'stroke-' + item.icon"></app-svg-icon>
+                  </div>
+                  <div class="ProfileCard-details">
+                    <div class="ProfileCard-realName flex">
+                      @if(item && item.title) {
+                        <a [routerLink]="item.path" (click)="removeFix()">{{ item.title | translate }}</a>
+                      }
+                      <span
+                        class="pull-right ms-auto"
+                        (click)="addToBookmark(item)"
+                      >
+                        <a>
+                          <i
+                            class="fa-regular fa-star"
+                            [class.starred]="item.bookmark"
+                          ></i>
+                        </a>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                }
+              </div>
+              } @else {
+              <div
+                class="Typeahead-menu custom-scrollbar bookmark-typeahead"
+                [class.is-open]="searchResultEmpty"
+              >
+                <div class="ProfileCard u-cf">
+                  <div class="EmptyMessage">
+                    Opps!! There are no result found.
+                  </div>
+                </div>
+              </div>
+              }
+            </div>
+          </li>
+          <li>
+            <a
+              class="flip-back btn btn-primary w-full block text-white font-bold hover:text-white"
+              href="javascript:void(0)"
+              (click)="flipBookmark('back')"
+              >Back</a
+            >
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

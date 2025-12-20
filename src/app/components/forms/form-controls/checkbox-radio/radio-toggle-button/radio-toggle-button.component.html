@@ -1,0 +1,12 @@
+<app-card [headerTitle]="'Radio Toggle Buttons'" [header]="'pb-0'" [cardBodyClass]="'common-flex main-radio-toggle'" [border]="true" [padding]="false"> 
+  <p class="f-m-light mt-1" header5>
+    The choice between these two approaches will depend on the type of toggle you are creating, and whether or not the toggle will make sense to 
+    users when announced as a checkbox or as an actual button. <code>[any one selected]</code>.
+  </p>
+
+  @for(radio of radioToggle; track radio){
+    <input class="btn-check radio-light-secondary" [id]="radio.id" type="radio" name="options" [checked]="radio.checked" [disabled]="radio.disabled">
+    <label class="btn list-light-secondary" [for]="radio.id">{{ radio.text}}</label>
+  }
+  
+</app-card>

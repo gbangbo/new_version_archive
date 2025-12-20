@@ -1,0 +1,214 @@
+/**=====================
+   3.64 Settings CSS Start
+==========================**/
+.main-setting {
+  input {
+    &::placeholder {
+      color: rgba($theme-font-color, 0.8);
+    }
+  }
+  .tab-links {
+    gap: 18px;
+    display: flex;
+    flex-direction: column;
+
+    .tab-link {
+      padding: 12px 16px !important;
+      background-color: rgba($gray-60, 0.3);
+      color: $theme-body-font-color;
+      @include pixelstrap-flex(flex, flex-start, center);
+      gap: 8px;
+      border-radius: 6px;
+      &.active {
+        svg {
+          stroke: $white;
+        }
+      }
+
+      svg {
+        @include pixelstrap-size(20px, 20px);
+        fill: $transparent-color;
+        stroke: rgba($badge-light-color, 0.8);
+
+        [dir="rtl"] & {
+          transform: scaleX(-1);
+        }
+      }
+
+      @media (max-width: 575px) {
+        margin-bottom: 12px;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+    }
+
+    @media (max-width: 991px) {
+      gap: 12px;
+      flex-wrap: nowrap;
+      overflow: auto;
+      position: relative;
+
+      .nav-link {
+        white-space: nowrap;
+      }
+    }
+  }
+
+  .panel-body {
+    .grid {
+      margin-bottom: 1rem;
+
+      @media (max-width: 575px) {
+        margin-bottom: 0.8rem;
+      }
+    }
+  }
+
+  .form-label {
+    font-weight: 500;
+    color: $badge-light-color;
+  }
+
+  .form-control,
+  .form-select {
+    font-size: 14px;
+    color: var(--body-font-color);
+    background-color: $auth-bg-color;
+  }
+
+  .bootstrap-select {
+    .dropdown-toggle {
+      border-color: $light-gray !important;
+    }
+
+    .dropdown-menu {
+      .inner {
+        max-height: 200px;
+      }
+    }
+  }
+
+  .input-group {
+    flex-wrap: nowrap !important;
+    .input-group-text {
+      background-color: rgba($lighter-white, 0.7);
+      border-radius: 6px 0 0 6px;
+      i {
+        font-weight: 400;
+      }
+    }
+    .form-control {
+      border-radius: 0 6px 6px 0;
+    }
+  }
+
+  .form-check {
+    &.form-switch {
+      @include pixelstrap-flex(flex, flex-start, center);
+      gap: 14px;
+      padding: 0;
+      margin: 0;
+
+      .form-check-input {
+        margin: 0;
+        @include pixelstrap-size(40px, 22px);
+      }
+
+      p {
+        @include pixelstrap-flex(flex, center, center);
+        gap: 6px;
+
+        svg {
+          min-width: 15px;
+          min-height: 15px;
+          @include pixelstrap-size(15px, 15px);
+        }
+      }
+    }
+  }
+
+  .helper-text {
+    p {
+      font-size: 13px;
+    }
+  }
+
+  .tab-content {
+    @media (min-width: 992px) {
+      border-left: 1px dashed $gray-60;
+      padding-left: 18px;
+      height: 100%;
+
+      [dir="rtl"] & {
+        border-left: unset;
+        border-right: 1px dashed $gray-60;
+        padding-left: unset;
+        padding-right: 18px;
+      }
+
+      .advance-options {
+        .tab-links {
+          flex-direction: row;
+          padding-bottom: 0;
+          .tab-link {
+            border-radius: 0;
+            background-color: transparent;
+          }
+        }
+        .tab-content {
+          border: unset;
+        }
+      }
+    }
+
+    .advance-options {
+      .tab-links {
+        @media (max-width: 991px) {
+          flex-direction: row !important;
+        }
+        @media (max-width: 575px) {
+          border-bottom: 1px solid $gray-60;
+        }
+        .tab-link {
+          @media (max-width: 991px) {
+            background-color: transparent !important;
+            border-radius:  0 !important;
+          }
+          @media (max-width: 575px) {
+            justify-content: center !important;
+          }
+          &.active {
+            font-weight: 400;
+          }
+        }
+      }
+      @media (max-width: 575px) {
+        .tab-links {
+          margin-bottom: 18px;
+
+          .tab-link {
+            padding-top: 10px;
+          }
+        }
+      }
+    }
+
+    .grid {
+      margin-bottom: 1.5rem;
+
+      @media (max-width: 575px) {
+        margin-bottom: 1.2rem;
+      }
+    }
+  }
+}
+.advance-options {
+  ul {
+    padding-bottom: 0 !important;
+  }
+}
+/**=====================
+   3.64 Settings CSS Start
+==========================**/

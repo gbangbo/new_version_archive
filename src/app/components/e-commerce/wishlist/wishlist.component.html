@@ -1,0 +1,62 @@
+<div class="container">
+  <div class="grid grid-cols-12 card-gap">
+    <div class="col-span-12">
+      <app-card>
+        <h5 class="flex gap-2">Wishlist <span class="c-o-light">({{ wishlistService.wishlistItems && wishlistService.wishlistItems.length ? wishlistService.wishlistItems.length : 0 }})</span></h5>
+      </app-card>
+    </div>
+
+    <div class="col-span-12">
+      <div class="grid grid-cols-12 gap-4 m-b-20">
+        @for(item of wishlistService.wishlistItems; track item) {
+          <div class="col-span-4 xxl:col-span-6 sm:col-span-12 box-col-6 inbox-data">
+            <div class="card mb-0 h-full">
+              <div class="wishlist-box card-body">
+                <div>
+                  <div class="wishlist-image">
+                    <a [routerLink]="'/product/grid'">
+                      <img [src]="item.product_image" [alt]="item.product_name">
+                    </a>
+                    <div class="wishlist-close-btn">
+                      <button class="btn trash-3" (click)="wishlistService.removeItem(item)">
+                         <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                  </div>
+                  <div class="wishlist-footer">
+                    <span class="brand-name">{{ item.brand }}</span>
+                    <a [routerLink]="'/product/grid'">
+                      <h6>{{ item.product_name }}</h6>
+                    </a>
+                    <span class="txt-{{ item.status == 'Out of Stock' ? 'danger' : 'success' }} mt-1">{{ item.status }}</span>
+                    @if(item.discount_price) {
+                      <h6 class="price">${{ item.discount_price | number: '1.2-2' }}
+                        <del>${{ item.price | number: '1.2-2' }}</del>
+                      </h6>
+                    } @else {
+                      <h6 class="price">${{ item.price | number: '1.2-2' }}</h6>
+                    }
+                    <div class="common-flex">
+                      <a class="btn bg-primary btn-hover-effect" [class.disabled]="item.status == 'Out of Stock'" [routerLink]="['/cart']">
+                        <i class="fa-solid fa-cart-shopping me-2"></i>Move to Cart
+                      </a>
+                      @if(item.status == 'Out of Stock') {
+                        <a class="btn bg-danger btn-hover-effect" href="javascript:void(0)">
+                          <i class="fa-solid fa-bell me-2"></i>Notify Me When Available
+                        </a>
+                      }
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        } @empty {
+            <div class="col-span-12">
+              <img class="max-w-full m-auto flex empty-wishlist" src="assets/images/no-data.svg">
+            </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>

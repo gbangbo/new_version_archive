@@ -1,0 +1,5 @@
+<app-card [cardClass]="'heading-space'" [padding]="false" [headerTitle]="'Top NFT'" [dropdownType]="'simple'" [options]="cardToggleOptions" [cardBodyClass]="'pt-0 px-0'">
+    <div class="recent-table overflow-x-auto nft-table custom-scrollbar">
+        <app-table [tableConfig]="tableConfig" [pageSize]="3" [showPaginate]="true" [hasCheckbox]="true"></app-table>
+    </div>
+</app-card>

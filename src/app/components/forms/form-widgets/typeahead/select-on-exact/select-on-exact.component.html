@@ -1,0 +1,17 @@
+<app-card [headerTitle]="'Select on exact'" [header]="'pb-0'" [border]="true" [padding]="false">
+  <p class="mt-1 mb-0" header5>
+    A typeahead with <code>[selectOnExact]</code> example that selects the item when it is the only one that matches the user input
+  </p>
+  <div class="typeahead-box" (clickOutside)="close()">
+      <input id="typeahead-template" type="text" class="form-control col" placeholder="Countries" [(ngModel)]="model" (input)="onSearch($event)" />
+  </div>
+  @if(filteredStates.length > 0){
+    <ul class="list-group">
+      @for(state of filteredStates; track state){
+        <li class="list-group-item" (click)="onSelect(state)">
+          {{ formatter(state) }}
+        </li>
+      }
+    </ul>
+  }
+</app-card>

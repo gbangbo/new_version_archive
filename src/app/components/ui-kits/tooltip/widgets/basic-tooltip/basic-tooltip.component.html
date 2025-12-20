@@ -1,0 +1,29 @@
+<app-card [headerTitle]="'Basic Tooltip'" [header]="'pb-0'" [border]="true" [padding]="false">
+
+    <p class="f-m-light mt-1" header5> To create a tooltip, set the tooltip content using <code>innerHTML</code> and control its visibility with <code>group-hover</code> for hover-based activation. Adjust positioning using <code>absolute</code> and <code>transform</code> classes. </p>
+
+    <span class="group relative">
+        <button class="example-popover btn btn-primary mb-0 me-0 text-white" type="button">It's magic please hover me... </button>
+
+        <app-tooltip [title]="'Surprise!!! Thank you for hovering...'"></app-tooltip>
+    </span>
+    <h5 class="mb-1 py-4 pb-0">Inline Tooltip Content</h5>
+
+    <p class="mb-0 c-o-light !block">Here, is some content about tooltips that you can set the
+        <span class="group relative">
+            <a class="txt-primary fw-bold">  tooltip</a>
+
+            <app-tooltip [title]="'tooltip'"></app-tooltip>
+        </span>
+
+        inside the content with help of tooltip and also you can add
+
+        <span class="group relative">
+            <button class="btn btn-success text-white border-0 px-3 py-1 me-0 mb-0" type="button">button </button> 
+
+            <app-tooltip [title]="'button'"></app-tooltip>
+        </span>
+        .Tooltips helps you to add more and more content. A tooltip is often used to specify extra information about something when the user moves the mouse pointer over an element
+    </p>
+
+</app-card>

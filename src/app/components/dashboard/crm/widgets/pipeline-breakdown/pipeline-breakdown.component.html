@@ -1,0 +1,29 @@
+<app-card [headerTitle]="'Pipeline Breakdown'" [padding]="false" [dropdownType]="'simple'" [options]="cardToggleOption" [cardBodyClass]="'pt-0'">
+
+    <div class="pipeline-data">
+        <div class="common-flex grid">
+            @for(details of pipelineBreakdownChart.chart_details; track details) {
+                <div class="common-flex">
+                    <div class="dotted-{{ details.color }}"></div>
+                    <span>{{ details.value }}</span>
+                </div>
+            }
+        </div>
+        <div class="pipeline-chart-container"> 
+            <div id="pipeline-chart">
+                <apx-chart
+                    [series]="pipelineBreakdownChart.chart.series"
+                    [labels]="pipelineBreakdownChart.chart.labels"
+                    [chart]="pipelineBreakdownChart.chart.chart"
+                    [plotOptions]="pipelineBreakdownChart.chart.plotOptions"
+                    [dataLabels]="pipelineBreakdownChart.chart.dataLabels"
+                    [colors]="pipelineBreakdownChart.chart.colors"
+                    [fill]="pipelineBreakdownChart.chart.fill"
+                    [legend]="pipelineBreakdownChart.chart.legend"
+                    [stroke]="pipelineBreakdownChart.chart.stroke"
+                    [responsive]="pipelineBreakdownChart.chart.responsive">
+                </apx-chart>
+            </div>
+        </div>
+    </div>
+</app-card>

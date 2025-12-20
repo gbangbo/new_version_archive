@@ -1,0 +1,9 @@
+<app-card [headerTitle]="'Random Suggestions'" [header]="'pb-0'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5> Use <code>ngx-chips</code> for select options.</p>
+    <form>
+      <tag-input [ngModel]="randomList" name="select" [onlyFromAutocomplete]="true">
+        <tag-input-dropdown [autocompleteItems]="randomSuggestion" [showDropdownIfEmpty]="true">
+        </tag-input-dropdown>
+      </tag-input>
+    </form>
+</app-card>

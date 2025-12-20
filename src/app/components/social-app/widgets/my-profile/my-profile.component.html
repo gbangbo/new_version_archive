@@ -1,0 +1,48 @@
+<div class="flex page-notification">
+    <img class="img-50 max-w-full h-auto m-r-20 rounded-full" [src]="myProfile.profile" alt>
+    <div class="grow">
+        <h6 class="font-primary pb-1">My Page</h6>
+        <span class="block">
+            <span>
+                <i class="fa-regular fa-comments"> </i>
+                <span class="px-2">
+                    Messages
+                    <span class="badge rounded-full badge-light ms-2"> {{ myProfile.message }}</span>
+                </span>
+            </span>
+        </span>
+        <span class="block">
+            <span>
+                <i class="fa-regular fa-bell"> </i>
+                <span class="px-2">
+                    Notification
+                    <span class="badge rounded-full badge-light ms-2">{{myProfile.notification }}</span>
+                </span>
+            </span>
+        </span>
+    </div>
+</div>
+<div class="social-btngroup flex">
+    <button class="btn btn-primary text-center text-white" type="button">Likes</button>
+    <button class="btn btn-light text-center ms-2" type="button">View</button>
+</div>
+<div class="likes-profile text-center">
+    <h5>
+         <span class="counter flex gap-2 justify-center">
+            <i class="fa-solid fa-heart font-danger"></i>
+            <app-counter [counter]="myProfile.total_likes"></app-counter> 
+        </span>
+        </h5>
+</div>
+<div class="text-center">{{ myProfile.this_week_likes }} New Likes This Week</div>
+<div class="customers text-center social-group">
+    <ul class="flex justify-center">
+        @for(user of myProfile.liked_by; track user) {
+        <li class="d-inline-block group relative" placement="top" >
+            <img class="img-40 rounded-full" [src]="user.profile">
+            <app-tooltip [title]="user.name"></app-tooltip>
+        </li>
+        }
+    </ul>
+</div>
+<img class="max-w-full mt-xl-5 mt-4 w-full" alt [src]="myProfile.post_image">

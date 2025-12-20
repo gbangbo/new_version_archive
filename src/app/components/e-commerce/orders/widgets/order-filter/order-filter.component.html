@@ -1,0 +1,29 @@
+<app-card>
+  <div class="grid grid-cols-12 gap-4 custom-input">
+    <div class="col-span-2 xl:col-span-6 md:col-span-12">
+      <label class="form-label" for="datetime-local">From: </label>
+      <div class="input-group flatpicker-calender">
+        <input class="form-control" placeholder="dd/mm/yyyy" [owlDateTime]="fromDate" [owlDateTimeTrigger]="fromDate">
+        <owl-date-time #fromDate [pickerType]="'calendar'"></owl-date-time>
+      </div>
+    </div>
+    <div class="col-span-2 xl:col-span-6 md:col-span-12">
+      <label class="form-label" for="datetime-local3">To: </label>
+      <div class="input-group flatpicker-calender">
+        <input class="form-control" placeholder="dd/mm/yyyy" [owlDateTime]="toDate" [owlDateTimeTrigger]="toDate">
+        <owl-date-time #toDate [pickerType]="'calendar'"></owl-date-time>
+      </div>
+    </div>
+    <div class="col-span-2 xl:col-span-6 md:col-span-12">
+      <label class="form-label">Payment Status</label>
+      <select2 [data]="paymentStatus" placeholder="Select payment status"> </select2>
+    </div>
+    <div class="col-span-2 xl:col-span-6 md:col-span-12">
+      <label class="form-label">Payment Methods</label>
+      <select2 [data]="paymentMethod" placeholder="Select payment method"></select2>
+    </div>
+    <div class="col-span-2 xl:col-span-6 md:col-span-12 flex justify-start items-center m-t-20">
+      <a class="btn btn-primary font-medium text-white" href="javascript:void(0)">Submit</a>
+    </div>
+  </div>
+</app-card>

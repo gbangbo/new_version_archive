@@ -1,0 +1,46 @@
+<app-card [headerTitle]="'Variation of Switches'" [header]="'pb-0'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>
+    Use <code>tgl-skewed/tgl-flip</code> class to create variations. </p>
+  <ul class="tg-list common-flex">
+    <li class="tg-list-item">
+      <input class="tgl tgl-skewed" id="cb3" type="checkbox">
+      <label class="tgl-btn" data-tg-off="OFF" data-tg-on="ON" for="cb3"></label>
+    </li>
+    <li>
+      <p> Skewed</p>
+    </li>
+    <li class="tg-list-item">
+      <input class="tgl tgl-flip" id="cb5" type="checkbox">
+      <label class="tgl-btn" data-tg-off="Nope" data-tg-on="Yeah!" for="cb5"></label>
+    </li>
+    <li>
+      <p>Flip</p>
+    </li>
+    <li class="tg-list-item">
+      <div class="flex">
+        <div class="grow text-end icon-state">
+          <label class="switch mb-0 square-checked">
+            <input type="checkbox" checked="">
+            <span class="switch-state bg-warning rounded-[4px]"></span>
+          </label>
+        </div>
+      </div>
+    </li>
+    <li>
+      <p>Checked</p>
+    </li>
+    <li class="tg-list-item">
+      <div class="flex">
+        <div class="grow text-end">
+          <label class="switch square-checked mb-0">
+            <input type="checkbox" checked="">
+            <span class="switch-state bg-success rounded-[4px]"></span>
+          </label>
+        </div>
+      </div>
+    </li>
+    <li>
+      <p>Flat</p>
+    </li>
+  </ul>
+</app-card>

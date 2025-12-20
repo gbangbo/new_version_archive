@@ -1,0 +1,66 @@
+<app-card [headerClass]="'Project Budget'" [border]="true" [padding]="false" [headerClass]="'m-0'" [cardBodyClass]="'project-budget-wrapper'">
+    <div class="grid grid-cols-12 gap-4 mb-4">
+        <div class="col-span-8 xxl:col-span-12 col-ed-6 box-col-12">
+          <div class="grid grid-cols-12 gap-1">
+            <div class="col-span-3 xxl:col-span-12 col-ed-4 box-col-12">
+              <label class="col-form-label">Remaining Budget</label>
+            </div>
+            <div class="col-span-9 xxl:col-span-12 col-ed-8 box-col-12">
+              <div class="progress">
+                <div class="progress-bar bg-primary" [ngStyle]="{ 'width': '65%'}"></div>
+              </div>
+              <p class="c-o-light text-end">$16,000 Used of $45,300</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-span-4 xxl:col-span-12 col-ed-6 box-col-12">
+          <div class="grid grid-cols-12 gap-1">
+            <div class="col-span-4 col-start-4 xxl:col-start-0 xxl:col-span-12 box-col-3">
+              <label class="col-form-label">Plan Your Budget</label>
+            </div>
+            <div class="col-span-5 xxl:col-span-12">
+              <div class="touchspin-wrapper"> 
+                <button class="decrement-touchspin btn-touchspin" (click)="changeValue(-1)">
+                  <i class="fa-solid fa-minus"> </i>
+                </button>
+                <input class="input-touchspin" type="number" [value]="budgetValue">
+                <button class="increment-touchspin btn-touchspin" (click)="changeValue(1)">
+                  <i class="fa-solid fa-plus"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+    <div class="grid grid-cols-12 gap-4">
+        <div class="col-span-12"> 
+          <div class="grid grid-cols-12 card-gap"> 
+            <div class="col-span-2 xxl:col-span-12 box-col-12">
+              <label class="col-form-label">Remarks and Notes</label>
+            </div>
+            <div class="col-span-10 xxl:col-span-12 box-col-12"> 
+              <textarea class="form-control" rows="3" placeholder="Add Remarks and Notes..."></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="col-span-12">
+          <div class="grid grid-cols-12 card-gap">
+            <div class="col-span-2 md:col-span-12">
+              <label class="col-form-label p-0">Notification</label>
+            </div>
+            <div class="col-span-8 md:col-span-12">
+              <div class="form-check form-switch">
+                <input class="form-check-input" id="flexSwitchCheckChecked" type="checkbox" role="switch" checked="">
+                <label class="form-check-label mb-0" for="flexSwitchCheckChecked">Send email to the user if actual cost exceeds the budget.</label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-span-12"> 
+          <div class="card-footer text-end pb-0 px-0">
+            <a class="btn button-light-primary" href="javascript:void(0)" role="button">Cancel</a>
+            <a class="btn btn-primary text-white" href="javascript:void(0)" role="button">Submit</a>
+          </div>
+        </div>
+    </div>
+</app-card>

@@ -1,0 +1,18 @@
+<app-card [headerTitle]="'Single-value Select'" [header]="'pb-0'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>
+    Use <code>ng-select2-component</code> for select.</p>
+    <form class="grid grid-cols-12 gap-4">
+      <div class="col-span-3 xl:col-span-6 sm:col-span-12">
+        <select2 [data]="selectTheme" placeholder="Please select" class="selectMode bg-light-primary"> </select2>
+      </div>
+      <div class="col-span-3 xl:col-span-6 sm:col-span-12">
+        <select2 [data]="designation" placeholder="Please select" class="bg-light-secondary"> </select2>
+      </div>
+      <div class="col-span-3 xl:col-span-6 sm:col-span-12">
+        <select2 [data]="component" placeholder="Please select" class="bg-light-primary"> </select2>
+      </div>
+      <div class="col-span-3 xl:col-span-6 sm:col-span-12">
+        <select2 [data]="selectDetails" placeholder="Please select" class="bg-light-secondary"></select2>
+      </div>
+    </form>
+</app-card>

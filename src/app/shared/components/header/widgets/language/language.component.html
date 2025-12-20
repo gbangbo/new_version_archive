@@ -1,0 +1,22 @@
+<div class="translate_wrapper" [ngClass]="layoutService.isLanguage ? 'active' : ''">
+    @if(selectedLanguage) {
+        <div class="current_lang">
+          <div class="lang">
+            <i class="flag-icon flag-icon-{{ selectedLanguage.icon }}"></i>
+            <span class="lang-txt">{{ selectedLanguage.code }}</span>
+            </div>
+        </div>
+    }
+    <div class="more_lang" [ngClass]="layoutService.isLanguage ? 'active' : ''">
+        @for(language of languages; track language) {
+            <div class="lang selected" (click)="selectLanguage(language)">
+                <i class="flag-icon flag-icon-{{ language.icon }}"></i>
+                <span class="lang-txt">{{ language.name }}
+                    @if(language.country_code) {
+                        <span> ({{ language.country_code }})</span>
+                    }
+                </span>
+            </div>
+        }
+    </div>
+  </div>

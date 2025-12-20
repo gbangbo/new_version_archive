@@ -1,0 +1,15 @@
+<app-card [headerTitle]="'Auto Size Textarea'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'autosize-textarea'">
+  <p class="f-m-light mt-1" header5>
+    Use <code>autosize-textarea </code>to define custom textarea and javascript textarea.
+  </p>
+  <form class="grid grid-cols-12 gap-4">
+    <div class="col-span-12">
+      <label class="form-label">Using SPAN Tag</label>
+      <span class="textarea" role="textbox" contenteditable></span>
+    </div>
+    <div class="col-span-12">
+      <label class="form-label">Using Javascript</label>
+      <textarea class="textarea autosize-area" rows="2" placeholder="Enter your message..."></textarea>
+    </div>
+  </form>
+</app-card>

@@ -1,0 +1,32 @@
+<div class="tab-content custom-input">
+  <div class="sidebar-body common-form e-category">
+    <form class="grid grid-cols-12 gap-4 common-form !static">
+      <div class="col-span-9 box-col-12 md:col-span-12">
+        <label class="form-label">Add Category</label>
+        <select2 [data]="productCategory" multiple="true" placeholder="Select category" class="product-select"></select2>
+      </div>
+      <div class="col-span-3 md:col-span-12 box-col-12">
+        <div class="category-btn">
+          <a class="btn button-primary" href="javascript:void(0)" (click)="createCategoryModal()">
+            <i class="me-2 fa-solid fa-plus"> </i>Create New Category</a>
+        </div>
+      </div>
+      <div class="col-span-12 common-tagify">
+        <label class="form-label">Add Tag</label>
+        <tag-input [(ngModel)]="items" name="tag" [editable]="true" class="form-control"></tag-input>
+      </div>
+      <div class="col-span-12 product-buttons">
+        <button class="btn" type="button" (click)="previous()">
+          <app-svg-icon [icon]="'back-arrow'"></app-svg-icon>Previous
+        </button>
+        <button class="btn" type="button" (click)="next()">Next
+          <app-svg-icon [icon]="'front-arrow'"></app-svg-icon>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+@if(modalOpen) {
+  <app-create-category-modal (modalOpen)="handleModalOpen($event)"></app-create-category-modal>
+}

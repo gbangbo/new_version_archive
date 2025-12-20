@@ -1,0 +1,27 @@
+<app-card [headerTitle]="'Reset Rating'" [header]="'pb-0'" [border]="true" [padding]="false" [cardClass]="'height-equal'" [cardBodyClass]="'reset-rating-wrapper'">
+  <p class="f-m-light mt-1" header5>Use<code> bar-rating </code> to allow users to select a rating. The rating value updates dynamically, and a reset button lets users revert to the default rating.</p>
+  <div class="rating-container current-ratingbar common-flex star-box justify-center">
+    <div class="star-ratings">
+      <bar-rating [rate]="faoRate" (rateChange)="onFaoRate($event)" [max]="5">
+        <ng-template ratingActive>
+          <i class="fa fa-star fa-lg" style="color: #ffb829"></i>
+        </ng-template>
+        <ng-template ratingInactive>
+          <i class="fa fa-star fa-lg" style="color: #e9edf1"></i>
+        </ng-template>
+        <ng-template ratingFraction>
+          <i class="fa fa-star fa-lg" style="color: #e9edf1"></i>
+        </ng-template>
+      </bar-rating>
+      <p></p>
+      @if(!faoRated){
+        <p class="mt-2">Current rating: {{faoRate}}</p>
+      }@else if(faoRated){
+        <div class="buttonContainer flex flex-col gap-2">
+          <p class="mt-2">Your rating: {{faoRate}}</p>
+          <button class="reset-btn btn btn-primary text-white" (click)="faoReset()">Reset</button>
+        </div>
+      }
+    </div>
+  </div>
+</app-card>

@@ -1,0 +1,65 @@
+<app-card [headerTitle]="'Tooltip Form Validation'" [header]="'pb-0'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>
+    If your form layout allows it, you can swap the <code>&#123;valid|invalid&#125;-tooltip </code>
+    classes for <code>&#123;valid|invalid&#125;-tooltip </code>classes to display validation tooltip in a styled
+    tooltip. Be sure to have a parent with position: relative on it for tooltip positioning.</p>
+    <form class="grid grid-cols-12 gap-4 needs-validation custom-input" [formGroup]="tooltipForm"(ngSubmit)="submitForm()">
+      <div class="col-span-4 md:col-span-12 position-relative">
+        <label class="form-label" for="validationTooltip01">First Name</label>
+        <input class="form-control" id="validationTooltip01" type="text" placeholder="Mark" formControlName="firstName"
+          [ngClass]="{ 'is-invalid' : tooltipForm.controls['firstName'].touched && 
+        tooltipForm.controls['firstName'].errors?.['required'] , 'is-valid' : tooltipForm.controls['firstName'].valid}">
+        @if(tooltipForm.controls['firstName'].valid) {
+          <div class="valid-tooltip">Looks's Good!</div>
+        }
+      </div>
+      <div class="col-span-4 md:col-span-12 position-relative">
+        <label class="form-label" for="validationTooltip02">Last Name</label>
+        <input class="form-control" id="validationTooltip02" type="text" placeholder="Otto" formControlName="lastName"
+          [ngClass]="{ 'is-invalid' : tooltipForm.controls['lastName'].touched && 
+        tooltipForm.controls['lastName'].errors?.['required'] , 'is-valid' : tooltipForm.controls['lastName'].valid}">
+        @if(tooltipForm.controls['lastName'].valid) {
+          <div class="valid-tooltip">Looks's Good!</div>
+        }
+      </div>
+      <div class="col-span-4 md:col-span-12 position-relative">
+        <label class="form-label" for="validationTooltipUsername">Username</label>
+        <div class="input-group has-validation flex flex-nowrap">
+          <span class="input-group-text rounded-none !rounded-l-md" id="validationTooltipUsernamePrepend">&#64;</span>
+          <input class="form-control rounded-none !rounded-r-md" id="validationTooltipUsername" type="text"
+            aria-describedby="validationTooltipUsernamePrepend" formControlName="userName" [ngClass]="{ 'is-invalid' : tooltipForm.controls['userName'].touched && 
+        tooltipForm.controls['userName'].errors?.['required'] , 'is-valid' : tooltipForm.controls['userName'].valid}">
+          @if(tooltipForm.controls['userName'].touched && tooltipForm.controls['userName'].errors?.['required']) {
+            <div class="invalid-tooltip">Please choose a unique and valid username.</div>
+          }
+        </div>
+      </div>
+      <div class="col-span-6 md:col-span-12 position-relative">
+        <label class="form-label" for="validationTooltip03">City</label>
+        <input class="form-control" id="validationTooltip03" type="text" formControlName="city" [ngClass]="{ 'is-invalid' : tooltipForm.controls['city'].touched && 
+        tooltipForm.controls['city'].errors?.['required'] , 'is-valid' : tooltipForm.controls['city'].valid}">
+        @if(tooltipForm.controls['city'].touched && tooltipForm.controls['city'].errors?.['required']) {
+          <div class="invalid-tooltip">Please provide a valid city.</div>
+        }
+      </div>
+      <div class="col-span-3 md:col-span-12 position-relative">
+        <label class="form-label" for="validationTooltip04">State</label>
+        <select2 [data]="selectState" formControlName="state" id="validationTooltip04" placeholder="Choose.." [ngClass]="{ 'is-invalid' : tooltipForm.controls['state'].touched && 
+        tooltipForm.controls['state'].errors?.['required'] , 'is-valid' : tooltipForm.controls['state'].valid}"></select2>
+        @if(tooltipForm.controls['state'].valid && tooltipForm.controls['state'].errors?.['required']) {
+          <div class="invalid-tooltip">Please select a valid state.</div>
+        }
+      </div>
+      <div class="col-span-3 md:col-span-12 position-relative">
+        <label class="form-label" for="validationTooltip05">Zip</label>
+        <input class="form-control" id="validationTooltip05" type="text" formControlName="zip" [ngClass]="{ 'is-invalid' : tooltipForm.controls['zip'].touched && 
+        tooltipForm.controls['zip'].errors?.['required'] , 'is-valid' : tooltipForm.controls['zip'].valid}">
+        @if(tooltipForm.controls['zip'].touched && tooltipForm.controls['zip'].errors?.['required']) {
+          <div class="invalid-tooltip">Please provide a valid zip.</div>
+        }
+      </div>
+      <div class="col-span-12">
+        <button class="btn btn-primary text-white" type="submit">Submit form</button>
+      </div>
+    </form>
+</app-card>

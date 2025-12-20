@@ -1,0 +1,13 @@
+<div class="container-fluid">
+    <div class="grid grid-cols-12 card-gap project-cards tabs">
+        <div class="col-span-12 project-list">
+            <app-projects-overview></app-projects-overview>
+        </div>
+        <div class="col-span-12">
+            <app-projects-tab (activeTabValue)="handleActiveTab($event)"></app-projects-tab>
+        </div>
+        <div class="col-span-12">
+            <app-projects [activeTab]="activeTab"></app-projects>
+        </div>
+    </div>
+</div>

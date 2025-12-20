@@ -1,0 +1,31 @@
+<app-card [headerTitle]="'Top Followers By Country'" [headerClass]="'m-0'" [dropdownType]="'simple'"
+    [options]="cardToggleOption" [cardBodyClass]="'pt-0'">
+
+    <div class="follower-country mt-1">
+        <div id="countryMap">
+            <div [ngStyle]="{ 'height': '262px'}"
+                leaflet 
+                [leafletOptions]="options" (leafletMapReady)="onMapReady($event)">
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-12 gap-8 top-country xxl:gap-5 mt-2">
+        @for(performer of topPerformers; track performer) {
+            <div class="col-span-6 sm:col-span-12">
+                <div class="common-space">
+                  <div>
+                    <img [src]="performer.country_flag" alt="flag">
+                    <p class="mb-0 font-medium">{{ performer.country_name }}</p>
+                  </div>
+                  <span class="c-o-light counter">
+                    <app-counter [counter]="performer.total_followers"></app-counter>
+                   </span>
+                </div>
+                <div class="progress">
+                    <div class="progress-bar bg-primary rounded-full" [ngStyle]="{ 'width': (performer.total_followers / maxFollowers) * 100 + '%'}"></div>
+                </div>
+            </div>
+        }
+    </div>
+</app-card>

@@ -1,0 +1,21 @@
+<app-card [headerTitle]="'Custom Height Progress Bars'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'progress-showcase'">
+    
+    <p class="f-m-light mt-1" header5>Set a height value on the <code> progress-bar</code>, so if you change that value the outer<code> progress</code> will automatically resize accordingly.</p>
+
+    <div class="grid grid-cols-12">
+        <div class="col-span-12">
+            <div class="progress" [ngStyle]="{ 'height': '1px'}">
+                <div class="progress-bar bg-primary" [ngStyle]="{ 'width': '25%'}"></div>
+            </div>
+            <div class="progress" [ngStyle]="{ 'height': '5px'}">
+                <div class="progress-bar bg-warning" [ngStyle]="{ 'width': '50%'}"></div>
+            </div>
+            <div class="progress" [ngStyle]="{ 'height': '11px'}">
+                <div class="progress-bar bg-danger" [ngStyle]="{ 'width': '75%'}"></div>
+            </div>
+            <div class="progress" [ngStyle]="{ 'height': '19px'}">
+                <div class="progress-bar bg-info" [ngStyle]="{ 'width': '100%'}"></div>
+            </div>
+        </div>
+    </div>
+</app-card>

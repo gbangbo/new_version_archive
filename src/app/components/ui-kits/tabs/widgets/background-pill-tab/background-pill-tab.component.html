@@ -1,0 +1,37 @@
+<app-card [headerTitle]="'Background Pill Tabs'" [header]="'pb-0'" [border]="true" [padding]="false">
+    <p class="mt-1 f-m-light" header5>
+        Use backdrop tab with <code>class="tab-links flex"</code> for tabs pill shape.
+    </p>
+        
+    <div class="bg-navbar tabs">
+        <ul class="tab-links flex nav-primary">
+            <li class="tab-link" [class.active]="activeTab == 'sofa'" (click)="handleTab('sofa')">Sofa</li>
+            <li class="tab-link" [class.active]="activeTab == 'chair'" (click)="handleTab('chair')">Chairs</li>
+            <li class="tab-link" [class.active]="activeTab == 'table'" (click)="handleTab('table')">Tables</li>
+        </ul>
+        <div class="tab-content mt-3">
+            <div class="tab-pan fade show active">
+                @if(activeTab == 'sofa') {
+                    <div class="grid grid-cols-12 gap-4">
+                        <div class="col-span-4"><img class="max-w-full h-auto" src="assets/images/switch/s1.jpg"alt="sofa"></div>
+                        <div class="col-span-4"><img class="max-w-full h-auto" src="assets/images/switch/s2.jpg"alt="sofa"></div>
+                        <div class="col-span-4"><img class="max-w-full h-auto" src="assets/images/switch/s3.jpg"alt="sofa"></div>
+                    </div>
+                } @else if(activeTab == 'chair') {
+                    <div class="grid grid-cols-12 gap-4">
+                        <div class="col-span-4"><img class="max-w-full h-auto" src="assets/images/switch/c1.jpg" alt="chairs"></div>
+                        <div class="col-span-4"><img class="max-w-full h-auto" src="assets/images/switch/c2.jpg" alt="chairs"></div>
+                        <div class="col-span-4"><img class="max-w-full h-auto" src="assets/images/switch/c3.jpg" alt="chairs"></div>
+                    </div>
+                } @else if(activeTab == 'table') {
+                    <div class="grid grid-cols-12 gap-4">
+                        <div class="col-span-4"><img class="max-w-full h-auto" src="assets/images/switch/t1.jpg" alt="table"></div>
+                        <div class="col-span-4"><img class="max-w-full h-auto" src="assets/images/switch/t2.jpg" alt="table"></div>
+                        <div class="col-span-4"><img class="max-w-full h-auto" src="assets/images/switch/t3.jpg" alt="table"></div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+</app-card>

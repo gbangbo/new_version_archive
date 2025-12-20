@@ -1,0 +1,64 @@
+<div class="modal fade modal-bookmark modal-backdrop show">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" (clickOutside)="closeModal()">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add Bookmark</h5>
+                <button class="btn-close" type="button" (click)="closeModal()"></button>
+            </div>
+            <div class="modal-body custom-input">
+                <form class="form-bookmark needs-validation" id="bookmark-form" [formGroup]="bookmarkForm" (ngSubmit)="submit()">
+                    <div class="grid grid-cols-12 gap-2">
+                    <div class="col-span-12 mb-4 mt-0">
+                        <label for="bm-weburl">Web Url</label>
+                        <input class="form-control" id="bm-weburl" type="text" autocomplete="off" placeholder="Enter web url" formControlName="url" [ngClass]="{ 'is-invalid' : bookmarkForm.controls['url'].touched && bookmarkForm.controls['url'].errors?.['required'] , 'is-valid' : bookmarkForm.controls['url'].valid}">
+                        @if(bookmarkForm.controls['url'].valid) {
+                            <div class="valid-feedback">Looks good!</div>
+                        } @else if(bookmarkForm.controls['url'].touched && bookmarkForm.controls['url'].errors?.['required']) {
+                            <div class="invalid-feedback">Please enter a web url.</div>
+                        }
+                    </div>
+                    <div class="col-span-12 mb-4 mt-0">
+                        <label for="bm-title">Title</label>
+                        <input class="form-control" id="bm-title" type="text" autocomplete="off" placeholder="Enter title" formControlName="title" [ngClass]="{ 'is-invalid' : bookmarkForm.controls['title'].touched && bookmarkForm.controls['title'].errors?.['required'] , 'is-valid' : bookmarkForm.controls['title'].valid}">
+                        @if(bookmarkForm.controls['title'].valid) {
+                            <div class="valid-feedback">Looks good!</div>
+                        } @else if(bookmarkForm.controls['title'].touched && bookmarkForm.controls['title'].errors?.['required']) {
+                            <div class="invalid-feedback">Please enter a title.</div>
+                        }
+                    </div>
+                    <div class="col-span-12 mb-4 mt-0">
+                        <label>Description</label>
+                        <textarea class="form-control" id="bm-desc" autocomplete="off" placeholder="Enter description" formControlName="description" [ngClass]="{ 'is-invalid' : bookmarkForm.controls['description'].touched && bookmarkForm.controls['description'].errors?.['required'] , 'is-valid' : bookmarkForm.controls['description'].valid}"></textarea>
+                        @if(bookmarkForm.controls['description'].valid) {
+                            <div class="valid-feedback">Looks good!</div>
+                        } @else if(bookmarkForm.controls['description'].touched && bookmarkForm.controls['description'].errors?.['required']) {
+                            <div class="invalid-feedback">Please enter a description.</div>
+                        }
+                    </div>
+                    <div class="col-span-6 md:col-span-12 mb-4 mt-0">
+                        <label class="mb-0">Tag</label>
+                        <select2 [data]="bookmarkTags" placeholder="Select tag" resettable formControlName="tag" [ngClass]="{ 'is-invalid' : bookmarkForm.controls['tag'].touched && bookmarkForm.controls['tag'].errors?.['required'] , 'is-valid' : bookmarkForm.controls['tag'].valid}"></select2>
+                        @if(bookmarkForm.controls['tag'].valid) {
+                            <div class="valid-feedback">Looks good!</div>
+                        } @else if(bookmarkForm.controls['tag'].touched && bookmarkForm.controls['tag'].errors?.['required']) {
+                            <div class="invalid-feedback">Please select tag.</div>
+                        }
+                    </div>
+                    <div class="col-span-6 md:col-span-12 mb-4 mt-0">
+                        <label class="mb-0">Collection</label>
+                        <select2 [data]="bookmarkCollection" placeholder="Select collection" resettable formControlName="collection" [id]="'collection'" [ngClass]="{ 'is-invalid' : bookmarkForm.controls['collection'].touched && bookmarkForm.controls['collection'].errors?.['required'] , 'is-valid' : bookmarkForm.controls['collection'].valid}"></select2>
+                        @if(bookmarkForm.controls['collection'].valid) {
+                            <div class="valid-feedback">Looks good!</div>
+                        } @else if(bookmarkForm.controls['collection'].touched && bookmarkForm.controls['collection'].errors?.['required']) {
+                            <div class="invalid-feedback">Please select description.</div>
+                        }
+                    </div>
+                    </div>
+                    <input id="index_var" type="hidden" value="6">
+                    <button class="btn btn-primary me-2 text-white" id="Bookmark" type="submit">Save</button>
+                    <button class="btn btn-secondary text-white" type="button" (click)="closeModal()">Cancel</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

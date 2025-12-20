@@ -1,0 +1,76 @@
+<div class="card" [ngClass]="cardClass">
+
+    @if(cardType == 'simple') {
+      @if(headerTitle) {
+        <div class="card-header card-no-border" [class.card-no-border]="!border" [class.pb-2]="padding" [ngClass]="header">
+          @if(dropdownType && options || rightSideDetails) {
+            <div class="header-top">
+              @if(headerTitle) {
+                <h5 [ngClass]="headerClass">{{ headerTitle }}
+                  <ng-content select="[header]"></ng-content>
+                </h5>
+              }
+              <ng-content select="[header2]"></ng-content>
+  
+              <div class="card-header-right-icon">
+                <ng-content select="[header3]"></ng-content>
+                @if(dropdownType && options) {
+                  <app-card-dropdown-button [dropdownType]="dropdownType" [options]="options" [dropdownClass]="dropdownClass"></app-card-dropdown-button>
+                }
+              </div>
+            </div>
+            <ng-content select="[headerTitleValue]"></ng-content>
+          } @else {
+            <h5 [ngClass]="headerClass">
+              <ng-content select="[icon]"></ng-content>
+              {{ headerTitle }}
+              <ng-content select="[header4]"></ng-content>
+            </h5>
+            <ng-content select="[header5]"></ng-content>
+          }
+        </div>
+      }
+    }
+  
+    @if(cardType == 'classic') {
+      <div class="card-header card-no-border">
+        @if(headerTitle) {
+          <div class="common-space">
+            <div class="left-header-content">
+              <h5>{{ headerTitle }}</h5>
+  
+              @if(sortDescription) {
+                <p class="m-0 c-o-light">{{ sortDescription }}</p>
+              }
+            </div>
+  
+            @if (buttonText) {
+              <div class="card-header-right-btn">
+                <a class="c-o-light" href="javascript:void(0)" [routerLink]="path">{{ buttonText }}</a>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+  
+    @if(cardType == 'dataTable') {
+      @if(headerTitle) {
+        <div class="card-header" [class.card-no-border]="!border" [class.pb-2]="padding">
+          <div class="header-top">
+            <h5 [ngClass]="headerClass">{{ headerTitle }}
+              <ng-content select="[header6]"></ng-content>
+            </h5>
+            <ng-content select="[header7]"></ng-content>
+          </div>
+        </div>
+      }
+    }
+  
+    <div class="card-body" [ngClass]="cardBodyClass">
+          <ng-content></ng-content>
+      </div>
+  
+      <ng-content select="[details]"></ng-content>
+</div>
+  

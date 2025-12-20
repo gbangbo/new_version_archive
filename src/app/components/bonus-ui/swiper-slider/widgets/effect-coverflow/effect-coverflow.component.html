@@ -1,0 +1,15 @@
+<app-card [headerTitle]="'Effect Coverflow'" [header]="'pb-0'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5> The height of the image can be adjusted by adding the <code>coverflow-slider</code> class. This will apply a 3D coverflow effect to the images, allowing them to slide in a dynamic and visually appealing manner, with the central image being highlighted while others are displayed at an angle.</p>
+
+        <div class="swiper coverflow-slider" #swiperContainer>
+        <div class="swiper-wrapper">
+            @for(slider of effectCoverFlow; track slider){
+                <div class="swiper-slide"> 
+                    <img class="max-w-full h-auto" [src]="slider.image" alt="image">
+                </div>
+            }
+        </div>
+      
+        <div class="swiper-pagination"></div>
+      </div>
+</app-card>

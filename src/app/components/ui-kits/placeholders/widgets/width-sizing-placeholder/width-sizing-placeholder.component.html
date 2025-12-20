@@ -1,0 +1,31 @@
+<app-card [headerTitle]="'Width & Sizing'" [header]="'pb-0'" [border]="true" [padding]="false">
+
+    <p class="f-m-light mt-1" header5><code>placeholder</code> class + grid column (e.g., col-6) sets width. Works as text replacement or modifier class.Create flexible placeholders: <code>placeholder</code> + <code>grid </code>for <code>width</code>. Replace text or modify components.</p>
+
+    <div class="grid grid-cols-12 gap-4">
+      <div class="col-span-12 xxl:col-span-6 md:col-span-12 box-col-6">
+        <div class="card-wrapper border rounded-3 h-full">
+          <h6 class="sub-title pb-1">Width</h6>
+          <p class="f-m-light">You can change the width through grid column classes, width utilities, or inline styles.<code> (like: w-25 , w-50 , w-75 , w-full ) </code></p>
+          <div class="card-body placeholder-glow !p-0">
+            <span class="placeholder placeholder-light w-[50%] min-h-[16px]"></span>
+              <span class="placeholder placeholder-light w-[75%] min-h-[16px]"></span>
+              <span class="placeholder placeholder-light w-[100%] min-h-[16px]"> </span>
+              <span class="placeholder placeholder-light w-[25%] min-h-[16px]"></span>
+            </div>
+        </div>
+      </div>
+      <div class="col-span-12 xxl:col-span-6 md:col-span-12 box-col-6">
+        <div class="card-wrapper border rounded-3 h-full">
+          <h6 class="sub-title pb-1">Sizing</h6>
+          <p class="f-m-light">The size of <code>placeholder</code> are based on the typographic style of the parent element. Customize them with sizing modifiers: <code>placeholder-lg, placeholder-sm, or placeholder-xs</code>.</p>
+          <div class="card-body placeholder-glow grid grid-cols-12 !p-0 gap-[10px]">
+             <span  class="placeholder col-span-12 placeholder-light min-h-[19.2px]"></span>
+              <span class="placeholder col-span-12 placeholder-light min-h-[16px]"></span>
+              <span class="placeholder col-span-12 placeholder-light min-h-[12.8px]"></span>
+              <span class="placeholder col-span-12 placeholder-light min-h-[9.6px]"></span>
+            </div>
+        </div>
+      </div>
+    </div>
+</app-card>

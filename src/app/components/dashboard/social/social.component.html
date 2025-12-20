@@ -1,0 +1,44 @@
+<div class="container dashboard-5">
+  <div class="grid grid-cols-12 card-gap">
+    <div class="col-span-12 od-xl-1">
+      <div class="grid grid-cols-12 card-gap">
+
+        @for (details of socialMediaDetails; track details) {
+          <div class="col-span-2 s-xxl-3 box-col-4">
+            <app-social-media-details [details]="details"></app-social-media-details>
+          </div>
+        }
+
+      </div>
+    </div>
+    <div class="col-span-3 xxl:col-span-4 xl:col-span-5 md:col-span-12 od-xl-2 box-col-4">
+      <app-social-media-announcement></app-social-media-announcement>
+    </div>
+    <div class="col-span-6 xxl:col-span-4 xl:col-span-12 od-xl-4 box-col-4">
+      <app-instagram-subscribers></app-instagram-subscribers>
+    </div>
+    <div class="col-span-3 xxl:col-span-4 xl:col-span-7 md:col-span-12 od-xl-3 box-col-4">
+      <app-facebook-campaign></app-facebook-campaign>
+    </div>
+    <div class="col-span-8 xxl:col-span-7 xl:col-span-12 od-xl-5 box-col-7">
+      <app-all-campaigns></app-all-campaigns>
+    </div>
+    <div class="col-span-4 xxl:col-span-5 xl:col-span-12 od-xl-6 box-col-5">
+      <div class="grid grid-cols-12 card-gap social-clicks">
+
+        @for(analyticsChart of socialAnalyticsChart; track analyticsChart) {
+          <div class="col-span-6 sm:col-span-12">
+            <app-social-analytics-charts [analyticsChart]="analyticsChart"></app-social-analytics-charts>
+          </div>
+        }
+        
+      </div>
+    </div>
+    <div class="col-span-7 md:col-span-12 od-xl-7">
+      <app-social-analytics></app-social-analytics>
+    </div>
+    <div class="col-span-5 md:col-span-12 od-xl-8">
+      <app-top-followers></app-top-followers>
+    </div>
+  </div>
+</div>

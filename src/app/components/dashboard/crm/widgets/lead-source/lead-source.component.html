@@ -1,0 +1,42 @@
+<div class="card">
+    <div class="card-header card-no-border">
+      <div class="header-top">
+        <div class="total-source"> 
+          <h5 class="pb-1">Lead Source</h5>
+          <h6>
+            92%
+            <span class="c-o-light f-14 ms-1">( Total lead source )</span>
+          </h6>
+        </div>
+        <app-card-dropdown-button [dropdownType]="'simple'" [options]="cardToggleOption"></app-card-dropdown-button>
+      </div>
+    </div>
+    <div class="card-body pt-0">
+      <div class="main-lead-source">
+        <div class="lead-source-1">
+          <div class="source-txt">
+            @for(lead of leadSource;track lead; let i = $index){
+                 @if(i + 1 <= 1){
+                    <span class="mb-1">{{ lead.title }}</span>
+                    <h5>
+                      <span class="counter"><app-counter [counter]="lead.value"></app-counter></span>
+                      %
+                    </h5>
+                 }
+                @if(i + 1 > 1){
+                  <div class="lead-source-{{ i + 1 }}">
+                    <div class="source-txt">
+                      <span>{{ lead.title }}</span>
+                      <h5>
+                        <span class="counter"><app-counter [counter]="lead.value"></app-counter></span>
+                        %
+                      </h5>
+                    </div>
+                  </div>
+                }
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+</div>

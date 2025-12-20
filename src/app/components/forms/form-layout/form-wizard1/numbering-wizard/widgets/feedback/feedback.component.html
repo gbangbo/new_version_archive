@@ -1,0 +1,35 @@
+<form class="stepper-three needs-validation custom-input" novalidate="">
+  <div class="grid grid-cols-12 gap-4 w-full">
+    <div class="col-span-6 sm:col-span-12">
+      <label class="form-label" for="email-basic">LinkedIn<span class="txt-danger">*</span></label>
+      <input class="form-control" id="email-basic" type="url" placeholder="https://linkedIn.com/cuba">
+      <div class="invalid-feedback">Please enter your valid link</div>
+      <div class="valid-feedback">
+        Looks's Good!</div>
+    </div>
+    <div class="col-span-6 sm:col-span-12">
+      <label class="form-label" for="validationCustom996">Github<span class="txt-danger">*</span></label>
+      <input class="form-control" id="validationCustom996" type="url" placeholder="https://github.com/cuba">
+      <div class="invalid-feedback">Please enter your valid link</div>
+      <div class="valid-feedback">
+        Looks's Good! </div>
+    </div>
+    <div class="col-span-12">
+      <label class="form-label" for="validationCustom09">Select State<span class="txt-danger">*</span></label>
+      <select2 [data]="selectState" placeholder="Choose.."> </select2>
+      <div class="invalid-feedback">Please select a valid state.</div>
+    </div>
+    <div class="col-span-12">
+      <label class="form-label" for="giveFeedBack">Give Feedback</label>
+      <textarea class="form-control" id="giveFeedBack"></textarea>
+      <div class="invalid-feedback">Please enter a message in the textarea.</div>
+    </div>
+    <div class="col-span-12">
+      <div class="form-check flex gap-2">
+        <input class="form-check-input" id="invalidCheck46" type="checkbox" value="">
+        <label class="form-check-label mb-0" for="invalidCheck46">Agree to terms and conditions</label>
+        <div class="invalid-feedback">You must agree before submitting.</div>
+      </div>
+    </div>
+  </div>
+</form>

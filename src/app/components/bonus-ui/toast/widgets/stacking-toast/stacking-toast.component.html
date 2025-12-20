@@ -1,0 +1,18 @@
+<app-card [headerTitle]="'Stacking Toasts'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'toast-rtl'">
+
+    <p class="f-m-light mt-1" header5>You can stack toasts by wrapping them in a toast container, which will vertically add some spacing.<code>[toast-*]</code> to change icons colors.</p>
+
+    <div class="toast-container position-static stacking-toast">
+        @for(toast of stackingToast; track toast) {
+            <div class="toast" [ngClass]="toast.show ? 'show' : 'hide'">
+                <div class="toast-header">
+                    <app-feather-icon [icon]="toast.icon" [class]="'toast-icons toast-'+toast.icon_color"></app-feather-icon>
+                    <strong class="me-auto">{{ toast.title }}</strong>
+                    <small [ngClass]="toast.time == 'just now' ? 'txt-danger' : 'txt-secondary'">{{ toast.time }}</small>
+                  <button class="btn-close" type="button" (click)="closeToast(toast.id)"></button>
+                </div>
+                <div class="toast-body toast-dark">{{ toast.description }}</div>
+            </div>
+        }
+    </div>
+</app-card>

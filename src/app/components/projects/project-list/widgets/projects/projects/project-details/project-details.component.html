@@ -1,0 +1,53 @@
+@if(project) {
+  <div class="progress-project-box">
+    <div class="list-box {{ project.status == 'pending' ? 'title-line-primary' : project.status == 'in_progress' ? 'title-line-warning' : 'title-line-success' }}">
+      <div class="header-top">
+          <span class="badge badge-light-{{ project.status == 'pending' ? 'primary' : project.status == 'in_progress' ? 'warning' : 'success' }}">
+              {{ project.status.replace('_', ' ') | titlecase }}
+          </span>
+        <p class="mb-0 c-o-light">
+          <app-svg-icon [icon]="'vector-calendar'" [class]="'me-2'"></app-svg-icon>
+          {{ project.date }}
+        </p>
+      </div>
+      <div class="project-body">
+        <div class="common-f-start gap-3">
+          <img class="max-w-full" [src]="project.project_banner" alt="dashboard">
+          <div>
+            <h6>{{ project.project_name }}</h6>
+            <span>{{ project.project_description }}</span>
+          </div>
+        </div>
+        <div class="common-space">
+          <p class="mb-0 c-o-light">Tasks</p>
+          <span>{{ project.progress }}%</span>
+        </div>
+        <div class="progress">
+          <div class="progress-bar bg-{{ project.status == 'pending' ? 'primary' : project.status == 'in_progress' ? 'warning' : 'success' }}" [ngStyle]="{ 'width': project.progress + '%'}"></div>
+        </div>
+        <div class="project-bottom common-space">
+          <ul class="common-f-start">
+              @if(project.team_member && project.team_member.length) {
+                  @for(member of project.team_member; track member) {
+                      @if(member.profile) {
+                          <li class="relative group">
+                              <img class="common-circle" [src]="member.profile" alt="user">
+                              <app-tooltip [title]="member.name"></app-tooltip>
+                            </li>
+                      } @else {
+                        <li class="relative group"> 
+                          <div class="common-circle bg-lighter-{{ chatService.getTextColor(chatService.getUserText(member.name)) }}">{{ chatService.getUserText(member.name, 'singleText') }}</div>
+                          <app-tooltip [title]="member.name"></app-tooltip>
+                        </li>
+                      }
+                  }
+              }
+          </ul>
+          <p class="mb-0">Budget 
+            <span>{{ project.budget }}</span>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+}

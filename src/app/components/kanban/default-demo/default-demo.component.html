@@ -1,0 +1,77 @@
+<div class="card shadow-lg rounded">
+  <div class="card-header card-no-border pb-0">
+      <h5 class="text-xl font-semibold">Create Board and Cards</h5>
+      <p class="f-m-light mt-1">Add boards and tasks</p>
+  </div>
+  <div class="card-body">
+
+      <!-- Create Board Form -->
+      <div id="demo1" class="mb-4">
+          <form [formGroup]="createBoardForm" (ngSubmit)="createBoard()">
+              <div class="form-group">
+                  <h3 class="pb-2 text-2xl font-semibold">Create Board</h3>
+                  <input
+                      type="text"
+                      formControlName="boardTitle"
+                      placeholder="Enter board title"
+                      class="form-control mb-4 p-2 border border-gray-300 rounded-md"
+                  />
+                  <button type="submit" class="btn btn-primary bg-blue-500 text-white py-2 px-4 rounded-md" [disabled]="createBoardForm.invalid">
+                      Add Board
+                  </button>
+              </div>
+          </form>
+      </div>
+
+      <!-- Kanban Board -->
+      <div class="grid grid-cols-12 card-gap">
+        @for(column of columns; track column) {
+            <div class="col-span-3 xl:col-span-6 mb-4">
+                <div class="kanban-column border rounded p-4 bg-light bg-gray-100" 
+                    (dragover)="allowDrop($event)" 
+                    (drop)="onDrop($event, column)">
+                    <h5 class="mb-4 text-lg font-semibold">{{ column.title }}</h5>
+                    <ul class="list-none">
+                        @if (column.tasks.length === 0) {
+                            <li
+                              class="kanban-task p-3 bg-white rounded-lg shadow-sm text-muted text-center"
+                              (dragover)="allowDrop($event)"
+                              (drop)="onDropInsideColumn($event, column, 0)">
+                              Drop here
+                            </li>
+                          }
+                        @for(task of column.tasks; track task; let i = $index) {
+                            <li class="kanban-task p-3 bg-white rounded-lg shadow-sm mb-4" 
+                                draggable="true" 
+                                (dragstart)="onDragStart($event, task, column, i)"
+                                (dragover)="allowDrop($event)"
+                                (drop)="onDropInsideColumn($event, column, i)">
+                                {{ task }}
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        }
+    </div>
+
+      <!-- Create Card Form -->
+      <div class="mt-6">
+          <form [formGroup]="createCardForm" (ngSubmit)="addCard()">
+              <div class="form-group">
+                  <h3 class="pb-2 text-2xl font-semibold">Create Card</h3>
+                  <select formControlName="columnIndex" class="form-control mb-4 p-2 border border-gray-300 rounded-md">
+                      <option [value]="null" disabled>Select Board</option>
+                      @for(column of columns; ; let i = $index; track column) {
+                        <option [value]="i">{{ column.title }}</option>
+                      }
+                  </select>
+                  <input type="text" formControlName="cardText" placeholder="Enter card text" class="form-control mb-4 p-2 border border-gray-300 rounded-md"/>
+                  <button type="submit" class="btn btn-success bg-green-500 text-white py-2 px-4 rounded-md" [disabled]="createCardForm.invalid">
+                    Add Card
+                  </button>
+              </div>
+          </form>
+      </div>
+  </div>
+</div>

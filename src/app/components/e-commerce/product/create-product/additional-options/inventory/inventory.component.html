@@ -1,0 +1,44 @@
+<form class="common-form grid grid-cols-12 gap-4 !static" id="advance-tab">
+  <div class="col-span-6 sm:col-span-12">
+    <label class="form-label">Stock Availability</label>
+    <select2 [data]="stockAvailability" placeholder="In stock"> </select2>
+  </div>
+  <div class="col-span-6 sm:col-span-12">
+    <label class="form-label">Low Stock Level</label>
+    <select2 [data]="stockLevel" placeholder="Low Stock (5 or less)"></select2>
+  </div>
+  <div class="col-span-4 xxl:col-span-6 sm:col-span-12">
+    <label class="form-label" for="exampleFormControlInputa">Stock Quantity 
+      <span class="txt-danger">*</span>
+    </label>
+    <input class="form-control" id="exampleFormControlInputa" type="number" placeholder="Quantity">
+  </div>
+  <div class="col-span-4 xxl:col-span-6 sm:col-span-12">
+    <label class="form-label">Restock Date 
+      <span class="txt-danger">*</span>
+    </label>
+    <div class="input-group flatpicker-calender product-date">
+      <input class="form-control" id="datetime-local2" type="date">
+    </div>
+  </div>
+  <div class="col-span-4 xxl:col-span-12">
+    <label class="form-label" for="exampleFormControlInputc">Pre-Order 
+      <span class="txt-danger">*</span>
+    </label>
+    <input class="form-control" id="exampleFormControlInputc" type="number" placeholder="Quantity">
+  </div>
+  <div class="col-span-12">
+    <div class="form-check flex gap-2">
+      <input class="form-check-input" id="gridCheck" type="checkbox">
+      <label class="form-check-label m-0" for="gridCheck">This is a digital product.</label>
+    </div>
+  </div>
+  <div class="col-span-12 product-buttons">
+    <button class="btn" type="button" (click)="previous()">
+      <app-svg-icon [icon]="'back-arrow'"></app-svg-icon>Previous
+    </button>
+    <button class="btn" type="button" (click)="next()">Next
+      <app-svg-icon [icon]="'front-arrow'"></app-svg-icon>
+    </button>
+  </div>
+</form>

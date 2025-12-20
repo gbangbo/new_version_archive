@@ -1,0 +1,10 @@
+<app-card [headerTitle]="'Initial Letter Avatar'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'justify-self-center lg:justify-self-start'">
+
+    <p class="f-m-light mt-1" header5>Use initial letter as a avatar.</p>
+
+    <div class="letter-avatar">
+        @for(avatar of letterAvatar; track avatar) {
+            <h6 class="txt-{{ avatar.color }} bg-light-{{ avatar.color }}">{{ avatar.profile_text }}</h6>
+        }
+    </div>
+</app-card>

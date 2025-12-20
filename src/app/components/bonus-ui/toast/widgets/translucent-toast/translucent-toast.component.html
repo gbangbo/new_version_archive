@@ -1,0 +1,18 @@
+<app-card [cardClass]="'overflow-hidden'" [headerTitle]="'Stacking Toasts'" [border]="true" [padding]="false" [cardBodyClass]="'toast-rtl bg-dark'">
+
+    <p class="f-m-light mt-1" header5>Use<code> hide </code>class to hide toast and <code>show </code>class to visible toast and given directions.<code>[toast-*]</code> to change icons colors.</p>
+
+    <div class="toast-container position-static stacking-toast">
+        @for(toast of translucentToasts; track toast) {
+            <div class="toast" [ngClass]="toast.show ? 'show' : 'hide'">
+                <div class="toast-header">
+                    <app-feather-icon [icon]="'disc'" [class]="'toast-icons toast-'+toast.icon_color"></app-feather-icon>
+                    <strong class="me-auto">{{ toast.title }}</strong>
+                    <small class="text-muted d-sm-block hidden" [ngClass]="toast.time == 'just now' ? 'txt-danger' : 'txt-secondary'">{{ toast.time }}</small>
+                  <button class="btn-close" type="button" (click)="closeToast(toast.id)"></button>
+                </div>
+                <div class="toast-body toast-dark">{{ toast.description }}</div>
+            </div>
+        }
+    </div>
+</app-card>

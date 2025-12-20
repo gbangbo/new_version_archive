@@ -1,0 +1,17 @@
+<app-card [cardClass]="'height-equal'" [header]="'pb-0'" [headerTitle]="'Heading Dropdown'" [border]="true" [padding]="false" [cardBodyClass]="'rtl-dropdown heading-dropdown'">
+  <p class="f-m-light mt-1" header5>Use <code>heading-dropdown </code>class to create dropdown heading.</p>
+
+  <div class="common-flex">
+    <div class="btn-group" (clickOutside)="clickOutside()">
+      <button class="btn btn-success border rounded-full dropdown-toggle text-white" type="button" (click)="toggleDropdown()">Party</button>
+      <ul class="dropdown-menu dropdown-block" [class.show]="dropdownOpen">
+        <li><a class="dropdown-item fw-bold fs-6" href="javascript:void(0)">Party List</a>
+          <ul>
+            <li> <a class="dropdown-item" href="javascript:void(0)">Balloons</a></li>
+            <li> <a class="dropdown-item" href="javascript:void(0)">Cake </a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</app-card>

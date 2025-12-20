@@ -1,0 +1,34 @@
+<app-card [headerTitle]="'Sortable Swap Lists'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'swap-wrapper'">
+    <p class="f-m-light mt-1" header5>
+      Use the <code>cdkDropListGroup</code> directive to group multiple drag-and-drop lists and enable nested sorting.  
+      The <code>cdkDropList</code> directive allows reordering items within the same list, while <code>cdkDrag</code> enables individual items to be draggable.  
+      The <code>drop()</code> method updates the item order when an element is repositioned.  
+      Nested lists are dynamically rendered using <code>*ngTemplateOutlet</code>, ensuring hierarchical structures can be reordered efficiently.
+    </p>
+
+    <ul class="list-group" cdkDropList (cdkDropListDropped)="drop($event, swapList)" >
+        @for(item of swapList; track item) {
+            <li class="list-group-item nested-1" cdkDrag>
+                <img [src]="item.icon" alt="icon"> {{ item.title }}
+                @if(item.children && item.children.length) {
+                    <ul class="list-group">
+                        @for(child of item.children; track child) {
+                            <li class="list-group-item nested-2">
+                                <img [src]="child.icon" alt="icon"> {{ child.title }}
+                                @if(child.children && child.children.length) {
+                                    <ul class="list-group">
+                                        @for(subChild of child.children; track subChild) {
+                                            <li class="list-group-item nested-3">
+                                                <img [src]="subChild.icon" alt="icon"> {{ subChild.title }}
+                                            </li>
+                                        }
+                                    </ul>
+                                }
+                            </li>
+                        }
+                    </ul>
+                }
+            </li>
+        }
+    </ul>
+  </app-card>

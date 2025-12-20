@@ -1,0 +1,16 @@
+<app-card [headerTitle]="'Vertical Slider'" [header]="'pb-0'" [border]="true" [padding]="false"> 
+    <p class="f-m-light mt-1" header5>
+        To create a vertical image slider, use the <code>swiper</code> package with the <code>vertical-swiper</code> and <code>sweeper-h</code> classes. This setup allows the images to scroll vertically, with height automatically adjusted based on the content. In this example, the <code>Swiper</code> module is configured with vertical direction, autoplay, and pagination for smooth navigation.
+    </p>
+        <div class="swiper vertical-swiper swiper-h" #swiperContainer>
+        <div class="swiper-wrapper"> 
+            @for(slider of verticalSlider; track slider){
+                <div class="swiper-slide">
+                    <img class="max-w-full h-auto" [src]="slider.image" alt="image">
+                </div>
+            }
+        </div>
+        <div class="swiper-pagination"></div>
+      </div>
+</app-card>
+

@@ -1,0 +1,40 @@
+<form class="grid grid-cols-12 gap-4 needs-validation" novalidate="" [formGroup]="formValidation" (ngSubmit)="next()">
+    <div class="col-span-6 sm:col-span-12 bank-search">
+      <label class="form-label" for="aadharnumber-wizard">Aadhar Number</label>
+      <input class="form-control" id="aadharnumber-wizard" type="Search" placeholder="xxxx xxxx xxxx xxxx" formControlName="aadhar_number"
+      [ngClass]="{ 'is-invalid' : formValidation.controls['aadhar_number'].touched && formValidation.controls['aadhar_number'].errors?.['required'] , 'is-valid' : formValidation.controls['aadhar_number'].valid}">
+      @if(formValidation.controls['aadhar_number'].touched && formValidation.controls['aadhar_number'].errors?.['required']) {
+       <div class="valid-feedback">Looks good!</div>
+     }
+    </div>
+    <div class="col-span-6 sm:col-span-12 bank-search">
+      <label class="form-label" for="pan-wizard">PAN</label>
+      <input class="form-control" id="pan-wizard" type="Search" placeholder="xxxxxxxxxx" formControlName="pan_number"
+      [ngClass]="{ 'is-invalid' : formValidation.controls['pan_number'].touched && formValidation.controls['pan_number'].errors?.['required'] , 'is-valid' : formValidation.controls['pan_number'].valid}">
+      @if(formValidation.controls['pan_number'].touched && formValidation.controls['pan_number'].errors?.['required']) {
+       <div class="valid-feedback">Looks good!</div>
+     }
+    </div>
+    <div class="col-span-12"> 
+      <h6>Choose from these popular banks</h6>
+      <div class="bank-selection">
+        <div class="form-check radio radio-primary ps-0">
+          <ul class="radio-wrapper">
+            @for(details of bankAccount; track details){
+              <li> 
+                <input class="form-check-input" [id]="details.id" type="radio" name="radio2" value="option2">
+                <label class="form-check-label" [for]="details.id">
+                  <img [src]="details.image" alt="{{ details.alt }}">
+                  <span>{{ details.title }}</span>
+                </label>
+              </li>
+            }
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="col-span-12 common-flex justify-end"> 
+      <button class="btn btn-primary text-white" (click)="previous()">Previous</button>
+      <button class="btn btn-primary text-white" type="submit">Continue</button>
+    </div>
+  </form>

@@ -1,0 +1,6 @@
+<app-card [headerTitle]="'Best Sellers'" [padding]="false" [dropdownType]="'simple'" [options]="cardToggleOption"[cardBodyClass]="'px-0 pt-0'">
+
+    <div class="seller-table overflow-x-auto custom-scrollbar">
+        <app-table [hasCheckbox]="true" [tableConfig]="tableConfig" [pageSize]="4"></app-table>
+    </div>
+</app-card>

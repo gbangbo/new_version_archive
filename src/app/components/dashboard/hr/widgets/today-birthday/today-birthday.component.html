@@ -1,0 +1,29 @@
+<app-card [cardClass]="'bhd-user-cards'">
+    <div class="birthday-cards text-center">
+        <h5>Today's Birthday !!!</h5>
+        <div class="swiper swiper-11">
+            <owl-carousel-o [options]="options">
+                @for(user of birthdayUsers; track user) {
+                    <ng-template carouselSlide>
+                        <div class="swiper-slide">
+                            <div class="birthday-usercard">
+                              <div class="btd-user">
+                                  <img class="max-w-full h-auto" [src]="user.image" alt="Birthday user">
+                                <div class="verified-user">
+                                  <i class="fa-solid fa-check"></i>
+                              </div>
+                              </div>
+                              <h5>{{ user.name }}</h5>
+                              <h6 class="font-normal">{{ user.role }}</h6>
+                            </div>
+                          </div>
+                    </ng-template>
+                }
+            </owl-carousel-o>
+        </div>
+        <div class="send-wishes btn-hover-effect">
+            <span class="f-14 font-medium">Send Wishes</span>
+            <i class="fa-solid fa-chevron-right ms-auto"></i>
+        </div>
+    </div>
+</app-card>

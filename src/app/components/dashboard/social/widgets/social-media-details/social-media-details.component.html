@@ -1,0 +1,30 @@
+<app-card [cardClass]="'social-widget widget-hover'">
+  <div class="flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <div class="social-icons">
+        <img [src]="details.platform_logo" [alt]="details.platform_name"></div>
+        <span>{{ details.platform_name }}</span>
+    </div>
+    <span class="font-{{ details.type == 'increase' ? 'success' : 'danger' }} f-12 d-xxl-block">{{ details.type == 'increase' ? '+' : '-' }}{{ details.rate }}%</span>
+  </div>
+  <div class="social-content">
+    <div>
+      <h5 class="mb-1 counter">
+        <app-counter [counter]="details.value"></app-counter>
+      </h5>
+      <span class="f-light">{{ details.title }}</span>
+    </div>
+    <div class="social-chart">
+      <div id="radial-{{ details.platform_name }}">
+        <apx-chart
+          [series]="details.chart_details.series"
+          [chart]="details.chart_details.chart"
+          [plotOptions]="details.chart_details.plotOptions"
+          [colors]="details.chart_details.colors"
+          [stroke]="details.chart_details.stroke"
+          [responsive]="details.chart_details.responsive">
+        </apx-chart>
+      </div>
+    </div>
+  </div>
+</app-card>

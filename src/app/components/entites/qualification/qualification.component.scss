@@ -1,0 +1,44 @@
+.hSoc {
+  height: 39px !important;
+}
+
+code {
+  color: #c33 !important;
+  font-size: 13px !important;
+}
+
+th {
+  color: #fff !important;
+  background: #144066 !important;
+}
+
+::ng-deep .ant-table.ant-table-bordered > .ant-table-container > .ant-table-content > table, .ant-table.ant-table-bordered > .ant-table-container > .ant-table-header > table {
+  font-size: 13px !important;
+}
+
+:host ::ng-deep .ant-table-thead > tr > th, .ant-table-tbody > tr > td, .ant-table tfoot > tr > th, .ant-table tfoot > tr > td {
+  padding: 4px 4px !important;
+}
+
+
+/* Uniquement sur petits écrans (moins de 768px) */
+@media (max-width: 767px) {
+  ::ng-deep .image-upload-container {
+    max-width: 400px !important;
+  }
+  ::ng-deep .image-preview {
+    width: 317px !important;
+  }
+}
+
+::ng-deep .ant-select{
+  width: 100% !important;
+}
+::ng-deep .ant-select-single .ant-select-selector {
+  border-radius: 4px !important;
+  height: 37px !important;
+  //background-color: #fafafa !important;
+}
+.main-setting .form-control, .main-setting .form-select {
+  background-color: #fff !important;
+}

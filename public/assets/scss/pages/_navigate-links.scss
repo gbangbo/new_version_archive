@@ -1,0 +1,57 @@
+/**=====================
+    3.44 Navigate Links CSS start
+==========================**/
+
+$border-opacities: (
+  "primary": 1,
+  "opacity-75": 0.75,
+  "opacity-50": 0.5,
+  "opacity-25": 0.25,
+  "opacity-10": 0.1,
+);
+
+@each $name, $opacity in $border-opacities {
+  .border-#{$name} {
+    border: 1px solid rgba($primary-color, $opacity);
+  }
+}
+$background-opacities: (
+  "primary": 1,
+  "opacity-75": 0.75,
+  "opacity-50": 0.5,
+  "opacity-25": 0.25,
+  "opacity-10": 0.1,
+);
+
+// Mixin for background with opacity for only primary color
+
+@each $name, $opacity in $background-opacities {
+  .bg-#{$name} {
+    background-color: rgba($primary-color, $opacity);
+  }
+}
+
+//
+$underline-opacities: (
+  "primary": 1,
+  "opacity-100": 100,
+  "opacity-75": 0.75,
+  "opacity-50": 0.5,
+  "opacity-25": 0.25,
+  "opacity-10": 0.1,
+);
+
+@each $name, $opacity in $underline-opacities {
+  .underline-#{$name} {
+    text-decoration: underline;
+    text-decoration-color: rgba($primary-color, $opacity);
+  }
+}
+
+.link-body-emphasis {
+  text-decoration: underline;
+}
+
+/**=====================
+    3.44 Navigate Links CSS end
+==========================**/

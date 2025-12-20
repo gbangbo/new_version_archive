@@ -1,0 +1,143 @@
+<div class="container main-setting">
+    <div class="grid grid-cols-12 card-gap">
+        <div class="col-span-12">
+            <app-card [headerTitle]="'AJOUT DE DEPARTEMENT'" [header]="'pb-0'" [border]="true" [padding]="false">
+                <div class="grid grid-cols-12 gap-4 tabs">
+                    <div class="col-span-5 lg:col-span-12">
+                        <div class="tab-links nav-primary" orientation="vertical">
+                            @if(errorTexte !=''){
+                            <div class="alert alert-danger flex items-center" role="alert">
+                                <div>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-circle stroke-danger"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12" y2="16"></line></svg></div>
+                                <span class="txt-light">
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{errorTexte}}
+                            </span>
+                          </div>
+                            }
+
+
+                            <form class="grid grid-cols-12 gap-6" [formGroup]="societeService" (ngSubmit)="submitForm()">
+
+                                <div class="col-span-12">
+                                    <label for="iddirection" class="form-label text-left block mb-2">Direction <code class="text-red-500">*</code>
+                                    </label>
+                                    <nz-select nzShowSearch
+                                               id="iddirection"
+                                               nzAllowClear
+                                               nzSize="default"
+                                               nzPlaceHolder="Selectionnez la direction"
+                                               formControlName="iddirection"
+                                               (ngModelChange)="changeDirection($event)"
+                                               [ngClass]="{ 'is-invalid' : societeService.controls['iddirection'].touched &&
+                                                                            societeService.controls['iddirection'].errors?.['required'] , 'is-valid' : societeService.controls['iddirection'].valid}"
+                                    >
+                                        <nz-option [nzLabel]="data.libelle_direction" [nzValue]="data.uid" *ngFor="let data of dataDirection"></nz-option>
+                                    </nz-select>
+                                </div>
+                                <div class="col-span-12">
+                                    <label for="iddepartement" class="form-label text-left block mb-2">Departement <code class="text-red-500">*</code>
+                                    </label>
+                                    <nz-select nzShowSearch
+                                               id="iddepartement"
+                                               nzAllowClear
+                                               nzSize="default"
+                                               nzPlaceHolder="Selectionnez la direction"
+                                               formControlName="iddepartement"
+                                               [ngClass]="{ 'is-invalid' : societeService.controls['iddepartement'].touched &&
+                                                                            societeService.controls['iddepartement'].errors?.['required'] , 'is-valid' : societeService.controls['iddepartement'].valid}"
+                                    >
+                                        <nz-option [nzLabel]="data.libelle_departement" [nzValue]="data.uid" *ngFor="let data of dataDepartement"></nz-option>
+                                    </nz-select>
+                                </div>
+                                <div class="col-span-12">
+                                    <label for="sigle_service" class="form-label text-left block mb-2">
+                                        Cote <code class="text-red-500">*</code>
+                                    </label>
+                                    <input class="form-control hSoc"
+                                           formControlName="sigle_service"
+                                           id="sigle_service"
+                                           type="text"
+                                           placeholder="Sigle"
+                                           [ngClass]="{ 'is-invalid' : societeService.controls['sigle_service'].touched &&
+                                            societeService.controls['sigle_service'].errors?.['required'] , 'is-valid' : societeService.controls['sigle_service'].valid}"
+                                    >
+                                </div>
+
+                                <div class="col-span-12">
+                                    <label for="libelle_service" class="form-label text-left block mb-2">Intitulé</label>
+                                    <input class="form-control hSoc"
+                                           formControlName="libelle_service"
+                                           id="libelle_service"
+                                           type="text"
+                                           placeholder="Entrez l'intitulé"
+                                           [ngClass]="{ 'is-invalid' : societeService.controls['libelle_service'].touched &&
+                                            societeService.controls['libelle_service'].errors?.['required'] , 'is-valid' : societeService.controls['libelle_service'].valid}"
+                                    >
+                                </div>
+
+
+                                <div class="col-span-12 flex flex-col-reverse sm:flex-row justify-end gap-6 mt-4">
+                                    <button (click)="resetForm()" class="btn btn-light w-full sm:w-auto" type="button">
+                                        <i class="fa-solid fa-times"></i> Annuler
+                                    </button>
+                                    <button [disabled]="!societeService.valid" class="btn btn-primary text-white w-full sm:w-auto" type="submit">
+                                        <i *ngIf="!isLoad" class="fa-solid fa-check-circle"></i>
+                                        <i *ngIf="isLoad" class="fas fa-spin fa-circle-notch"></i>
+                                        {{societeService.value.idservice ? 'Modifier':'Valider'}}
+                                    </button>
+                                </div>
+                            </form>
+
+
+                        </div>
+                    </div>
+                    <div class="col-span-7 lg:col-span-12">
+                        <div class="tab-content">
+                            <div class="tab-pan fade show active">
+                                <div class="overflow-x-auto w-full">
+                                    <nz-table #basicTable
+                                              [nzLoading]="isloading"
+                                              [nzSize]="'small'"
+                                              [nzBordered]="true"
+                                              [nzData]="dataServices"
+                                              class="min-w-[700px]">
+                                        <thead>
+                                        <tr>
+                                            <!--                                            <th class="whitespace-nowrap">Société</th>-->
+                                            <th class="whitespace-nowrap">Direction</th>
+                                            <th class="whitespace-nowrap">Cote</th>
+                                            <th class="whitespace-nowrap">Intitulé</th>
+                                            <th class="whitespace-nowrap" style="width: 5% !important;">Action</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr *ngFor="let data of basicTable.data">
+                                            <!--                                            <td class="whitespace-nowrap">{{data.raison_sociale}}</td>-->
+                                            <td class="whitespace-nowrap">{{data?.datadepartement?.libelle_departement}}</td>
+                                            <td class="whitespace-nowrap">{{data?.sigle_service}}</td>
+                                            <td class="whitespace-nowrap">{{data?.libelle_service}}</td>
+                                            <td class="whitespace-nowrap">
+                                                <button nzTooltipTitle="Modifier {{data?.libelle_service}}"
+                                                        nzTooltipPlacement="topRight"
+                                                        nz-tooltip
+                                                        (click)="actionBtn(data)"
+                                                        type="button"
+                                                        class="w-10 h-10 rounded-full inline-flex items-center justify-center p-0 border-0"
+                                                        style="background-color: #efefef !important; box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;">
+                                                    <i class="icofont icofont-pencil-alt-2" style="font-size: 15px;"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </nz-table>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </app-card>
+        </div>
+    </div>
+</div>

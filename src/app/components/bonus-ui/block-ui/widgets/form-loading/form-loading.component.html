@@ -1,0 +1,49 @@
+<app-card [headerTitle]="'Form Loading'" [header]="'pb-0'" [headerClass]="'mb-0'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>Use <code>&lt;ngx-spinner&gt;</code> to display a loading spinner. Customize the background with the <code>bdColor</code> property, adjust the size using <code>size</code>, and change the spinner color with <code>color</code>. To set different spinner styles, use the <code>[type]</code> input. Supported types include <code>ball-clip-rotate</code>, <code>ball-fall</code>, and <code>ball-spin-clockwise</code>. Control its display mode with <code>[fullScreen]</code> as needed.</p>  
+  <div class="form-main-wrapper">
+    <div class="form-block-wrapper">
+      <div class="card-wrapper border rounded-3 pay-info light-card">
+        <form class="grid grid-cols-12 gap-4 needs-validation" novalidate="">
+          <div class="col-span-12"> 
+            <label class="form-label" for="placeholdername">Card Holder</label>
+            <input class="form-control" id="placeholdername" type="text" placeholder="Enter card holder name">
+          </div>
+          <div class="col-span-4 md:col-span-12">
+            <label class="form-label" for="holdernumber">Card Number</label>
+            <input class="form-control" id="holdernumber" type="number" placeholder="xxxx xxxx xxxx xxxx">
+            <div class="invalid-feedback">Please enter your valid number</div>
+            <div class="valid-feedback"> Looks's Good!</div>
+          </div>
+          <div class="col-span-4 md:col-span-12">
+            <label class="form-label" for="expirationdates">Expiration(MM/YY)</label>
+            <input class="form-control" id="expirationdates" type="number" placeholder="xx/xx">
+            <div class="invalid-feedback">Please enter your valid number</div>
+            <div class="valid-feedback"> Looks's Good!</div>
+          </div>
+          <div class="col-span-4 md:col-span-12">
+            <label class="form-label" for="cvvNumber-c">CVV</label>
+            <input class="form-control" id="cvvNumber-c" type="number">
+            <div class="invalid-feedback">Please enter your valid number</div>
+            <div class="valid-feedback"> Looks's Good!</div>
+          </div>
+          <div class="col-span-12">
+            <div class="form-check flex gap-2">
+              <input class="form-check-input checkbox-primary" id="invalidCheck-c" type="checkbox" value="">
+              <label class="form-check-label" for="invalidCheck-c">All the above information is correct</label>
+              <div class="invalid-feedback">You must agree before submitting.</div>
+            </div>
+          </div>
+        </form>
+      </div>
+      @if(loadingShow) {
+        <ngx-spinner bdColor="rgba(255, 255, 255, .8)" size="default" color="#343a40" [type]="type" [fullScreen]="false"></ngx-spinner>
+      }
+
+    </div>
+    <div class="common-flex">
+        <button class="button text-white btn btn-primary block-btn-7" (click)="loading('ball-clip-rotate')">Form Loader 1</button>
+        <button class="button text-white btn btn-primary block-btn-8" (click)="loading('ball-fall')">Form Loader 2 </button>
+        <button class="button text-white btn btn-primary block-btn-9" (click)="loading('ball-spin-clockwise')">Form Loader 3</button>
+      </div>
+  </div>
+</app-card>

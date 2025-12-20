@@ -1,0 +1,36 @@
+<app-card [headerTitle]="'Light Tooltips'" [header]="'pb-0'" [border]="true" [padding]="false">
+    <p class="f-m-light mt-1" header5> Use <code>button-light-*</code> to change light background color.</p>
+
+    <div class="common-flex">
+        <span class="group relative">
+            <button class="mb-0 me-0 btn button-light-primary">Primary</button>
+
+            <app-tooltip [title]="'Primary'"></app-tooltip>
+        </span>
+        <span class="group relative">
+            <button class="mb-0 me-0 btn button-light-secondary">Secondary</button>
+
+            <app-tooltip [title]="'Secondary'"></app-tooltip>
+        </span>
+        <span class="group relative">
+            <button class="mb-0 me-0 btn button-light-warning">Warning</button>
+
+            <app-tooltip [title]="'Warning'"></app-tooltip>
+        </span>
+        <span class="group relative">
+            <button class="mb-0 me-0 btn button-light-success">Success</button>
+
+            <app-tooltip [title]="'Success'"></app-tooltip>
+        </span>
+        <span class="group relative">
+            <button class="mb-0 me-0 btn button-light-danger">Danger</button>
+
+            <app-tooltip [title]="'Danger'"></app-tooltip>
+        </span>
+        <span class="group relative">
+            <button class="mb-0 me-0 btn button-light-info">Info</button>
+
+            <app-tooltip [title]="'Info'"></app-tooltip>
+        </span>
+    </div>
+</app-card>

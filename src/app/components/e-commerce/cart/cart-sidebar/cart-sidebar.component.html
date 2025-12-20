@@ -1,0 +1,54 @@
+<div class="grid grid-cols-12 card-gap">
+  <div class="col-span-12 order-1 xl:order-0 xxl:order-2">
+    <app-card [headerTitle]="'Summary'" [border]="true" [padding]="false">
+      <ul class="cart-summary">
+        <li>
+          <h6>Subtotal </h6>
+          <span>{{ cartService.getSubTotal() }}</span>
+        </li>
+        <li>
+          <h6>Coupon Discount</h6>
+          <span>(-) 0.00</span>
+        </li>
+        <li>
+          <h6>Shipping</h6>
+          <span class="txt-primary">Free</span>
+        </li>
+      </ul>
+
+      <ul class="product-total" details>
+        <li>
+          <h4>Total</h4>
+          <h4>{{ cartService.getSubTotal() }}</h4>
+        </li>
+        <li>
+          <ul class="cart-buttons">
+            <li>
+              <a class="btn btn-primary" [routerLink]="['/checkout']">Proceed to Checkout</a>
+            </li>
+            <li>
+               <a class="btn btn-hover-effect" [routerLink]="'/product/grid'">
+                <span>
+                  <i class="fa-solid fa-caret-left fa-lg"></i>
+                </span>
+                Return to Shopping
+               </a>
+              </li>
+          </ul>
+        </li>
+      </ul>
+    </app-card>
+  </div>
+
+  <div class="col-span-12 order-0 xxl:order-1">
+    <app-card>
+      <div class="coupon-cart">
+        <span class="pb-1">Have a Coupon&quest;</span>
+        <div class="input-group flex">
+          <input class="form-control" type="text" placeholder="Enter Coupon Code Here...">
+          <button class="btn btn-primary text-white" id="button-addon2" type="button">Apply</button>
+        </div>
+      </div>
+    </app-card>
+  </div>
+</div>

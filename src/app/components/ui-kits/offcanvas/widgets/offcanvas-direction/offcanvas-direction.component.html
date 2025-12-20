@@ -1,0 +1,32 @@
+<app-card [headerTitle]="'Offcanvas Directions'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'common-flex common-offcanvas'">
+
+    <p class="f-m-light mt-1" header5>
+        Use position classes to control the offcanvas panel's placement.  
+        <br>
+        - <code>offcanvas-top</code> for a top-positioned panel. <br> 
+        - <code>offcanvas-end</code> for a right-side panel. <br> 
+        - <code>offcanvas-bottom</code> for a bottom-positioned panel.  <br>
+        - <code>offcanvas-start</code> for a left-side panel. <br>
+        The <code>showOffcanvas()</code> method dynamically sets the position and visibility.  
+    </p>
+
+    <button class="btn btn-primary text-white" type="button" (click)="showOffcanvas('top')">Top Offcanvas</button>
+
+    <button class="btn btn-secondary text-white" type="button" (click)="showOffcanvas('right')">Right Offcanvas</button>
+
+    <button class="btn btn-dark text-white" type="button" (click)="showOffcanvas('bottom')">Bottom Offcanvas</button>
+    
+    <button class="btn btn-success text-white" type="button" (click)="showOffcanvas('left')">Left Offcanvas</button>
+    
+    @if(topCanvasVisible || bottomCanvasVisible) {
+        <app-user-form [title]="title" [positionClass]="positionClass" (closeOffcanvas)="handleOffcanvas($event)"></app-user-form>
+    }
+
+    @if(rightCanvasVisible || leftCanvasVisible) {
+        <app-project-form [title]="title" [positionClass]="positionClass" (closeOffcanvas)="handleOffcanvas($event)"></app-project-form>
+    }
+
+    @if(topCanvasVisible || bottomCanvasVisible || rightCanvasVisible || leftCanvasVisible) {
+        <div class="offcanvas-backdrop"></div>
+      }
+</app-card>

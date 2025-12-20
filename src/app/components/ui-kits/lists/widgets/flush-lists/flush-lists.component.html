@@ -1,0 +1,11 @@
+<app-card [headerTitle]="'Flush Lists'" [header]="'pb-0'" [border]="true" [padding]="false" [cardClass]="'list-with-icon'">
+    <p class="f-m-light mt-1" header5>
+        Use <code>  list-group-flush</code> to remove some borders and rounded corners to render list group items.
+    </p>
+    <ul class="list-group list-group-flush">
+        @for(list of flushList;track list){
+            <li class="list-group-item">
+                <i class="icofont icofont-{{ list.icon }}"></i>{{ list.item }}</li>
+        }
+      </ul>
+</app-card>

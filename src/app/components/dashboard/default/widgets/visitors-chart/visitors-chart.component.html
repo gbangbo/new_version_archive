@@ -1,0 +1,21 @@
+<app-card [headerTitle]="'Visitors'" [cardBodyClass]="'visitor-chart pt-0'" [dropdownType]="'simple'" [options]="cardToggleOptions">
+    <div class="common-flex">
+        <h6><span class="counter"><app-counter [counter]="'98,736'"></app-counter></span>K</h6>
+        <div class="flex"> 
+          <p>( <span class="txt-success font-medium me-1">+0.4%</span>Than last week)</p>
+        </div>
+    </div>
+    <div id="visitor_chart">
+        <apx-chart 
+            [series]="visitorChart.series"
+            [chart]="visitorChart.chart"
+            [colors]="visitorChart.colors"
+            [stroke]="visitorChart.stroke"
+            [xaxis]="visitorChart.xaxis"
+            [yaxis]="visitorChart.yaxis"
+            [grid]="visitorChart.grid"
+            [fill]="visitorChart.fill"
+            [responsive]="visitorChart.responsive"
+        ></apx-chart>
+    </div>
+</app-card>

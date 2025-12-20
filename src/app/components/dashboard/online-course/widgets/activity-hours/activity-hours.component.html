@@ -1,0 +1,45 @@
+<app-card [headerTitle]="activityHoursChart.title" [padding]="false" [dropdownType]="'simple'"
+        [options]="cardToggleOption" [cardBodyClass]="'!pt-0'">
+        <div class="grid grid-cols-12 m-0 overall-card items-center">
+            <div class="col-span-8 xl:col-span-12">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
+                <div class="chart-right">
+                  <div class="grid grid-cols-12">
+                    <div class="col-span-12">
+                      <div class="card-body p-0">
+                        <div class="activity-wrap">
+                          <div id="activity-chart">
+                            <apx-chart
+                                [series]="activityHoursChart.series"
+                                [chart]="activityHoursChart.chart"
+                                [plotOptions]="activityHoursChart.plotOptions"
+                                [dataLabels]="activityHoursChart.dataLabels"
+                                [xaxis]="activityHoursChart.xaxis"
+                                [yaxis]="activityHoursChart.yaxis"
+                                [grid]="activityHoursChart.grid"
+                                [colors]="activityHoursChart.colors"
+                                [fill]="activityHoursChart.fill"
+                                [responsive]="activityHoursChart.responsive">
+                            </apx-chart>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            </div>
+            <div class="col-span-4 xl:col-span-12 !p-0">
+                <div class="grid grid-cols-12 gap-3 !mt-0">
+                    @for(details of activityHoursChart.chart_details; track details) {
+                      <div class="col-span-12 xl:col-span-6 md:col-span-4 sm:col-span-12">
+                        <div class="light-card balance-card">
+                          <div> 
+                            <span class="f-light">{{ details.title }}</span>
+                            <h6 class="mt-1 mb-0">{{ details.value }}</h6>
+                          </div>
+                        </div>
+                      </div>
+                    }
+                </div>
+            </div>
+        </div>
+</app-card>

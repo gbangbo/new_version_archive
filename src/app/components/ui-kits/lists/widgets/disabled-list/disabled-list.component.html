@@ -1,0 +1,12 @@
+<app-card [headerTitle]="'Disabled Lists'" [border]="true" [header]="'pb-0'" [padding]="false">
+    <p class="f-m-light mt-1" header5>Use<code>  disabled </code>to a <code> list-group-item</code> to make it appear disabled.</p>
+
+    <div class="list-group">
+        @for(disable_item of disabledLists; track disable_item){
+            <a class="list-group-item list-group-item-action {{disable_item.class}}" href="javascript:void(0)">
+                <img class="rounded-full" [src]="disable_item.img" alt="user">
+                {{disable_item.name}}
+            </a>
+        }
+     </div>
+</app-card>

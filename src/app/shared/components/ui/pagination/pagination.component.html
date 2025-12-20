@@ -1,0 +1,48 @@
+<div class="bottom-info">
+    <div class="flex cb-info">
+      @if(paginateDetails) {
+        <p>Showing 
+          {{ paginate.total_items > 0 ? paginate.start_index + 1 : 0}}- {{ paginate.total_items > 0 ? paginate.end_index + 1 : 0}} of {{ paginate.total_items > 0 ? paginate.total_items : 0 }} 
+          entries
+        </p>
+      }
+  
+      @if(selectedItems && selectedRows) {
+        <span class="select-info">
+          <span class="select-item">
+            {{ selectedItems }} rows selected
+          </span>
+        </span>
+      }
+    </div>
+    <ul class="pagination justify-content-center">
+  
+      <li class="page-item" [ngClass]="{ disabled: paginate.current_page === 1 }">
+        <a class="page-link" href="javascript:void(0)" (click)="pageSet(1)">
+          « 
+        </a>
+      </li>
+  
+      <li class="page-item" [ngClass]="{disabled:paginate.current_page === 1}">
+        <a class="page-link" href="javascript:void(0)" (click)="pageSet(paginate.current_page - 1)">
+          ‹ 
+        </a>
+      </li>
+      @for(page of paginate.pages; track page){
+        <li class="page-item" [ngClass]="{ 'active': paginate.current_page == page }">
+          <a class="page-link" href="javascript:void(0)" (click)="pageSet(page)">{{ page }}</a>
+        </li>
+      }
+      <li class="page-item" [ngClass]="{ disabled: paginate.current_page == paginate.total_pages }">
+        <a class="page-link" href="javascript:void(0)" (click)="pageSet(paginate.current_page + 1)">
+          ›
+        </a>
+      </li>
+  
+      <li class="page-item" [ngClass]="{ disabled: paginate.current_page == paginate.total_pages }">
+        <a class="page-link" href="javascript:void(0)" (click)="pageSet(paginate.end_page)">
+          »
+        </a>
+      </li>
+    </ul>
+</div>

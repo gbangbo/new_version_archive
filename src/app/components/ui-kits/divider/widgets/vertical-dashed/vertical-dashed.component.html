@@ -1,0 +1,24 @@
+<app-card [headerTitle]="'Vertical Dashed Divider'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'main-divider'">
+
+    <p class="mb-0 mt-1" header5>Use <code>vertical-divider</code> and<code> vertical-line</code> class for dashed divider.</p>
+
+    <div class="grid grid-cols-12 card-gap">
+        @for(divider of verticalDashedDivider; track divider) {
+            <div class="col-span-3 sm:col-span-6">
+                <div class="vertical-divider flex items-center justify-between flex-col">
+                  <div class="vertical-line bg-{{ divider.color }}"></div>
+                  @if(divider.icon) {
+                    <app-svg-icon [icon]="divider.icon" [class]="'my-2 ' + divider.icon_type"></app-svg-icon>
+                  } @else {
+                      <p class="my-2" [ngClass]="{
+                        'border': divider.border, 
+                        'rounded-full': divider.border && divider.rounded
+                      }" 
+                      [class]="divider.border ? 'border-' + divider.color : 'txt-' + divider.color">{{ divider.color | titlecase }}</p>
+                  }
+                  <div class="vertical-line bg-{{ divider.color }}"></div>
+                </div>
+            </div>
+        }
+    </div>
+</app-card>

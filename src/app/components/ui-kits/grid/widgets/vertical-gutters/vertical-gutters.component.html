@@ -1,0 +1,20 @@
+<app-card [cardClass]="'height-equal-2'" [header]="'pb-0'" [headerTitle]="'Vertical Gutters'" [border]="true" [padding]="false" [cardBodyClass]="'v-gutter'">
+    <p class="mt-1 f-m-light" header5>Use<code> gap-* </code> classes control vertical space between elements in rows, especially when they wrap and wider spacing can overflow the page and wrap the <code> grid </code> with <code> overflow-hidden</code> to prevent this.</p>
+
+    <div class="container overflow-hidden text-center">
+      <div class="grid grid-cols-12 gap-4">
+        <div class="col-span-6 flex-behaviors">
+          <div class="p-3"> <span>Custom column padding</span></div>
+        </div>
+        <div class="col-span-6 flex-behaviors">
+          <div class="p-3"> <span>Custom column padding</span></div>
+        </div>
+        <div class="col-span-6 flex-behaviors">
+          <div class="p-3"> <span>Custom column padding</span></div>
+        </div>
+        <div class="col-span-6 flex-behaviors">
+          <div class="p-3"> <span>Custom column padding</span></div>
+        </div>
+      </div>
+    </div>
+</app-card>

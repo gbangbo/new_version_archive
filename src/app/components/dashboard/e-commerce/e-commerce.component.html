@@ -1,0 +1,137 @@
+<div class="container dashboard-2">
+  <div class="grid grid-cols-12 card-gap size-column">
+    <div class="col-span-10 xxl:col-span-12 box-col-12 grid-ed-12">
+      <div class="grid grid-cols-12 card-gap">
+        <div class="col-span-12">
+          <div class="card">
+            <div class="card-body main-title-box">
+              <div class="common-space gap-2">
+                <h6 class="f-light">
+                  The latest shopping trends and timeless essentials are waiting
+                  for you
+                </h6>
+                <div class="e-common-button flex flex-wrap">
+                  <a
+                    class="btn btn-primary border text-white flex"
+                    href="javascript:void(0)"
+                    [routerLink]="['/product/create']"
+                  >
+                    <app-feather-icon [icon]="'plus'"></app-feather-icon>
+                    Add Product
+                  </a>
+                  <a
+                    class="btn btn-primary border text-white"
+                    href="javascript:void(0)"
+                    [routerLink]="['/order/1']"
+                    >View Orders</a
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-span-5 xxl:col-span-7 md:col-span-12 box-col-7">
+          <div class="grid grid col-12 card-gap">
+            <div class="col-span-12">
+              <app-total-earnings></app-total-earnings>
+            </div>
+
+            @for(details of tilesDetails; track details) {
+            <div class="col-span-6 sm:col-span-12">
+              <app-details [details]="details"></app-details>
+            </div>
+            }
+          </div>
+        </div>
+
+        <div
+          class="col-span-3 xxl:col-span-5 md:col-span-6 sm:col-span-12 box-col-5"
+        >
+          <app-top-customers></app-top-customers>
+        </div>
+        <div
+          class="col-span-4 xxl:col-span-6 sm:col-span-12 box-col-6 ord-xl-i box-ord-1"
+        >
+          <app-month-order></app-month-order>
+        </div>
+        <div
+          class="col-span-3 xxl:col-span-6 md:col-span-12 box-col-6 ord-xl-ii box-ord-2"
+        >
+          <app-monthly-profits></app-monthly-profits>
+        </div>
+        <div class="col-span-9 xxl:col-span-12 box-col-12 ord-xl-iii box-ord-3">
+          <app-recent-transactions></app-recent-transactions>
+        </div>
+
+        <div
+          class="col-span-3 xxl:col-span-4 xl:col-span-6 md:col-span-12 box-col-4 ord-xl-iv box-ord-4"
+        >
+          <div class="card purchase-card discover">
+            <img
+              class="max-w-full"
+              src="assets/images/dashboard-2/discover.png"
+              alt="vector discover"
+            />
+            <div class="card-body pt-3">
+              <h5 class="mb-1">Discover Pro</h5>
+              <p class="f-light mb-4">
+                Advanced navigation system with traffic updates in real-time
+              </p>
+              <a
+                class="purchase-btn btn btn-hover-effect btn-primary font-medium text-white"
+                href="https://1.envato.market/3GVzd"
+                target="_blank"
+                >Update Now</a
+              >
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="col-span-4 xl:col-span-6 md:col-span-12 box-col-4 ord-xl-v box-ord-5"
+        >
+          <app-website-traffic></app-website-traffic>
+        </div>
+        <div
+          class="col-span-5 xxl:col-span-4 xl:col-span-12 box-col-4 ord-xl-vi box-ord-6"
+        >
+          <app-recent-orders></app-recent-orders>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="col-span-2 grid-ed-none xxl:col-span-3 xl:col-span-4 md:col-span-12 box-col-none xxl:hidden"
+    >
+      <app-card [headerTitle]="'Top Categories'" [cardBodyClass]="'pt-0'">
+        <app-top-categories></app-top-categories>
+        <app-recent-activity></app-recent-activity>
+      </app-card>
+    </div>
+
+    <div
+      class="col-span-7 xxl:col-span-8 lg:col-span-7 md:col-span-12 box-col-8 ord-xl-vii box-ord-7"
+    >
+      <app-order-overview></app-order-overview>
+    </div>
+    <div class="col-span-5 xxl:col-span-12 box-col-12">
+      <app-stock-reports></app-stock-reports>
+    </div>
+    <div
+      class="col-span-5 xxl:col-span-6 md:col-span-12 box-col-6 ord-xl-ix box-ord-9"
+    >
+      <app-best-sellers></app-best-sellers>
+    </div>
+    <div
+      class="col-span-3 xxl:col-span-4 lg:col-span-5 md:col-span-12 box-col-4e ord-xl-vii box-ord-8"
+    >
+      <app-payment-gateway-earning></app-payment-gateway-earning>
+    </div>
+    <div
+      class="col-span-4 xxl:col-span-6 md:col-span-12 box-col-6 ord-xl-x box-ord-10"
+    >
+      <app-trending-products></app-trending-products>
+    </div>
+  </div>
+</div>

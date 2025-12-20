@@ -1,0 +1,13 @@
+<app-card [headerTitle]="'Today\'s Task'" [padding]="false" [cardClass]="'height-equal'" [cardBodyClass]="' pt-0'" [dropdownType]="'simple'" [options]="cardToggleOption">
+    <ul class="task-card">
+        @for(task of todayTask;track task){
+            <li class="common-space">
+                <div> 
+                    <span>{{ task.id }}</span>
+                    <span class="text-truncate">{{ task.task }}</span>
+                </div>
+                    <app-svg-icon class="{{task.class}}" [icon]="task.icon"></app-svg-icon>
+            </li>
+        } 
+      </ul>
+</app-card>

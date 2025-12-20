@@ -1,0 +1,57 @@
+<div class="card">
+    <div class="card-header card-no-border">
+        <div class="main-product-wrapper">
+            <div class="product-header">
+              <h5>Products</h5>
+              <p class="f-m-light mt-1 text-gray font-medium">Browse & Discover thousands of products here!</p>
+            </div>
+            <div class="product-body"> 
+              <div class="input-group product-search">
+                <span class="input-group-text">
+                    <app-feather-icon [icon]="'search'" [class]="'search-icon text-gray'"></app-feather-icon>
+                </span>
+                <input class="form-control" type="text" placeholder="Search Product..." list="datalistOptionsSearch" id="exampleDataList1" [(ngModel)]="searchQuery" (input)="searchStores()">
+                <datalist id="datalistOptionsSearch">
+                  <option value="Bluetooth Calling Smartwatch"></option>
+                  <option value="Microsoft Surface Laptop"></option>
+                  <option value="Gaming Over Ear Headphone"></option>
+                  <option value="Apple iPhone 14 Plus"></option>
+                </datalist>
+              </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-body main-our-product">
+        <div class="grid grid-cols-12 gap-4">
+            @for(product of filteredProduct; track product) {
+                <div class="col-span-3 xxl:col-span-4 md:col-span-6 sm:col-span-12 box-col-4">
+                    <div class="our-product-wrapper h-full widget-hover">
+                        <div class="our-product-img">
+                            <img [src]="product.product_image" [alt]="product.product_name">
+                        </div>
+                        <div class="our-product-content">
+                            <h6 class="f-14 font-medium pt-2 pb-1">{{ product.product_name }}</h6>
+                            <div>
+                            <h6 class="txt-primary">${{ product.price | number: '1.2-2' }}</h6>
+                            <div class="common-f-start">
+                                <div class="add-quantity btn border text-gray font-medium">
+                                    <i class="fa-solid fa-minus decrement-btn" (click)="updateQuantity(-1, product)"></i>
+                                    <input class="countdown-remove" type="text" [value]="product.quantity">
+                                    <i class="fa-solid fa-plus increment-btn" (click)="updateQuantity(1, product)"></i>
+                                </div>
+                                <div class="btn border font-medium">
+                                    <span class="text-gray" (click)="addToCart(product)">Add</span>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            } @empty {
+                <div class="col-span-12 flex justify-center">
+                    No Product Found.
+                </div>
+            }
+        </div>
+    </div>
+</div>

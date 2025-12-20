@@ -1,0 +1,17 @@
+<app-card [headerTitle]="'Rounded Dropdowns'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'rtl-dropdown'">
+    <p class="f-m-light mt-1" header5> Use <code>rounded-pill </code>class through to change rounded dropdowns.</p>
+    <div class="common-flex">
+        @for(dropdown of roundedDropdown; track dropdown; let i = $index) {
+            <div class="btn-group" (clickOutside)="clickOutside(i)">
+                <button class="btn btn-{{ dropdown.color }} rounded-full dropdown-toggle border text-white" type="button" (click)="toggleDropdown(i)">{{ dropdown.color | titlecase }}</button>
+                <ul class="dropdown-menu dropdown-block" [class.show]="dropdownOpen[i]">
+                    @for(item of dropdown.dropdown_item; track item) {
+                        <li>
+                            <a class="dropdown-item" href="javascript:void(0)">{{ item.item }}</a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        }
+    </div>
+</app-card>

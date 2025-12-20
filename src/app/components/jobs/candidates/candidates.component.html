@@ -1,0 +1,18 @@
+<div class="container candidate-wrapper">
+    <div class="grid grid-cols-12 card-gap">
+        <div class="col-span-12">
+            <div class="card">
+                <div class="card-body">
+                    <app-candidate-filter></app-candidate-filter>
+                </div>
+            </div>
+        </div>
+        <div class="col-span-12">
+            <app-card [cardBodyClass]="'candidates-box !px-0'" [padding]="false" [cardType]="'dataTable'">
+                <div class="overflow-x-auto custom-scrollbar">
+                    <app-table [tableConfig]="tableConfig" [hasCheckbox]="true" [pageSize]="10" [showPaginate]="true" [paginateDetails]="true"></app-table>
+                </div>
+            </app-card>
+        </div>
+    </div>
+</div>

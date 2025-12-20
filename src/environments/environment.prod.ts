@@ -1,0 +1,26 @@
+export const environment = {
+  production: true,
+  CONFIG: {
+    APP_NAME: 'ARCHIVE WEB PRO',
+    API: '',
+    APP_VERSION: '1.1',
+    APP_CDN: '',
+    APP_LOCAL_CDN: '',
+    APP_API_URI: '',
+    SRV_REST: 'api',
+    PRODUIT: 'ARCHVAGE ELECTRONIQUE',
+    SLOGAN: 'MIEUX GARDER POUR MIEUX SERVIR',
+    APP_LOCALISATION: '',
+    APP_TOKEN_NAME: '_164_',
+    APP_PASS: 'SàFçNMCëÎBAïÎNWiÏCA=',
+    COPYRIGHT: 'Logiciel plus',
+    LANG: 'fr',
+    APP_ASSET: 'bng',
+    APP_CONTACT: '07 09 75 08 95 / 07 09 46 41 23',
+    APP_MAIL: 'gbangbojb@gmail.com',
+    APP_SITE: '',
+    APP_COUNTRY: 'Côte d\'Ivoire',
+    APP_PAYS_CODE: 'ci',
+    APP_PAYS_ISO: 'CIV',
+  }
+};

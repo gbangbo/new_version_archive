@@ -1,0 +1,54 @@
+<div class="grid grid-cols-12 car-gap">
+  <div class="col-span-3">
+    <label class="form-label mb-0">Status</label>
+  </div>
+  <div class="col-span-9">
+    <div class="form-check form-switch form-check-inline">
+      <input class="form-check-input switch-primary check-size" type="checkbox" role="switch">
+    </div>
+  </div>
+</div>
+<div class="grid grid-cols-12 car-gap">
+  <div class="col-span-3 md:col-span-12">
+    <label class="form-label mb-0">Min Withdraw Amount</label>
+  </div>
+  <div class="col-span-9 md:col-span-12">
+    <div class="input-group">
+      <span class="input-group-text" id="commissionRate">
+        <i class="fa-solid fa-dollar-sign"></i>
+      </span>
+      <input class="form-control" type="number" placeholder="Enter min withdraw amount">
+    </div>
+    <div class="helper-text">
+      <p class="italic c-o-light">*Payout Minimum for Sellers: Specify the min amount sellers can request for withdrawal.</p>
+    </div>
+  </div>
+</div>
+<div class="grid grid-cols-12 car-gap">
+  <div class="col-span-3 md:col-span-12">
+    <label class="form-label mb-0">Commission Rate</label>
+  </div>
+  <div class="col-span-9 md:col-span-12">
+    <div class="input-group">
+      <input class="form-control" type="number" placeholder="Enter default commission rate"><span class="input-group-text" id="categoryCommission">%</span>
+    </div>
+    <div class="helper-text">
+      <p class="italic c-o-light">*Set the rate at which admin receives a commission from seller earnings.</p>
+    </div>
+  </div>
+</div>
+<div class="grid grid-cols-12 car-gap g-lg-3 g-0">
+  <div class="col-span-3 md:col-span-12">
+    <label class="form-label mb-0">Category Based Commission</label>
+  </div>
+  <div class="col-span-9 md:col-span-12">
+    <div class="input-group">
+      <div class="form-check form-switch form-check-inline">
+        <input class="form-check-input switch-primary check-size" type="checkbox" role="switch">
+      </div>
+      <div class="helper-text">
+        <p class="italic c-o-light">*Enable the functionality to apply commissions based on product categories. To configure, navigate to the Product Category module and set the respective commission rates.</p>
+      </div>
+    </div>
+  </div>
+</div>

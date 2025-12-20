@@ -1,0 +1,33 @@
+<app-card [cardType]="'classic'" [headerTitle]="'Comments'" [sortDescription]="'Total 120 Comments'" [cardBodyClass]="'pt-0'" [buttonText]="'View All'" [path]="'/courses/courses-details'">
+
+    <ul class="user-comment-wrapper">
+        @for(comment of comments; track comment) {
+            <li class="common-align gap-2 items-start">
+                <div class="shrink-0">
+                    <img class="max-w-full" [src]="comment.image" alt="user">
+                </div>
+                <div class="grow">
+                  <div class="common-space pb-1">
+                    <h6>{{ comment.name }}</h6>
+
+                    @if(!comment.is_reply) {
+                        <button class="btn c-o-light">
+                            <app-svg-icon [icon]="'stroke-arrow'" [class]="'me-2'"></app-svg-icon>
+                            Reply
+                        </button>
+                    }
+                  </div>
+                  <span class="c-o-light">{{ comment.message}}</span>
+                </div>
+            </li>
+        }
+    </ul>
+
+    <div class="cmt-box"> 
+        <label class="form-label" for="exampleFormControlTextarea1">Post A Comment</label>
+        <div class="common-f-start gap-1">
+          <textarea class="form-control" id="exampleFormControlTextarea1" rows="2" placeholder="Comment Here.."></textarea>
+          <i class="fa-solid fa-paper-plane"></i>
+        </div>
+    </div>
+</app-card>

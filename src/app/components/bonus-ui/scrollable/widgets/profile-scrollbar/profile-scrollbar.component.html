@@ -1,0 +1,14 @@
+<app-card [headerTitle]="'Profile Scrollbar'" [header]="'pb-0'" [border]="true" [padding]="false">
+    <p class="f-m-light mt-1" header5>Use <code>ngx-scrollbar</code> to create a custom scrollbar. Use <code>list-group-item </code>through made profile and with used <code> vertical-scroll</code>.</p>
+    <div class="vertical-scroll scroll-demo scroll-b-none">
+        <ng-scrollbar style="height: 300px; width: 100%;">
+            <div class="list-group">
+                @for(profile of profileScrollbar; track profile) {
+                    <a class="list-group-item list-group-item-action list-hover-primary" href="javascript:void(0)">
+                        <img class="rounded-full" [src]="profile.user_profile" alt="user">{{ profile.user_name }}
+                    </a>
+                }
+            </div>
+          </ng-scrollbar>
+      </div>
+</app-card>

@@ -1,0 +1,21 @@
+<app-card [headerTitle]="'Basic Timeline'" [border]="true" [header]="'pb-0'" [padding]="false" [cardClass]="'height-equal'" [cardBodyClass]="'dark-timeline basic-timeline'">
+    <p class="f-m-light mt-1" header5>Use <code>timeline-dot-*</code> class to a square style timeline.</p>
+    <ul> 
+      @for(details of basicTimeline; track details){
+        <li class="flex">
+          <div class="timeline-dot-{{ details.dot_class }}"></div>
+          <div class="w-full ms-4">
+            <p class="flex justify-between mb-4">
+              <span class="date-content light-background">{{ details.date }}</span>
+              <span>{{ details.time }}</span>
+            </p>
+            <h6 class="mb-0">
+              {{ details.title }}
+              <span class="dot-notification"></span>
+            </h6>
+            <p class="f-light">{{ details.description }}</p>
+          </div>
+        </li>
+        }
+    </ul>
+</app-card>

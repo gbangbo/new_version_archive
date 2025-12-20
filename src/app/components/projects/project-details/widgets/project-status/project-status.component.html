@@ -1,0 +1,122 @@
+<div class="grid grid-cols-12 card-gap">
+    <div class="col-span-12"> 
+        <div class="card filter-header"> 
+          <div class="card-body">
+            <div class="input-group common-searchbox">
+                <span class="input-group-text">
+                    <app-feather-icon [icon]="'search'" [class]="'search-icon text-gray'"></app-feather-icon>
+                </span>
+              <input class="form-control" type="text" placeholder="Search Project...">
+            </div>
+          </div>
+        </div>
+    </div>
+
+    @for(status of projectStatus; track status) {
+        <div class="col-span-4 xl:col-span-6 md:col-span-12 xl-50 box-col-6">
+            <div class="card progress-project">
+                <div class="card-header card-no-border scope-light-{{ status.color }}">
+                    <div class="common-space">
+                      <div class="common-align">
+                        <div class="common-dot bg-{{ status.color }}"></div>
+                        <h6>{{ status.title }}</h6><span class="badge rounded-full c-o-light">3</span>
+                      </div>
+                      <div class="card-header-right-icon">
+                        <app-card-dropdown-button [dropdownType]="'simple'" [options]="projectStatusOptions"></app-card-dropdown-button>
+                      </div>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    @for(project of projects; track project) {
+                        @if(project.status == status.value) {
+                            <div class="progress-project-box">
+                                <div class="list-box title-line-{{ project.tag_color }}">
+                                  <div class="header-top">
+
+                                    @if(!project.project_banner) {
+                                        @if(project.developer && project.developer.length) {
+                                            <ul class="common-f-start">
+                                                @for(developer of project.developer; track developer) {
+                                                    @if(developer.profile) {
+                                                        <li class="relative group">
+                                                            <img class="rounded-full" [src]="developer.profile" alt="user">
+                                                            <app-tooltip [title]="developer.name"></app-tooltip>
+                                                        </li>
+                                                    } @else {
+                                                      <li class="relative group"> 
+                                                        <div class="common-circle bg-lighter-{{ chatService.getTextColor(chatService.getUserText(developer.name)) }}">{{ chatService.getUserText(developer.name, 'singleText') }}</div>
+                                                        <app-tooltip [title]="developer.name"></app-tooltip>
+                                                      </li>
+                                                    }
+                                                }
+                                            </ul>
+                                        }
+                                    }
+                                    <span class="badge badge-light-{{ project.tag_color }}">{{ project.tag }}</span>
+
+                                    @if(project.project_banner) {
+                                        <div class="common-box"> 
+                                            <i class="fa-solid fa-plus txt-{{ project.tag_color }}"></i>
+                                        </div>
+                                    }
+
+                                  </div>
+                                  <div class="project-body">
+                                    @if(project.project_banner) {
+                                        <img class="max-w-full" [src]="project.project_banner" alt="phone">
+                                    }
+                                    <h6 class="mb-4">{{ project.project_title }}</h6>
+                                    <span>{{ project.project_description }}</span>
+
+                                    <div class="progress">
+                                      <div class="progress-bar" 
+                                        [ngClass]="status.value == 'pending' ? 'bg-secondary' : status.value == 'progress' ? 'bg-warning' : 'bg-success'" 
+                                        [ngStyle]="{ 'width': project.progress + '%' }"></div>
+                                    </div>
+
+                                    @if(project.developer && project.developer.length && project.project_banner) {
+                                        <ul class="common-f-start">
+                                            @for(developer of project.developer; track developer) {
+                                              @if(developer.profile) {
+                                                <li class="relative group">
+                                                    <img class="rounded-full" [src]="developer.profile" alt="user">
+                                                    <app-tooltip [title]="developer.name"></app-tooltip>
+                                                </li>
+                                              } @else {
+                                                <li class="relative group"> 
+                                                  <div class="common-circle bg-lighter-{{ chatService.getTextColor(chatService.getUserText(developer.name)) }}">{{ chatService.getUserText(developer.name, 'singleText') }}</div>
+                                                  <app-tooltip [title]="developer.name"></app-tooltip>
+                                                </li>
+                                              }
+                                            }
+                                        </ul>
+                                    }
+                                    <div class="project-bottom common-space">
+                                      <div class="common-flex">
+                                        <span class="relative group">
+                                            <app-svg-icon [icon]="'project-attachment'" [class]="'me-2'"></app-svg-icon>
+                                                {{ project.attachment }}
+                                            <app-tooltip [title]="'Attachment'"></app-tooltip>
+                                        </span>
+                                        <span class="relative group">
+                                            <app-svg-icon [icon]="'project-cmt'" [class]="'me-2'"></app-svg-icon>
+                                          {{ project.comments }}
+                                          <app-tooltip [title]="'Comments'"></app-tooltip>
+                                        </span>
+                                    </div>
+                                      <p class="mb-0 c-o-light"> 
+                                        <app-svg-icon [icon]="'vector-calendar'" [class]="'me-2'"></app-svg-icon>
+                                        {{ project.date }}
+                                      </p>
+                                    </div>
+                                  </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>

@@ -1,0 +1,10 @@
+<app-card [headerTitle]="'Default Buttons'" [border]="true" [header]="'pb-0'" [padding]="false" [cardBodyClass]="'common-flex'">
+    <p class="f-m-light mt-1" header5>Use<code> btn </code>class to set default buttons and set background color like this : <code>bg-* [primary/secondary..]. </code></p>
+    
+    @for(button of defaultButton;track button){
+        <button class="btn btn-{{ button.class}} group relative" type="button" >
+            {{ button.title }} Button
+            <app-tooltip [title]="'btn btn-' + button.title"></app-tooltip>
+        </button>
+    }
+</app-card>

@@ -1,0 +1,32 @@
+<app-card [headerTitle]="'Striped Columns'" [header]="'pb-0'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>
+    Use <code>table-striped-columns </code>to add zebra-striping to any table column.</p>
+    <div class="card-block grid grid-cols-12 emphasis-table">
+      <div class="col-span-12">
+        <div class="overflow-x-auto custom-scrollbar">
+          <table class="table table-striped-columns">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Name</th>
+                <th scope="col">Age</th>
+                <th scope="col">City</th>
+                <th scope="col">Occupation</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for(details of stripedColumn;track details){
+                <tr>
+                  <th scope="row">{{ details.id }}</th>
+                  <td>{{ details.name }}</td>
+                  <td>{{ details.age }}</td>
+                  <td>{{ details.city }}</td>
+                  <td>{{ details.occupation }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>       
+         </div>
+      </div>
+    </div>
+</app-card>

@@ -1,0 +1,9 @@
+<ul class="policies-wrapper">
+  @for(policy of policy; track policy) {
+    <li>
+      <label class="form-label">{{ policy.title }}</label>
+      <angular-editor [(ngModel)]="policy.policy_text"></angular-editor>
+    </li>
+  }
+</ul>
+<button class="btn btn-primary text-white">Update </button>

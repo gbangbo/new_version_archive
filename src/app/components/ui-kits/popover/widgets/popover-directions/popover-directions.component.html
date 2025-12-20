@@ -1,0 +1,44 @@
+<app-card [headerTitle]="'Popover Directions'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'common-flex popover-wrapper'">
+
+    <p class="mb-0 mt-1" header5>Use the <code>handlePopover()</code> function to toggle popovers in different directions. Apply <code>bottom-full</code> for <code>top</code>, <code>left-full</code> for <code>right</code>, <code>top-full</code> for <code>bottom</code>, and <code>right-full</code> for <code>left</code> positioning.</p>
+    <div class="relative group inline-block">
+        <button class="btn btn-warning example-popover mb-0 me-0 text-white" (click)="handlePopover('top')">Popover On Top</button>
+    
+        <div [class.show]="popoverVisible['top']" class="popover absolute left-1/2 bottom-[60%] -translate-x-1/2 mb-4 w-max bg-white text-sm rounded opacity-100 visible transition-opacity duration-300 shadow-lg">
+            <div class="popover-arrow bottom"></div>
+            <div class="popover-header">Top Popover</div>
+            <div class="popover-body">Popovers need the tooltip plugin considering that a dependency.</div>
+        </div>
+    </div>
+
+    <div class="relative group inline-block">
+        <button class="btn btn-danger example-popover mb-0 me-0 text-white" (click)="handlePopover('right')">Popover On Right</button>
+    
+        <div [class.show]="popoverVisible['right']" class="popover absolute left-[96%] top-1/2 -translate-y-1/2 ml-2 w-max bg-white text-sm rounded opacity-100 visible transition-opacity duration-300 shadow-lg">
+            <div class="popover-arrow right"></div>
+            <div class="popover-header">Popover on Right</div>
+            <div class="popover-body">Popovers are opt-in for effectiveness causes, in this way you have to initialize them yourself.</div>
+        </div>
+    </div>
+
+    <div class="relative group inline-block">
+        <button class="btn btn-info example-popover mb-0 me-0 text-white" (click)="handlePopover('bottom')">Popover On Bottom</button>
+    
+        <div [class.show]="popoverVisible['bottom']" class="popover absolute left-1/2 top-[85%] mt-2 w-max -translate-x-1/2 bg-white text-sm rounded opacity-100 visible transition-opacity duration-300 shadow-lg">
+            <div class="popover-arrow"></div>
+            <div class="popover-header">Popover on Bottom</div>
+            <div class="popover-body">Identify container:to evade rendering problems in more complex components (like Bootstrap input groups, button groups, etc).</div>
+        </div>
+    </div>
+
+    <div class="relative group inline-block">
+        <button class="btn btn-dark example-popover mb-0 me-0 text-white" (click)="handlePopover('left')">Popover On Left</button>
+    
+        <div [class.show]="popoverVisible['left']" class="popover absolute right-[96%] top-1/2 -translate-y-1/2 mr-2 w-max bg-white text-sm rounded opacity-100 visible transition-opacity duration-300 shadow-lg">
+            <div class="popover-arrow left"></div>
+            <div class="popover-header">Popover on Left</div>
+            <div class="popover-body">Popovers are opt-in for effectiveness causes, in this way you have to initialize them yourself.</div>
+        </div>
+    </div>
+
+</app-card>

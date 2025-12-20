@@ -1,0 +1,30 @@
+<app-card [cardClass]="'widget-2 budget-card'" [cardBodyClass]="'common-space'">
+    <div>
+        <span class="pb-2 c-o-light">{{ chart.title }}</span>
+        <h6>${{ chart.value }}</h6>
+        <span class="f-14 txt-{{ chart.profit_type == 'profit' ?'success' : 'danger' }} font-medium flex">
+            <app-feather-icon [icon]="chart.profit_type == 'profit' ? 'arrow-up' : 'arrow-down'" [class]="'me-1'"></app-feather-icon>
+            {{ chart.profit_type == 'profit' ? '+' : '-' }}{{chart.profit }}%
+        </span>
+    </div>
+    <div class="expense-chart-wrap">
+      <div id="expense-chart">
+        <apx-chart 
+            [series]="chart.chart_details.series"
+            [chart]="chart.chart_details.chart"
+            [grid]="chart.chart_details.grid"
+            [colors]="chart.chart_details.colors"
+            [stroke]="chart.chart_details.stroke ? chart.chart_details.stroke : {}"
+            [tooltip]="chart.chart_details.tooltip"
+            [xaxis]="chart.chart_details.xaxis"
+            [fill]="chart.chart_details.fill"
+            [yaxis]="chart.chart_details.yaxis"
+            [legend]="chart.chart_details.legend"
+            [responsive]="chart.chart_details.responsive"
+            [plotOptions]="chart.chart_details.plotOptions ? chart.chart_details.plotOptions : {}"
+            [dataLabels]="chart.chart_details.dataLabels ? chart.chart_details.dataLabels : {}"
+            [markers]="chart.chart_details.markers ? chart.chart_details.markers : {}">
+        </apx-chart>
+      </div>
+    </div>
+</app-card>

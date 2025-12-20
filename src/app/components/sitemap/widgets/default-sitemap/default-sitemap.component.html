@@ -1,0 +1,20 @@
+<app-card [headerTitle]="'Default Sitemap'" [border]="true" [padding]="false" [cardBodyClass]="'default-sitemap'">
+    <div class="grid grid-cols-12 gap-[48px] lg:gap-[15px]">
+        @for(menu of menuItem; track menu) {
+            @if(menu.title && menu.children && menu.children.length) {
+                <div class="col-span-3 xxl:col-span-4 md:col-span-6 sm:col-span-12 box-col-4"> 
+                    <h6 class="sub-title">{{ menu.title | translate }}</h6>
+                    @if(menu.children && menu.children.length) {
+                        <div class="common-flex">
+                            @for(child of menu.children | slice: 0:5; track child) {
+                                @if(child.title){
+                                    <a href="javascript:void(0)">{{ child.title | translate }}</a>
+                                }
+                            }
+                        </div>
+                    }
+                </div>
+            }
+        }
+    </div>
+</app-card>

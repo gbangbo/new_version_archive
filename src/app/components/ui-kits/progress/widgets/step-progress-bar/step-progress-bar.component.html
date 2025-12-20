@@ -1,0 +1,18 @@
+<app-card [headerTitle]="'Step Progressbar'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'progress-showcase step-progress-wrapper'">
+    <p class="f-m-light mt-1" header5>Use <code> step-progress-wrapper</code>  class to make step progressbar.</p>
+
+    <div class="step-progress-box">
+        <ul class="custom-scrollbar">
+            @for(step of stepProgressBar; track step; let i = $index) {
+                <li (click)="handleStep(i+1)">
+                  <app-feather-icon [icon]="step.icon" [class]="'bookmark-search'"></app-feather-icon>
+                  <div class="p-step" [class.active]="(i+1) <= activeStep" [ngClass]="step.value">
+                    <p>{{ i+1 }}</p>
+                    <app-feather-icon [icon]="'check'" [class]="'bookmark-search'"></app-feather-icon>
+                  </div>
+                  <h6>{{ step.title }}</h6>
+                </li>
+            }
+        </ul>
+    </div>
+</app-card>

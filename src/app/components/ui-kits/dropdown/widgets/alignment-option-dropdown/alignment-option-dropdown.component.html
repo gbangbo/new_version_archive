@@ -1,0 +1,70 @@
+<app-card [headerTitle]="'Alignment Options'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'dark-dropdown-box'">
+    <p class="f-m-light mt-1" header5>
+        - Set <code>bottom-full</code> for <code>top dropdown</code>, <code>left-full</code> for <code>right dropdown</code>, and <code>right-full</code> for <code>left dropdown</code>
+    </p>
+
+    <div class="common-flex">
+        <div class="btn-group" (clickOutside)="clickOutside(1)">
+          <button class="btn btn-dark border dropdown-toggle text-white" type="button" (click)="toggleDropdown(1)">Dropdown</button>
+          <ul class="dropdown-menu" [class.show]="dropdownOpen[1]">
+            <li><a class="dropdown-item" href="javascript:void(0)">Menu item</a></li>
+            <li><a class="dropdown-item" href="javascript:void(0)">Menu item</a></li>
+            <li><a class="dropdown-item" href="javascript:void(0)">Menu item</a></li>
+          </ul>
+        </div>
+
+        <div class="btn-group" (clickOutside)="clickOutside(2)">
+          <button class="btn btn-dark border dropdown-toggle text-white" type="button" (click)="toggleDropdown(2)">Right-aligned menu</button>
+          <ul class="dropdown-menu dropdown-menu-end absolute right-0" [class.show]="dropdownOpen[2]">
+            <li><a class="dropdown-item" href="javascript:void(0)">Menu item</a></li>
+            <li><a class="dropdown-item" href="javascript:void(0)">Menu item</a></li>
+            <li><a class="dropdown-item" href="javascript:void(0)">Menu item</a></li>
+          </ul>
+        </div>
+
+        <div class="btn-group" (clickOutside)="clickOutside(3)">
+          <button class="btn btn-dark border dropdown-toggle text-white" type="button" (click)="toggleDropdown(3)">Left-aligned, right-aligned lg</button>
+          <ul class="dropdown-menu dropdown-menu-lg-end absolute" [ngClass]="dropdownPlacementOne" [class.show]="dropdownOpen[3]">
+            <li><a class="dropdown-item" href="javascript:void(0)">Menu item</a></li>
+            <li><a class="dropdown-item" href="javascript:void(0)">Menu item</a></li>
+            <li><a class="dropdown-item" href="javascript:void(0)">Menu item</a></li>
+          </ul>
+        </div>
+
+        <div class="btn-group" (clickOutside)="clickOutside(4)">
+          <button class="btn btn-dark border dropdown-toggle text-white" type="button" (click)="toggleDropdown(4)">Right-aligned, left-aligned lg</button>
+          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-lg-start absolute" [ngClass]="dropdownPlacementTwo" [class.show]="dropdownOpen[4]">
+            <li><a class="dropdown-item" href="javascript:void(0)">Menu item</a></li>
+            <li><a class="dropdown-item" href="javascript:void(0)">Menu item</a></li>
+            <li><a class="dropdown-item" href="javascript:void(0)">Menu item</a></li>
+          </ul>
+        </div>
+
+        <div class="btn-group dropstart" (clickOutside)="clickOutside(5)">
+          <button class="btn btn-dark border dropdown-toggle text-white" type="button" (click)="toggleDropdown(5)">Dropstart</button>
+          <ul class="dropdown-menu absolute right-full top-1/2 -translate-y-1/2" [class.show]="dropdownOpen[5]">
+            <li><a class="dropdown-item" href="javascript:void(0)">Menu item</a></li>
+            <li><a class="dropdown-item" href="javascript:void(0)">Menu item</a></li>
+            <li><a class="dropdown-item" href="javascript:void(0)">Menu item</a></li>
+          </ul>
+        </div>
+
+        <div class="btn-group dropend"  (clickOutside)="clickOutside(6)">
+          <button class="btn btn-dark border dropdown-toggle text-white" type="button" (click)="toggleDropdown(6)">Dropend</button>
+          <ul class="dropdown-menu absolute left-full top-1/2 -translate-y-1/2" [class.show]="dropdownOpen[6]">
+            <li><a class="dropdown-item" href="javascript:void(0)">Menu item</a></li>
+            <li><a class="dropdown-item" href="javascript:void(0)">Menu item</a></li>
+            <li><a class="dropdown-item" href="javascript:void(0)">Menu item</a></li>
+          </ul>
+        </div>
+
+        <div class="btn-group dropup"  (clickOutside)="clickOutside(7)"> 
+          <button class="btn btn-dark border dropdown-toggle text-white" type="button" (click)="toggleDropdown(7)">Dropup</button>
+          <ul class="dropdown-menu absolute left-1/2 bottom-full -translate-x-1/2" [class.show]="dropdownOpen[7]">
+            <li><a class="dropdown-item" href="javascript:void(0)">Menu item</a></li>
+            <li><a class="dropdown-item" href="javascript:void(0)">Menu item</a></li>
+            <li><a class="dropdown-item" href="javascript:void(0)">Menu item</a></li>
+          </ul>
+        </div>
+    </div>
+</app-card>

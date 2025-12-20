@@ -1,0 +1,32 @@
+<app-card [headerTitle]="'Active Courses'" [padding]="false" [rightSideDetails]="true" [cardBodyClass]="'pt-0'">
+  <a class="link-only" href="javascript:void(0)" [routerLink]="['/courses/courses-list']" header3>View All
+    <app-feather-icon [icon]="'arrow-right'"></app-feather-icon>
+  </a>
+
+  <ul class="lessons-lists">
+    @for(course of activeCourse; track course) {
+      <li>
+        <img [src]="course.logo" [alt]="course.course_name">
+        <div>
+          <h6 class="f-14 font-normal mb-0">{{ course.course_name }}</h6>
+          <span class="f-light">{{ course.course_type }}</span>
+        </div>
+        <div class="lesson-wrap ms-auto">
+          <div id="lessonChart1">
+            <apx-chart
+              [series]="course.chart_details.series"
+              [chart]="course.chart_details.chart"
+              [colors]="course.chart_details.colors"
+              [legend]="course.chart_details.legend"
+              [stroke]="course.chart_details.stroke"
+              [dataLabels]="course.chart_details.dataLabels"
+              [tooltip]="course.chart_details.tooltip"
+              [plotOptions]="course.chart_details.plotOptions"
+              [states]="course.chart_details.states">
+            </apx-chart>
+          </div>
+        </div>
+      </li>
+    }
+  </ul>
+</app-card>

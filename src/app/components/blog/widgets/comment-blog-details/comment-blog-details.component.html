@@ -1,0 +1,70 @@
+<section class="!pb-0 comment-box">
+    <h5>Comment</h5>
+    <hr>
+    <ul>
+        @for(comments of comment; track comments){
+            @if(!comments.reply){
+                <li>
+                    <div class="flex align-self-center">
+                        <img class="align-self-center" [src]="comments.image" alt="Generic placeholder image">
+                        <div class="grow">
+                            <div class="grid grid-cols-12 card-gap">
+                                <div class="col-span-4 md:col-span-12">
+                                    <h6 class="mt-0">
+                                        {{ comments.name }}
+                                        <span>
+                                            ({{ comments.designation }})
+                                        </span>
+                                    </h6>
+                                </div>
+                                <div class="col-span-8 m:col-span-12">
+                                    <ul class="comment-social float-right md:float-start">
+                                        <li>
+                                            <i class="icofont icofont-thumbs-up"></i>
+                                            {{ comments.hits }} Hits
+                                        </li>
+                                        <li>
+                                            <i class="icofont icofont-ui-chat"></i>
+                                            {{ comments.comments }} Comments
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <p>{{ comments.description }}</p>
+                        </div>
+                    </div>
+                </li>
+            } @else {
+                <li>
+                    <ul>
+                        <li>
+                            <div class="flex">
+                                <img class="align-self-center" [src]="comments.image" alt="Generic placeholder image">
+                                <div class="grow">
+                                    <div class="grid grid-cols-12">
+                                        <div class="col-span-12">
+                                            <h6 class="mt-0">
+                                                {{ comments.name }}
+                                                <span>
+                                                    ({{ comments.designation }})
+                                                </span>
+                                            </h6>
+                                        </div>
+                                    </div>
+                                    <p>{{ comments.description }}</p>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </li>
+            }
+        }
+        <li class="cmt-box p-0">
+            <label class="form-label" for="exampleFormControlTextarea1">Post A Comment</label>
+            <div class="common-f-start gap-1">
+                <textarea class="form-control" id="exampleFormControlTextarea1" rows="2" placeholder="Comment Here.."></textarea>
+                <i class="fa-solid fa-paper-plane"></i>
+            </div>
+        </li>
+    </ul>
+</section>

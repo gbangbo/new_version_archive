@@ -1,0 +1,25 @@
+<app-card [headerTitle]="'HTML Elements with Hover Effect'" [header]="'pb-0'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5> To create a tooltip, wrap the target element in a <code>span</code> or <code>div</code> and use a sibling <code>span</code> for the tooltip content. Apply utility classes to control visibility and styling. </p>    
+  <div class="common-flex">
+    <span class="group relative">
+      <button class="mb-0 me-0 btn btn-primary text-white">Notifications</button>
+
+      <app-tooltip [title]="`<em>Thank</em>&nbsp;<u>you</u>`" [template]="true"></app-tooltip>
+    </span>    
+    <span class="group relative">
+      <button class="mb-0 me-0 btn btn-warning text-white">Alert</button>
+
+      <app-tooltip [title]="`<b>Thank</b>&nbsp;<em>you</em>`" [template]="true"></app-tooltip>
+    </span>    
+    <span class="group relative">
+      <button class="mb-0 me-0 btn btn-danger text-white">It's Danger</button>
+
+      <app-tooltip [title]="`<em>Thank</em>&nbsp;<u>you</u>`" [template]="true"></app-tooltip>
+    </span>
+    <span class="group relative">
+      <button class="mb-0 me-0 btn btn-info text-white">Coming soon</button>
+
+      <app-tooltip [title]="`<b>Thank</b>&nbsp;<em>you</em>`" [template]="true"></app-tooltip>
+    </span>
+  </div>
+</app-card>

@@ -1,0 +1,15 @@
+<app-card [headerTitle]="'Draggable Filtering'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'draggable-filter'">
+    <p class="f-m-light mt-1" header5>
+        Use the <code>cdkDropList</code> directive to create a draggable list where some items can be filtered out based on a specific condition. The <code>cdkDrag</code> directive makes each list item draggable. In this example, items with the <code>.list-light-*</code> class are filtered out by the filter option, preventing them from being draggable. The <code>cdkDropListData</code> binds the data (like <code>draggableList</code>) to the list, and the <code>cdkDropListDropped</code> event handler is used to update the list when an item is dropped. This demonstrates how certain items, based on their class or other criteria, can be excluded from the drag-and-drop functionality, providing dynamic control over the items available for interaction. </p>
+
+        <div cdkDropList #list="cdkDropList" [cdkDropListData]="draggableList" (cdkDropListDropped)="drop($event)">
+            @for(list of draggableList; track list){
+                <ul class="list-group" cdkDrag>
+                    <li class="list-group-item {{ list.class }}">
+                        <img class="rounded-full" [src]="list.image" alt="user">
+                        {{ list.name }}
+                    </li>
+                </ul>
+            }
+           </div>
+</app-card>

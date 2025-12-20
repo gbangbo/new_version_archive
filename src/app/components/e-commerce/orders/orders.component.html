@@ -1,0 +1,20 @@
+<div class="container common-order-history">
+  <div class="grid grid-cols-12 card-gap">
+    <div class="col-span-12">
+      <app-order-filter></app-order-filter>
+    </div>
+    <div class="col-span-12">
+      <app-card [cardClass]="'heading-space'" [cardType]="'dataTable'" [headerTitle]="'New Orders'" [padding]="false" [cardBodyClass]="'pt-0 px-0'">
+        <div class="grid grid-cols-12">
+          <div class="col-span-12">
+            <div class="order-history-wrapper">
+              <div class="recent-table overflow-x-auto custom-scrollbar">
+                <app-table [tableConfig]="tableConfig" [hasCheckbox]="true" [pageSize]="10" [paginateDetails]="true" [showPaginate]="true" [selectedRows]="true" (action)="handleAction($event)"></app-table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </app-card>
+    </div>
+  </div>
+</div>

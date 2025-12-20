@@ -1,0 +1,18 @@
+<app-card [cardClass]="'helper-height-equal'" [header]="'pb-0'" [headerTitle]="'Images Sizes'" [border]="true" [padding]="false">
+
+    <p class="f-m-light mt-1" header5>Use <code>img-h-* </code>& <code> img-* </code> for image height and border radius for use <code>rounded-* / b-r-* / and rounded-pill </code>for border-radius images.</p>
+
+    <div class="grid grid-cols-12 card-gap">
+        @for(sizes of imageSize; track sizes) {
+            <div class="col-span-12">
+                <div class="card-wrapper border rounded-3 h-full">
+                    <div class="gradient-border gap-4">
+                        @for(size of sizes.size; track size) {
+                            <img [class]="size.class" [src]="sizes.image" [alt]="size.class">
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</app-card>

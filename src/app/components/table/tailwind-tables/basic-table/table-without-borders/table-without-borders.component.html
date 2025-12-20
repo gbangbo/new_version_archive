@@ -1,0 +1,30 @@
+<app-card [headerTitle]="'Table Without Borders'" [header]="'pb-0'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>
+    Add <code>table-borderless </code>for a table without borders.</p>
+    <div class="card-block grid grid-cols-12">
+      <div class="col-span-12">
+        <div class="overflow-x-auto custom-scrollbar">
+          <table class="table table-borderless">
+            <thead>
+              <tr>
+                <th scope="col">Date</th>
+                <th scope="col">Exercise Type</th>
+                <th scope="col">Duration</th>
+                <th scope="col">Calories Burned</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for(details of tableWithoutBorder;track details){
+                <tr>
+                  <th scope="row">{{ details.date }}</th>
+                  <td>{{ details.exercise_type }}</td>
+                  <td>{{ details.duration }}</td>
+                  <td>{{ details.calories_burned }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+</app-card>

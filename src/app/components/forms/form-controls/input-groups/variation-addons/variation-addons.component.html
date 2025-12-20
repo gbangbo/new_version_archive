@@ -1,0 +1,95 @@
+<app-card [headerTitle]="'Variation of Addons'" [header]="'pb-0'" [border]="true" [padding]="false"
+  [cardBodyClass]="'card-wrapper input-radius'">
+  <p class="f-m-light mt-1" header5>
+    Place one add-on or button on either side of an input. You may also place one on both sides of an input. Remember to
+    place <code>&lt;label&gt;</code>s outside the input group.</p>
+  <div class="grid grid-cols-12">
+    <div class="col-span-12">
+      <form>
+        <div class="mb-4 m-form__group">
+          <label class="form-label">Left Addon</label>
+          <div class="input-group">
+            <span class="input-group-text bg-light-primary !rounded-l-lg !rounded-none">
+              <i class="icofont icofont-pencil-alt-5 txt-primary"></i>
+            </span>
+              <input class="form-control" type="text" placeholder="Email">
+            </div>
+        </div>
+        <div class="mb-4">
+          <label class="form-label">Right Addon</label>
+          <div class="input-group">
+            <input class="form-control !rounded-l-lg !rounded-none" type="text" placeholder="Recipient's username" aria-label="Recipient's username">
+              <span class="input-group-text bg-light-secondary">
+              <i class="icofont icofont-ui-dial-phone txt-secondary"></i>
+            </span>
+            </div>
+        </div>
+        <div class="mb-4">
+          <label class="form-label">Joint Addon</label>
+          <div class="input-group">
+            <span class="input-group-text bg-light-primary !rounded-l-lg !rounded-none">
+              <i class="icofont icofont-unlink txt-primary"></i>
+            </span>
+            <span class="input-group-text !rounded-none">0.00</span>
+            <input class="form-control" type="text" aria-label="Amount (to the nearest dollar)">
+          </div>
+        </div>
+        <div class="mb-4">
+          <label class="form-label">Left & Right Addon</label>
+          <div class="input-group mb-4">
+            <span class="input-group-text bg-light-secondary !rounded-l-lg !rounded-none">
+              <i class="icofont icofont-ui-zoom-out txt-secondary"></i>
+            </span>
+              <input class="form-control !rounded-none" type="text" aria-label="Amount (to the nearest dollar)">
+            <span class="input-group-text bg-light-secondary !rounded-r-lg !rounded-none">
+              <i class="icofont icofont-ui-zoom-in txt-secondary"></i>
+            </span>
+          </div>
+        </div>
+        <div class="mb-4 input-group-solid">
+          <label class="form-label">Solid Style</label>
+          <div class="input-group">
+            <span class="input-group-text bg-light-primary !rounded-l-lg !rounded-none">
+              <i class="icofont icofont-users txt-primary"></i>
+              </span>
+              <input class="form-control" type="text" placeholder="999999">
+            </div>
+        </div>
+        <div class="mb-4 input-group-square">
+          <label class="form-label">Flat  Style</label>
+          <div class="input-group">
+            <span class="input-group-text bg-light-secondary">
+              <i class="icofont icofont-credit-card txt-secondary"></i>
+              </span>
+              <input class="form-control" type="text" placeholder="">
+            </div>
+        </div>
+        <div class="mb-4 input-group-square">
+          <label class="form-label">Raise Style</label>
+          <div class="input-group">
+            <span class="input-group-text bg-light-primary">
+              <i class="icofont icofont-download txt-primary"></i>
+              </span>
+              <input class="form-control input-group-air" type="text" placeholder="https://www.example.com">
+            </div>
+        </div>
+        <div>
+          <label class="form-label">Left & Right Addon</label>
+          <div class="input-group pill-input-group">
+            <span class="input-group-text bg-light-secondary !rounded-l-lg !rounded-none">
+              <i class="icofont icofont-ui-copy txt-secondary"></i>
+            </span>
+              <input class="form-control !rounded-none" type="text" aria-label="Amount (to the nearest dollar)">
+            <span class="input-group-text bg-light-secondary !rounded-r-lg !rounded-none">
+              <i class="icofont icofont-stock-search txt-secondary"></i>
+            </span>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  <div class="card-footer" details>
+    <button class="btn btn-primary text-white m-r-15" type="submit">Submit</button>
+    <button class="btn btn-light" type="submit">Cancel</button>
+  </div>
+</app-card>

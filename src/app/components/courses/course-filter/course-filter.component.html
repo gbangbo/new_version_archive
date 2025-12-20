@@ -1,0 +1,85 @@
+<div class="md-sidebar">
+    <a class="btn btn-primary email-aside-toggle text-white md-sidebar-toggle hover:text-white" (click)="openFilter()">Learning filter</a>
+    <div class="md-sidebar-aside job-sidebar custom-scrollbar" [class.open]="isOpen">
+        <div class="default-according style-1 faq-accordion job-accordion">
+            <div id="accordionExample">
+                @for(details of courseSidebar; track details){
+                    <div class="card accordion">
+                        <div class="card-header card-no-border accordion-item" id="headingOne">
+                            <h2 class="accordion-header relative">
+                                <button class="accordion-button btn btn-link btn-block text-start" type="button" [class.collapsed]="!accordionOpen[details.id]" (click)="toggleAccordion(details.id)">
+                                    {{ details.title }}
+                                </button>
+                            </h2>
+                        <div class="accordion-collapse collapse" [class.show]="accordionOpen[details.id]">
+                            <div class="card-body {{ details.class }}">
+                                    @if(details.search){
+                                        <div class="job-filter mb-4">
+                                            <div class="faq-form">
+                                                <input class="form-control" type="text" placeholder="Search..">
+                                                <app-feather-icon [icon]="'search'" [class]="'search-icon'"></app-feather-icon>
+                                            </div>
+                                        </div>
+                                    }
+                                    @for(item of details.details;track item){
+                                        <div [class]="item.class">
+                                            <div class="learning-header">
+                                                <span class="font-semibold">{{ item.sub_title}}</span>
+                                            </div>
+                                            @for(details of item.item;track details){
+                                                @if(!details.badge){
+                                                    <label class="block" [for]="details.check_id">
+                                                        <input [class]="details.class" [id]="details.check_id" [type]="details.type" name="rdo-ani"> 
+                                                        {{ details.title}}
+                                                    </label>
+                                                } @else {
+                                                    <ul>
+                                                        <li>
+                                                            <a href="javascript:void(0)">
+                                                                {{ details.title }}
+                                                            </a>
+                                                            <span class="badge badge-primary text-white pull-right">{{ details.badge_text }}</span>
+                                                        </li>
+                                                    </ul>
+                                                }
+                                            }
+                                            @if(item.rating){
+                                                <div class="grow">
+                                                    <span class="font-semibold">{{ item.title }}</span>
+                                                    <span class="block">
+                                                        Course By
+                                                        <a href="javascript:void(0)">{{ item.created_by }}</a>
+                                                    </span>
+                                                    <span class="block">
+                                                        <bar-rating  [rate]="item.rate" [readonly]="true" [max]="5">
+                                                            <ng-template ratingActive>
+                                                              <i class="fa-solid fa-star" style="color: #ffb829"></i>
+                                                            </ng-template>
+                                                            <ng-template ratingInactive>
+                                                              <i class="fa-solid fa-star" style="color: #d2d2d2"></i>
+                                                            </ng-template>
+                                                            <ng-template ratingFraction>
+                                                              <i class="fa-solid fa-star-half-stroke" style="color: #ffb829"></i>
+                                                            </ng-template>
+                                                          </bar-rating>
+                                                    </span>
+                                                </div>
+                                                <div>
+                                                    <h5 class="mb-0 font-primary">{{ item.date }}</h5>
+                                                    <span class="block">{{ item.month }}</span>
+                                                </div>
+                                                }
+                                            </div>
+                                        }
+                                    @if(details.search){
+                                        <button class="btn btn-primary !text-center !text-white" type="button">{{ details.button }}</button>
+                                    }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,32 @@
+<app-card [headerTitle]="'Avg Delivery Duration'" [padding]="false" [cardClass]="'delivery-chart sales-report'" [cardBodyClass]="'pt-0'" 
+           [dropdownType]="'simple'" [options]="cardToggleOption">
+  
+    <ul class="balance-data">
+        @for(details of deliveryDuration.details; track details){
+            <li>
+                <span class="circle bg-{{ details.class}}"></span>
+                <span class="c-light ms-1">{{ details.name }}</span>
+            </li>
+        } 
+    </ul>
+
+      <div class="delivery-duration-chart">
+        <div id="delivery-duration">
+            <apx-chart
+                [series]="deliveryDuration.series"
+                [chart]="deliveryDuration.chart"
+                [stroke]="deliveryDuration.stroke"
+                [plotOptions]="deliveryDuration.plotOptions"
+                [colors]="deliveryDuration.colors"
+                [fill]="deliveryDuration.fill"
+                [grid]="deliveryDuration.grid"
+                [legend]="deliveryDuration.legend"
+                [markers]="deliveryDuration.markers"
+                [annotations]="deliveryDuration.annotations"
+                [xaxis]="deliveryDuration.xaxis"
+                [yaxis]="deliveryDuration.yaxis"
+                [responsive]="deliveryDuration.responsive">
+            </apx-chart>
+        </div>
+      </div>
+</app-card>

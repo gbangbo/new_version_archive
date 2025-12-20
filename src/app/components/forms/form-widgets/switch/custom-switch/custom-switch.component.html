@@ -1,0 +1,40 @@
+<app-card [headerTitle]="'Custom switch'" [header]="'pb-0'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>
+    A switch has the markup of a custom checkbox but uses the .form-switch class to render a <code>toggle switch</code>.
+  </p>
+  <div class="grid grid-cols-12 gap-4">
+    <div class="col-span-4 md:col-span-6 sm:col-span-12">
+      <div class="card-wrapper border rounded-3">
+        <div class="form-check-size">
+          @for(item of customSwitch; track item){
+            <div class="form-check form-switch form-check-inline">
+              <input class="form-check-input switch-{{item.class}} check-size" type="checkbox" role="switch" [checked]="item.value">
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+    <div class="col-span-4 md:col-span-6 sm:col-span-12">
+      <div class="card-wrapper border rounded-3 radius-none">
+        <div class="form-check-size default-square">
+          @for(item of customSwitch; track item){
+            <div class="form-check form-switch form-check-inline">
+              <input class="form-check-input switch-{{ item.class }} check-size" type="checkbox" role="switch" [checked]="item.value">
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+    <div class="col-span-4 md:col-span-12">
+      <div class="card-wrapper border rounded-3 common-flex">
+        <div class="form-check-size">
+          @for(item of customSwitch; track item){
+            <div class="form-check form-switch form-check-inline">
+              <input class="form-check-input switch-{{ item.class }} check-size" type="checkbox" role="switch" [checked]="item.value" disabled="">
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</app-card>

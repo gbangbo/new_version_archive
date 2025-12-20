@@ -1,0 +1,10 @@
+<app-card [headerTitle]="'Negative Value'" [header]="'pb-0'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>
+    Use <code>ngx-slider</code> to create a range slider that supports negative values. The slider is configured with a <code>value</code> starting at -500, and the <code>highValue</code> set to 500. The range is defined between <code>floor</code> -1000 and <code>ceil</code> 1000, allowing for both negative and positive value selection.
+  </p>
+    <div class="form-group grid grid-cols-12 py-1 justify-center">
+      <div class="col-span-10 md:col-span-12">
+        <ngx-slider [(value)]="value" [(highValue)]="maxValue" [options]="options"></ngx-slider>
+      </div>
+    </div>
+</app-card>

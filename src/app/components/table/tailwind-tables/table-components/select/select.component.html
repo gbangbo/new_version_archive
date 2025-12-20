@@ -1,0 +1,43 @@
+<app-card [headerTitle]="'Select'" [padding]="false" [cardBodyClass]="'p-0'">
+  <div class="carblock grid grid-cols-12">
+    <div class="col-span-12">
+      <div class="overflow-x-auto custom-scrollbar">
+        <table class="table table-bordered checkbox-td-width">
+          <tbody>
+            <tr>
+              <td>Single Select</td>
+              <td class="w-50">
+                <select2 [data]="values" placeholder="1" ></select2>
+              </td>
+              <td><span>Use for basic ng-select2 control.</span></td>
+            </tr>
+            <tr>
+              <td>Disabled Select Mode</td>
+              <td>
+                <select2 [data]="values" placeholder="1" [disabled]="true"></select2>
+              </td>
+              <td><span>Use for  ng-select2 control add <code> [disabled] </code> value set of <code> true or false </code>.</span></td>
+            </tr>
+            <tr>
+              <td>Large Select Mode</td>
+              <td class="flex flex-col gap-4">
+                <select2 [data]="values" placeholder="1"></select2>
+                <select2 [data]="values" placeholder="1"></select2>
+              </td>
+              <td><span>Use for large and small ng-select2 control.</span></td>
+            </tr>
+            <tr>
+              <td>Example Multiple Select</td>
+              <td>
+                <select2 [data]="values" placeholder="1" [multiple]="true"></select2>
+              </td>
+              <td>
+                <span>Use for ng-select2 control add code <code>[multiple] </code> property <code> true </code>on select multiple value.</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</app-card>

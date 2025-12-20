@@ -1,0 +1,39 @@
+<div class="modal  fade show modal-backdrop">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" (clickOutside)="closeModal()">
+      <div class="modal-header">
+        <h5 class="modal-title">Tooltip and Popover Modal</h5>
+        <button class="btn-close py-0" type="button" (click)="closeModal()"></button>
+      </div>
+      <div class="modal-body">
+        <h5>Popover in a modal</h5>
+        <p class="mt-2 relative group inline-block">This
+          <button class="btn btn-info" (click)="handlePopover()">
+            button
+            <div [class.show]="popoverVisible" class="popover absolute left-full top-1/2 -translate-y-1/2 ml-2 w-max bg-white text-sm rounded opacity-100 visible transition-opacity duration-300 shadow-lg">
+              <div class="popover-arrow right"></div>
+              <div class="popover-header">Popover title</div>
+              <div class="popover-body">Popover body content is set in this attribute.</div>
+            </div>
+          </button>
+          triggers a popover on click.
+        </p>
+        <hr>
+        <h5>Tooltips in a modal</h5>
+        <p class="mt-2">
+          <a class="tooltip-test txt-primary group relative" href="javascript:void(0)" title="Tooltip" placement="top">This link
+            <app-tooltip [title]="'tooltip'"></app-tooltip>
+          </a>
+            and
+          <a class="tooltip-test txt-primary group relative" href="javascript:void(0)" title="Tooltip" placement="top">
+            <app-tooltip [title]="'tooltip'"></app-tooltip>
+            that link</a> have tooltips on hover.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary  text-white" type="button" (click)="closeModal()">Close</button>
+        <button class="btn btn-primary  text-white" type="button">Save</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,5 @@
+<app-card [headerTitle]="'Line Graph'" [border]="true" [header]="'pb-0'" [padding]="false"[cardBodyClass]="'chart-block'">
+  <canvas baseChart class="chart" id="myGraph" [datasets]="lineGraphData"
+          [labels]="lineGraphLabels" [legend]="lineGraphLegend" [type]="lineGraphType">
+  </canvas>
+</app-card>

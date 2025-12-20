@@ -1,0 +1,8 @@
+<app-card [headerTitle]="'Border Warning State'" [border]="true" [padding]="false" [header]="'border-l-warning border-3 pb-0'" [cardClass]="'common-hover'">
+  <p class="mt-1 f-m-light" header5>Use class of<code> border-l-* </code>for left border and <code>border-3 </code>is used to increase the width of the border.</p>
+  <ol class="list-group list-group-numbered">
+    @for(details of warningStateCard; track details){
+      <li class="list-group-item txt-{{ details.color_class }} font-bold">{{ details.text }}</li>
+    }
+  </ol>
+</app-card>

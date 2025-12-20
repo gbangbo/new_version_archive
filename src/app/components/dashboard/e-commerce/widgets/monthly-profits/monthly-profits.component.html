@@ -1,0 +1,18 @@
+<app-card [headerTitle]="'Monthly Profits'" [padding]="false" [dropdownType]="'simple'" [options]="cardToggleOption" [cardBodyClass]="'pt-0'">
+    <div class="monthly-profit">
+        <div id="profitmonthly">
+            <apx-chart
+                [labels]="profitChart.labels"
+                [series]="profitChart.series"
+                [chart]="profitChart.chart"
+                [dataLabels]="profitChart.dataLabels"
+                [legend]="profitChart.legend"
+                [stroke]="profitChart.stroke"
+                [plotOptions]="profitChart.plotOptions"
+                [states]="profitChart.states"
+                [colors]="profitChart.colors"
+                [responsive]="profitChart.responsive">
+            </apx-chart>
+        </div>
+    </div>
+</app-card>

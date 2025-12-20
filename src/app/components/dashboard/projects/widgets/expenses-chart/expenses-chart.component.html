@@ -1,0 +1,37 @@
+<app-card [headerTitle]="chart.title" [padding]="false" [dropdownType]="'simple'" [options]="cardToggleOption">
+    <div class="grid grid-cols-12 card-gap"> 
+        <div class="col-span-6 xxl:col-span-12 box-col-12"> 
+          <h6>
+             $ 
+             <span class="counter" data-target="5476000">
+              <app-counter [counter]="chart.count"></app-counter>
+            </span>
+            </h6>
+            <span class="flex font-{{ chart.class }}">
+                <app-feather-icon class="me-1" [icon]="chart.icon"></app-feather-icon>
+               {{ chart.percentage }}
+            </span>
+        </div>
+        <div class="col-span-6 xxl:col-span-12 box-col-12"> 
+          <div class="{{ chart.chart_id}}-wrapper">
+            <div id="{{ chart.chart_id}}">
+                <apx-chart
+                    [series]="chart.chart_details.series"
+                    [chart]="chart.chart_details.chart"
+                    [stroke]="chart.chart_details.stroke"
+                    [xaxis]="chart.chart_details.xaxis"
+                    [grid]="chart.chart_details.grid"
+                    [yaxis]="chart.chart_details.yaxis"
+                    [dataLabels]="chart.chart_details.dataLabels"
+                    [colors]="chart.chart_details.colors"
+                    [fill]="chart.chart_details.fill"
+                    [responsive]="chart.chart_details.responsive"
+                    [plotOptions]="chart.chart_details.plotOptions"
+                    [tooltip]="chart.chart_details.tooltip"
+                    [legend]="chart.chart_details.legend">
+                </apx-chart>
+            </div>
+          </div>
+        </div>
+      </div>
+</app-card>

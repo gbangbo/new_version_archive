@@ -1,0 +1,6 @@
+<app-card [headerTitle]="'Top Customers'" [cardBodyClass]="'main-customer-table px-0 pt-0'" [dropdownType]="'simple'" [options]="cardToggleOptions" [padding]="false">
+    <div class="recent-table overflow-x-auto custom-scrollbar">
+      <app-table [tableConfig]="tableConfig" [hasCheckbox]="true" [pageSize]="4"></app-table>
+    </div>
+  </app-card>
+  

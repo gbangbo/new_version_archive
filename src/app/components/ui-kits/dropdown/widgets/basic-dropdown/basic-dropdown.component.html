@@ -1,0 +1,17 @@
+<app-card [headerTitle]="'Basic Dropdowns'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'rtl-dropdown'">
+    <p class="f-m-light mt-1" header5> Use the <code>show</code> class on the <code>dropdown-menu</code> to toggle its visibility when the button is clicked. </p>
+    <div class="common-flex">
+        @for(dropdown of basicDropdown; track dropdown; let i = $index) {
+            <div class="btn-group" (clickOutside)="clickOutside(i)">
+                <button class="btn btn-{{ dropdown.color }} dropdown-toggle border text-white" type="button" (click)="toggleDropdown(i)">{{ dropdown.title }}</button>
+                <ul class="dropdown-menu dropdown-block" [class.show]="dropdownOpen[i]">
+                    @for(item of dropdown.dropdown_item; track item) {
+                        <li>
+                            <a class="dropdown-item" href="javascript:void(0)">{{ item.item }}</a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        }
+    </div>
+</app-card>

@@ -1,0 +1,127 @@
+<app-card [cardClass]="'basic-floating'" [header]="'pb-0'" [headerTitle]="'Basic Floating Input Control'"
+          [cardBodyClass]="'custom-input'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>
+    Give textual form controls like <code>&lt;input&gt;</code>s and <code>&lt;textarea&gt;</code>s an upgrade with
+    custom styles, sizing, focus states, and more.
+  </p>
+  <form class="form theme-form">
+  <div class="grid grid-cols-12">
+    <div class="col-span-12">
+      <div class="mb-4 grid grid-cols-12">
+        <label class="col-span-3 sm:col-span-12">Valid Input </label>
+        <div class="col-span-9 sm:col-span-12">
+          <div class="form-floating">
+            <input class="form-control" id="floatingInputValue" type="email" placeholder="" value="test&#64;example.com">
+            <label for="floatingInputValue">Input with value</label>
+          </div>
+        </div>
+      </div>
+      <div class="mb-4 grid grid-cols-12">
+        <label class="col-span-3 sm:col-span-12">Invalid Input </label>
+        <div class="col-span-9 sm:col-span-12">
+          <div class="form-floating">
+            <input class="form-control is-invalid" id="floatingInputInvalid" type="email" placeholder="" value="test&#64;example.com">
+            <label for="floatingInputInvalid">Invalid input</label>
+          </div>
+        </div>
+      </div>
+      <div class="mb-4 grid grid-cols-12">
+        <label class="col-span-3 sm:col-span-12">Comments</label>
+        <div class="col-span-9 sm:col-span-12">
+          <div class="form-floating">
+            <textarea class="form-control" id="floatingTextarea" placeholder=""></textarea>
+            <label for="floatingTextarea">Comments</label>
+          </div>
+        </div>
+      </div>
+      <div class="mb-4 grid grid-cols-12">
+        <label class="col-span-3 sm:col-span-12">Email</label>
+        <div class="col-span-9 sm:col-span-12">
+          <div class="form-floating mb-4">
+            <input class="form-control" id="floatingInput" type="email">
+            <label for="floatingInput">Email address</label>
+          </div>
+        </div>
+      </div>
+      <div class="mb-4 grid grid-cols-12">
+        <label class="col-span-3 sm:col-span-12">Password</label>
+        <div class="col-span-9 sm:col-span-12">
+          <div class="form-floating">
+            <input class="form-control" id="floatingPassword1" type="password">
+            <label for="floatingPassword1">Password</label>
+          </div>
+        </div>
+      </div>
+      <div class="mb-4 grid grid-cols-12">
+        <label class="col-span-3 sm:col-span-12">Comments</label>
+        <div class="col-span-9 sm:col-span-12">
+          <div class="form-floating">
+            <textarea class="form-control" id="floatingTextarea2" placeholder="" style="height: 100px"></textarea>
+            <label for="floatingTextarea2">Comments</label>
+          </div>
+        </div>
+      </div>
+      <div class="mb-4 grid grid-cols-12">
+        <label class="col-span-3 sm:col-span-12">Open This Select Menu </label>
+        <div class="col-span-9 sm:col-span-12">
+          <div class="form-floating">
+            <select2 [data]="selectNumber" placeholder="Open this select menu"> </select2>
+          </div>
+        </div>
+      </div>
+      <div class="mb-4 grid grid-cols-12">
+        <label class="col-span-3 sm:col-span-12">Input Group</label>
+        <div class="col-span-9 sm:col-span-12">
+          <div class="input-group mb-4">
+            <span class="input-group-text">&#64;</span>
+            <div class="form-floating">
+              <input class="form-control" id="floatingInputGroup1" type="text">
+              <label for="floatingInputGroup1">Username</label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mb-4 grid grid-cols-12">
+        <label class="col-span-3 sm:col-span-12">Input Group</label>
+        <div class="col-span-9 sm:col-span-12">
+          <div class="input-group has-validation">
+            <span class="input-group-text">&#64;</span>
+            <div class="form-floating">
+              <input class="form-control" id="floatingInputGroup2" type="text">
+              <label for="floatingInputGroup2">Username</label>
+            </div>
+            <div class="invalid-feedback">Please choose a username.</div>
+          </div>
+        </div>
+      </div>
+      <div class="mb-0 grid grid-cols-12">
+        <div class="col-span-3 sm:col-span-12">
+          <label>Layout</label>
+        </div>
+        <div class="col-span-9 sm:col-span-12">
+          <div class="grid grid-cols-12 gap-2 mb-4 layout-input">
+            <div class="col-span-6 xxl:col-span-12">
+              <div class="form-floating">
+                <input class="form-control" id="floatingInputGrid" type="email" placeholder="" value="mdo&#64;example.com">
+                <label for="floatingInputGrid">Email address</label>
+              </div>
+            </div>
+            <div class="col-span-6 xxl:col-span-12">
+              <div class="form-floating">
+                <select2 class="form-select" [data]="selectMenu" placeholder="Open this select menu"></select2>
+                <label for="floatingSelectGrid">Works with selects</label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card-footer text-end grid grid-cols-12" details>
+    <div class="col-span-12 sm:col-span-12">
+      <button class="btn btn-primary me-3 text-white" type="submit">Submit</button>
+      <input class="btn btn-light" type="reset" value="Cancel">
+    </div>
+  </div>
+</form>
+</app-card>

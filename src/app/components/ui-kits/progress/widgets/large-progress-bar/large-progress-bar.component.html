@@ -1,0 +1,20 @@
+<app-card [cardClass]="'height-equal'" [header]="'pb-0'" [headerTitle]="'Large Progress Bars'" [border]="true" [padding]="false" [cardBodyClass]="'progress-showcase'">
+  <p class="f-m-light mt-1" header5>Use <code> lg-progress-bar</code> class to change progress size to large.</p>
+
+  <div class="grid grid-cols-12">
+    <div class="col-span-12">
+      <div class="progress lg-progress-bar">
+        <div class="progress-bar bg-primary text-center" [ngStyle]="{ 'width': '25%'}">25%</div>
+      </div>
+      <div class="progress lg-progress-bar">
+        <div class="progress-bar bg-secondary text-center" [ngStyle]="{ 'width': '50%'}">50%</div>
+      </div>
+      <div class="progress lg-progress-bar">
+        <div class="progress-bar bg-success text-center" [ngStyle]="{ 'width': '75%'}">75%</div>
+      </div>
+      <div class="progress lg-progress-bar">
+        <div class="progress-bar bg-info text-center" [ngStyle]="{ 'width': '100%'}">100%</div>
+      </div>
+    </div>
+  </div>
+</app-card>

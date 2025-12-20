@@ -1,0 +1,12 @@
+<app-card [headerTitle]="'Image Badges'" [header]="'pb-0'" [border]="true" [padding]="false">
+    <p class="f-m-light mt-1" header5>Use<code> image-badges </code>class to set image sizes. </p>
+
+    <div class="badge-spacing image-badges">
+        @for(badge of imageBadge; track badge) {
+            <span class="badge common-align txt-{{ badge.color }} rounded-full badge-l-{{ badge.color }} border border-{{ badge.color }}">
+                <img class="rounded-full me-1" [src]="badge.profile" alt="user">{{ badge.text }}   
+            </span>
+        }
+    </div>
+
+</app-card>

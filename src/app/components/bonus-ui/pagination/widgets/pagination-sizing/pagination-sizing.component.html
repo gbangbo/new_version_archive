@@ -1,0 +1,9 @@
+<app-card [headerTitle]="'Pagination Sizing'" [header]="'pb-0'" [border]="true" [padding]="false">
+    <p class="f-m-light mt-1" header5>Use <code>[pagination-lg/pagination-md/pagination-lg]</code> for additional sizes.</p>
+    
+    @for(details of paginationSizing; track details){
+      <nav [class]="details.class" aria-label="Page navigation example">
+        <app-common-pagination [ul_class]="'pagination-info pagin-border-info pagination pagination-' + details.size_class"></app-common-pagination>
+      </nav>
+      }
+</app-card>

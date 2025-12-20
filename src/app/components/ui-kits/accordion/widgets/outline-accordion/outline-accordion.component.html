@@ -1,0 +1,20 @@
+<app-card [headerTitle]="'Outline Accordion'" [header]="'pb-0'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>
+      Made custom <code>accordion-wrapper</code> class use to bring border-left side.
+  </p>
+  <div class="accordion-1 accordion dark-accordion">
+    @for(accordion of outlineAccordion; track accordion) {
+      <div class="accordion-item accordion-wrapper">
+        <h2 class="accordion-header">
+          <button class="accordion-button accordion-light-primary txt-primary" type="button" [class.collapsed]="!accordionOpen[accordion.id]" (click)="toggleAccordion(accordion.id)" [attr.aria-expanded]="accordionOpen[accordion.id] ? true : false">
+              {{ accordion.title }}
+              <app-feather-icon [icon]="'chevron-down'" [class]="'svg-color'"></app-feather-icon>
+          </button>
+        </h2>
+        <div class="accordion-collapse collapse" [class.show]="accordionOpen[accordion.id]">
+          <div class="accordion-body" [innerHTML]="accordion.description"></div>
+        </div>
+      </div>
+    }
+  </div>
+</app-card>

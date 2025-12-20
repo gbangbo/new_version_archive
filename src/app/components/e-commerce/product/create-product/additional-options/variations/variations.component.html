@@ -1,0 +1,24 @@
+<form class="grid grid-cols-12 gap-4 common-form !static">
+  <div class="col-span-12">
+    <div class="grid g-2 product-tag">
+      <label class="form-label d-block m-0">Colors</label>
+      <tag-input [(ngModel)]="colors" name="tag" [editable]="true" class="form-control"></tag-input>
+    </div>
+  </div>
+  <div class="col-span-12">
+    <label class="form-label">Option Name</label>
+    <select2 [data]="colorOptionName" placeholder="Color"></select2>
+  </div>
+  <div class="col-span-12">
+    <label class="form-label">Options Value</label>
+    <select2 [data]="colorOptionValue" placeholder="Red"></select2>
+  </div>
+  <div class="col-span-12 product-buttons">
+    <button class="btn" type="button" (click)="previous()">
+      <app-svg-icon [icon]="'back-arrow'"></app-svg-icon>Previous
+    </button>
+    <button class="btn" type="button" (click)="next()">Next
+      <app-svg-icon [icon]="'front-arrow'"></app-svg-icon>
+    </button>
+  </div>
+</form>

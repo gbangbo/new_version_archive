@@ -1,0 +1,7 @@
+<app-card [cardClass]="'heading-space seller-order-table'" [cardType]="'dataTable'" [headerTitle]="'Recent Orders'" [padding]="false" [cardBodyClass]="'px-0 pt-0'">
+  <div class="list-product seller-order-table">
+    <div class="recent-table overflow-x-auto custom-scrollbar">
+      <app-table [tableConfig]="tableConfig" [hasCheckbox]="true" [pageSize]="6" [paginateDetails]="true" [showPaginate]="true" [selectedRows]="true" [tableClass]="'table'"></app-table>
+    </div>
+  </div>
+</app-card>

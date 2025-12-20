@@ -1,0 +1,22 @@
+<div class="main-card-box bg-10-{{ projectRating.card_color }} h-full">
+    <div class="p-5 common-space">
+        <div>
+            <h5>{{ projectRating.rating }}</h5>
+            <span class="c-o-light">{{ projectRating.title }}</span>
+        </div>
+      <div class="project-right-icon bg-10-{{ projectRating.card_color }}">
+        <i class="fa-solid fa-{{ projectRating.icon }} fa-fade txt-{{ projectRating.card_color }}"></i>
+    </div>
+    </div>
+    <div class="highlight-content">
+        @for(details of projectRating.details; track details) {
+            <div class="common-space">
+                <span class="font-medium">{{ details.title }}</span>
+                <div> 
+                    <app-feather-icon [class]="details.increase ? 'txt-success' : 'txt-danger'" [icon]="details.increase ? 'trending-up' : 'trending-down'"></app-feather-icon>
+                    <span class="font-medium">{{ details.rating}} / 10</span>
+                </div>
+            </div>
+        }
+    </div>
+</div>

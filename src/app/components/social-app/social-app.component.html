@@ -1,0 +1,25 @@
+<div class="container social-app-profile1">
+    <div class="user-profile social-app-profile tabs">
+        <div class="grid grid-cols-12 card-gap">
+            <div class="col-span-12 box-col-12">
+                <app-social-app-profile (currentTab)="handleCurrentTab($event)"></app-social-app-profile>
+            </div>
+        </div>
+        <div class="tab-content" id="top-tabContent">
+            <div class="tab-pane fade show active">
+                @if(activeTab == 'timeline') {
+                    <app-social-app-timeline></app-social-app-timeline>
+                }
+                @if(activeTab == 'about') {
+                    <app-social-app-about></app-social-app-about>
+                }
+                @if(activeTab == 'friends') {
+                    <app-social-app-friends></app-social-app-friends>
+                }
+                @if(activeTab == 'photos') {
+                    <app-social-app-photos></app-social-app-photos>
+                }
+            </div>
+        </div>
+    </div>
+</div>

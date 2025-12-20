@@ -1,0 +1,31 @@
+<app-card [cardClass]="'overflow-hidden analytics-tread-card widget-hover'" [headerTitle]="analyticsChart.value + '%'" [dropdownType]="'simple'"
+    [options]="cardToggleOption" [cardBodyClass]="'pt-0 px-0'"> 
+
+    <div class="common-align justify-start" headerTitleValue>
+        <span class="me-1">{{analyticsChart.title }}</span>
+        <span class="common-align gap-1 justify-start">
+            <i class="txt-{{ analyticsChart.analytics_type == 'increment' ? 'success' : 'danger' }} i icon-arrow-{{ analyticsChart.analytics_type == 'increment' ? 'up' : 'down' }} fw-bold"></i>
+            <span class="txt-{{ analyticsChart.analytics_type == 'increment' ? 'success' : 'danger' }} font-medium f-12">
+                {{ analyticsChart.analytics_type == 'increment' ? '+' :'-'}}{{ analyticsChart.analytics_value }}%
+            </span>
+        </span>
+    </div>
+
+    <div class="photo-click-wrapper">
+        <div>
+            <apx-chart 
+                [series]="analyticsChart.chart_details.series"
+                [chart]="analyticsChart.chart_details.chart"
+                [stroke]="analyticsChart.chart_details.stroke"
+                [xaxis]="analyticsChart.chart_details.xaxis"
+                [grid]="analyticsChart.chart_details.grid"
+                [yaxis]="analyticsChart.chart_details.yaxis"
+                [dataLabels]="analyticsChart.chart_details.dataLabels"
+                [markers]="analyticsChart.chart_details.markers"
+                [colors]="analyticsChart.chart_details.colors"
+                [fill]="analyticsChart.chart_details.fill"
+                [responsive]="analyticsChart.chart_details.responsive">
+            </apx-chart>
+        </div>
+    </div>
+</app-card>

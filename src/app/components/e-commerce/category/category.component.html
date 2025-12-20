@@ -1,0 +1,30 @@
+<div class="container e-category">
+  <div class="grid grid-cols-12 card-gap">
+    <div class="col-span-12">
+      <app-category-filter></app-category-filter>
+    </div>
+
+    <div class="col-span-12">
+      <div class="card">
+        <div class="card-header card-no-border text-end">
+          <div class="card-header-right-icon">
+            <a class="btn btn-primary font-medium text-white" href="javascript:void(0)" (click)="openCategoryModal()">
+              <i class="fa-solid fa-plus pe-2"></i>
+              Add Category
+            </a>
+            @if(modalOpen) {
+              <app-create-category-modal (modalOpen)="handleModalOpen($event)"></app-create-category-modal>
+            }
+          </div>
+        </div>
+        <div class="card-body px-0 pt-0">
+          <div class="list-product list-category">
+            <div class="recent-table overflow-x-auto custom-scrollbar">
+              <app-table [tableConfig]="tableConfig" [hasCheckbox]="true" [pageSize]="5" [paginateDetails]="true" [showPaginate]="true" (action)="handleAction($event)"></app-table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

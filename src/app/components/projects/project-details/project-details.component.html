@@ -1,0 +1,45 @@
+<div class="container-fluid main-scope-project">
+    <div class="grid grid-cols-12 card-gap scope-bottom-wrapper tabs">
+        <div class="col-span-2 xxl:col-span-3 xl:col-span-12 recent-xl-23 box-col-3">
+            <app-project-details-tab (handleActiveTab)="handleActiveTab($event)"></app-project-details-tab>
+        </div>
+
+        <div class="col-span-10 xxl:col-span-9 xl:col-span-12 recent-xl-77 box-col-9">
+            <div class="grid grid-cols-12 card-gap">
+                <div class="col-span-12">
+                    <app-project-details-header></app-project-details-header>
+                </div>
+
+                <div class="col-span-12">
+                    <div class="">
+                        <div>
+                            @if(activeTab == 'summary') {
+                                <app-project-summary></app-project-summary>
+                            }
+
+                            @if(activeTab == 'status') {
+                                <app-project-status></app-project-status>
+                            }
+
+                            @if(activeTab == 'finance') {
+                                <app-finance></app-finance>
+                            }
+
+                            @if(activeTab == 'team') {
+                                <app-project-team></app-project-team>
+                            }
+
+                            @if(activeTab == 'attachment') {
+                                <app-attachments></app-attachments>
+                            }
+
+                            @if(activeTab == 'activity') {
+                                <app-activity></app-activity>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

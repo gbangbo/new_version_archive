@@ -1,0 +1,11 @@
+<app-card [cardClass]="'height-equal'" [header]="'pb-0'" [headerTitle]="'Link Underlines'" [border]="true" [padding]="false">
+    <p class="f-m-light mt-1" header5>Use <code>link-underline-* </code>classes to link underlines. Change the underline's color independent of the link text color.</p>
+
+    @for(link of colors; track link) {
+        <p class="mb-4">
+            <a class="link-underline-{{ link.color }}" href="javascript:void(0)">
+                {{ link.color | titlecase }} underline
+            </a>
+        </p>
+    }
+</app-card>

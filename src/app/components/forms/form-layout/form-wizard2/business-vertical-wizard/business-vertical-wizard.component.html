@@ -1,0 +1,40 @@
+<app-card [headerTitle]="title" [header]="'pb-0'" [border]="true" [padding]="false">
+  <div class="horizontal-wizard-wrapper vertical-variations tabs" [ngClass]="{'vertical-options': type ? '': 'horizontal'}">
+    <div class="grid grid-cols-12 gap-4">
+      <div class="col-span-12 main-horizontal-header" [ngClass]="{'': type ? '': 'horizontal'}">
+        <div class="tab-links horizontal-options">
+          @for(tab of businessVerticalWizard;track tab; let i = $index){
+            <a class="tab-link "[class.active]="activeTab == tab.id" (click)="changeTab(tab.id)">
+              <div class="horizontal-wizard">
+                <div class="stroke-icon-wizard">
+                  <span>{{ tab.id }}</span></div>
+                <div class="horizontal-wizard-content"> 
+                  <h6>{{ tab.title }}</h6>
+                </div>
+              </div>
+            </a>
+          }
+        </div>
+      </div>
+      <div class="col-span-12" [ngClass]="{' ': type ? '': 'horizontal'}">
+        <div class="dark-field">
+          @if(activeTab == 1){
+            <app-choose-account [active]="activeTab" (changeTab)="changeTab($event)"></app-choose-account>
+          }
+          @if(activeTab == 2){
+            <app-business-setting [active]="activeTab" (changeTab)="changeTab($event)"></app-business-setting>
+          }
+          @if(activeTab == 3){
+            <app-contact-details [active]="activeTab" (changeTab)="changeTab($event)"></app-contact-details>
+          }
+          @if(activeTab == 4){
+            <app-pay-details [active]="activeTab" (changeTab)="changeTab($event)"></app-pay-details>
+            }
+          @if(activeTab == 5){
+            <app-completed></app-completed>
+          }
+          </div>
+      </div>
+    </div>
+  </div>
+</app-card>

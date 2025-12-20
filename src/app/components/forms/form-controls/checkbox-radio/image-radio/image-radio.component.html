@@ -1,0 +1,22 @@
+<app-card [headerTitle]="'Images with Radio'" [header]="'pb-0'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>
+    Use  <code>form-check-input </code>and <code>form-check-label </code>for image radio.
+  </p>
+    <div class="main-img-checkbox">
+      <div class="grid grid-cols-12 gap-4">
+        @for(item of imageRadio;track item){
+          <div class="col-span-3 xxl:col-span-6 sm:col-span-12">
+            <div class="card-wrapper border rounded-3 checkbox-checked">
+              <h6 class="sub-title">{{ item.title }}</h6>
+              <div class="img-checkbox">
+                <input class="main-img-cover form-check-input" id="img-radio-{{ item.id }}" type="radio" name="radio6" [checked]="item.check" [disabled]="item.disabled">
+                <label class="form-check-label mb-0" for="img-radio-{{ item.id }}"> 
+                  <img [src]="item.img" alt="coffee-beans">
+                </label>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+</app-card>

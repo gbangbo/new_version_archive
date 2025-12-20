@@ -1,0 +1,23 @@
+<div class="container">
+  <div class="grid grid-cols-12 card-gap">
+
+    @for(blog of blogDetails | slice:0:1;track blog){
+      <div class="col-span-6 xl:col-span-12 set-col-12 box-col-12">
+        <app-single-blog [blog]="blog"></app-single-blog>
+      </div>
+    }
+
+    <div class="col-span-6 xl:col-span-12 set-col-12 box-col-12">
+      @for(blog of blogDetails | slice:1:3;track blog){
+        <app-vertical-blog [blog]="blog"></app-vertical-blog>
+      }
+    </div>
+
+    @for(blog of blogDetails | slice:3:7;track blog){
+      <div class="col-span-3 xxl:col-span-6 md:col-span-12 box-col-6">
+        <app-horizontal-blog [blog]="blog"></app-horizontal-blog>
+      </div>
+    }
+    
+  </div>
+</div>

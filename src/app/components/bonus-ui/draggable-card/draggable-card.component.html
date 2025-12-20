@@ -1,0 +1,44 @@
+<div class="container">
+    <div class="grid grid-cols-12 card-gap" id="draggable" cdkDropList (cdkDropListDropped)="drop($event)" cdkDropListOrientation="mixed">
+        @for(lists of list; track lists){
+          <div class="col-span-4 xxl:col-span-6 md:col-span-12" cdkDrag>
+            <div class="card {{lists.card_class }}">
+              <div class="card-header card-no-border pb-0 {{lists.card_header_class}}">
+                <h5 class="{{lists.heading_class}}">{{ lists.title }}</h5>
+                @if(lists.card_type == 'simple'){
+                  <p class="mt-1 f-m-light">You can draggable cards anywhere.</p>
+                }
+              </div>
+              <div class="card-body {{lists.card_body_class }}">
+                <ul class="list-group {{lists.class}}">
+                  @for(item of lists.details; track item){
+                    @if(item.list){
+                      <li class="list-group-item" [ngClass]="{ 'active bg-warning-light text-white' : item.active }"> 
+                        @if(item.icon){
+                          <i class="icofont icofont-{{ item.icon }}"></i>
+                        } @else {
+                          <i class="icofont icofont-arrow-right"></i>
+                        }
+                        {{ item.name }}
+                      </li>
+                    }
+                  }
+                </ul>
+                @for(item of lists.details; track item){
+                  @if(lists.card_type == 'classic'){
+                    <h6 class="pb-2 {{item.title_class}}"> {{ item.title }} </h6>
+                    <p class="mb-0 c-light {{item.description_class}}">{{ item.description }}</p>
+                  }
+              }
+              </div>
+              @if(lists.card_type == 'classic'){
+                <div class="card-footer {{lists.card_footer_class}}">
+                  <h6 class="mb-0 text-end {{lists.footer_class}}">Cuba Theme</h6>
+                </div>
+              }
+          
+            </div>
+        </div>
+        }
+    </div>
+</div>

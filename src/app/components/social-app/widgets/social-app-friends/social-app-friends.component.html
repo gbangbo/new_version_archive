@@ -1,0 +1,46 @@
+<div class="grid grid-cols-12 card-gap social-friends">
+    @for(friend of users; track friend) {
+      <div class="col-span-3 xxl:col-span-4 xl:col-span-6 md:col-span-12 col-ed-4 box-col-4">
+          <app-card [cardClass]="'social-profile'">
+              <div class="common-social-box">
+                  <div>
+                    <div class="social-img-wrap"> 
+                      <div class="social-img">
+                          <img [src]="friend.user_profile" [alt]="friend.user_name">
+                      </div>
+                      <div class="edit-icon">
+                          <app-svg-icon [icon]="'profile-check'"></app-svg-icon>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                      <h5>
+                          <a href="javascript:void(0)" [routerLink]="['/social-app']">{{ friend.name }}</a>
+                      </h5>
+                      <span class="c-o-light">{{ friend.user_name }}</span>
+                  </div>
+                </div>
+                <div class="social-details">
+                  <ul class="social-follow"> 
+                    <li>
+                      <h5 class="mb-0 counter">{{ friend.post }}</h5><span class="c-o-light !block">Posts</span>
+                    </li>
+                    <li>
+                      <h5 class="mb-0">{{ friend.followers }}</h5><span class="c-o-light !block">Followers</span>
+                    </li>
+                    <li>
+                      <h5 class="mb-0 counter">{{ friend.following }}</h5><span class="c-o-light !block">Following</span>
+                    </li>
+                  </ul>
+                  <ul class="card-social">
+                    <li><a href="https://www.facebook.com/" target="_blank"><i class="fa-brands fa-facebook-f"></i></a></li>
+                    <li><a href="https://accounts.google.com/" target="_blank"><i class="fa-brands fa-linkedin-in"></i></a></li>
+                    <li><a href="https://twitter.com/" target="_blank"><i class="fa-brands fa-x-twitter"></i></a></li>
+                    <li><a href="https://www.instagram.com/" target="_blank"><i class="fa-brands fa-instagram"></i></a></li>
+                    <li><a href="https://youtube.com/" target="_blank"><i class="fa-brands fa-youtube"></i></a></li>
+                  </ul>
+              </div>
+          </app-card>
+      </div>
+    }
+</div>

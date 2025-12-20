@@ -1,0 +1,11 @@
+<app-card [headerTitle]="'Border Secondary State'" [border]="true" [padding]="false" [cardClass]="'common-hover'" [header]="'border-l-secondary border-3 pb-0'">
+  <p class="mt-1 f-m-light" header5>Use class of<code> border-l-* </code>for left border and <code>border-3 </code>is used to increase the width of the border.</p>
+  <ol class="list-group list-group-numbered scroll-rtl">
+    @for(details of secondaryStateCard; track details){
+      <li class="list-group-item flex align-items-start flex-wrap">
+        <div class="ms-2 me-auto">{{ details.name }}</div>
+        <span class="badge bg-{{ details.badge_color }} rounded-full p-2">{{ details.badge_text }}</span>
+      </li>
+    }
+  </ol>
+</app-card>

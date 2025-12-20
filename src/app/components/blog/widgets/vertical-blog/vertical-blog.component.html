@@ -1,0 +1,26 @@
+<div class="card">
+  <div class="blog-box blog-list grid grid-cols-12 card-gap">
+    <div class="col-span-5 sm:col-span-12">
+      <div class="blog-list-img">
+        <img class="max-w-full h-auto sm-100-w" [src]="blog.image" [alt]="blog.title">
+      </div>
+    </div>
+    <div class="col-span-7 sm:col-span-12">
+      <div class="blog-details">
+        <div class="blog-date">
+          <span>{{ blog.date }}</span> 
+          {{ blog.year }}
+        </div>
+        <h6>{{ blog.title }}</h6>
+        <div class="blog-bottom-content">
+          <ul class="blog-social">
+            <li>by: {{ blog.created_by }}</li>
+            <li>{{ blog.hits }} Hits</li>
+          </ul>
+          <hr>
+          <p class="mt-0">{{ blog.description }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

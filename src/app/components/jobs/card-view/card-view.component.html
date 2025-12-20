@@ -1,0 +1,41 @@
+<div class="container card-view-wrapper">
+    <div class="grid grid-cols-12 card-gap">
+        <div class="col-span-3 xl:col-span-12 xl-40 box-col-12">
+            <app-job-filter></app-job-filter>
+        </div>
+        <div class="col-span-9 xl:col-span-12 xl-60 box-col-12">
+            <div class="grid grid-cols-12 card-gap">
+
+                @for(details of jobCards;track details){
+                    <div class="col-span-6 xl:col-span-12 xl-100">
+                        <app-common-card [jobCard]="details"></app-common-card>
+                    </div>
+                }
+                
+                <div class="col-span-12">
+                    <div class="job-pagination">
+                        <nav aria-label="Page navigation example">
+                            <ul class="pagination pagination-primary">
+                                <li class="page-item disabled">
+                                    <a class="page-link" href="javascript:void(0)">Previous</a>
+                                </li>
+                                <li class="page-item active">
+                                    <a class="page-link" href="javascript:void(0)">1</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="javascript:void(0)">2</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="javascript:void(0)">3</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="javascript:void(0)">Next</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

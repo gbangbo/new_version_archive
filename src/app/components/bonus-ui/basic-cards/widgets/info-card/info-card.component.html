@@ -1,0 +1,11 @@
+<app-card [headerTitle]="details.title" [header]="details.card_header_class" [headerClass]="details.heading_class" [border]="true" 
+          [padding]="false" [cardBodyClass]="details.card_body_class">
+          
+  @for(list of details.details;track list){
+    <h6 class="pb-2 {{list.title_class}}"> {{ list.title }} </h6>
+    <p class="mb-0 c-light {{list.description_class}}">{{ list.description }}</p>
+  }
+    <div class="card-footer {{ details.card_footer_class}}" details>
+      <h6 class="mb-0 text-end {{ details.footer_class}}">Cuba Theme</h6>
+    </div>
+</app-card>

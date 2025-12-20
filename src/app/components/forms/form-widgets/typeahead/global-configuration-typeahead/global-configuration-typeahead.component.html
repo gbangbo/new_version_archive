@@ -1,0 +1,20 @@
+<app-card [headerTitle]="'Global configuration of typeahead'" [header]="'pb-0'" [border]="true" [padding]="false">
+  <p class="mt-1 mb-0" header5>
+    This typeahead shows a hint when the input matches because the default
+    values have been customized.
+  </p>
+
+  <div class="typeahead-box " (clickOutside)="close()">
+    <input id="typeahead-config" type="text" class="form-control" placeholder="Search for a state" [(ngModel)]="model" (keyup)="searchStates(model)"/>
+  </div>
+
+  @if(filteredStates.length > 0){
+    <ul class="list-group">
+      @for(state of filteredStates; track state){
+      <li class="list-group-item" (click)="selectState(state)">
+        {{ state }}
+      </li>
+      }
+    </ul>
+  }
+</app-card>

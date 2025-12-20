@@ -1,0 +1,72 @@
+<div class="md-sidebar">
+    <a class="btn btn-primary email-aside-toggle text-white md-sidebar-toggle hover:text-white" (click)="openSidebar()">Job filter</a>
+    <div class="md-sidebar-aside job-sidebar custom-scrollbar" [class.open]="isOpen">
+        <div class="default-according style-1 faq-accordion job-accordion">
+            <div id="accordionExample">
+                @for(details of sidebars; track details){
+                    <div class="card accordion">
+                        <div class="card-header card-no-border accordion-item" id="headingOne">
+                            <h2 class="accordion-header relative">
+                                <button class="accordion-button btn btn-link btn-block text-start" type="button" [class.collapsed]="!accordionOpen[details.id]" (click)="toggleAccordion(details.id)">
+                                    {{ details.title }}
+                                </button>
+                            </h2>
+                        <div class="accordion-collapse collapse" [class.show]="accordionOpen[details.id]" [ngStyle]="{ 'max-height': accordionOpen[details.id] ? '364px' : '' }">
+                            <div class="card-body animate-chk {{ details.card_body_class }}">
+                                    @if(details.search){
+                                        <div class="job-filter mb-4">
+                                            <div class="faq-form">
+                                                <input class="form-control" type="text" placeholder="Search..">
+                                                <app-feather-icon [icon]="'search'" [class]="'search-icon'"></app-feather-icon>
+                                            </div>
+                                        </div>
+                                    }
+                                    @if(details.location){
+                                        <div class="job-filter">
+                                            <div class="faq-form">
+                                                <input class="form-control" type="text" placeholder="location..">
+                                                <app-feather-icon [icon]="'map-pin'" [class]="'search-icon'"></app-feather-icon>
+                                            </div>
+                                        </div>
+                                    }
+                                    @if(details.check){
+                                        <div [class]="details.class">
+                                        @for(item of details.details; track item){
+                                            <div class="form-check">
+                                            <input class="checkbox_animated" [id]="item.check_id" type="checkbox" data-original-title="" title="">
+                                            <label class="form-check-label" [for]="item.check_id">
+                                            <span>{{ item.title }}</span>
+                                                @if(item.badge) {
+                                                    <span class="number">({{ item.badge_text }})</span>
+                                                }
+                                            </label>
+                                        </div>
+                                        }
+                                    </div>
+                                    } @else {
+                                        <div [class]="details.class">
+                                            @for(item of details.details; track item){
+                                                <label class="block" for="{{ item.check_id }}">
+                                                    <input class="checkbox_animated" [id]="item.check_id" type="checkbox"> 
+                                                    {{ item.title }}
+                                                    @if(item.country_code){
+                                                        <span class="block">{{ item.country_code }} ({{ item.badge_text }})</span>
+                                                    }@else if(item.badge) {
+                                                        ({{ item.badge_text }})
+                                                    }
+                                                </label>
+                                            }
+                                        </div>
+                                    }
+                            </div>
+                            <button class="btn btn-block btn-primary !text-center !text-white" type="button">
+                                {{ details.button }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

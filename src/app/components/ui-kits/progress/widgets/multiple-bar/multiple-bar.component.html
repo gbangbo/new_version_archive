@@ -1,0 +1,25 @@
+<app-card [headerTitle]="'Multiple Bars'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'progress-showcase'">
+
+    <p class="f-m-light mt-1" header5>Include multiple progress bars in a progress component if you need.</p>
+
+
+    <div class="grid grid-cols-12">
+        <div class="col-span-12">
+          <div class="progress">
+            <div class="progress-bar bg-primary"  [ngStyle]="{ 'width': '30%'}"></div>
+            <div class="progress-bar bg-secondary"  [ngStyle]="{ 'width': '20%'}"></div>
+            <div class="progress-bar bg-success"  [ngStyle]="{ 'width': '15%'}"></div>
+          </div>
+          <div class="progress">
+            <div class="progress-bar bg-primary"  [ngStyle]="{ 'width': '10%'}"></div>
+            <div class="progress-bar bg-secondary"  [ngStyle]="{ 'width': '10%'}"></div>
+            <div class="progress-bar bg-success"  [ngStyle]="{ 'width': '10%'}"></div>
+            <div class="progress-bar bg-info"  [ngStyle]="{ 'width': '10%'}"></div>
+            <div class="progress-bar bg-warning"  [ngStyle]="{ 'width': '10%'}"></div>
+            <div class="progress-bar bg-danger"  [ngStyle]="{ 'width': '10%'}"></div>
+            <div class="progress-bar bg-primary"  [ngStyle]="{ 'width': '10%'}"></div>
+            <div class="progress-bar bg-light"  [ngStyle]="{ 'width': '10%'}"></div>
+          </div>
+        </div>
+    </div>
+</app-card>

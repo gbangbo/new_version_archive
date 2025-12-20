@@ -1,0 +1,30 @@
+<app-card [headerTitle]="'Student Validation Form'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'custom-input'">
+  <p class="f-m-light mt-1" header5> Please make sure fill all the filed before click on next button.</p>
+  <form class="form-wizard" id="regForm">
+
+    <div class="tab" [ngStyle]="{ 'display': (activeTab === 1 ? 'block' : 'none') }">
+      <app-student-personal-details></app-student-personal-details>
+    </div>
+
+    <div class="tab" [ngStyle]="{ 'display': (activeTab === 2 ? 'block' : 'none') }">
+      <app-add-profile></app-add-profile>
+    </div>
+
+    <div class="tab" [ngStyle]="{ 'display': (activeTab === 3 ? 'block': 'none') }">
+      <app-social-links></app-social-links>
+    </div>
+
+    <div>
+      <div class="flex justify-end gap-2 mt-3">
+        <button class="btn btn-secondary text-white" id="prevBtn" type="button" (click)="handleStep(-1)" [disabled]="activeTab == 1">Previous</button>
+        <button class="btn btn-primary text-white" id="nextBtn" type="button" (click)="handleStep(1)">{{ activeTab == 3 ? 'Submit' : 'Next' }}</button>
+      </div>
+    </div>
+    <div class="text-center">
+      <span class="step"></span>
+      <span class="step"></span>
+      <span class="step"></span>
+      <span class="step"></span>
+    </div>
+  </form>
+</app-card>

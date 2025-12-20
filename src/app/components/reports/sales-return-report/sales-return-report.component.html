@@ -1,0 +1,13 @@
+<div class="container sale-return-wrapper">
+    <div class="grid grid-cols-12">
+        <div class="col-span-12">
+            <app-card [cardBodyClass]="'px-0 pt-0'">
+                <div class="sale-return-report">
+                    <div class="sale-return-report-table overflow-x-auto custom-scrollbar">
+                        <app-table [hasCheckbox]="true" [tableConfig]="tableConfig" [pageSize]="12" [paginateDetails]="true" [selectedRows]="true" [dateFilter]="true" [downloadReports]="true"></app-table>
+                    </div>
+                </div>
+            </app-card>
+        </div>
+    </div>
+</div>

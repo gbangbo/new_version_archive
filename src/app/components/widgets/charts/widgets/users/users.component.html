@@ -1,0 +1,20 @@
+<app-card [headerTitle]="'Uses'" [header]="'pb-0'" [border]="true" [padding]="false">
+    <div class="chart-container">
+        <div class="grid grid-cols-12">
+          <div class="col-span-12">
+            <div id="chart-widget9">
+                <apx-chart
+                    [chart]="usersChart.chart"
+                    [dataLabels]="usersChart.dataLabels"
+                    [series]="usersChart.series"
+                    [fill]="usersChart.fill"
+                    [colors]="usersChart.colors"
+                    [title]="usersChart.title"
+                    [xaxis]="usersChart.xaxis"
+                    [yaxis]="usersChart.labels">
+                </apx-chart>
+            </div>
+          </div>
+        </div>
+    </div>
+</app-card>

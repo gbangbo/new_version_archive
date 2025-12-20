@@ -1,0 +1,14 @@
+<app-card [headerTitle]="'Live Users'" [padding]="false" [cardBodyClass]="'live-user-wrapper pt-0'" [dropdownType]="'simple'" [options]="cardToggleOption">
+  <div class="user-data">
+    <h5>8,630k</h5>
+    <span class="flex font-success">
+      <app-feather-icon class="me-1 font-success font-medium" [icon]="'trending-up'"></app-feather-icon>
+      <span class="font-medium font-success">+50%&nbsp;</span>
+    </span>
+  </div>
+  <div class="live-user-map">
+    <div id="map">
+      <div [ngStyle]="{ 'height': '250px' }" leaflet [leafletOptions]="options" (leafletMapReady)="onMapReady($event)"></div>
+    </div>
+  </div>
+</app-card>

@@ -1,0 +1,15 @@
+<app-card [headerTitle]="'Sortable using the Handle List'" [header]="'pb-0'"  [border]="true" [padding]="false" [cardBodyClass]="'sortable-handler'">
+    <p class="f-m-light mt-1" header5>
+        Use the <code>cdkDropList</code> directive to create a sortable list with drag handles. The <code>cdkDragHandle</code> directive is applied to the handle icon, allowing the user to click and drag items to reorder them within the list. The <code>cdkDropListData</code> binds the data (like <code>sortableList</code>) to the drop list, while the <code>cdkDropListDropped</code> event handler triggers the <code>drop()</code> method to update the item order after a drop. This example demonstrates a "handle-based" drag-and-drop system where only the specified handle icon can be used to drag and reorder items, providing more control over the list's interactivity. </p>
+
+        <div cdkDropList #list="cdkDropList" [cdkDropListData]="sortableList" (cdkDropListDropped)="drop($event)">
+            @for(list of sortableList; track list){
+                <ul class="list-group">
+                    <li class="list-group-item {{ list.class }}" cdkDrag>
+                        <i class="fa-solid fa-arrows-up-down-left-right handle" cdkDragHandle></i>
+                        <span>{{ list.name }}</span>
+                    </li>
+                </ul>
+            }
+           </div>
+</app-card>

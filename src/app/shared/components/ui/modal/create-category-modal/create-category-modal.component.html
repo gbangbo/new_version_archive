@@ -1,0 +1,100 @@
+<div class="modal  fade show modal-backdrop">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content category-popup" (clickOutside)="close()">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modaldashboard">Add Categories</h5>
+        <button class="btn-close" type="button" (click)="close()"></button>
+      </div>
+      <div class="modal-body p-0 custom-input">
+        <div class="text-start">
+          <div class="p-20">
+            <form class="grid grid-cols-12 gap-4 needs-validation" novalidate="">
+              <div class="col-span-6 md:col-span-12">
+                <label class="form-label" for="validationCategory">Category Name<span class="txt-danger">*</span></label>
+                <input class="form-control" id="validationCategory" type="text" placeholder="Enter your category name">
+                <div class="invalid-feedback">
+                  Please choose a category name.
+                </div>
+                <div class="valid-feedback">Looks good!</div>
+              </div>
+              <div class="col-span-6 md:col-span-12">
+                <label class="form-label" for="validationSlug">Slug<span class="txt-danger">*</span></label>
+                <input class="form-control" id="validationSlug" type="text" placeholder="Enter slug">
+                <div class="invalid-feedback">
+                  Please choose a slug name.
+                </div>
+                <div class="valid-feedback">Looks good!</div>
+              </div>
+              <div class="col-span-12">
+                <label class="form-label">Parent Category<span class="txt-danger">*</span></label>
+                <select2 [data]="parentCategory" placeholder="Select category"> </select2>
+                <div class="invalid-feedback">
+                  Please choose a parent category.
+                </div>
+                <div class="valid-feedback">Looks good!</div>
+              </div>
+              <div class="col-span-6 md:col-span-12">
+                <label class="form-label">Category Type<span class="txt-danger">*</span></label>
+                <select2 [data]="categoryType" placeholder="Select category type"></select2>
+                <div class="invalid-feedback">
+                  Please choose a category type.
+                </div>
+                <div class="valid-feedback">Looks good!</div>
+              </div>
+              <div class="col-span-6 md:col-span-12">
+                <label class="form-label">Category Status<span class="txt-danger">*</span></label>
+                <select2 [data]="categoryStatus" placeholder="Select category status"></select2>
+                <div class="invalid-feedback">
+                  Please choose a category status.
+                </div>
+                <div class="valid-feedback">Looks good!</div>
+              </div>
+              <div class="col-span-12">
+                <label class="form-label" for="validationDescription">Category Description</label>
+                <textarea class="form-control" id="validationDescription" placeholder="Description here..."></textarea>
+                <div class="invalid-feedback">Please enter a category description.</div>
+                <div class="valid-feedback">Looks good!</div>
+              </div>
+              <div class="col-span-12">
+                <div class="main-divider">
+                  <div class="divider-body">
+                    <h6>SEO Tags</h6>
+                  </div>
+                </div>
+              </div>
+              <div class="col-span-6 lg:col-span-12">
+                <label class="form-label" for="validationMetaTitle1">Meta Title<span class="txt-danger">*</span></label>
+                <input class="form-control" id="validationMetaTitle1" type="text" placeholder="Enter meta title">
+                <div class="invalid-feedback">
+                  Please choose a meta title.
+                </div>
+                <div class="valid-feedback">Looks good!</div>
+              </div>
+              <div class="col-span-6 lg:col-span-12">
+                <label class="form-label flex" for="validationKeywords">Meta Keywords<span class="txt-danger">*</span><span class="c-o-light">&nbsp;(In comma separated)</span></label>
+                <input class="form-control" id="validationKeywords" type="text" placeholder="Enter meta keywords">
+                <div class="invalid-feedback">
+                  Please enter a meta keywords(In comma separated).</div>
+                <div class="valid-feedback">Looks good!</div>
+              </div>
+              <div class="col-span-12">
+                <label class="form-label">Meta Description</label>
+                <angular-editor [placeholder]="'Enter text here...'"></angular-editor>
+                <div class="invalid-feedback">
+                  Please enter a meta description
+                </div>
+                <div class="valid-feedback">Looks good!</div>
+              </div>
+              <div class="col-span-12 flex justify-end">
+                <button class="btn btn-primary ms-2 text-white" type="button" (click)="close()">Cancel</button>
+                <button class="btn btn-primary ms-2 text-white" type="submit">Create + </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="sidebar-body common-form e-category">
+</div>

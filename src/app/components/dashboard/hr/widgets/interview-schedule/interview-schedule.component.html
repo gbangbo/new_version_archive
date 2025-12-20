@@ -1,0 +1,17 @@
+<app-card [headerTitle]="'Interviews Scheduled'" [padding]="false" [cardBodyClass]="'interviewer-users pt-0'" [dropdownType]="'simple'" [options]="cardToggleOption">
+    <ul> 
+        @for(details of interviewSchedule;track details){
+          <li>
+            <div class="common-flex"> 
+              <img class="max-w-full h-auto" [src]="details.image" alt="user">
+              <div>
+                <h6>{{ details.name }}</h6>
+                <span>{{ details.role }}</span>
+              </div>
+            </div>
+            <span>{{ details.date }}</span>
+            <i class="fa-solid fa-angle-right c-o-light"></i>
+          </li>
+        }
+      </ul>
+</app-card>

@@ -1,0 +1,26 @@
+<app-card [headerTitle]="'Dropdown Options'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'dark-dropdown-box'">
+    <p class="f-m-light mt-1" header5>Use <code>data-bs-offset </code> or <code>data-bs-reference</code> to change the location of the dropdown.</p>
+
+    <div class="common-flex dropdown-option">
+        <div class="btn-group" (clickOutside)="clickOutside(1)">
+            <button class="btn btn-secondary border dropdown-toggle text-white" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-offset="10,20" (click)="toggleDropdown(1)">Offset</button>
+          <ul class="dropdown-menu" [class.show]="dropdownOpen[1]">
+            <li><a class="dropdown-item" href="javascript:void(0)">Action</a></li>
+            <li><a class="dropdown-item" href="javascript:void(0)">Another action</a></li>
+            <li><a class="dropdown-item" href="javascript:void(0)">Something else here</a></li>
+          </ul>
+        </div>
+        <div class="btn-group" (clickOutside)="clickOutside(2)">
+            <button class="btn btn-secondary border dropdown-toggle text-white" type="button" (click)="toggleDropdown(2)">Reference</button>
+          <ul class="dropdown-menu" [class.show]="dropdownOpen[2]">
+            <li><a class="dropdown-item" href="javascript:void(0)">Action</a></li>
+            <li><a class="dropdown-item" href="javascript:void(0)">Another action</a></li>
+            <li><a class="dropdown-item" href="javascript:void(0)">Something else here</a></li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li><a class="dropdown-item" href="javascript:void(0)">Separated link</a></li>
+          </ul>
+        </div>
+      </div>
+</app-card>

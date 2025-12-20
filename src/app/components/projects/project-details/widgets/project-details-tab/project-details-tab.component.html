@@ -1,0 +1,19 @@
+<app-card>
+    <ul class="sidebar-left-icons nav nav-pills tab-links">
+        @for(tab of projectDetailsTab; track tab) {
+            <li class="nav-item" (click)="changeTab(tab.value)"> 
+                <a class="tab-link" [class.active]="activeTab == tab.value" href="javascript:void(0)">
+                    <div class="absolute-border"></div>
+                    <div class="nav-rounded">
+                        <div class="product-icons">
+                            <app-svg-icon [icon]="tab.icon"></app-svg-icon>
+                        </div>
+                    </div>
+                    <div class="product-tab-content">
+                        <h6>{{ tab.title }}</h6>
+                    </div>
+                </a>
+            </li>
+        }
+    </ul>
+</app-card>

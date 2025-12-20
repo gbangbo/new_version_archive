@@ -1,0 +1,58 @@
+<div class="container">
+  @if(currentUser) {
+    <div class="user-profile">
+      <app-user-personal-details [currentUser]="currentUser"></app-user-personal-details>
+      <div class="grid grid-cols-12 card-gap">
+  
+        <div class="col-span-12">
+          <div class="grid grid-cols-12 card-gap scope-bottom-wrapper user-profile-wrapper tabs">
+            <div class="col-span-3 xxl:col-span-4 xl:col-span-12 box-col-4">
+              <app-card>
+                <ul class="sidebar-left-icons nav tab-links" orientation="vertical">
+                  @for(tab of userDetailsTab; track tab) {
+                    <li>
+                      <a class="tab-link" [class.active]="activeTab == tab.value" (click)="handleTab(tab.value)">
+                        <div class="nav-rounded">
+                          <div class="product-icons">
+                            <i [class]="tab.icon"></i>
+                          </div>
+                        </div>
+                        <div class="product-tab-content">
+                          <h6>{{ tab.title }}</h6>
+                        </div>
+                      </a>
+                    </li>
+                  }
+                </ul>
+              </app-card>
+            </div>
+            <div class="col-span-9 xxl:col-span-8 xl:col-span-12 box-col-8e">
+              <div>
+                <div class="grid grid-cols-12">
+                  <div class="col-span-12">
+                    @if(activeTab == 'activity') {
+                      <div class="notification">
+                        <app-user-activity></app-user-activity>
+                      </div>
+                    }
+                    @if(activeTab == 'task') {
+                      <app-user-task></app-user-task>
+                    }
+                    @if(activeTab == 'notification') {
+                      <app-user-notification></app-user-notification>
+                    }
+                    @if(activeTab == 'setting') {
+                      <app-user-setting></app-user-setting>
+                    }
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  } @else {
+    <p class="text-center">No User Found.</p>
+  }
+</div>

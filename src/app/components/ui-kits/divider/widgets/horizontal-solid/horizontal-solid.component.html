@@ -1,0 +1,13 @@
+<app-card [headerTitle]="'Horizontal Solid Divider'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'main-divider'">
+
+    <p class="mb-0 mt-1" header5>Use <code>divider-body-1</code> class for linear divider.</p>
+
+    @for(divider of horizontalSolidDivider; track divider) {
+        <div class="divider-body divider-body-1 divider-{{ divider.color }} flex items-center mb-[16px] gap-[calc(14px_+_(30_-_14)_*_((100vw_-_320px)_/_(1920_-_320)))]"> 
+            <div class="divider-p-{{ divider.color }}">
+                <i class="{{ divider.icon }} me-2 txt-{{ divider.color }} f-20"></i>
+                <span class="txt-{{ divider.color }}">{{ divider.color | titlecase }}</span>
+            </div>
+        </div>
+    }
+</app-card>

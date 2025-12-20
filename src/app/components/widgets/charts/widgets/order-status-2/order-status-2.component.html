@@ -1,0 +1,21 @@
+<app-card [headerTitle]="'Order Status'" [header]="'pb-0'" [border]="true" [padding]="false">
+    <div class="chart-container">
+        <div id="linechart">
+            <apx-chart
+                [chart]="orderStatusChart2.chart"
+                [dataLabels]="orderStatusChart2.dataLabels"
+                [stroke]="orderStatusChart2.stroke"
+                [grid]="orderStatusChart2.grid"
+                [fill]="orderStatusChart2.fill"
+                [colors]="orderStatusChart2.colors"
+                [markers]="orderStatusChart2.markers"
+                [series]="orderStatusChart2.series"
+                [xaxis]="orderStatusChart2.xaxis"
+                [yaxis]="orderStatusChart2.yaxis"
+                [title]="orderStatusChart2.title"
+                [legend]="orderStatusChart2.legend"
+                [responsive]="orderStatusChart2.responsive">
+            </apx-chart>
+        </div>
+    </div>
+</app-card>

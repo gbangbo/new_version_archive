@@ -1,0 +1,23 @@
+<app-card [headerTitle]="'Cryptocurrency Annotations'" [header]="'pb-0'" [border]="true" [padding]="false">
+    <div class="chart-container">
+        <div class="grid grid-cols-12">
+          <div class="col-span-12">
+            <div id="chart-annotation">
+                <apx-chart
+                    [series]="cryptoAnnotationChart.series"
+                    [chart]="cryptoAnnotationChart.chart"
+                    [annotations]="cryptoAnnotationChart.annotations"
+                    [dataLabels]="cryptoAnnotationChart.dataLabels"
+                    [stroke]="cryptoAnnotationChart.stroke"
+                    [grid]="cryptoAnnotationChart.grid"
+                    [title]="cryptoAnnotationChart.title"
+                    [colors]="cryptoAnnotationChart.colors"
+                    [labels]="cryptoAnnotationChart.labels"
+                    [xaxis]="cryptoAnnotationChart.xaxis"
+                    [responsive]="cryptoAnnotationChart.responsive">
+                </apx-chart>
+            </div>
+          </div>
+        </div>
+    </div>
+</app-card>

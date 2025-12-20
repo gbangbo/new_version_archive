@@ -1,0 +1,50 @@
+<div class="container dashboard-3">
+    <div class="grid grid-cols-12 card-gap">
+        <div class="col-span-5 xxl:col-span-8 xl:col-span-12 col-ed-6 box-col-7">
+            <div class="grid grid-cols-12 card-gap">
+                <div class="col-span-12">
+                    <app-welcome-card></app-welcome-card>
+                </div>
+
+                @for(course of courses; track course) {
+                    <div class="col-span-6 sm:col-span-12">
+                        <app-courses [course]="course"></app-courses>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="col-span-2 xxl:col-span-4 xl:col-span-6 sm:col-span-12 col-ed-3 box-col-5">
+            <app-today-progress></app-today-progress>
+        </div>
+        <div class="col-span-2 xl:col-span-12 col-ed-3 box-col-none block xxl:hidden sm:block">
+            <app-advertisement></app-advertisement>
+        </div>
+        <div class="col-span-3 xxl:col-span-5 xl:col-span-6 sm:col-span-12 col-ed-5 box-col-5">
+            <app-calendar></app-calendar>
+        </div>
+        <div class="col-span-5 xxl:col-span-7 xl:col-span-12 col-ed-7 box-col-7">
+            <app-learning-overview></app-learning-overview>
+        </div>
+        <div class="col-span-4 xxl:col-span-7 xl:col-span-6 md:col-span-12 col-ed-7 box-col-7">
+            <app-activity-hours></app-activity-hours>
+        </div>
+        <div class="col-span-3 xxl:col-span-5 xl:col-span-6 md:col-span-12 col-ed-5 box-col-5">
+            <app-upcoming-courses></app-upcoming-courses>
+        </div>
+        <div class="col-span-6 md:col-span-12">
+            <app-top-mentors></app-top-mentors>
+        </div>
+        <div class="col-span-6 md:col-span-12">
+          <app-completed-courses></app-completed-courses>
+        </div>
+        <div class="col-span-5 xxl:col-span-12 col-ed-12 box-col-12">
+          <app-my-course></app-my-course>
+        </div>
+        <div class="col-span-4 xxl:col-span-7 md:col-span-12 col-ed-6 box-col-7">
+          <app-upcoming-schedule></app-upcoming-schedule>
+        </div>
+        <div class="col-span-3 xxl:col-span-5 md:col-span-12 col-ed-6 box-col-5">
+          <app-active-courses></app-active-courses>
+        </div>
+    </div>
+</div>

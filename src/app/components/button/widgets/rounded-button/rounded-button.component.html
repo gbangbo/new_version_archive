@@ -1,0 +1,7 @@
+<app-card [headerTitle]="'Rounded Buttons'" [border]="true" [header]="'pb-0'" [padding]="false" [cardBodyClass]="'common-flex buttons-box'">
+    <p class="f-m-light mt-1" header5>Use<code> btn-pill</code> class for rounded buttons.</p>
+    
+    @for(button of roundedButton;track button){
+        <button class="btn btn-pill button-light-{{ button.class }}">{{ button.title }}</button>
+    }
+</app-card>

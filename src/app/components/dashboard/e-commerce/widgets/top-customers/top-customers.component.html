@@ -1,0 +1,21 @@
+<div class="appointment">
+    <app-card [headerTitle]="'Top Customer'" [padding]="false" [cardBodyClass]="'pt-0'">
+        <div class="appointment-table customer-table overflow-x-auto custom-scrollbar">
+            <table class="table table-bordernone">
+              <tbody>
+                @for(customer of topCustomers; track customer) {
+                  <tr>
+                    <td>
+                      <img class="max-w-full img-40 rounded-full me-2" [src]="customer.customer_profile" alt="user">
+                    </td>
+                    <td class="img-content-box">
+                      <a class="font-medium" href="javascript:void(0)"  [routerLink]="['/user/user-profile/1']">{{ customer.customer_name }}</a>
+                      <span class="f-light">{{ customer.customer_email }}</span>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+        </div>
+    </app-card>
+</div>

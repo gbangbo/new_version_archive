@@ -1,0 +1,37 @@
+<app-card [cardType]="'classic'" [headerTitle]="recentActivity.title" [sortDescription]="recentActivity.date" [cardBodyClass]="'activity-wrapper pt-0 tabs'" [buttonText]="'View All'" [path]="'/task'">
+
+    <ul class="schedule-wrapper nav tab-links" id="myTab" role="tablist">
+        @for(activities of recentActivity.activities; track activities) {
+            <li class="tab-link" [class.active]="activeTab == activities.date" (click)="handleTab(activities)">
+                <h6>{{ activities.day }}</h6>
+                <span class="c-o-light">{{ activities.date }}</span>
+            </li>
+        }
+    </ul>
+
+    <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade active show">
+            <ul class="activity-update">
+                @for(activities of recentActivity.activities; track activities) {
+                    @if(activeTab == activities.date) {
+                        @for(activity of activities.activity; track activity) {
+                            <li class="flex items-center">
+                                <div class="grow">
+                                    <h6>{{ activity.title }}</h6>
+                                    <span>By 
+                                        <a href="javascript:void(0)">{{ activity.customer_name }}</a>
+                                    </span>
+                                </div>
+                                <div class="shrink-0">
+                                    <p class="mb-0">{{ activity.created_time }}</p>
+                                    <app-svg-icon [icon]="'clock'"></app-svg-icon>
+                                    <span>{{ activity.time }}</span>
+                                </div>
+                            </li>
+                        }
+                    }
+                }
+            </ul>
+        </div>
+    </div>
+</app-card>

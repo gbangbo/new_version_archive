@@ -1,0 +1,62 @@
+<div class="right-sidebar-title">
+  <div class="common-space">
+    <div class="chat-time-chat" [class.group-chat]="groupChat">
+      @if(groupChat) {
+        <ul>
+          @for(member of currentUserChat.group_members; track member) {
+            <li>
+              <img class="max-w-full rounded-full" [src]="member.user_profile" [alt]="member.user_name">
+            </li>
+          }
+          @if(currentUserChat.total_members && currentUserChat.group_members) {
+            <li>
+              <div class="custom-name profile-count light-background">
+                <p class="font-medium">{{ currentUserChat.total_members - currentUserChat.group_members.length }}+</p>
+              </div>
+            </li>
+          }
+        </ul>
+        <div>
+          <span>{{ currentUserChat.group_name }}</span>
+          @if(currentUserChat.total_members) {
+            <p>{{ currentUserChat.total_members }} Members</p>
+          }
+        </div>
+      } @else {
+        <div class="active-profile-chat">
+          @if(currentUserChat.user_profile) {
+            <img class="max-w-full rounded-full" [src]="currentUserChat.user_profile" [alt]="currentUserChat.user_name">
+          } @else {
+              @if(currentUserChat.user_name) {
+                <div class="custom-name bg-light-{{ chatService.getTextColor(chatService.getUserText(currentUserChat.user_name)) }}">
+                  <p class="txt-{{ chatService.getTextColor(chatService.getUserText(currentUserChat.user_name)) }} font-medium">{{ chatService.getUserText(currentUserChat.user_name) }}</p>
+                </div>
+              }
+          }
+          <div class="status bg-{{ currentUserChat.user_status == 'Online' ? 'success' : 'warning' }}"></div>
+        </div>
+        <div>
+          <span>{{ currentUserChat.user_name }}</span>
+          @if(currentUserChat.user_status == 'Online') {
+            <p>{{ currentUserChat.user_status }}</p>
+          } @else {
+            <p>{{ currentUserChat.last_seen }}</p>
+          }
+        </div>
+      }
+    </div>
+    <div class="flex gap-2 offcanvas-wrapper">
+      <div class="contact-edit dropdown chat-alert">
+        <app-svg-icon [icon]="'spam'"></app-svg-icon>
+      </div>
+      <div class="contact-edit dropdown chat-alert" (clickOutside)="clickOutside()">
+        <app-svg-icon [icon]="'menubar'" (click)="toggleDropdown()"></app-svg-icon>
+        <div class="dropdown-menu dropdown-menu-end" [class.show]="dropdownOpen">
+          <a class="dropdown-item" href="javascript:void(0)" (click)="toggleDropdown()">View Details</a>
+          <a class="dropdown-item" href="javascript:void(0)" (click)="toggleDropdown()">Send Messages</a>
+          <a class="dropdown-item" href="javascript:void(0)" (click)="toggleDropdown()">Add To Favorites</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

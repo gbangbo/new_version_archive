@@ -1,0 +1,18 @@
+<div class="grid grid-cols-12 card-gap">
+    
+    @for(chart of expenseCharts; track chart; let i = $index) {
+        <div [ngClass]="(expenseCharts.length % 2 !== 0 && i === expenseCharts.length - 1) ? 'col-span-4 md:col-span-12' : 'col-span-4 md:col-span-6 sm:col-span-12'">
+            <app-expense-chart [chart]="chart"></app-expense-chart>
+        </div>
+    }
+
+    <div class="col-span-8 xxl:col-span-12 xl:col-span-8 lg:col-span-12 box-col-12">
+        <app-budget-details></app-budget-details>
+    </div>
+    <div class="col-span-4 xxl:col-span-12 xl:col-span-4 lg:col-span-12 box-col-12">
+        <app-budget-distribution></app-budget-distribution>
+    </div>
+    <div class="col-span-12">
+        <app-project-budget></app-project-budget>
+    </div>
+</div>

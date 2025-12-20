@@ -1,0 +1,25 @@
+<form class="grid grid-cols-12 gap-4 common-form !static">
+  <div class="col-span-6 xxl:col-span-12">
+    <label class="form-label" for="validationTitle">Meta Title</label>
+    <input class="form-control" id="validationTitle" type="text" placeholder="Enter meta title">
+  </div>
+  <div class="col-span-6 xxl:col-span-12">
+    <label class="form-label flex" for="validationCustom-9">Meta Keywords
+      <span class="c-o-light">&nbsp;(In comma separated)</span>
+    </label>
+    <input class="form-control" id="validationCustom-9" type="text" placeholder="Enter meta keywords">
+  </div>
+  <div class="col-span-12">
+    <label class="form-label">Meta Description</label>
+    <angular-editor [placeholder]="'Enter text here...'"></angular-editor>
+    <p class="mb-0 mt-1 f-light">Enhance your SEO ranking with an added tag description for the product.</p>
+  </div>
+  <div class="col-span-12 product-buttons">
+    <button class="btn" type="button" (click)="previous()">
+      <app-svg-icon [icon]="'back-arrow'"></app-svg-icon>Previous
+    </button>
+    <button class="btn" type="button" (click)="next()">Next
+      <app-svg-icon [icon]="'front-arrow'"></app-svg-icon>
+    </button>
+  </div>
+</form>

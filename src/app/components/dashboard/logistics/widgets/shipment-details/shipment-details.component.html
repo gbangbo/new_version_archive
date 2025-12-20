@@ -1,0 +1,22 @@
+<app-card [headerTitle]="'Shipment Details'" [padding]="false" [cardBodyClass]="'shipping-details pt-0'" [dropdownType]="'simple'" [options]="cardToggleOption">
+  <div class="common-space">
+    <p>Status : <span>Ongoing</span></p>
+    <p>Insurance : <span>10,000</span></p>
+  </div>
+  <div class="simple-timeline">
+    <ul> 
+        @for(details of shipmentDetails; track details){
+          <li> 
+            <div class="shipment-details">
+              <div class="dots bg-{{ details.class }}"></div>
+              <div> 
+                <div class="line bg-{{ details.class }}"></div>
+                <p class="f-14  font-medium">{{ details.title }}</p>
+                <p class="f-14 font-normal c-o-light">{{ details.text }}</p>
+              </div>
+            </div>
+          </li>
+        }
+    </ul>
+  </div>
+</app-card>

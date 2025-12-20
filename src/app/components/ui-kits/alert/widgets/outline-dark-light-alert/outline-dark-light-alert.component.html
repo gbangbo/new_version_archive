@@ -1,0 +1,43 @@
+<app-card [headerTitle]="'Outline Dark and Light Alerts'" [header]="'pb-0'" [border]="true" [padding]="false" [cardBodyClass]="'outline-alerts'">
+    <p class="f-m-light mt-1" header5>Use<code> border-* </code>utility class to provide matching border and border-width within any alert<code> [solid/double/inset/outset]</code>.</p>
+
+    <div class="grid grid-cols-12 card-gap gy-3"> 
+        <div class="col-span-6 xl:col-span-12">
+
+            <div class="alert txt-primary border border-primary alert-dismissible fade" [ngClass]="alertVisible[1] ? 'show' : 'hide'">
+                <app-feather-icon [icon]="'clock'"></app-feather-icon>
+                <p>The 
+                    <b class="txt-primary">"border-primary" </b>class has the ability to generate on its own alerts.
+                </p>
+                <button class="btn-close" type="button" (click)="closeAlert(1)"></button>
+            </div>
+
+            <div class="alert txt-success border-success outline-2x alert-dismissible fade alert-icons" [ngClass]="alertVisible[2] ? 'show' : 'hide'">
+                <app-feather-icon [icon]="'thumbs-up'"></app-feather-icon>
+                <p>The 
+                    <b class="txt-success">"border-success" </b>with <b class="txt-success">"outline-2x"</b>
+                    class has the ability to generate on its own alerts.
+                </p>
+                <button class="btn-close" type="button" (click)="closeAlert(2)"></button>
+            </div>
+        </div>
+        <div class="col-span-6 xl:col-span-12">
+            <div class="alert txt-warning double-border border-warning alert-dismissible fade alert-icons" [ngClass]="alertVisible[3] ? 'show' : 'hide'">
+                <app-feather-icon [icon]="'alert-triangle'"></app-feather-icon>
+                <p>The 
+                    <b class="txt-warning">"double-border"</b>&<b class="txt-warning">"border-warning"</b>
+                    class has the ability to generate on its own alerts.
+                </p>
+                <button class="btn-close" type="button" (click)="closeAlert(3)"></button>
+            </div>
+            <div class="alert txt-danger inset-border border-danger outline-2x alert-dismissible fade alert-icons" [ngClass]="alertVisible[4] ? 'show' : 'hide'">
+                <app-feather-icon [icon]="'alert-octagon'"></app-feather-icon>
+                <p>The 
+                    <b class="txt-danger">"inset-border" </b>with <b class="txt-danger">"border-danger"</b>
+                    class has the ability to generate on its own alerts.
+                </p>
+                <button class="btn-close" type="button" (click)="closeAlert(4)"></button>
+            </div>
+        </div>
+    </div>
+</app-card>

@@ -1,0 +1,54 @@
+<div class="container dashboard-09">
+    <div class="grid grid-cols-12 card-gap">
+        <div class="col-span-6 xxl:col-span-12 box-col-12">
+            <div class="grid grid-cols-12 card-gap">
+                @for(details of lastMonthDetails; track details; let i = $index) {
+                    <div class="col-span-4 md:col-span-6 sm:col-span-12">
+                        <app-last-month-details [details]="details"></app-last-month-details>
+                    </div>
+                }
+                <div class="col-span-6 sm:col-span-12">
+                    <app-total-sales></app-total-sales>
+                </div>
+                <div class="col-span-6 md:col-span-12">
+                    <app-upgrade-plan></app-upgrade-plan>
+                </div>
+            </div>
+        </div>
+        <div class="col-span-6 xxl:col-span-12 box-col-12">
+            <div class="grid grid-cols-12 card-gap">
+                <div class="col-span-6 md:col-span-12">
+                    <app-sales-chart></app-sales-chart>
+                </div>
+                <div class="col-span-6 md:col-span-12">
+                    <div class="grid grid-cols-12 card-gap">
+                        <div class="col-span-12 md:col-span-6 sm:col-span-12">
+                            <app-revenue-growth></app-revenue-growth>
+                        </div>
+                        <div class="col-span-12 md:col-span-6 sm:col-span-12">
+                            <app-pipeline-breakdown></app-pipeline-breakdown>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-span-3 xxl:col-span-6 md:col-span-12 box-col-6">
+            <app-crm-to-do></app-crm-to-do>
+        </div>
+        <div class="col-span-5 xxl:col-span-6 md:col-span-12 box-col-6">
+            <app-finance-overview></app-finance-overview>
+        </div>
+        <div class="col-span-4 xxl:col-span-6 md:col-span-12 xxl:order-4 sm:order-1 box-col-6 box-ord-4">
+            <app-deals></app-deals>
+        </div>
+        <div class="col-span-6 md:col-span-12 xxl:order-1 sm:order-1 box-ord-1">
+            <app-leads></app-leads>
+        </div>
+        <div class="col-span-3 xxl:col-span-6 sm:col-span-12 xxl:order-3 sm:order-3 box-col-6 box-ord-3">
+            <app-sales-week></app-sales-week>
+        </div>
+        <div class="col-span-3 xxl:col-span-6 sm:col-span-12 xxl:order-2 sm:order-2 box-col-6 box-ord-2">
+            <app-lead-source></app-lead-source>
+        </div>
+    </div>
+</div>

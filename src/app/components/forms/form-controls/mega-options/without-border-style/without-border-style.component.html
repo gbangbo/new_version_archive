@@ -1,0 +1,32 @@
+<app-card [headerTitle]="'Without Borders Style'" [header]="'pb-0'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>
+    By adding <code>plain-style </code>& <code>mega-inline</code> to use default style for checkbox buttons.</p>
+    <form class="mega-inline plain-style">
+      <div class="grid grid-cols-12 card-gap">
+        @for(border of withoutBorderStyle;track border){
+          <div class="col-span-6 sm:col-span-12">
+            <div class="card">
+              <div class="flex p-5">
+                <div class="form-check checkbox {{ border.checkbox_class }} m-0">
+                  <input class="form-check-input" [id]="border.id" [type]="border.type" [checked]="border.checked">
+                  <label class="form-check-label" [for]="border.id">
+                    <span class="grow megaoption-space">
+                      <span class="mt-0 mega-title-badge">
+                        {{ border.price }}
+                        <span class="badge {{ border.badge_class}} text-white pull-right digits">{{ border.speed }}</span>
+                    </span>
+                    <span>{{ border.description }}</span>
+                  </span>
+                </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </form>
+    <div class="card-footer text-end" details>
+      <button class="btn btn-primary text-white m-r-15" type="submit">Submit</button>
+      <button class="btn button-light-primary" type="submit">Cancel</button>
+    </div>
+</app-card>

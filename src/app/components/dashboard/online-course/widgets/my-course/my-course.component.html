@@ -1,0 +1,19 @@
+<app-card [cardClass]="'course-card'" [headerTitle]="'My Course'" [padding]="false" [rightSideDetails]="true" [cardBodyClass]="'pt-0'">
+  <a class="link-only" href="javascript:void(0)" [routerLink]="['/courses/courses-list']" header3>View All
+    <app-feather-icon [icon]="'arrow-right'"></app-feather-icon>
+  </a>
+
+  <div class="course-main-card">
+    @for(course of myCourses; track course) {
+      <div class="course-wrapper">
+        <div class="course-icon-box">
+          <div class="icon-wrap">
+            <img [src]="course.image_url" alt="clock vector">
+          </div>
+          <img class="arrow-bg" [src]="course.icon" alt="sqaure border arrow">
+        </div>
+        <h6 class="f-14">{{ course.course_name }}</h6>
+      </div>
+    }
+  </div>
+</app-card>

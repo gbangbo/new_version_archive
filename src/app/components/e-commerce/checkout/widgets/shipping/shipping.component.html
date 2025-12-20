@@ -1,0 +1,81 @@
+<form class="stepper-two needs-validation shipping-wizard" novalidate="">
+  <div class="grid grid-cols-12 gap-4">
+  <div class="col-span-5 xxl:col-span-6 md:col-span-12 box-col-6">
+    <div class="shipping-title mb-4">
+      <h6>Delivery Address</h6>
+      <button class="btn btn-primary p-0" type="button" (click)="openAddressModal()"> 
+        <i class="fa-solid fa-square-plus f-20"></i>
+      </button>
+      @if(modalOpen) {
+        <app-address-modal (modalOpen)="handleModalOpen($event)"></app-address-modal>
+      }
+    </div>
+    <div class="grid grid-cols-12 gap-4 mt-0 flex-col">
+      @for(address of userDetails.addresses; track address) {
+        <div class="col-span-12">
+          <div class="card-wrapper border rounded-3 h-full light-card">
+            <div class="collect-address">
+              <div class="flex gap-2 items-center">
+                <div class="form-check radio radio-primary">
+                  <input class="form-check-input" id="shipping-{{ address.id }}" type="radio" name="radio{{ address.id }}" value="option{{ address.id }}" checked="">
+                  <label class="form-check-label mb-0" for="shipping-{{ address.id }}">{{ userDetails.name }}</label>
+                </div>
+              </div>
+              <div class="card-icon">
+                <i class="fa-solid fa-pencil"></i>
+                <i class="fa-solid fa-trash-can"></i>
+                @if(address.tag) {
+                  <span class="badge badge-primary text-white">{{ address.tag }}</span>
+                }
+              </div>
+            </div>
+            <div class="shipping-address">
+              <span>
+                <strong>Address: </strong>{{ address.address }}
+              </span>
+              <span>
+                <strong>Pincode: </strong>{{ address.pin_code }}
+              </span>
+              <span>
+                <strong>Contact: </strong>{{ address.contact }}
+              </span>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+  <div class="col-span-7 xxl:col-span-6 md:col-span-12 box-col-6">
+    <h6 class="mb-4">Delivery Options</h6>
+    <div class="grid grid-cols-12 shipping-method gap-4 mt-0 flex-col">
+      <div class="col-span-12">
+        <div class="card-wrapper border rounded-3 h-full light-card">
+          <div class="form-check radio radio-primary">
+            <input class="form-check-input" id="shipping-choose3" type="radio" name="radio2" value="option1" checked="">
+            <label class="form-check-label mb-0" for="shipping-choose3">Standard Delivery - Free</label>
+          </div>
+          <p>Estimated 5-7 days shipping</p>
+        </div>
+      </div>
+      <div class="col-span-12">
+        <div class="card-wrapper border rounded-3 h-full light-card">
+          <div class="form-check radio radio-primary">
+            <input class="form-check-input" id="shipping-choose4" type="radio" name="radio2" value="option1" checked="">
+            <label class="form-check-label mb-0" for="shipping-choose4">Express Delivery - $30</label>
+          </div>
+          <P>Estimated 1-2 days shipping</P>
+        </div>
+      </div>
+      <div class="col-span-12">
+        <div class="card-wrapper border rounded-3 h-full light-card">
+          <div class="form-check radio radio-primary">
+            <input class="form-check-input" id="shipping-choose6" type="radio" name="radio2" value="option1" checked="">
+            <label class="form-check-label mb-0" for="shipping-choose6">Future Delivery</label>
+          </div>
+          <input class="form-control future-date" type="date">
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+</form>

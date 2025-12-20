@@ -1,0 +1,48 @@
+<app-card [headerTitle]="'Inline Input Types'" [header]="'pb-0'" [border]="true"
+  [padding]="false">
+  <p class="f-m-light mt-1" header5>
+    Group checkboxes or radios on the same horizontal row by adding<code>form-check-inline </code>to any <code>form-check</code>.
+  </p>
+  <div class="grid grid-cols-12 gap-4">
+    <div class="col-span-4 xl:col-span-6 md:col-span-12">
+      <div class="card-wrapper border rounded-3 checkbox-checked">
+        <h6 class="sub-title">Inline Checkbox</h6>
+        <div class="form-check-size rtl-input">
+          @for(checkbox of inlineCheckbox; track checkbox){
+            <div class="form-check form-check-inline">
+              <input class="form-check-input me-2" [id]="checkbox.id" type="checkbox" [value]="checkbox.value" [checked]="checkbox.checked" [disabled]="checkbox.disable">
+              <label class="form-check-label"
+                [for]="checkbox.id">{{checkbox.text}}</label>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+    <div class="col-span-4 xl:col-span-6 md:col-span-12">
+      <div class="card-wrapper border rounded-3 checkbox-checked">
+        <h6 class="sub-title">Inline Radios</h6>
+        <div class="form-check-size rtl-input">
+          @for(radio of inlineRadio; track radio){
+            <div class="form-check form-check-inline">
+              <input class="form-check-input me-2" [id]="radio.id" type="radio" name="inlineRadioOptions" [value]="radio.value" [checked]="radio.checked" [disabled]="radio.disable">
+              <label class="form-check-label"
+                [for]="radio.id">{{radio.text}}</label>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+    <div class="col-span-4 xl:col-span-12">
+      <div class="card-wrapper border rounded-3 checkbox-checked">
+        <h6 class="sub-title">Inline Switches</h6>
+        <div class="form-check-size">
+          @for(switch of inlineSwitch; track switch){
+            <div class="form-check form-switch form-check-inline">
+              <input class="form-check-input check-size" [id]="switch.id" type="checkbox" role="switch" [checked]="switch.checked" [disabled]="switch.disable">
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</app-card>

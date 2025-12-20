@@ -1,0 +1,26 @@
+<app-card [headerTitle]="'Manage Appointments'" [cardBodyClass]="'pt-0'" [dropdownType]="'simple'"
+  [options]="cardToggleOptions" [padding]="false">
+
+    <ul class="appointments-wrapper">
+      @for(appointment of manageAppointments; track appointment) {
+        <li class="flex items-start">
+          <span>{{ appointment.appointment_time }}</span>
+          <div class="bg-lighter-{{ appointment.color }}"></div>
+          <div class="main-box">
+            <div>
+               <span>{{ appointment.appointment_title }}</span>
+              @if(appointment.appointment_description) {
+                <span class="c-o-light">{{ appointment.appointment_description }}</span>
+                <span class="txt-primary">{{ appointment.schedule_time }}</span>
+              }
+            </div>
+            @if(appointment.appointment_description) {
+              <div>
+                <button class="btn btn-primary text-white">General</button>
+              </div>
+            }
+          </div>
+        </li>
+      }
+    </ul>
+</app-card>

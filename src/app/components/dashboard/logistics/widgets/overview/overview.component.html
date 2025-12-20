@@ -1,0 +1,47 @@
+<app-card [cardClass]="'widget-13 widget-hover'">
+    <div> 
+        <div class="stat-content">
+          <div class="stat-square bg-light-{{ overview.color }}">
+            <app-svg-icon [icon]="overview.icon" [class]="'fill-'+overview.color"></app-svg-icon>
+          </div>
+          <div> 
+            <p class="c-o-light mb-1">{{ overview.title }}</p>
+            <h4>
+              <span class="counter">
+              <app-counter [counter]="overview.value"></app-counter>
+             </span>
+            </h4>
+          </div>
+        </div>
+    </div>
+    <div class="common-space">
+        <div class="common-align font-{{ overview.profit_type == 'profit' ? 'success' : 'danger' }}">
+            <app-feather-icon [icon]="overview.profit_type == 'profit' ? 'trending-up' : 'trending-down'" [class]="'me-1'"></app-feather-icon>
+            <span>{{ overview.profit_type == 'profit' ? '+' : '-' }}{{ overview.profit }}%</span>
+        </div>
+        @if(overview.chart_details) {
+            <div [class]="overview.class">
+              <div [id]="overview.chart_id">
+                <apx-chart 
+                    [series]="overview.chart_details.series"
+                    [chart]="overview.chart_details.chart"
+                    [plotOptions]="overview.chart_details.plotOptions"
+                    [dataLabels]="overview.chart_details.dataLabels"
+                    [xaxis]="overview.chart_details.xaxis"
+                    [yaxis]="overview.chart_details.yaxis"
+                    [grid]="overview.chart_details.grid"
+                    [colors]="overview.chart_details.colors"
+                    [fill]="overview.chart_details.fill"
+                    [stroke]="overview.chart_details.stroke ? overview.chart_details.stroke : {}"
+                    [markers]="overview.chart_details.markers ? overview.chart_details.markers : {}"
+                    [responsive]="overview.chart_details.responsive ? overview.chart_details.responsive : []">
+                  </apx-chart>
+              </div>
+            </div>
+        } @else if(overview.progress_bar_details) {
+          <div class="progress" >
+              <div class="progress-bar bg-secondary" [class.progress-bar-striped]="overview.progress_bar_details.striped" [class.progress-bar-animated]="overview.progress_bar_details.animated" [ngStyle]="{ 'width': overview.progress_bar_details.width + '%' }" [ngStyle]="{ 'width': '75%'}"></div>
+          </div>
+        }
+    </div>
+</app-card>

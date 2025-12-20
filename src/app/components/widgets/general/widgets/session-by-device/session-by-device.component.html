@@ -1,0 +1,32 @@
+<app-card  [headerTitle]="sessionByDeviceChart.title" [dropdownType]="type"
+    [padding]="false" [options]="cardToggleOption" [dropdownClass]="'custom-dropdown'" [cardBodyClass]="'main-session-devices pt-0'">
+
+    <div class="grid grid-cols-12 justify-center items-center">
+        <div class="col-span-6 sm:col-span-12 box-col-none">
+            <div class="common-align">
+                @for(details of sessionByDeviceChart.chart_details; track details) {
+                    <div>
+                        <div class="common-space">
+                            <p>{{ details.title }}</p><span>{{ details.value }} / {{ details.progress }}%</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar bg-{{ details.color }}" 
+                                [ngStyle]="{'width': details.progress + '%'}"> </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="col-span-6 sm:col-span-12 box-col-12">
+            <div id="session-chart">
+                <apx-chart [series]="sessionByDeviceChart.series" [labels]="sessionByDeviceChart.labels"
+                    [chart]="sessionByDeviceChart.chart" [plotOptions]="sessionByDeviceChart.plotOptions"
+                    [dataLabels]="sessionByDeviceChart.dataLabels" [colors]="sessionByDeviceChart.colors"
+                    [fill]="sessionByDeviceChart.fill" [legend]="sessionByDeviceChart.legend"
+                    [stroke]="sessionByDeviceChart.stroke" [responsive]="sessionByDeviceChart.responsive">
+                </apx-chart>
+            </div>
+        </div>
+    </div>
+</app-card>

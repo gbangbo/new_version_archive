@@ -1,0 +1,9 @@
+<app-card [headerTitle]="'Lists with Numbers'" [header]="'pb-0'" [border]="true" [padding]="false">
+    <p class="f-m-light mt-1" header5>Use<code> list-group-numbered</code> to ordered wise print numbers.</p>
+
+    <ol class="list-group list-group-numbered">
+        @for(list of numberList;track list){
+            <li class="list-group-item txt-{{ list.class }} font-bold">{{ list.title }}</li>
+        }
+      </ol>
+</app-card>

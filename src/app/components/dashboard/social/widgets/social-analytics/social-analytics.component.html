@@ -1,0 +1,56 @@
+<app-card [cardClass]="'sales-report'" [headerTitle]="'Social Analytics'" [padding]="false"
+    [cardBodyClass]="'pt-0 analytics-data'" [dropdownType]="'simple'" [options]="cardToggleOption">
+
+    <ul class="balance-data"> 
+        @for(marker of socialAnalytics.marker; track marker) {
+            <li>
+                <span class="circle bg-{{ marker.color }}"></span>
+                <span class="c-light ms-1">{{ marker.title }}</span>
+            </li>
+        }
+    </ul>
+
+    <div class="social-tabs tabs">
+        <div class="tab-links custom-scrollbar flex">
+            @for(tabs of socialAnalyticsTab; track tabs) {
+                <a class="tab-link social-box bg-7-{{ tabs.bg_color }}" [class.active]="activeTab == tabs.value" href="javascript:void(0)" (click)="handleTab(tabs.value)">
+                    <div class="frame-image">
+                      <div class="outline-10-{{ tabs.bg_color }}">
+                        <div class="bg-10-{{ tabs.bg_color }}">
+                            <i class="fa-brands fa-{{ tabs.icon }} {{ tabs.icon_color }} {{tabs.class}} m-0 f-14"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <span>{{ tabs.title }}</span>
+                </a>
+            }
+        </div>
+
+        <div class="tab-content">
+            <div class="tab-pane fade show active">
+                <div>
+                  <div>
+                    @for(chart of socialAnalytics.charts; track chart) {
+                        @if(chart.value == activeTab) {
+                            <apx-chart 
+                                [series]="chart.chart_details.series"
+                                [chart]="chart.chart_details.chart"
+                                [plotOptions]="chart.chart_details.plotOptions"
+                                [dataLabels]="chart.chart_details.dataLabels"
+                                [stroke]="chart.chart_details.stroke"
+                                [colors]="chart.chart_details.colors"
+                                [xaxis]="chart.chart_details.xaxis"
+                                [yaxis]="chart.chart_details.yaxis"
+                                [fill]="chart.chart_details.fill"
+                                [legend]="chart.chart_details.legend"
+                                [grid]="chart.chart_details.grid"
+                                [responsive]="chart.chart_details.responsive">
+                            </apx-chart>
+                        }
+                    }
+                  </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</app-card>

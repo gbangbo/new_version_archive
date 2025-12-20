@@ -1,0 +1,13 @@
+<app-card [headerTitle]="'Default Lists'" [header]="'pb-0'" [border]="true" [padding]="false" [cardClass]="'list-with-icon'">
+    <p class="f-m-light mt-1" header5>
+        Use <code> list-group </code>define the list of items and used <code> list-group-item </code>to indicate the
+        current content.
+    </p>
+
+    <ul class="list-group">
+        @for(list of defaultList; track list){
+        <li class="list-group-item">
+            <i class="icofont icofont-arrow-right"></i>{{ list }}</li>
+        }
+    </ul>
+</app-card>

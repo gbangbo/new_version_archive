@@ -1,0 +1,11 @@
+<app-card [headerTitle]="'Link Utilities'" [header]="'pb-0'" [border]="true" [padding]="false">
+    <p class="f-m-light mt-1" header5>Colored links can also be modified by our <code>link utilities</code>.</p>
+
+    @for(link of colors; track link) {
+        <p class="mb-4">
+            <a class="link-{{ link.color }} link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" href="javascript:void(0)">
+                Link {{ link.color }}
+            </a>
+        </p>
+    }
+</app-card>

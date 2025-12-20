@@ -1,0 +1,26 @@
+<div class="header-faq">
+    <h5>{{ headerTitle }}</h5>
+</div>
+  <div class="grid grid-cols-12 card-gap {{ faqClass }}">
+    @for(article of details;track article){
+      <div class="col-span-4 {{ article.class }}">
+        <div class="grid grid-cols-12 card-gap">
+          @for(item of article.details;track item){
+            <div class="col-span-12 {{ item.class }}">
+              <div class="card">
+                <div class="card-body">
+                  <div class="flex">
+                    <app-feather-icon [icon]="item.icon" [class]="'m-r-20'"></app-feather-icon>
+                    <div class="grow flex-1">
+                      <h6 class="pb-2">{{ item.title }}</h6>
+                      <p class="c-light">{{ item.description }}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </div>

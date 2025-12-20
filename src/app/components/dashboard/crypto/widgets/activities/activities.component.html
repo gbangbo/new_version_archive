@@ -1,0 +1,23 @@
+<app-card [headerTitle]="'Activities'" [padding]="false" [dropdownType]="'simple'" [options]="cardToggleOption" [cardBodyClass]="'pt-0 activity-card'">
+  <div class="appointment-table customer-table overflow-x-auto">
+    <table class="table table-bordernone">
+      <tbody>
+        @for(activity of activities; track activity) {
+          <tr>
+            <td>
+              <img class="max-w-full h-auto img-40 rounded-full me-2" [src]="activity.user_profile" alt="user">
+            </td>
+            <td class="img-content-box">
+              <a class="block font-medium" href="javascript:void(0)" [routerLink]="['/user/user-profile/1']">{{ activity.user_name }}</a>
+              <span class="f-light">To : {{ activity.transaction_to }}</span>
+            </td>
+            <td class="text-end">
+              <span class="font-{{ activity.profit_type == 'profit' ? 'success' : 'danger' }}">{{ activity.transaction_amount }}</span>
+              <span class="block f-light">{{ activity.transaction_date }}</span>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</app-card>

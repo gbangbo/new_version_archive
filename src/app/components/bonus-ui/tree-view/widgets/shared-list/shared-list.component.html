@@ -1,0 +1,28 @@
+<app-card [headerTitle]="'Shared Lists'" [header]="'pb-0'" [border]="true" [padding]="false" [cardClass]="'height-equal'">
+    <p class="f-m-light mt-1" header5>Use the <code>cdkDropList</code> directive to create two connected draggable lists, allowing items to be shared between them. The <code>cdkDropListConnectedTo</code> property connects the two lists, enabling items to be dragged and dropped between them. The <code>cdkDrag</code> directive makes individual items draggable within each list. The <code>cdkDropListDropped</code> event handler, triggered by the <code>drop()</code> method</p>
+
+        <div class="grid grid-cols-12 card-gap">
+            <div class="col-span-6" cdkDropList #list1="cdkDropList" [cdkDropListData]="sharedList" [cdkDropListConnectedTo]="[list2]" 
+             (cdkDropListDropped)="drop($event)">
+             <ul class="list-group" id="mix-left">
+             @for(list of sharedList; track list;){
+                <li class="list-group-item !rounded-none" cdkDrag>
+                    <i class="fa sitemap me-2"></i>
+                    <span>{{ list }}</span>
+                </li>
+             }
+             </ul>
+            </div>
+            <div class="col-span-6" cdkDropList #list2="cdkDropList" [cdkDropListData]="sharedList2" [cdkDropListConnectedTo]="[list1]" 
+             (cdkDropListDropped)="drop($event)">
+             <ul class="list-group" id="mix-right">
+             @for(list of sharedList2; track list){
+                <li class="list-group-item !rounded-none light-background" cdkDrag>
+                    <i class="fa sitemap me-2"></i>
+                    <span>{{ list }}</span>
+                </li>
+             }
+             </ul>
+            </div>
+        </div>
+</app-card>

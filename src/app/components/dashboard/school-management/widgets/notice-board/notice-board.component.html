@@ -1,0 +1,24 @@
+<app-card [headerTitle]="'Notice Board'" [padding]="false" [cardBodyClass]="'pt-0 notice-board'" [dropdownType]="'simple'" [options]="cardToggleOption">
+    <ul> 
+        @for(details of noticeBoard; track details){
+            <li class="flex">
+              <div class="activity-dot-{{ details.class }}"></div>
+              <div class="ms-4">
+                <p class="flex mb-4">
+                    <span class="date-content light-background">{{ details.date }}</span>
+                </p>
+                <h6>
+                    {{ details.title }}
+                    <span class="dot-notification"></span>
+                </h6>
+                <p class="f-light">
+                    {{ details.time }}
+                    @if(details.badge){
+                        <span class="badge alert-light-success txt-success ms-2 font-semibold">New</span>
+                    }
+                </p>
+              </div>
+            </li>
+        }
+      </ul>
+</app-card>

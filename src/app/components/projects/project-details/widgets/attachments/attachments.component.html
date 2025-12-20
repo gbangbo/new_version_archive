@@ -1,0 +1,62 @@
+<div class="grid grid-cols-12 attach-files-wrapper">
+    <div class="col-span-12">
+        <app-card>
+            <div class="common-f-start">
+                @for(attachment of attachmentType; track attachment) {
+                    <div class="bg-10-{{ attachment.color }}">
+                        <div class="outer-file-circle shadow-10-{{ attachment.color }}">
+                            <app-svg-icon [icon]="attachment.icon"></app-svg-icon>
+                        </div>
+                        <p class="mb-0 txt-{{ attachment.color }}">{{ attachment.title }}</p>
+                    </div>
+                }
+            </div>
+        </app-card>
+    </div>
+
+    <div class="col-span-12">
+        <app-card>
+            <div class="upload-files-wrapper">
+                <div class="create-file-box">
+                    <div class="flex">
+                        <app-svg-icon [icon]="'vector-create'"></app-svg-icon>
+                        <div> 
+                            <h6>Create Folder</h6>
+                            <p class="mb-0 c-o-light">Create folder in this zone</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="upload-file-box">
+                    <div class="flex"> 
+                        <app-svg-icon [icon]="'vector-upload'"></app-svg-icon>
+                        <div> 
+                            <h6>Upload files </h6>
+                            <p class="mb-0 c-o-light">Drop your files in this zone</p>
+                        </div>
+                    </div>
+                </div>
+
+                @for(attachment of attachments; track attachment) {
+                    <div>
+                        <a href="javascript:void(0)" [routerLink]="['/file-manager']"> 
+                            <div class="flex"> 
+                                <app-svg-icon [icon]="attachment.file_icon"></app-svg-icon>
+                                <div>
+                                    <h6>{{ attachment.file_name }}</h6>
+                                    <p class="mb-0 c-o-light">Uploaded {{ attachment.upload_time }} ago</p>
+                                </div>
+                            </div>
+                        </a>
+                        <div class="common-space">
+                            <p class="mb-0">{{ attachment.upload_size }} GB</p>
+                            <span>{{ attachment.total_file_size }} GB</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar bg-primary" [ngStyle]="{ 'width': (attachment.upload_size / attachment.total_file_size)*100 + '%' }"></div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </app-card>
+    </div>
+</div>

@@ -1,0 +1,27 @@
+<app-card [headerTitle]="'Buy Coins'" [padding]="false" [dropdownType]="'simple'" [options]="cardToggleOption" [cardBodyClass]="'pt-0'">
+  <form class="theme-form crypto-form">
+    <div class="mb-xxl-4 mb-6">
+      <label class="form-label f-light mt-1" for="money">Enter your Money</label>
+      <div class="relative">
+        <input class="form-control" id="money" type="number" placeholder="100">
+        <select class="form-select crypto-select warning">
+          @for(option of currencyOptions; track option) {
+            <option>{{ option.name }}</option>
+          }
+        </select>
+      </div>
+    </div>
+    <div class="mb-xxl-4 mb-6">
+      <label class="form-label f-light mt-1" for="coin">Enter Coins Converted to</label>
+      <div class="relative">
+        <input class="form-control" id="coin" type="number" placeholder="0.0043">
+        <select class="form-select crypto-select primary">
+          @for(option of currencyOptions; track option) {
+            <option>{{ option.name }}</option>
+          }
+        </select>
+      </div>
+    </div>
+    <button class="btn btn-primary btn-hover-effect w-full text-white" type="button">Buy Coins</button>
+  </form>
+</app-card>

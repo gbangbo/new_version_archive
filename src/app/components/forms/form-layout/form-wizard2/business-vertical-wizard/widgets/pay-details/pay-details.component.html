@@ -1,0 +1,72 @@
+<form class="grid grid-cols-12 gap-4 needs-validation" novalidate="" [formGroup]="formValidation" (ngSubmit)="next()">
+    <div class="col-span-6 md:col-span-12">
+      <label class="form-label" for="cardHolder">Card Holder</label>
+      <input class="form-control" id="cardHolder" type="text" formControlName="cardHolder" 
+      [ngClass]="{ 'is-invalid' : formValidation.controls['cardHolder'].touched && 
+      formValidation.controls['cardHolder'].errors?.['required'] , 'is-valid' : formValidation.controls['cardHolder'].valid}">
+       @if(formValidation.controls['cardHolder'].valid) {
+        <div class="valid-feedback">Looks's Good!</div>        
+        } @else if(formValidation.controls['cardHolder'].touched && formValidation.controls['cardHolder'].errors?.['required']) {
+          <div class="invalid-feedback">Please enter your valid name</div>
+        }
+    </div>
+    <div class="col-span-6 md:col-span-12">
+      <label class="form-label" for="cardNumber">Card Number</label>
+      <input class="form-control" id="cardNumber" type="text" placeholder="xxxx xxxx xxxx xxxx" formControlName="cardNumber"
+      [ngClass]="{ 'is-invalid' : formValidation.controls['cardNumber'].touched && 
+      formValidation.controls['cardNumber'].errors?.['required'] , 'is-valid' : formValidation.controls['cardNumber'].valid}">
+       @if(formValidation.controls['cardNumber'].valid) {
+        <div class="valid-feedback">Looks's Good!</div>        
+        } @else if(formValidation.controls['cardNumber'].touched && formValidation.controls['cardNumber'].errors?.['required']) {
+          <div class="invalid-feedback">Please enter your valid number</div>
+        }
+    </div>
+    <div class="col-span-12"> 
+      <div class="grid grid-cols-12 gap-4">
+        <div class="col-span-6 md:col-span-12">
+          <label class="form-label" for="expiration">Expiration(MM/YY)</label>
+          <div class="grid grid-cols-12 gap-4">
+            <div class="col-span-6 md:col-span-12">
+              <input class="form-control" id="expiration" type="number" placeholder="xx/xx" formControlName="expireDate"
+              [ngClass]="{ 'is-invalid' : formValidation.controls['expireDate'].touched && 
+              formValidation.controls['expireDate'].errors?.['required'] , 'is-valid' : formValidation.controls['expireDate'].valid}">
+               @if(formValidation.controls['expireDate'].valid) {
+                <div class="valid-feedback">Looks's Good!</div>        
+                } @else if(formValidation.controls['expireDate'].touched && formValidation.controls['expireDate'].errors?.['required']) {
+                  <div class="invalid-feedback">Please enter your valid number</div>
+                }
+            </div>
+            <div class="col-span-6 md:col-span-12">
+              <select2 [data]="year" placeholder="Year" data-live-search="true"></select2>
+            </div>
+          </div>
+        </div>
+        <div class="col-span-6 md:col-span-12">
+          <label class="form-label" for="cvvNumber-1">CVV Number</label>
+          <input class="form-control" id="cvvNumber-1" type="text" formControlName="cvv"
+          [ngClass]="{ 'is-invalid' : formValidation.controls['cvv'].touched && 
+          formValidation.controls['cvv'].errors?.['required'] , 'is-valid' : formValidation.controls['cvv'].valid}">
+           @if(formValidation.controls['cvv'].valid) {
+            <div class="valid-feedback">Looks's Good!</div>        
+            } @else if(formValidation.controls['cvv'].touched && formValidation.controls['cvv'].errors?.['required']) {
+              <div class="invalid-feedback">Please enter your valid number</div>
+            }
+        </div>
+      </div>
+    </div>
+    <div class="col-span-12">
+      <div class="form-check mb-0 flex gap-2">
+        <input class="form-check-input" id="invalidCheckboxWizard" type="checkbox" value=""formControlName="agree"
+        [ngClass]="{ 'is-invalid' : formValidation.controls['agree'].touched && formValidation.controls['agree'].errors?.['required'] , 'is-valid' : formValidation.controls['agree'].valid}">
+        @if(formValidation.controls['agree'].touched && formValidation.controls['agree'].errors?.['required']) {
+         <div class="valid-feedback">Looks good!</div>
+       }
+        <label class="form-check-label mb-0" for="invalidCheckboxWizard">Agree to terms and conditions</label>
+        <div class="invalid-feedback">You must agree before submitting.</div>
+      </div>
+    </div>
+    <div class="col-span-12 common-flex justify-end"> 
+      <button class="btn btn-primary text-white" (click)="previous()">Previous</button>
+      <button class="btn btn-primary text-white" type="submit">Continue </button>
+    </div>
+  </form>

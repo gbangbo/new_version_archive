@@ -1,0 +1,19 @@
+<form class="stepper-four needs-validation shipping-wizard">
+  @if(type == 'simple') {
+    <div class="order-confirm">
+      <img src="assets/images/gif/dashboard-8/successful.gif" alt="popper">
+      <div>
+        <h5>Order Placed Successfully</h5>
+        <p class="mb-0">A confirmation email with your order details has been sent to you.</p>
+      </div>
+    </div>
+  } @else if(type == 'classic') {
+    <div class="finish-shipping">
+      <app-svg-icon [icon]="'ord-success'"></app-svg-icon>
+      <div class="mt-sm-3">
+        <h5>Order Placed Successfully</h5>
+        <p class="mb-0 c-o-light justify-center">A confirmation email with your order details has been sent to you.</p>
+      </div>
+    </div>
+  }
+</form>

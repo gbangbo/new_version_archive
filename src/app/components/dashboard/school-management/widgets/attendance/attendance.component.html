@@ -1,0 +1,32 @@
+<app-card [headerTitle]="'Attendance'" [padding]="false" [cardClass]="'sales-report'" [cardBodyClass]="'pt-0 attendance-data'" [dropdownType]="'simple'" [options]="cardToggleOption">
+   
+    <ul class="balance-data"> 
+        <li>
+            <span class="circle bg-primary"></span>
+            <span class="c-light ms-1">Present</span>
+        </li>
+        <li>
+            <span class="circle bg-success"></span>
+            <span class="c-light ms-1">Absent</span>
+        </li>
+      </ul>
+      
+      <div class="attendance-student-data">
+        <div id="attendance-wrapper">
+            <apx-chart
+                [series]="attendance.series"
+                [chart]="attendance.chart"
+                [plotOptions]="attendance.plotOptions"
+                [dataLabels]="attendance.dataLabels"
+                [stroke]="attendance.stroke"
+                [grid]="attendance.grid"
+                [xaxis]="attendance.xaxis"
+                [yaxis]="attendance.yaxis"
+                [colors]="attendance.colors"
+                [fill]="attendance.fill"
+                [legend]="attendance.legend"
+                [responsive]="attendance.responsive">
+            </apx-chart>
+        </div>
+      </div>
+</app-card>

@@ -1,0 +1,30 @@
+<app-card [headerTitle]="'Placeholder Cards'" [header]="'pb-0'" [headerClass]="'mb-0'" [border]="true" [padding]="false" [cardBodyClass]="'loading-card-wrapper mb-1 text-start'">
+
+    <p class="f-m-light mt-1" header5>In the example below, we take a typical card component and recreate it with placeholders applied to create a <code> loading card </code>and create placeholders with the <code>placeholder </code>class.</p>
+
+    <div class="grid grid-cols-12 card-gap">
+      <div class="col-span-6 sm:col-span-12">
+        <div class="card mb-0 h-full" aria-hidden="true"><img class="card-img-top max-w-full w-full" src="assets/images/masonry/5.jpg" alt="#">
+          <div class="card-body">
+            <h6 class="card-title">Card Title</h6>
+            <p class="card-text c-o-light mb-4">Some quick example text to build on the card title and  make up the bulk of the card&apos;s content.</p><a  class="btn btn-primary text-white inline-block rounded-[6px]" href="#!">Go somewhere</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-span-6 sm:col-span-12">
+        <div class="card mb-0 h-full" aria-hidden="true"><img class="card-img-top max-w-full w-full" src="assets/images/masonry/13.jpg" alt="#">
+          <div class="card-body">
+            <h6 class="card-title placeholder-glow grid grid-cols-12 mb-4"><span class="placeholder col-span-6 placeholder-light min-h-[16px]"></span></h6>
+            <div class="card-text placeholder-glow mb-4 grid grid-cols-12 gap-2">
+              <div class="placeholder col-span-7 placeholder-light min-h-[16px]"></div>
+              <div class="placeholder col-span-4 placeholder-light min-h-[16px]"></div>
+              <div class="placeholder col-span-4 placeholder-light min-h-[16px]"></div>
+              <div class="placeholder col-span-6 placeholder-light min-h-[16px]"> </div>
+              <div class="placeholder col-span-8 placeholder-light min-h-[16px]"></div>
+            </div>
+            <a class="rounded-[6px] h-[30px] w-[130px] btn btn-primary disabled placeholder col-6" href="#!"></a>
+          </div>
+        </div>
+      </div>
+    </div>
+</app-card>

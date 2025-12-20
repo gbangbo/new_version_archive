@@ -1,0 +1,26 @@
+<app-card [cardClass]="'course-box'">
+    <div class="course-widget"> 
+        <div class="course-icon" [ngClass]="course.color"> 
+            <app-svg-icon [icon]="course.icon" [class]="'fill-icon'"></app-svg-icon>
+        </div>
+        <div> 
+          <h4 class="mb-0"> 
+            <span class="counter">
+                <app-counter [counter]="course.total_course"></app-counter>
+            </span>+
+          </h4>
+            <span class="f-light">{{ course.title }}</span>
+            <a class="btn btn-light f-light" href="javascript:void(0)" [routerLink]="['/courses/courses-list']">View Course
+                <span class="ms-2"> 
+                    <app-svg-icon [icon]="'arrowright'" [class]="'fill-icon f-light'"></app-svg-icon>
+                </span>
+            </a>
+        </div>
+    </div>
+
+    <ul class="square-group">
+        @for(color of squaresColor; track color) {
+            <li class="square-{{ color.id }} {{ color.color }}"></li>
+        }
+      </ul>
+</app-card>

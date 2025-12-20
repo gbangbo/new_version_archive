@@ -1,0 +1,39 @@
+<app-card [headerTitle]="'Responsive Tables with Light Background'" [header]="'pb-0'">
+  <p class="f-m-light mt-1" header5> A <code>table-responsive , light-card</code> inside table element.</p>
+    <div class="card-block grid grid-cols-12">
+      <div class="col-span-12">
+        <div class="overflow-x-auto custom-scrollbar">
+          <table class="table light-card">
+            <thead>
+              <tr>
+                <th scope="col">Id</th>
+                <th scope="col">Task</th>
+                <th scope="col">Email</th>
+                <th scope="col">Phone</th>
+                <th scope="col">Assign</th>
+                <th scope="col">Date</th>
+                <th scope="col">Price   </th>
+                <th scope="col">Status</th>
+                <th scope="col">Progress</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for(details of responsiveTable;track details){
+                <tr>
+                  <th scope="row">{{ details.id }}</th>
+                  <td>{{ details.task }}	</td>
+                  <td>{{ details.email }}	</td>
+                  <td>{{ details.phone }}</td>
+                  <td>{{ details.assign }}	</td>
+                  <td>{{ details.date }}	</td>
+                  <td>${{ details.price }}	</td>
+                  <td class="font-{{ details.class}}">{{ details.status }}</td>
+                  <td>{{ details.progress }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>      
+    </div>
+      </div>
+    </div>
+</app-card>

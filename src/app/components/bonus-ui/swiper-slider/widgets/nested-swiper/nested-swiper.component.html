@@ -1,0 +1,28 @@
+<app-card [headerTitle]="'Nested Swiper'" [header]="'pb-0'" [border]="true" [padding]="false">
+  <p class="f-m-light mt-1" header5>
+    To create a nested image slider, use the <code>swiper</code> package with the <code>nested-horizontal-swiper</code> and <code>sweeper-h</code> classes. This setup allows images to be swiped both vertically and horizontally. In this example, a nested swiper is used within the main swiper, enabling multiple levels of carousels, each with its own set of images. The <code>Swiper</code> module is configured with autoplay, pagination, and navigation for smooth transitions.
+  </p>
+    <div class="swiper nested-horizontal-swiper swiper-h" #swiperContainer>
+        <div class="swiper-wrapper">
+            @for(sliders of nestedSwiper; track sliders){
+                <div class="swiper-slide"> 
+                    @if(sliders.image){
+                      <img class="max-w-full h-auto" [src]="sliders.image" alt="image">
+                    } @else if(sliders.images){
+                      <div class="swiper-slide">
+                        <div class="swiper nested-vertical-swiper" #swiperContainer2>
+                          <div class="swiper-wrapper">
+                            @for(slider of sliders.images; track slider){
+                              <div class="swiper-slide"> <img class="img-fluid" [src]="slider.image" alt="image"></div>
+                            }
+                          </div>
+                          <div class="swiper-pagination"></div>
+                        </div>
+                      </div>
+                    }
+                </div>
+            }
+        </div>
+        <div class="swiper-pagination"></div>
+      </div>
+</app-card>

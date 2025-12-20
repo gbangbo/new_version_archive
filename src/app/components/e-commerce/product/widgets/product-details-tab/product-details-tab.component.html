@@ -1,0 +1,125 @@
+<div class="card">
+  <div class="grid grid-cols-12 product-page-main">
+    <div class="col-span-12 tabs">
+      <ul class="tab-links border-tab nav-primary mb-0">
+        @for(tab of productDetailsTab; track tab) {
+          <li>
+            <a class="tab-link rounded-none" [class.active]="activeTab == tab.value" (click)="handleTab(tab.value)">{{ tab.title }}</a>
+            <div class="material-border"></div>
+          </li>
+        }
+      </ul>
+
+      <div class="tab-content">
+        <div class="tab-pan fade active show">
+          @if(activeTab == 'description') {
+            @for(details of productDetails.description; track details) {
+              <div class="info-part">
+                @if(details.title) {
+                  <h6>{{ details.title }}:</h6>
+                }
+                <p class="c-o-light">{{ details.description }}</p>
+              </div>
+            }
+          } @else if(activeTab == 'additional_info') {
+            <div class="info-part">
+              <p class="c-o-light">The model is wearing a white blouse from our stylist's collection, see the image for a mock-up of what the actual blouse would look like.it has text written on it in a black cursive language which looks great on a white color.</p>
+            </div>
+            <div class="product-info-table overflow-x-auto custom-scrollbar">
+              <app-table [tableConfig]="tableConfig" [search]="false" [pagination]="false" [tableClass]="'table-striped'"></app-table>
+            </div>
+          } @else if(activeTab == 'review') {
+            <div class="review-box">
+              <div class="grid grid-cols-12 gap-4">
+                <div class="col-span-6 xl:col-span-12">
+                  <div class="product-rating-box">
+                    <div class="grid grid-cols-12">
+                      <div class="col-span-12">
+                        <div class="common-f-start mb-4">
+                          <h5 class="main-product-rating">{{ productDetails.review.review }}
+                            <i class="fa-solid fa-star"></i>
+                          </h5>
+                          <h6 class="ms-3 c-o-light">{{ productDetails.review.total_review }} Overall Rating</h6>
+                        </div>
+                      </div>
+                      <div class="col-span-12">
+                        <div class="rating-box">
+                          <ul>
+                            @for(count of productDetails.review.review_count; track count; let i = $index) {
+                              <li>
+                                <div class="rating-list">
+                                  <h6>{{ rating[rating.length-i-1] }}
+                                    <i class="fa-solid fa-star"></i>
+                                  </h6>
+                                  <div class="progress">
+                                    <div class="progress-bar"  [ngStyle]="{ 'width': count/productDetails.review.total_review*100 + '%'}"></div>
+                                  </div>
+                                </div>
+                              </li>
+                            }
+                          </ul>
+                        </div>
+                      </div>
+                      <div class="col-span-12">
+                        <div class="review-title-2">
+                          <h5>Review this product</h5>
+                          <p>Let other customers know what you think</p>
+                          <button class="btn btn-primary text-white" href="javascript:void(0)" (click)="openReviewModal()">Write a Review</button>
+                          @if(modalOpen) {
+                            <app-review-modal (modalOpen)="handleModalOpen($event)"></app-review-modal>
+                          }
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-span-6 xl:col-span-12">
+                  <div class="review-people">
+                    <ul class="review-list custom-scrollbar">
+                      @for(review of productDetails.review.reviews; track review) {
+                        <li>
+                          <div class="people-box">
+                            <img class="max-w-full" [src]="review.image" [alt]="review.name">
+                            <div class="people-comment">
+                              <div class="people-name">
+                                <div>
+                                  <a class="name" href="javascript:void(0)">{{ review.name }}</a>
+                                  <span class="c-o-light">({{ review.product }})</span>
+                                </div>
+                                <div class="product-rating">
+                                  <div class="common-flex">
+                                    <div class="rating">
+                                      <bar-rating [rate]="review.rating" [readonly]="true" [max]="5">
+                                        <ng-template ratingActive>
+                                          <i class="fa-solid fa-star" [ngStyle]="{ 'color': '#ffb829'}"></i>
+                                        </ng-template>
+                                        <ng-template ratingInactive>
+                                          <i class="fa-solid fa-star" [ngStyle]="{ 'color': '#52526ccc'}"></i>
+                                        </ng-template>
+                                        <ng-template ratingFraction>
+                                          <i class="fa-solid fa-star-half-stroke" [ngStyle]="{ 'color': '#ffb829'}"></i>
+                                        </ng-template>
+                                      </bar-rating>
+                                    </div>
+                                  </div>
+                                </div>
+                                <h6 class="text-content">{{ review.date }}</h6>
+                              </div>
+                              <div class="reply">
+                                <p>{{ review.review_text }}</p>
+                              </div>
+                            </div>
+                          </div>
+                        </li>
+                      }
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

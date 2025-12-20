@@ -1,0 +1,29 @@
+<app-card [cardClass]="'mb-4'" [header]="'pb-0'" [headerTitle]="'Initial Progress Bars'" [border]="true" [padding]="false" [cardBodyClass]="'progress-showcase'">
+
+    <p class="f-m-light mt-1" header5> Progress components are built with two HTML elements, some CSS to set the
+        width, and a few attributes.
+        We use the <code> progress </code>as a wrapper to indicate the max value of the progress bar. The
+        <code> progress-bar </code>requires an inline style, utility class, or custom CSS to set their
+        width.
+    </p>
+
+    <div class="grid grid-cols-12">
+        <div class="col-span-12">
+            <div class="progress rounded-s-lg">
+                <div class="progress-bar"> </div>
+            </div>
+            <div class="progress">
+                <div class="progress-bar bg-primary text-center"  [ngStyle]="{ 'width': '25%'}">25%</div>
+            </div>
+            <div class="progress">
+                <div class="progress-bar bg-secondary text-center"  [ngStyle]="{ 'width': '50%'}">50%</div>
+            </div>
+            <div class="progress">
+                <div class="progress-bar bg-success text-center"  [ngStyle]="{ 'width': '75%'}">75%</div>
+            </div>
+            <div class="progress">
+                <div class="progress-bar bg-info text-center"  [ngStyle]="{ 'width': '100%'}">100%</div>
+            </div>
+        </div>
+    </div>
+</app-card>

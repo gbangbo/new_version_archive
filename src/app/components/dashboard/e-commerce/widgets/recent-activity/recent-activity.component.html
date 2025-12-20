@@ -1,0 +1,33 @@
+<div class="recent-activity notification dashboard-2-notification">
+    <h5>Recent Activity</h5>
+    <ul>
+        @for(activity of recentActivity; track activity) {
+            <li class="flex">
+                <div class="activity-dot-{{ activity.color }}"></div>
+                <div class="w-full ms-4">
+                    <p class="flex justify-between mb-2">
+                        <span class="date-content light-background">{{ activity.date }} </span>
+                    </p>
+                    <h6>{{ activity.title }}
+                        <span class="dot-notification"></span>
+                    </h6>
+                    <span class="f-light">{{ activity.description }}</span>
+    
+                    @if(activity.images && activity.images.length) {
+                        <div class="recent-images"> 
+                            <ul> 
+                                @for(image of activity.images; track image) {
+                                    <li> 
+                                        <div class="recent-img-wrap">
+                                            <img [src]="image.image_url" alt="chair">
+                                        </div>
+                                    </li>
+                                }
+                            </ul>
+                        </div>    
+                    }
+                </div>
+            </li>
+        }
+    </ul>
+</div>
