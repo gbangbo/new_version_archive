@@ -32,6 +32,7 @@ export class TableComponent {
   @Input() showPaginate: boolean = false;
   @Input() tableClass: string;
   @Input() search: boolean = true;
+  @Input() searchLibelle: string = 'Search:';
   @Input() pagination: boolean = true;
   @Input() selectedRows: boolean = false;
   @Input() rowDetails: boolean = false;
@@ -39,8 +40,55 @@ export class TableComponent {
   @Input() downloadReports: boolean = false;
   @Input() searchPlaceholder: string = '';
   @Input() emptyTexte: string = 'No data found';
+  @Input() entriesLabel = 'Affichage de {start} à {end} sur {total} éléments';
+  // ✅ NOUVEAUX INPUTS pour personnaliser les boutons
+  @Input() showCopyButton: boolean = true;
+  @Input() showCSVButton: boolean = true;
+  @Input() showExcelButton: boolean = true;
+  @Input() showPDFButton: boolean = true;
+  @Input() showPrintButton: boolean = true;
+
+  // ===== LABELS DES BOUTONS =====
+  @Input() copyButtonLabel: string = 'Copy';
+  @Input() csvButtonLabel: string = 'CSV';
+  @Input() excelButtonLabel: string = 'Excel';
+  @Input() pdfButtonLabel: string = 'PDF';
+  @Input() printButtonLabel: string = 'Print';
+
+  // ===== CLASSES CSS PERSONNALISÉES =====
+  @Input() copyButtonClass: string = 'dt-button buttons-copy buttons-html5 btn-outline-primary';
+  @Input() csvButtonClass: string = 'dt-button buttons-csv buttons-html5 btn-outline-primary';
+  @Input() excelButtonClass: string = 'dt-button buttons-excel buttons-html5 btn-outline-primary';
+  @Input() pdfButtonClass: string = 'dt-button buttons-pdf buttons-html5 btn-outline-primary';
+  @Input() printButtonClass: string = 'dt-button buttons-print btn-outline-primary';
+
+  // ===== ICÔNES DES BOUTONS =====
+  @Input() copyButtonIcon: string = 'ti ti-copy';
+  @Input() csvButtonIcon: string = 'ti ti-file-csv';
+  @Input() excelButtonIcon: string = 'ti ti-file-spreadsheet';
+  @Input() pdfButtonIcon: string = 'ti ti-file-pdf';
+  @Input() printButtonIcon: string = 'ti ti-printer';
+
+  // ===== TOOLTIPS =====
+  @Input() copyButtonTooltip: string = 'Copier dans le presse-papier';
+  @Input() csvButtonTooltip: string = 'Exporter en CSV';
+  @Input() excelButtonTooltip: string = 'Exporter en Excel';
+  @Input() pdfButtonTooltip: string = 'Exporter en PDF';
+  @Input() printButtonTooltip: string = 'Imprimer';
+  @Input() libBtnAction: string = 'Oui, Supprimer';
+
+  // ===== ÉVÉNEMENTS =====
+  @Output() onExport = new EventEmitter<{ type: string, data: any[] }>();
+  @Output() onCopy = new EventEmitter<any[]>();
+  @Output() onCSV = new EventEmitter<any[]>();
+  @Output() onExcel = new EventEmitter<any[]>();
+  @Output() onPDF = new EventEmitter<any[]>();
+  @Output() onPrint = new EventEmitter<any[]>();
+
 
   @Output() action = new EventEmitter<TableClickedAction>();
+
+
 
   public tableData$: Observable<any>;
   public total$: Observable<number>;
@@ -192,12 +240,12 @@ export class TableComponent {
         this.action.emit({action_to_perform: value.action_to_perform, data: details})
       } else {
         Swal.fire({
-          title: 'Are you sure?',
-          text: value.model_text ? value.model_text : 'Do you really want to delete the product?',
+          title: 'Êtes vous sûr ?',
+          text: value.model_text ? value.model_text : 'Voulez-vous vraiment supprimer le produit?',
           imageUrl: 'assets/images/gif/trash.gif',
-          confirmButtonText: 'Yes, delete it!',
+          confirmButtonText: this.libBtnAction,
           showCancelButton: true,
-          cancelButtonText: 'Cancel',
+          cancelButtonText: 'Annuler',
           cancelButtonColor: '#FC4438'
         }).then((result) => {
           if(result.isConfirmed) {
@@ -338,13 +386,13 @@ export class TableComponent {
         return Object.keys(item).some(key => {
           const value = item[key];
           if (typeof value === 'string' || typeof value === 'object') {
-            const valueString = typeof value === 'string' ? value : value.toString(); 
+            const valueString = typeof value === 'string' ? value : value?.toString();
             
-            if (valueString.toLowerCase().includes(this.filter['search'].toLowerCase())) {
+            if (valueString?.toLowerCase()?.includes(this.filter['search']?.toLowerCase())) {
               return true;
             }
           }
-          if (typeof value === 'number' && value.toString().includes(this.filter['search'])) {
+          if (typeof value === 'number' && value?.toString()?.includes(this.filter['search'])) {
             return true;
           }
     
@@ -411,5 +459,199 @@ export class TableComponent {
     // Pagination
     this.paginate = this.tableService.getPager(filteredData.length, this.filter['page'], this.filter['pageSize']);
     this.tableData = filteredData.slice(this.paginate.start_index, this.paginate.end_index + 1);
+  }
+
+  emitAction(action: any, row: any) {
+    this.action.emit({
+      action_to_perform: action.action_to_perform,
+      data: row
+    });
+  }
+
+  handleExport(type: string) {
+    const dataToExport = this.tableData; // Données actuellement affichées
+
+    switch(type) {
+      case 'copy':
+        this.copyToClipboard(dataToExport);
+        break;
+      case 'csv':
+        this.exportToCSV(dataToExport);
+        break;
+      case 'excel':
+        this.exportToExcel(dataToExport);
+        break;
+      case 'pdf':
+        this.exportToPDF(dataToExport);
+        break;
+      case 'print':
+        this.printTable();
+        break;
+    }
+
+    // Émettre l'événement pour une gestion personnalisée
+    this.onExport.emit({ type, data: dataToExport });
+  }
+
+  copyToClipboard(data: any[]) {
+    const headers = this.tableConfig.columns.map((col:any) => col?.header).join('\t');
+    const rows = data.map(row =>
+        this.tableConfig.columns.map((col:any) =>
+            this.getNestedPropertyValue(col?.field, row)
+        ).join('\t')
+    );
+
+    const textToCopy = [headers, ...rows].join('\n');
+
+    navigator.clipboard.writeText(textToCopy).then(() => {
+      console.log('Données copiées dans le presse-papier');
+      // Vous pouvez ajouter une notification de succès ici
+    });
+  }
+
+  exportToCSV(data: any[]) {
+    const headers = this.tableConfig.columns.map((col:any) => col?.header).join(',');
+    const rows = data.map(row =>
+        this.tableConfig.columns.map((col:any) => {
+          const value = this.getNestedPropertyValue(col?.field, row);
+          return `"${String(value).replace(/"/g, '""')}"`;
+        }).join(',')
+    );
+
+    const csv = [headers, ...rows].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `export_${new Date().getTime()}.csv`;
+    link.click();
+    URL.revokeObjectURL(link.href);
+  }
+
+  exportToExcel(data: any[]) {
+    // Si vous avez installé xlsx: npm install xlsx
+    import('xlsx').then(XLSX => {
+      const worksheet = XLSX.utils.json_to_sheet(data);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Data');
+      XLSX.writeFile(workbook, `export_${new Date().getTime()}.xlsx`);
+    }).catch(() => {
+      console.error('xlsx library not found. Install it with: npm install xlsx');
+    });
+  }
+
+
+
+  exportToPDF(data: any[]) {
+    try {
+      if (!data || data.length === 0) {
+        alert('Aucune donnée à exporter');
+        return;
+      }
+
+      Promise.all([
+        import('jspdf'),
+        import('jspdf-autotable')
+      ]).then(([jsPDFModule, autoTableModule]) => {
+        const { jsPDF } = jsPDFModule;
+        const autoTable = autoTableModule.default;
+
+        const doc = new jsPDF();
+
+        doc.setFontSize(16);
+        doc.text('Export des données', 14, 15);
+
+        // ✅ Support des deux formats: field/header OU field_value/title
+        const headers = [
+          this.tableConfig.columns.map((col: any) =>
+              col.header || col.title || ''
+          )
+        ];
+
+        const rows = data.map((row) => {
+          return this.tableConfig.columns.map((col: any) => {
+            const field = col.field || col.field_value;
+            const value = this.getNestedPropertyValue(field, row);
+            return this.formatValueForExport(value);
+          });
+        });
+
+        autoTable(doc, {
+          head: headers,
+          body: rows,
+          startY: 28,
+          styles: { fontSize: 9, cellPadding: 3 },
+          headStyles: { fillColor: [102, 126, 234], fontStyle: 'bold' },
+          theme: 'grid'
+        });
+
+        doc.save(`export_${Date.now()}.pdf`);
+        this.onPDF.emit(data);
+
+      });
+    } catch (error) {
+      console.error('❌ Erreur export PDF:', error);
+    }
+  }
+
+
+  /**
+   * Formate une valeur pour l'export (dynamique)
+   */
+  private formatValueForExport(value: any): string {
+    // Null/undefined
+    if (value === null || value === undefined) {
+      return '';
+    }
+
+    // Boolean
+    if (typeof value === 'boolean') {
+      return value ? 'Oui' : 'Non';
+    }
+
+    // Number
+    if (typeof value === 'number') {
+      return value.toLocaleString('fr-FR');
+    }
+
+    // String
+    if (typeof value === 'string') {
+      return value.trim();
+    }
+
+    // Date
+    if (typeof value === 'object' && value !== null) {
+      // Vérifier si c'est une Date
+      if (typeof value.getTime === 'function') {
+        try {
+          return new Date(value).toLocaleDateString('fr-FR');
+        } catch {
+          return String(value);
+        }
+      }
+
+      // Array
+      if (Array.isArray(value)) {
+        return value.map(v => this.formatValueForExport(v)).join(', ');
+      }
+
+      // Object (afficher une propriété pertinente si possible)
+      if (value.libelle || value.name || value.label) {
+        return value.libelle || value.name || value.label;
+      }
+
+      // Sinon, JSON
+      try {
+        return JSON.stringify(value);
+      } catch {
+        return '[Object]';
+      }
+    }
+
+    // Fallback
+    return String(value);
+  }
+
+  printTable() {
+    window.print();
   }
 }

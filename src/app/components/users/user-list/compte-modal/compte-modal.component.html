@@ -1,0 +1,197 @@
+<div class="modal  fade show modal-backdrop">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content category-popup">
+            <div class="modal-header">
+                <h5 class="modal-title">{{validationForm.value.uid ? 'MODIFIER DE COMPTE': 'CREATION DE COMPTE'}}</h5>
+                <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close" (click)="closeModal()"></button>
+            </div>
+            <div class="modal-body p-0 custom-input">
+                <div class="text-start">
+                    <div class="p-20">
+                        <div class="alert alert-danger flex items-center gap-3" role="alert"
+                             style="animation: slideDown 0.3s ease;" *ngIf="errorTexte">
+                            <div>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-circle stroke-danger">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                </svg>
+                            </div>
+                            <span class="txt-light">{{errorTexte}}</span>
+                        </div>
+                        <form class="grid grid-cols-12 gap-4 needs-validation" novalidate="" [formGroup]="validationForm" (ngSubmit)="submitForm()">
+                            <div class="col-span-12 position-relative">
+                                <label class="form-label" for="idpersonnel">Agent
+                                    <span class="txt-danger">*</span>
+                                </label>
+                                <select2 [data]="dataUser"
+                                         placeholder="Selectionnez l'agent"
+                                         id="idpersonnel"
+                                         formControlName="idpersonnel"
+                                         [disabled]="loadingUser"
+                                         [overlay]="false"
+                                         [resettable]="true"
+                                         [listPosition]="'below'"
+                                         [minCountForSearch]="1"
+                                         noResultMessage="Aucune donnée trouvée"
+                                         class="raise-input-select" [ngClass]="{ 'is-invalid' : validationForm.controls['idpersonnel'].touched &&  validationForm.controls['idpersonnel'].errors?.['required'] , 'is-valid' : validationForm.controls['idpersonnel'].valid}">
+
+                                </select2>
+                                <div class="select-loader" *ngIf="loadingUser">
+                                    <i class="fas fa-spin fa-circle-notch"></i>
+                                </div>
+                                @if(validationForm.controls['idpersonnel'].valid) {
+                                <!--<div class="valid-feedback">Looks's Good!</div>-->
+                                } @else if(validationForm.controls['idpersonnel'].touched && validationForm.controls['idpersonnel'].errors?.['required']) {
+                                <div class="invalid-feedback"> Veuillez selectionner l'agent svp.</div>
+                                }
+                            </div>
+                            <div class="col-span-12 position-relative">
+                                <label class="form-label" for="idroles">Role
+                                    <span class="txt-danger">*</span>
+                                </label>
+                                <select2 [data]="dataRole"
+                                         placeholder="Selectionnez le role"
+                                         id="idroles"
+                                         formControlName="idroles"
+                                         [disabled]="loadingRole"
+                                         [overlay]="false"
+                                         [resettable]="true"
+                                         [listPosition]="'below'"
+                                         [minCountForSearch]="1"
+                                         noResultMessage="Aucune donnée trouvée"
+                                         class="raise-input-select" [ngClass]="{ 'is-invalid' : validationForm.controls['idroles'].touched &&  validationForm.controls['idroles'].errors?.['required'] , 'is-valid' : validationForm.controls['idroles'].valid}">
+
+                                </select2>
+                                <div class="select-loader" *ngIf="loadingRole">
+                                    <i class="fas fa-spin fa-circle-notch"></i>
+                                </div>
+                                @if(validationForm.controls['idroles'].valid) {
+                                <!--<div class="valid-feedback">Looks's Good!</div>-->
+                                } @else if(validationForm.controls['idroles'].touched && validationForm.controls['idroles'].errors?.['required']) {
+                                <div class="invalid-feedback"> Veuillez selectionner le role svp.</div>
+                                }
+                            </div>
+                            <div class="col-span-12">
+                                <label class="form-label" for="password">
+                                    Mot de passe
+                                    <span class="text-muted">(facultatif)</span>
+                                </label>
+
+                                <div class="input-with-icon">
+                                    <input
+                                            class="form-control"
+                                            id="password"
+                                            [type]="showPassword ? 'text' : 'password'"
+                                            placeholder="Entrez le mot de passe"
+                                            formControlName="password"
+                                            [ngClass]="{
+                'is-invalid': validationForm.controls['password'].touched && validationForm.controls['password'].invalid,
+                'is-valid': validationForm.controls['password'].touched && validationForm.controls['password'].valid && validationForm.controls['password'].value
+            }"
+                                    >
+
+                                    <!-- Icône œil à l'intérieur -->
+                                    <span
+                                            class="password-toggle-icon"
+                                            (click)="togglePasswordVisibility()"
+                                            [title]="showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'"
+                                    >
+            <i [class]="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+        </span>
+                                </div>
+
+                                <!-- Messages de validation -->
+                                @if(validationForm.controls['password'].touched && validationForm.controls['password'].value) {
+                                <div class="password-requirements mt-2">
+                                    <!-- Minimum 8 caractères -->
+                                    <div class="requirement" [class.valid]="!validationForm.controls['password'].errors?.['minLength']">
+                                        <i [class]="validationForm.controls['password'].errors?.['minLength'] ? 'fas fa-times' : 'fas fa-check'"></i>
+                                        Au moins 8 caractères
+                                    </div>
+
+                                    <!-- Majuscule -->
+                                    <div class="requirement" [class.valid]="!validationForm.controls['password'].errors?.['uppercase']">
+                                        <i [class]="validationForm.controls['password'].errors?.['uppercase'] ? 'fas fa-times' : 'fas fa-check'"></i>
+                                        Au moins une lettre majuscule (A-Z)
+                                    </div>
+
+                                    <!-- Minuscule -->
+                                    <div class="requirement" [class.valid]="!validationForm.controls['password'].errors?.['lowercase']">
+                                        <i [class]="validationForm.controls['password'].errors?.['lowercase'] ? 'fas fa-times' : 'fas fa-check'"></i>
+                                        Au moins une lettre minuscule (a-z)
+                                    </div>
+
+                                    <!-- Chiffre -->
+                                    <div class="requirement" [class.valid]="!validationForm.controls['password'].errors?.['number']">
+                                        <i [class]="validationForm.controls['password'].errors?.['number'] ? 'fas fa-times' : 'fas fa-check'"></i>
+                                        Au moins un chiffre (0-9)
+                                    </div>
+
+                                    <!-- Caractère spécial -->
+                                    <div class="requirement" [class.valid]="!validationForm.controls['password'].errors?.['special']">
+                                        <i [class]="validationForm.controls['password'].errors?.['special'] ? 'fas fa-times' : 'fas fa-check'"></i>
+                                        Au moins un caractère spécial (@#$%^&*)
+                                    </div>
+                                </div>
+                                }
+                            </div>
+                            <div class="col-span-12 mb-3">
+                                <label class="form-label" for="confirmPassword">
+                                    Confirmer le mot de passe
+                                    <span class="text-muted">(facultatif)</span>
+                                </label>
+
+                                <div class="input-with-icon">
+                                    <input
+                                            class="form-control"
+                                            id="confirmPassword"
+                                            [type]="showConfirmPassword ? 'text' : 'password'"
+                                            placeholder="Confirmez le mot de passe"
+                                            formControlName="confirmPassword"
+                                            [ngClass]="{
+                    'is-invalid': validationForm.controls['confirmPassword'].touched && validationForm.controls['confirmPassword'].errors?.['passwordMismatch'],
+                    'is-valid': validationForm.controls['confirmPassword'].touched && !validationForm.controls['confirmPassword'].errors && validationForm.controls['confirmPassword'].value
+                }"
+                                    >
+
+                                    <!-- Icône œil -->
+                                    <span
+                                            class="password-toggle-icon"
+                                            (click)="toggleConfirmPasswordVisibility()"
+                                            [title]="showConfirmPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'"
+                                                        >
+                                    <i [class]="showConfirmPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+                                </span>
+                                </div>
+
+                                <!-- Message d'erreur si les mots de passe ne correspondent pas -->
+                                @if(validationForm.controls['confirmPassword'].touched && validationForm.controls['confirmPassword'].errors?.['passwordMismatch']) {
+                                <div class="invalid-feedback d-block">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    Les mots de passe ne correspondent pas
+                                </div>
+                                }
+
+                                <!-- Message de succès si les mots de passe correspondent -->
+                                @if(validationForm.controls['confirmPassword'].touched && !validationForm.controls['confirmPassword'].errors && validationForm.controls['confirmPassword'].value) {
+                                <div class="valid-feedback d-block">
+                                    <i class="fas fa-check-circle"></i>
+                                    Les mots de passe correspondent
+                                </div>
+                                }
+                            </div>
+                            <div class="col-span-12 flex justify-end">
+                                <button class="btn btn-primary text-white w-full mt-8 newBtn" type="submit">
+                                    <i class="{{isloading?'fas fa-spin fa-circle-notch':''}}"></i>
+                                    {{validationForm.value.uid ? 'Modifier':' Créer +'}}
+
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

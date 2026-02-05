@@ -1,0 +1,212 @@
+<div class="modal  fade show modal-backdrop">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content category-popup">
+            <div class="modal-header">
+                <h5 class="modal-title">{{validationForm.value.uid ? 'MODIFIER UN AGENT':'AJOUTER UN AGENT'}}</h5>
+                <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close" (click)="closeModal()"></button>
+            </div>
+            <div class="modal-body p-0 custom-input">
+                <div class="text-start">
+                    <div class="p-20">
+                        <div class="alert alert-danger flex items-center gap-3" role="alert"
+                             style="animation: slideDown 0.3s ease;" *ngIf="errorTexte">
+                            <div>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-circle stroke-danger">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                </svg>
+                            </div>
+                            <span class="txt-light">{{errorTexte}}</span>
+                        </div>
+                        <form class="grid grid-cols-12 gap-4 needs-validation" novalidate="" [formGroup]="validationForm" (ngSubmit)="submitForm()">
+                            <div class="col-span-12 position-relative">
+                                <label class="form-label" for="idservice">Service
+                                    <span class="txt-danger">*</span>
+                                </label>
+                                <select2 [data]="dataService"
+                                         placeholder="Selectionnez le site"
+                                         id="idservice"
+                                         formControlName="idservice"
+                                         [disabled]="loadingService"
+                                         [overlay]="false"
+                                         [resettable]="true"
+                                         [listPosition]="'below'"
+                                         [minCountForSearch]="1"
+
+                                         noResultMessage="Aucune donnée trouvée"
+                                         class="raise-input-select" [ngClass]="{ 'is-invalid' : validationForm.controls['idservice'].touched &&  validationForm.controls['idservice'].errors?.['required'] , 'is-valid' : validationForm.controls['idservice'].valid}">
+
+                                </select2>
+                                <div class="select-loader" *ngIf="loadingService">
+                                    <i class="fas fa-spin fa-circle-notch"></i>
+                                </div>
+                                @if(validationForm.controls['idservice'].valid) {
+                                <!--<div class="valid-feedback">Looks's Good!</div>-->
+                                } @else if(validationForm.controls['idservice'].touched && validationForm.controls['idservice'].errors?.['required']) {
+                                <div class="invalid-feedback"> Veuillez selectionner le rayon.</div>
+                                }
+                            </div>
+                            <div class="col-span-12">
+                                <label class="form-label" for="nom">Nom
+                                    <span class="txt-danger">*</span>
+                                </label>
+                                <input class="form-control"
+                                       id="nom"
+                                       type="text" placeholder=""
+                                       formControlName="nom"
+                                       [ngClass]="{ 'is-invalid' : validationForm.controls['nom'].touched &&  validationForm.controls['nom'].errors?.['required'] , 'is-valid' : validationForm.controls['nom'].valid}">
+                                @if(validationForm.controls['nom'].valid) {
+                                <!--<div class="valid-feedback">Looks's Good!</div>-->
+                                } @else if(validationForm.controls['nom'].touched && validationForm.controls['nom'].errors?.['required']) {
+                                <div class="invalid-feedback">Veuillez saisir le nom</div>
+                                }
+                            </div>
+                            <div class="col-span-12">
+                                <label class="form-label" for="prenom">Prénoms
+                                    <span class="txt-danger">*</span>
+                                </label>
+                                <input class="form-control"
+                                       id="prenom"
+                                       type="text" placeholder=""
+                                       formControlName="prenom"
+                                       [ngClass]="{ 'is-invalid' : validationForm.controls['prenom'].touched &&  validationForm.controls['prenom'].errors?.['required'] , 'is-valid' : validationForm.controls['prenom'].valid}">
+                                @if(validationForm.controls['prenom'].valid) {
+                                <!--<div class="valid-feedback">Looks's Good!</div>-->
+                                } @else if(validationForm.controls['prenom'].touched && validationForm.controls['prenom'].errors?.['required']) {
+                                <div class="invalid-feedback">Veuillez saisir le prénom</div>
+                                }
+                            </div>
+                            <div class="col-span-12">
+                                <label class="form-label" for="telMobile">Contact
+<!--                                    <span class="txt-danger">*</span>-->
+                                </label>
+                                <input class="form-control"
+                                       id="telMobile"
+                                       type="text"  placeholder="Ex : 0123456789"
+                                       formControlName="telMobile"
+                                       [ngClass]="{
+                                            'is-invalid': validationForm.controls['telMobile'].touched && validationForm.controls['telMobile'].invalid,
+                                            'is-valid': validationForm.controls['telMobile'].touched && validationForm.controls['telMobile'].valid
+                                        }">
+                                @if(validationForm.controls['telMobile'].touched) {
+                                @if(validationForm.controls['telMobile'].errors?.['pattern']) {
+                                <div class="invalid-feedback d-block">
+                                    Numéro invalide. Format attendu: 0123456789
+                                </div>
+                                }
+                                }
+                            </div>
+                            <div class="col-span-12">
+                                <label class="form-label" for="emailAgent">Email
+                                    <span class="txt-danger">*</span>
+                                </label>
+                                <input class="form-control"
+                                       id="emailAgent"
+                                       type="text" placeholder=""
+                                       formControlName="emailAgent"
+                                       [ngClass]="{
+                                            'is-invalid': validationForm.controls['emailAgent'].touched && validationForm.controls['emailAgent'].invalid,
+                                            'is-valid': validationForm.controls['emailAgent'].touched && validationForm.controls['emailAgent'].valid
+                                        }">
+                                @if(validationForm.controls['emailAgent'].touched) {
+                                @if(validationForm.controls['emailAgent'].errors?.['required']) {
+                                <div class="invalid-feedback d-block">Veuillez saisir l'adresse mail</div>
+                                }
+                                @if(validationForm.controls['emailAgent'].errors?.['email']) {
+                                <div class="invalid-feedback d-block">L'email n'est pas valide</div>
+                                }
+                                }
+                            </div>
+                            <div class="col-span-12 position-relative">
+                                <label class="form-label" for="idtypeposte">Type de poste
+                                    <span class="txt-danger">*</span>
+                                </label>
+                                <select2 [data]="dataTypePoste"
+                                         placeholder="Selectionnez le type de poste"
+                                         id="idtypeposte"
+                                         formControlName="idtypeposte"
+                                         [disabled]="loadingTypePoste"
+                                         [overlay]="false"
+                                         [resettable]="true"
+                                         [listPosition]="'below'"
+                                         [minCountForSearch]="1"
+                                         (update)="onUpdate($event)"
+                                         noResultMessage="Aucune donnée trouvée"
+                                         class="raise-input-select" [ngClass]="{ 'is-invalid' : validationForm.controls['idtypeposte'].touched &&  validationForm.controls['idtypeposte'].errors?.['required'] , 'is-valid' : validationForm.controls['idtypeposte'].valid}">
+
+                                </select2>
+                                <div class="select-loader" *ngIf="loadingTypePoste">
+                                    <i class="fas fa-spin fa-circle-notch"></i>
+                                </div>
+                                @if(validationForm.controls['idtypeposte'].valid) {
+                                <!--<div class="valid-feedback">Looks's Good!</div>-->
+                                } @else if(validationForm.controls['idtypeposte'].touched && validationForm.controls['idtypeposte'].errors?.['required']) {
+                                <div class="invalid-feedback"> Veuillez selectionner le type de poste svp.</div>
+                                }
+                            </div>
+                            <div class="col-span-12 position-relative">
+                                <label class="form-label" for="idposte">Poste
+                                    <span class="txt-danger">*</span>
+                                </label>
+                                <select2 [data]="dataPoste"
+                                         placeholder="Selectionnez le poste"
+                                         id="idposte"
+                                         formControlName="idposte"
+                                         [disabled]="loadingPoste"
+                                         [overlay]="false"
+                                         [resettable]="true"
+                                         [listPosition]="'below'"
+                                         [minCountForSearch]="1"
+                                         noResultMessage="Aucune donnée trouvée"
+                                         class="raise-input-select" [ngClass]="{ 'is-invalid' : validationForm.controls['idposte'].touched &&  validationForm.controls['idposte'].errors?.['required'] , 'is-valid' : validationForm.controls['idposte'].valid}">
+
+                                </select2>
+                                <div class="select-loader" *ngIf="loadingPoste">
+                                    <i class="fas fa-spin fa-circle-notch"></i>
+                                </div>
+                                @if(validationForm.controls['idposte'].valid) {
+                                <!--<div class="valid-feedback">Looks's Good!</div>-->
+                                } @else if(validationForm.controls['idposte'].touched && validationForm.controls['idposte'].errors?.['required']) {
+                                <div class="invalid-feedback"> Veuillez selectionner le poste svp.</div>
+                                }
+                            </div>
+                            <div class="col-span-12 position-relative">
+                                <label class="form-label" for="sexe">Genre
+                                    <span class="txt-danger">*</span>
+                                </label>
+                                <select2 [data]="dataGenre"
+                                         placeholder="Selectionnez le poste"
+                                         id="sexe"
+                                         formControlName="sexe"
+                                         [overlay]="false"
+                                         [resettable]="true"
+                                         [listPosition]="'below'"
+                                         [minCountForSearch]="1"
+                                         noResultMessage="Aucune donnée trouvée"
+                                         class="raise-input-select" [ngClass]="{ 'is-invalid' : validationForm.controls['sexe'].touched &&  validationForm.controls['sexe'].errors?.['required'] , 'is-valid' : validationForm.controls['sexe'].valid}">
+
+                                </select2>
+                                <div class="select-loader" *ngIf="loadingPoste">
+                                    <i class="fas fa-spin fa-circle-notch"></i>
+                                </div>
+                                @if(validationForm.controls['sexe'].valid) {
+                                <!--<div class="valid-feedback">Looks's Good!</div>-->
+                                } @else if(validationForm.controls['sexe'].touched && validationForm.controls['sexe'].errors?.['required']) {
+                                <div class="invalid-feedback"> Veuillez selectionner le genre svp.</div>
+                                }
+                            </div>
+                            <div class="col-span-12 flex justify-end">
+                                <button class="btn btn-primary text-white w-full mt-8 newBtn" type="submit">
+                                    <i class="{{isloading?'fas fa-spin fa-circle-notch':''}}"></i>
+                                    {{validationForm.value.uid ? 'Modifier':' Créer +'}}
+
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

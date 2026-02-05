@@ -75,14 +75,14 @@ export const menuItems: Menu[] =
             active: false,
             level: 1,
             children: [
-                {
-                    path: '/project/project-details',
-                    title: 'Import PDF',
-                    type: 'link',
-                    badge: false,
-                    badge_value: 'New',
-                    badge_color: 'success'
-                },
+                // {
+                //     path: '/project/project-details',
+                //     title: 'Import PDF',
+                //     type: 'link',
+                //     badge: false,
+                //     badge_value: 'New',
+                //     badge_color: 'success'
+                // },
                 {
                     path: '/project/project-list',
                     title: 'Import EXCEL PDF',
@@ -92,15 +92,17 @@ export const menuItems: Menu[] =
                     path: '/project/create-project',
                     title: 'Import EXCEL PDF dossier',
                     type: 'link'
-                }, {
-                    path: '/project/create-project',
-                    title: 'Import EXCEL village',
-                    type: 'link'
-                }, {
-                    path: '/project/create-project',
-                    title: 'Import EXCEL',
-                    type: 'link'
                 },
+                // {
+                //     path: '/project/create-project',
+                //     title: 'Import EXCEL village',
+                //     type: 'link'
+                // },
+                // {
+                //     path: '/project/create-project',
+                //     title: 'Import EXCEL',
+                //     type: 'link'
+                // }
             ],
         },
         {
@@ -108,59 +110,59 @@ export const menuItems: Menu[] =
             id: 'search',
             icon: 'search',
             type: 'link',
-            path: '/file-manager',
+            path: 'recherche/trouver-un-document',
             bookmark: true,
             level: 1,
         },
-        {
-            title: 'Dépôt d\'archives',
-            icon: 'archive',
-            id: 'archive',
-            type: 'sub',
-            active: false,
-            level: 1,
-            children: [
-                {
-                    path: '/category',
-                    title: 'Bordereaux de versement',
-                    id: 'category',
-                    type: 'link',
-                },
-                {
-                    path: '/cart',
-                    title: 'Valider un borderaux',
-                    type: 'link',
-                    id: 'cart'
-                },
-                {
-                    path: '/wishlist',
-                    title: 'Archivage physique',
-                    type: 'link',
-                    id: 'wishlist'
-                },
-                {path: '/checkout', title: 'Bordereaux de destruction', type: 'link', id: 'checkout'},
-                {
-                    path: '/review',
-                    title: 'Mes bordereaux',
-                    type: 'link',
-                    badge: false,
-                    badge_color: 'success',
-                    badge_value: "New",
-                    id: 'review'
-                }
-            ],
-        },
-        {
-            title: 'Prêt de document',
-            id: 'chat',
-            icon: 'chat',
-            type: 'sub',
-            active: false,
-            level: 1,
-            children: [
-                {path: '/chat/private-chat', title: 'Document Prêtés', type: 'link'}
-            ],
-        },
+        // {
+        //     title: 'Dépôt d\'archives',
+        //     icon: 'archive',
+        //     id: 'archive',
+        //     type: 'sub',
+        //     active: false,
+        //     level: 1,
+        //     children: [
+        //         {
+        //             path: '/category',
+        //             title: 'Bordereaux de versement',
+        //             id: 'category',
+        //             type: 'link',
+        //         },
+        //         {
+        //             path: '/cart',
+        //             title: 'Valider un borderaux',
+        //             type: 'link',
+        //             id: 'cart'
+        //         },
+        //         {
+        //             path: '/wishlist',
+        //             title: 'Archivage physique',
+        //             type: 'link',
+        //             id: 'wishlist'
+        //         },
+        //         {path: '/checkout', title: 'Bordereaux de destruction', type: 'link', id: 'checkout'},
+        //         {
+        //             path: '/review',
+        //             title: 'Mes bordereaux',
+        //             type: 'link',
+        //             badge: false,
+        //             badge_color: 'success',
+        //             badge_value: "New",
+        //             id: 'review'
+        //         }
+        //     ],
+        // },
+        // {
+        //     title: 'Prêt de document',
+        //     id: 'chat',
+        //     icon: 'chat',
+        //     type: 'sub',
+        //     active: false,
+        //     level: 1,
+        //     children: [
+        //         {path: '/chat/private-chat', title: 'Document Prêtés', type: 'link'}
+        //     ],
+        // },
         {
             title: 'Validation',
             id: 'mail-box',
@@ -183,17 +185,17 @@ export const menuItems: Menu[] =
             badge_value: "0",
             level: 1,
         },
-        {
-            title: 'Flash Info',
-            id: 'faq',
-            icon: 'faq',
-            type: 'link',
-            path: '/mail-box',
-            badge: false,
-            badge_color: 'danger',
-            badge_value: "0",
-            level: 1,
-        },
+        // {
+        //     title: 'Flash Info',
+        //     id: 'faq',
+        //     icon: 'faq',
+        //     type: 'link',
+        //     path: '/mail-box',
+        //     badge: false,
+        //     badge_color: 'danger',
+        //     badge_value: "0",
+        //     level: 1,
+        // },
         {
             title: 'Changer de société',
             id: 'mail-box',
@@ -312,63 +314,63 @@ export const menuItems: Menu[] =
                     type: 'link'
                 },
                 {
-                    path: '/entites/direction',
+                    path: '/configuration/workflow',
                     title: 'Workflow',
                     type: 'link'
                 },
                 {
-                    path: '/entites/departement',
+                    path: '/configuration/site-rayon-boite',
                     title: 'Site, Rayons & Boîte d\'archivage',
                     type: 'link'
                 },
                 {
-                    path: '/entites/services',
+                    path: '/configuration/consigne-priorite',
                     title: 'Consigne & Priorité',
                     type: 'link'
                 },
-                {
-                    path: '/entites/qualification',
-                    title: 'Sous-prefecture',
-                    type: 'link'
-                }
+                // {
+                //     path: '/entites/qualification',
+                //     title: 'Sous-prefecture',
+                //     type: 'link'
+                // }
             ],
         },
-        {
-            title: 'Journal des opérations',
-            id: 'journal',
-            icon: 'journal',
-            type: 'link',
-            path: '/bookmark',
-            level: 1,
-        },
-        {
-            title: 'GeD',
-            id: 'ged',
-            icon: 'ged',
-            type: 'sub',
-            active: false,
-            level: 1,
-            badge: false,
-            badge_value: "New",
-            badge_color: "success",
-            children: [
-                {
-                    path: '/entites/societe',
-                    title: 'Suivi de document',
-                    type: 'link'
-                },
-                {
-                    path: '/entites/direction',
-                    title: 'Expression de besoin',
-                    type: 'link'
-                },
-                {
-                    path: '/entites/direction',
-                    title: 'Article',
-                    type: 'link'
-                }
-            ],
-        },
+        // {
+        //     title: 'Journal des opérations',
+        //     id: 'journal',
+        //     icon: 'journal',
+        //     type: 'link',
+        //     path: '/bookmark',
+        //     level: 1,
+        // },
+        // {
+        //     title: 'GeD',
+        //     id: 'ged',
+        //     icon: 'ged',
+        //     type: 'sub',
+        //     active: false,
+        //     level: 1,
+        //     badge: false,
+        //     badge_value: "New",
+        //     badge_color: "success",
+        //     children: [
+        //         {
+        //             path: '/entites/societe',
+        //             title: 'Suivi de document',
+        //             type: 'link'
+        //         },
+        //         {
+        //             path: '/entites/direction',
+        //             title: 'Expression de besoin',
+        //             type: 'link'
+        //         },
+        //         {
+        //             path: '/entites/direction',
+        //             title: 'Article',
+        //             type: 'link'
+        //         }
+        //     ],
+        // },
         {
             path: '/support-ticket',
             id: 'support-ticket',

@@ -2,3 +2,15 @@
 
 @use "../public/assets/scss/app.scss";
 
+body {
+  font-family: "Cocon-Regular" !important;
+}
+
+.page-wrapper.compact-wrapper .page-body-wrapper div.sidebar-wrapper .sidebar-main .sidebar-links li a span {
+  text-transform: none !important;
+  font-family: "Cocon-Regular" !important;
+}
+
+body.dark-sidebar .page-wrapper.compact-wrapper .page-body-wrapper div.sidebar-wrapper .sidebar-main .sidebar-links > li .sidebar-submenu li a {
+  text-transform: none !important;
+}

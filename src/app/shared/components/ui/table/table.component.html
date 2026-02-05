@@ -36,16 +36,65 @@
       }
       @if(search) {
         <div id="basic-1_filter" class="dataTables_filter" search>
-          <label>Search:
+          <label>{{ searchLibelle }}
             <input type="text" name="searchTerm" [(ngModel)]="searchText" (keyup)="searchTerm(searchText)" [placeholder]="searchPlaceholder">
           </label>
           @if(downloadReports) {
-            <div class="dt-buttons btn-group flex-wrap">
-              <button class="dt-button buttons-copy buttons-html5 btn-outline-primary" type="button"><span>Copy</span></button>
-              <button class="dt-button buttons-csv buttons-html5 btn-outline-primary" type="button"><span>CSV</span></button>
-              <button class="dt-button buttons-excel buttons-html5 btn-outline-primary" type="button"><span>Excel</span></button>
-              <button class="dt-button buttons-pdf buttons-html5 btn-outline-primary" type="button"><span>PDF</span></button>
-              <button class="dt-button buttons-print btn-outline-primary" type="button"><span>Print</span></button>
+            <div class="dt-buttons btn-group flex-wrap ml-3">
+              <!-- Bouton Copy -->
+              <button
+                      *ngIf="showCopyButton"
+                      [class]="copyButtonClass"
+                      [title]="copyButtonTooltip"
+                      (click)="handleExport('copy')"
+                      type="button">
+                <i *ngIf="copyButtonIcon" [class]="copyButtonIcon"></i>
+                <span>{{ copyButtonLabel }}</span>
+              </button>
+
+              <!-- Bouton CSV -->
+              <button
+                      *ngIf="showCSVButton"
+                      [class]="csvButtonClass"
+                      [title]="csvButtonTooltip"
+                      (click)="handleExport('csv')"
+                      type="button">
+                <i *ngIf="csvButtonIcon" [class]="csvButtonIcon"></i>
+                <span>{{ csvButtonLabel }}</span>
+              </button>
+
+              <!-- Bouton Excel -->
+              <button
+                      *ngIf="showExcelButton"
+                      [class]="excelButtonClass"
+                      [title]="excelButtonTooltip"
+                      (click)="handleExport('excel')"
+                      type="button">
+                <i *ngIf="excelButtonIcon" [class]="excelButtonIcon"></i>
+                <span>{{ excelButtonLabel }}</span>
+              </button>
+
+              <!-- Bouton PDF -->
+              <button
+                      *ngIf="showPDFButton"
+                      [class]="pdfButtonClass"
+                      [title]="pdfButtonTooltip"
+                      (click)="handleExport('pdf')"
+                      type="button">
+                <i *ngIf="pdfButtonIcon" [class]="pdfButtonIcon"></i>
+                <span>{{ pdfButtonLabel }}</span>
+              </button>
+
+              <!-- Bouton Print -->
+              <button
+                      *ngIf="showPrintButton"
+                      [class]="printButtonClass"
+                      [title]="printButtonTooltip"
+                      (click)="handleExport('print')"
+                      type="button">
+                <i *ngIf="printButtonIcon" [class]="printButtonIcon"></i>
+                <span>{{ printButtonLabel }}</span>
+              </button>
             </div>
           }
         </div>
@@ -140,12 +189,23 @@
                     }
                     @if(rows.label == 'Create') {
                       <button class="plus-btn">+ </button>
-                    }
-                    @else if(rows.label == 'Edit' || rows.label == 'Delete') {
-                      <a class="square-white" href="javascript:void(0)" [routerLink]="rows.path" (click)="handleAction(rows, details)">
+                    } @else if(rows.label == 'Edit') {
+<!--                    @else if(rows.label == 'Edit' || rows.label == 'Delete') -->
+                      <a class="square-white" href="javascript:void(0)"  (click)="emitAction(rows, details); $event.preventDefault()">
+<!--                      <a class="square-white" href="javascript:void(0)" [routerLink]="rows.path" (click)="handleAction(rows, details)">-->
                         <app-svg-icon [icon]="rows.icon"></app-svg-icon>
                       </a>
-                    } @else if(rows.label == 'View') {
+                    } @else if(rows.label == 'Consult') {
+                    <a class="square-white" href="javascript:void(0)" (click)="emitAction(rows, details); $event.preventDefault()">
+<!--                      <i class="fa-solid fa-download"></i>-->
+                      <app-svg-icon [icon]="rows.icon"></app-svg-icon>
+                      <app-tooltip [title]="'Exporter le model'"></app-tooltip>
+                    </a>
+                  } @else if(rows.label == 'Delete') {
+                  <a class="square-white" href="javascript:void(0)" [routerLink]="rows.path" (click)="handleAction(rows, details)">
+                    <app-svg-icon [icon]="rows.icon"></app-svg-icon>
+                  </a>
+                  } @else if(rows.label == 'View') {
                       <a class="square-white" href="javascript:void(0)" (click)="handleAction(rows, details)" [routerLink]="rows.path">
                         <i class="fa-solid fa-eye"></i>
                       </a>

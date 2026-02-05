@@ -10,6 +10,12 @@ import {ToastrService} from "ngx-toastr";
 import {NzSwitchModule} from "ng-zorro-antd/switch";
 import {NzTableModule} from "ng-zorro-antd/table";
 import {NzToolTipModule} from "ng-zorro-antd/tooltip";
+import {SocieteModalComponent} from "./societe-modal/societe-modal.component";
+import {TableClickedAction, TableConfigs} from "../../../shared/interface/common";
+import {SupportDB} from "../../../shared/interface/support-ticket";
+import Swal from "sweetalert2";
+import moment from "moment";
+import {TableComponent} from "../../../shared/components/ui/table/table.component";
 
 
 @Component({
@@ -17,12 +23,12 @@ import {NzToolTipModule} from "ng-zorro-antd/tooltip";
     imports: [
         CommonModule,
         CardComponent,
-        ImageUploadComponent,
         FormsModule,
         ReactiveFormsModule,
         NzSwitchModule,
         NzToolTipModule,
-        NzTableModule],
+        SocieteModalComponent,
+        TableComponent],
     providers: [],
     templateUrl: './societe.component.html',
     styleUrl: './societe.component.scss',
@@ -36,6 +42,28 @@ export class SocieteComponent implements OnInit {
     errorTexte: string = '';
     isloading: boolean = false;
     isLoad: boolean = false;
+    modalOpen: boolean = false;
+    dataOneLigne: any = {};
+    tableConfig: TableConfigs = {
+        columns: [
+            {title: 'Raison sociale', field_value: 'raison_sociale', sort: true},
+            {title: 'Telephone', field_value: 'telephone', sort: true},
+            {title: 'Email', field_value: 'email', sort: true},
+            {title: 'Adresse', field_value: 'adresse', sort: true},
+            {title: 'Localisation', field_value: 'localisation', sort: true},
+            {title: 'Double authentification ?', field_value: '', sort: true},
+        ],
+        data: [] as SupportDB[],
+        row_action: [
+            {
+                label: "Edit",
+                action_to_perform: "edit",
+                icon: "edit-content",
+                class: "btn-sm"
+            }
+        ],
+
+    };
 
     constructor(private autor: Authorization,
                 private fb: FormBuilder,
@@ -125,12 +153,20 @@ export class SocieteComponent implements OnInit {
     societe() {
         this.isloading = true;
         this.dataSociete = [];
+        this.tableConfig.data = [];
         this.httService.getData(`${environment.api_url}auth/:savesociete`, false, this.users?.access_token || '')
             .toPromise()
             .then((res: any) => {
                 this.isloading = false;
                 if (res.body.status) {
                     this.dataSociete = res.body.data;
+                    this.tableConfig = {
+                        ...this.tableConfig,
+                        data: res.body.data.map((e: any) => {
+                            return {...e, created_at: moment(e.created_at).format('DD/MM/YYYY')}
+                        })
+                    };
+                    console.log("res.body.data ===", res.body.data)
                 }
             })
             .catch((err) => {
@@ -151,5 +187,48 @@ export class SocieteComponent implements OnInit {
             active: 1,
         }
         this.societeForm.setValue(payload);
+    }
+
+    handleModal(value: boolean) {
+        if (value) {
+            this.societe();
+        }
+        this.modalOpen = false;
+    }
+
+    openModal() {
+        this.modalOpen = true;
+        this.dataOneLigne = {};
+    }
+
+    handleAction(value: TableClickedAction) {
+
+        console.log('🎯 Action reçue:', value);
+        console.log('Données:', value.action_to_perform);
+
+        switch (value.action_to_perform) {
+            case 'edit':
+                this.modalOpen = true;
+                this.dataOneLigne = value.data;
+                break;
+            default:
+            //console.warn('⚠️ Action non gérée:', event.action);
+        }
+    }
+
+    handleExport(event: { type: string, data: any[] }) {
+        console.log('Type d\'export:', event.type);
+        console.log('Données:', event.data);
+
+        // Logique personnalisée selon le type
+        if (event.type === 'csv') {
+            // Traitement personnalisé pour CSV
+            console.log('Export CSV personnalisé');
+        }
+
+        if (event.type === 'pdf') {
+            // Traitement personnalisé pour PDF
+            console.log('Export PDF personnalisé');
+        }
     }
 }

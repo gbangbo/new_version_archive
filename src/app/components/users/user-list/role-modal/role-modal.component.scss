@@ -1,0 +1,21 @@
+.modal .modal-dialog .modal-content .modal-header {
+  padding: 11px;
+  background-color: rgba(0, 54, 110);
+  color: #fff !important;
+  border-top-right-radius: 6px;
+  border-top-left-radius: 6px;
+}
+
+.modal-header > h5 {
+  color: #fff !important;
+}
+
+.modal-header .btn-close {
+  filter: var(--tw-btn-close-white-filter);
+  opacity: 1;
+}
+
+
+.newBtn {
+  background-color: #00141e !important;
+}

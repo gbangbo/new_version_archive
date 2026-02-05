@@ -1,48 +1,65 @@
-.hSoc {
-  height: 39px !important;
+.tab-links {
+  justify-content: flex-start;
+  margin-left: 0 !important;
+  background-color: #e8e8e8 !important;
 }
 
-code {
-  color: #c33 !important;
-  font-size: 13px !important;
+::ng-deep .table-header label::before {
+  content: 'Rechercher : ';
+  font-weight: 500;
 }
 
-th {
-  color: #fff !important;
-  background: #144066 !important;
-}
-
-::ng-deep .ant-table.ant-table-bordered > .ant-table-container > .ant-table-content > table, .ant-table.ant-table-bordered > .ant-table-container > .ant-table-header > table {
-  font-size: 13px !important;
-}
-
-:host ::ng-deep .ant-table-thead > tr > th, .ant-table-tbody > tr > td, .ant-table tfoot > tr > th, .ant-table tfoot > tr > td {
-  padding: 4px 4px !important;
+.main-setting .tab-content {
+  border-left: none !important;
 }
 
 
-/* Uniquement sur petits écrans (moins de 768px) */
-@media (max-width: 767px) {
-  ::ng-deep .image-upload-container {
-    max-width: 400px !important;
-  }
-  ::ng-deep .image-preview {
-    width: 317px !important;
-  }
+::ng-deep app-table svg {
+
+
 }
 
-::ng-deep .ant-select{
-  width: 100% !important;
-}
-::ng-deep .ant-select-single .ant-select-selector {
-  border-radius: 4px !important;
-  height: 37px !important;
-  //background-color: #fafafa !important;
-}
-.main-setting .form-control, .main-setting .form-select {
-  background-color: #fff !important;
+
+::ng-deep .square-white svg {
+  fill: rgba(82, 82, 108, 0.8);
+  width: 20px;
+  height: 20px;
 }
 
-::ng-deep .card{
-  box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px !important;
+::ng-deep .square-white {
+  width: 20px;
+  height: 20px;
+  border-radius: 2px;
+  background-color: var(--white);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0px 0px 28px 6px rgba(235, 235, 235, 0.4);
+  margin: auto;
+}
+
+/* largeur fixe de la colonne actions */
+::ng-deep app-table td:last-child {
+  width: 50px;
+  max-width: 50px;
+  gap: normal !important;
+  //white-space: nowrap;
+}
+
+::ng-deep table.table th,
+::ng-deep table.table td {
+  padding: 0.60rem !important;
+}
+
+.support-ticket-table thead tr th:nth-child(3), .support-ticket-table thead tr td:nth-child(3), .support-ticket-table tbody tr th:nth-child(3), .support-ticket-table tbody tr td:nth-child(3) {
+  min-width: 76px !important;
+}
+
+::ng-deep .support-ticket-table .top-body .dataTables_filter label input {
+  height: 34px !important;
+}
+
+::ng-deep app-feather-icon svg {
+  width: 16px;
+  height: 16px;
 }

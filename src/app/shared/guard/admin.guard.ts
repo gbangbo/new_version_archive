@@ -15,7 +15,7 @@ export class AdminGuard implements CanActivate {
     const user = JSON.parse(localStorage.getItem('user') || 'null');
 
     if (!user || !Object.keys(user).length) {
-      this.router.navigate(['/auth/login']);
+      this.router.navigate(['/auth/connexion']);
       return false;
     }
 

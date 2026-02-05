@@ -1,0 +1,165 @@
+
+<div class="bg-navbar tabs">
+    <ul class="tab-links flex nav-primary">
+        <li class="tab-link" [class.active]="activeTab == 'site'" (click)="handleTab('site')">Sites</li>
+        <li class="tab-link" [class.active]="activeTab == 'rayon'" (click)="handleTab('rayon')">Rayons</li>
+        <li class="tab-link" [class.active]="activeTab == 'boite'" (click)="handleTab('boite')">Boîtes</li>
+    </ul>
+
+    <div class="container main-setting">
+        <div class="grid grid-cols-12 card-gap">
+            <div class="col-span-12 mt-5">
+                <app-card [headerTitle]="titleCarde" [header]="'pb-0'" [border]="true" [padding]="false">
+                    <div class="tab-content mt-3">
+                        <div class="tab-pan fade show active">
+                            @if(activeTab == 'site') {
+                            <div>
+                              <div class="flex justify-end items-center mb-4">
+                               <button
+                               *ngIf='!isloading'
+                                   (click)="openModalSite()"
+                                   class="btn button-light-primary btn-sm flex items-center justify-center gap-2 px-4 py-2 rounded-lg transition-all"
+                                   style="min-width: 183px; width:183px">
+                                   <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-3"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                                    Nouveau site
+                               </button>
+                           </div>
+
+                               <!-- Tableau -->
+                          <div class="relative">
+                           <!-- Overlay spinner -->
+                           <div *ngIf="isloading" class="absolute inset-0 bg-white bg-opacity-75 flex justify-center items-center z-10 rounded-lg">
+                               <div class="text-center">
+                                   <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mx-auto"></div>
+                                   <p class="mt-4 text-gray-600 font-medium">Chargement des données...</p>
+                               </div>
+                           </div>
+
+                           <!-- Tableau -->
+                           <div class="overflow-x-auto support-ticket-table custom-scrollbar" [class.opacity-50]="isloading">
+                               <app-table
+                                   [tableConfig]="tableConfigSite"
+                                   [searchLibelle]="''"
+                                   [searchPlaceholder]="'Rechercher ici...'"
+                                   [emptyTexte]="'Aucune donnée trouvée'"
+                                   [pageSize]="10"
+                                   [showPaginate]="true"
+                                   [paginateDetails]="true"
+                                   [downloadReports]="false"
+                                   [showCopyButton]="false"
+                                   [showCSVButton]="false"
+                                   [showPrintButton]="false"
+                                   [showPDFButton]="false"
+                                   [showExcelButton]="false"
+                                    (onExport)="handleExport($event)"
+                                    (action)="handleAction($event)"
+                                   >
+                               </app-table>
+                           </div>
+
+
+                       </div>
+
+
+                           </div>
+                            } @else if(activeTab == 'rayon') {
+                            <div>
+                                                           <div class="flex justify-end items-center mb-4">
+                                                            <button
+                                                                (click)="openModalRayon()"
+                                                                class="btn button-light-primary btn-sm flex items-center justify-center gap-2 px-4 py-2 rounded-lg transition-all"
+                                                                style="min-width: 183px; width:183px">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-3"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                                                                 Nouveau rayon
+                                                            </button>
+                                                        </div>
+
+                                                            <!-- Tableau -->
+
+
+                                                        <div class="relative">
+                                                        <!-- Overlay spinner -->
+                                                        <div *ngIf="isloadingRayon" class="absolute inset-0 bg-white bg-opacity-75 flex justify-center items-center z-10 rounded-lg">
+                                                            <div class="text-center">
+                                                                <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mx-auto"></div>
+                                                                <p class="mt-4 text-gray-600 font-medium">Chargement des données...</p>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Tableau -->
+                                                        <div class="overflow-x-auto support-ticket-table custom-scrollbar" [class.opacity-50]="isloadingRayon">
+                                                            <app-table
+                                                                [tableConfig]="tableConfigRayon"
+                                                                [searchLibelle]="''"
+                                                                [searchPlaceholder]="'Rechercher ici...'"
+                                                                [emptyTexte]="'Aucune donnée trouvée'"
+                                                                [pageSize]="10"
+                                                                [showPaginate]="true"
+                                                                [paginateDetails]="true"
+                                                                 (action)="handleActionRayon($event)">
+                                                            </app-table>
+                                                        </div>
+                                                    </div>
+
+
+                                                        </div>
+                            }@else if(activeTab == 'boite') {
+
+                            <div>
+                                                                                       <div class="flex justify-end items-center mb-4">
+                                                                                        <button
+                                                                                            (click)="openModalBoite()"
+                                                                                            class="btn button-light-primary btn-sm flex items-center justify-center gap-2 px-4 py-2 rounded-lg transition-all"
+                                                                                            style="min-width: 183px; width:183px">
+                                                                                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-3"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                                                                                             Nouvelle boîte
+                                                                                        </button>
+                                                                                    </div>
+
+                                                                                        <!-- Tableau -->
+
+
+                                                                                    <div class="relative">
+                                                                                    <!-- Overlay spinner -->
+                                                                                    <div *ngIf="isloadingBoite" class="absolute inset-0 bg-white bg-opacity-75 flex justify-center items-center z-10 rounded-lg">
+                                                                                        <div class="text-center">
+                                                                                            <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mx-auto"></div>
+                                                                                            <p class="mt-4 text-gray-600 font-medium">Chargement des données...</p>
+                                                                                        </div>
+                                                                                    </div>
+
+                                                                                    <!-- Tableau -->
+                                                                                    <div class="overflow-x-auto support-ticket-table custom-scrollbar" [class.opacity-50]="isloadingRayon">
+                                                                                        <app-table
+                                                                                            [tableConfig]="tableConfigBoite"
+                                                                                            [searchLibelle]="''"
+                                                                                            [searchPlaceholder]="'Rechercher ici...'"
+                                                                                            [emptyTexte]="'Aucune donnée trouvée'"
+                                                                                            [pageSize]="10"
+                                                                                            [showPaginate]="true"
+                                                                                            [paginateDetails]="true"
+                                                                                             (action)="handleActionBoite($event)">
+                                                                                        </app-table>
+                                                                                    </div>
+                                                                                </div>
+
+
+                                                                                    </div>
+                            }
+                        </div>
+                    </div>
+                </app-card>
+            </div>
+        </div>
+        @if(modalOpenSite){
+        <app-site-modal [dataLigne]="dataOneLigne" (modalOpen)="handleModalSite($event)"></app-site-modal>
+        }
+        @if(modalOpenRayon){
+        <app-rayon-modal [dataLigne]="dataOneLigne" (modalOpen)="handleModalRayon($event)"></app-rayon-modal>
+        }
+        @if(modalOpenBoite){
+        <app-boite-modal [dataLigne]="dataOneLigne" (modalOpen)="handleModalBoite($event)"></app-boite-modal>
+        }
+
+    </div>
+</div>

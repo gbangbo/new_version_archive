@@ -13,7 +13,14 @@
                 <div class="card-body pt-0 !px-0">
                     <div class="api-management">
                         <div class="recent-table overflow-x-auto custom-scrollbar">
-                            <app-table [tableClass]="'table'" [hasCheckbox]="true" [tableConfig]="tableConfig" [pageSize]="10" [paginateDetails]="true" [showPaginate]="true" [selectedRows]="true" [searchPlaceholder]="'Search here...'"  (action)="handleAction($event)"></app-table>
+                            <app-table [tableClass]="'table'"
+                                       [hasCheckbox]="true"
+                                       [tableConfig]="tableConfig"
+                                       [pageSize]="10"
+                                       [paginateDetails]="true"
+                                       [showPaginate]="true"
+                                       [selectedRows]="true"
+                                       [searchPlaceholder]="'Search here...'"  (action)="handleAction($event)"></app-table>
                         </div>
                     </div>
                 </div>

@@ -1,5 +1,6 @@
 import {Routes} from "@angular/router";
 import {configuration} from "../../components/configuration/configuration.routes";
+import {voirdocuments} from "../../components/voir-document/voir-documents.routes";
 
 export const content: Routes = [
     {
@@ -311,11 +312,19 @@ export const content: Routes = [
         data: {
             breadcrumb: "Configuration"
         },
-    }, {
+    },
+    {
         path: 'documents',
         loadChildren: () => import('../../components/documents/documents.routes').then(r => r.documents),
         data: {
             breadcrumb: "Documents"
+        },
+    },
+    {
+        path: 'recherche',
+        loadChildren: () => import('../../components/voir-document/voir-documents.routes').then(r => r.voirdocuments),
+        data: {
+            breadcrumb: "Recherche"
         },
     },
 ]

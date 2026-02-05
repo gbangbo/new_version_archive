@@ -1,34 +1,82 @@
+<div class="bg-navbar tabs">
+    <ul class="tab-links flex nav-primary">
+        <li class="tab-link" [class.active]="activeTab == 'type_doc'" (click)="handleTab('type_doc')">Type de document</li>
+        <li class="tab-link" [class.active]="activeTab == 'plan_class'" (click)="handleTab('plan_class')">Plan de classement</li>
+    </ul>
 <div class="container main-setting">
+
+    <ngx-spinner
+            bdColor="rgba(0, 0, 0, 0.6)"
+            size="medium"
+            color="#fff"
+            type="ball-scale-multiple"
+    >
+        <p style="color: white">{{actionLoad}}...</p>
+    </ngx-spinner>
+
     <div class="grid grid-cols-12 card-gap">
-        <div class="col-span-12">
-            <app-card [headerTitle]="'NOUVEAU TYPE DE DOCUMENT'" [header]="'pb-0'" [border]="true" [padding]="false">
+        <div class="col-span-12  mt-5 ">
+            <app-card [headerTitle]="titleCarde" [header]="'pb-0'" [border]="true" [padding]="false">
                 <div class="grid grid-cols-12 gap-4 tabs">
-                    <div class="col-span-3 lg:col-span-12">
-                        <div class="tab-links nav-primary" orientation="vertical">
+                    <div class="col-span-12 lg:col-span-12">
+                        @if(activeTab == 'type_doc') {
+                        <div>
+                            <div class="flex justify-end items-center mb-4">
+                                <button
+                                        *ngIf='!isloading'
+                                        (click)="openModal()"
+                                        class="btn button-light-primary btn-sm flex items-center justify-center gap-2 px-4 py-2 rounded-lg transition-all"
+                                        style="min-width: 183px; width:183px">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-3"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                                    Nouveau type
+                                </button>
+                            </div>
+                            <!-- Tableau -->
+                            <div class="relative">
+                                <!-- Overlay spinner -->
+                                <div *ngIf="isloading" class="absolute inset-0 bg-white bg-opacity-75 flex justify-center items-center z-10 rounded-lg">
+                                    <div class="text-center">
+                                        <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mx-auto"></div>
+                                        <p class="mt-4 text-gray-600 font-medium">Chargement des données...</p>
+                                    </div>
+                                </div>
 
-                            @for(tab of settingTabs; track tab) {
-                            <a class="tab-link" [class.active]="activeTab == tab.value" (click)="handleTab(tab.value)">
-                              <app-svg-icon [icon]="tab.icon"></app-svg-icon>
-                            {{ tab.title }}
-                            </a>
-                            }
-                        </div>
-                    </div>
-                    <div class="col-span-9 lg:col-span-12">
-                        <div class="tab-content">
-                            <div class="tab-pan fade show active">
+                                <!-- Tableau -->
+                                <div class="overflow-x-auto support-ticket-table custom-scrollbar" [class.opacity-50]="isloading">
+                                    <app-table
+                                            [tableConfig]="tableConfig"
+                                            [searchLibelle]="''"
+                                            [searchPlaceholder]="'Rechercher ici...'"
+                                            [emptyTexte]="'Aucune donnée trouvée'"
+                                            [pageSize]="10"
+                                            [showPaginate]="true"
+                                            [paginateDetails]="true"
+                                            [downloadReports]="false"
+                                            [showCopyButton]="false"
+                                            [showCSVButton]="false"
+                                            [showPrintButton]="false"
+                                            [showPDFButton]="false"
+                                            [showExcelButton]="false"
+                                            (onExport)="handleExport($event)"
+                                            (action)="handleAction($event)"
+                                    >
+                                    </app-table>
+                                </div>
 
-                                @if(activeTab == 'general'){
-                                <app-creer></app-creer>
-                                }
-                                @else if(activeTab == 'activation'){
-                                <app-liste></app-liste>
-                                }
+
                             </div>
                         </div>
-                    </div>
+                            }@else if(activeTab == 'plan_class') {
+
+                        }
+
+                        </div>
                 </div>
             </app-card>
         </div>
     </div>
+    @if(modalOpen){
+    <app-type-doc-modal [dataLigne]="dataOneLigne" (modalOpen)="handleModal($event)"></app-type-doc-modal>
+    }
+</div>
 </div>

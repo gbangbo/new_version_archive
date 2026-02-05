@@ -13,6 +13,11 @@ import {Select2Module} from "ng-select2-component";
 import {NzSelectModule} from "ng-zorro-antd/select";
 import {NzTabsModule} from "ng-zorro-antd/tabs";
 import {NzIconModule} from "ng-zorro-antd/icon";
+import {TableClickedAction, TableConfigs} from "../../../shared/interface/common";
+import {AddUserModalComponent} from "./add-user-modal/add-user-modal.component";
+import {SupportDB} from "../../../shared/interface/support-ticket";
+import {TableComponent} from "../../../shared/components/ui/table/table.component";
+import {FeatherIconComponent} from "../../../shared/components/ui/feather-icon/feather-icon.component";
 
 
 @Component({
@@ -28,7 +33,7 @@ import {NzIconModule} from "ng-zorro-antd/icon";
         Select2Module,
         NzTabsModule,
         NzIconModule,
-        NzTableModule],
+        NzTableModule, AddUserModalComponent, TableComponent, FeatherIconComponent],
     providers: [],
     templateUrl: './add-user.component.html',
     styleUrl: './add-user.component.scss'
@@ -44,7 +49,30 @@ export class AddUserComponent implements OnInit {
     errorTexte: string = '';
     isloading: boolean = false;
     isLoad: boolean = false;
-    dataPersonnel: any=[];
+    dataPersonnel: any = [];
+    modalOpen: boolean = false;
+    dataOneLigne: any = {};
+
+    tableConfig: TableConfigs = {
+        columns: [
+            {title: 'Nom & prénoms', field_value: 'name', sort: true},
+            {title: 'Telephone', field_value: 'telMobile', sort: true},
+            {title: 'Email', field_value: 'emailAgent', sort: true},
+            {title: 'Service', field_value: 'libelle_service', sort: true},
+            {title: 'Poste', field_value: 'libelle_poste', sort: true},
+            {title: 'Genre', field_value: 'sexe', sort: true},
+        ],
+        data: [] as SupportDB[],
+        row_action: [
+            {
+                label: "Edit",
+                action_to_perform: "edit",
+                icon: "edit-content",
+                class: "btn-sm"
+            }
+        ],
+
+    };
 
     constructor(private autor: Authorization,
                 private fb: FormBuilder,
@@ -70,59 +98,6 @@ export class AddUserComponent implements OnInit {
         this.departement(this.users?.dataSociete?.uid, '', '');
         this.personnel(this.users?.dataSociete?.uid, '', '');
         console.log(this.users)
-    }
-
-    submitForm(): void {
-        this.errorTexte = ''
-
-        if (this.societeDepartement.valid) {
-            this.isLoad = true;
-            this.societeDepartement.value.action = this.societeDepartement.value.action ? this.societeDepartement.value.action : 1;
-            this.societeDepartement.value.idsociete = this.societeDepartement.value.idsociete ? this.societeDepartement.value.idsociete : this.users?.dataSociete?.uid
-            console.log(this.societeDepartement.value)
-            this.httService.postData(`${environment.api_url}auth/:savepersonnel`, this.societeDepartement.value, this.users?.access_token)
-                .toPromise()
-                .then((res: any) => {
-                    this.isLoad = false;
-                    window.scrollTo({top: 0, behavior: 'smooth'});
-                    if (res.body.status) {
-
-                        this.societeDepartement.reset({});
-                        this.departement(this.users?.dataSociete?.uid, '', '');
-                        this.toast.success(`${res.body.message}`, '',
-                            {
-                                positionClass: 'toast-top-right',
-                                closeButton: true,
-                                timeOut: 3000
-                            })
-                    }
-                })
-                .catch((err) => {
-                    this.isLoad = false;
-                    console.log(err?.error)
-                    this.toast.error(`${err?.error?.err?.message || 'Une erreur est survenue.'} `, '',
-                        {
-                            positionClass: 'toast-top-right',
-                            closeButton: true,
-                            timeOut: 3000
-                        })
-                    setTimeout(() => {
-                        this.errorTexte = `${err?.error?.err?.message || 'Une erreur est survenue.'} `;
-                    }, 3000)
-                });
-        } else {
-            Object.values(this.societeDepartement.controls).forEach(control => {
-                if (control.invalid) {
-                    control.markAsDirty();
-                    control.updateValueAndValidity({onlySelf: true});
-                }
-            });
-        }
-    }
-
-    resetForm(): void {
-        this.errorTexte = '';
-        this.societeDepartement.reset({});
     }
 
     direction(idsociete: string = '', iddirection: string = '') {
@@ -156,6 +131,7 @@ export class AddUserComponent implements OnInit {
             });
 
     }
+
     personnel(idsociete: string = '', iddirection: string = '', iddepartement: string = '') {
         this.isloading = true;
         this.dataPersonnel = [];
@@ -165,6 +141,17 @@ export class AddUserComponent implements OnInit {
                 this.isloading = false;
                 if (res.body.status) {
                     this.dataPersonnel = res.body.data;
+                    this.tableConfig = {
+                        ...this.tableConfig,
+                        data: res.body.data.map((d: any) => {
+                            return {
+                                ...d,
+                                name: `${d.nom} ${d.prenom}`,
+                                libelle_poste: d?.dataposte?.libelle_poste,
+                                libelle_service: d?.dataservice?.libelle_service
+                            }
+                        })
+                    };
                     console.log(res.body.data)
                 }
             })
@@ -188,5 +175,28 @@ export class AddUserComponent implements OnInit {
 
 
         this.societeDepartement.setValue(payload);
+    }
+
+
+    handleModal(value: boolean) {
+        if (value) {
+            this.personnel(this.users?.dataSociete?.uid, '', '');
+        }
+        this.modalOpen = false;
+    }
+
+    openModal() {
+        this.modalOpen = true;
+        this.dataOneLigne = {};
+    }
+
+    handleAction(value: TableClickedAction) {
+        switch (value.action_to_perform) {
+            case 'edit':
+                this.modalOpen = true;
+                this.dataOneLigne = value.data;
+                break;
+            default:
+        }
     }
 }

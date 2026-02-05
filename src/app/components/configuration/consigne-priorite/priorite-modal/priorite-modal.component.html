@@ -1,0 +1,49 @@
+<div class="modal  fade show modal-backdrop">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content category-popup">
+            <div class="modal-header">
+                <h5 class="modal-title">{{validationForm.value.uid ? 'MODIFIER LA PRIORITE': 'AJOUTER UNE PRIORITE'}}</h5>
+                <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close" (click)="closeModal()"></button>
+            </div>
+            <div class="modal-body p-0 custom-input">
+                <div class="text-start">
+                    <div class="p-20">
+                        <div class="alert alert-danger flex items-center gap-3" role="alert"
+                             style="animation: slideDown 0.3s ease;" *ngIf="errorTexte">
+                            <div>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-circle stroke-danger">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                </svg>
+                            </div>
+                            <span class="txt-light">{{errorTexte}}</span>
+                        </div>
+                        <form class="grid grid-cols-12 gap-4 needs-validation" novalidate="" [formGroup]="validationForm" (ngSubmit)="submitForm()">
+                            <div class="col-span-12">
+                                <label class="form-label" for="lib_priorite">Libellé
+                                    <span class="txt-danger">*</span>
+                                </label>
+                                <input class="form-control" id="lib_priorite" type="text" placeholder="Entrez le libellé de la priorité" formControlName="lib_priorite"
+                                       [ngClass]="{ 'is-invalid' : validationForm.controls['lib_priorite'].touched &&  validationForm.controls['lib_priorite'].errors?.['required'] , 'is-valid' : validationForm.controls['lib_priorite'].valid}">
+                                @if(validationForm.controls['lib_priorite'].valid) {
+                                <!--<div class="valid-feedback">Looks's Good!</div>-->
+                                } @else if(validationForm.controls['lib_priorite'].touched && validationForm.controls['lib_priorite'].errors?.['required']) {
+                                <div class="invalid-feedback"> Veuillez saisir le libellé de la priorité.</div>
+                                }
+                            </div>
+
+                            <div class="col-span-12 flex justify-end">
+                                <button class="btn btn-primary text-white  w-full mt-8 newBtn" type="submit">
+                                    <i class="{{isloading?'fas fa-spin fa-circle-notch':''}}"></i>
+                                    {{validationForm.value.uid ? 'Modifier':' Créer +'}}
+
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

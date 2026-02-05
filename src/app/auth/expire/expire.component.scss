@@ -1,0 +1,247 @@
+/* Bouton de connexion */
+.btnCnx {
+  background: linear-gradient(135deg, #7366ff 0%, #7366ff 100%) !important;
+  height: 48px;
+  font-size: 16px;
+  margin-top: 12% !important;
+  transition: all 0.3s ease;
+  font-weight: 600;
+  padding: 12px 24px;
+  border-radius: 10px;
+  border: none;
+  box-shadow: 0 4px 15px rgba(6, 40, 120, 0.3);
+  letter-spacing: 0.5px;
+}
+
+
+.btnCnx:active:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.btnCnx:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* Logo */
+.logoTaille {
+  width: 50px !important;
+}
+
+/* Texte d'information principal */
+.infoTexte {
+  color: #fff;
+  position: absolute;
+  width: auto;
+  max-width: 800px;
+  top: 26%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  text-shadow: 3px 3px 10px rgba(0, 0, 0, 0.9);
+  z-index: 10;
+  line-height: 1.6;
+  text-align: justify;
+  text-align-last: center;
+  padding: 0 20px;
+}
+
+.infoTexte small {
+  font-size: 14px;
+  font-weight: 400;
+  display: block;
+  margin-top: 10px;
+}
+
+/* Message de session expirée */
+.session-expire-text {
+  position: absolute;
+  top: 49%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  color: #fff;
+  font-size: 27px;
+  font-weight: 700;
+  text-align: center;
+  margin: 0;
+  padding: 9px 25px;
+  background-color: rgba(220, 53, 69, 0.95);
+  border-radius: 12px;
+  border: 4px solid #fff;
+  text-shadow: 4px 4px 12px rgba(0, 0, 0, 0.8);
+  letter-spacing: 2px;
+  animation: _ngcontent-ng-c789345981_pulse 2s infinite;
+  box-shadow: 0 8px 32px rgba(220, 53, 69, 0.6);
+}
+
+/* Animation de pulsation */
+@keyframes pulse {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.05);
+  }
+}
+
+/* Container et overlay */
+.image-container {
+  position: relative;
+  min-height: 100vh;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.3));
+  z-index: 1;
+}
+
+/* Animation pour les alertes */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================
+   RESPONSIVE - TABLETTES
+   ============================================ */
+@media (max-width: 1279px) {
+  .overlay {
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.4));
+  }
+
+  .infoTexte {
+    font-size: 18px;
+    max-width: 90%;
+    top: 20%;
+  }
+
+  .session-expire-text {
+    font-size: 27px;
+    padding: 9px 25px;
+    top: 45%;
+  }
+
+  .btnCnx {
+    height: 46px;
+    font-size: 15px;
+  }
+}
+
+/* ============================================
+   RESPONSIVE - MOBILE
+   ============================================ */
+@media (max-width: 768px) {
+  .overlay {
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5));
+  }
+
+  .infoTexte {
+    font-size: 16px;
+    max-width: 95%;
+    top: 15%;
+    padding: 0 15px;
+    text-align: center;
+    text-align-last: center;
+  }
+
+  .infoTexte small {
+    font-size: 12px;
+    margin-top: 8px;
+  }
+
+  .session-expire-text {
+    font-size: 22px;
+    padding: 12px 24px;
+    top: 40%;
+    max-width: 90%;
+    border: 3px solid #fff;
+    letter-spacing: 1px;
+  }
+
+  .btnCnx {
+    height: 50px;
+    font-size: 16px;
+    margin-top: 8% !important;
+    width: 100%;
+    padding: 14px 20px;
+    border-radius: 8px;
+  }
+
+  /* Ajustement du conteneur du bouton pour mobile */
+  .absolute.bottom-\[10\%\] {
+    bottom: 5% !important;
+    max-width: 90% !important;
+  }
+}
+
+/* ============================================
+   RESPONSIVE - PETIT MOBILE
+   ============================================ */
+@media (max-width: 480px) {
+  .infoTexte {
+    font-size: 14px;
+    top: 12%;
+    line-height: 1.4;
+  }
+
+  .infoTexte small {
+    font-size: 11px;
+  }
+
+  .session-expire-text {
+    font-size: 18px;
+    padding: 10px 20px;
+    top: 35%;
+    border: 2px solid #fff;
+  }
+
+  .btnCnx {
+    height: 48px;
+    font-size: 15px;
+    padding: 12px 16px;
+  }
+
+  .logoTaille {
+    width: 40px !important;
+  }
+}
+
+/* ============================================
+   RESPONSIVE - MODE PAYSAGE MOBILE
+   ============================================ */
+@media (max-width: 768px) and (orientation: landscape) {
+  .infoTexte {
+    top: 8%;
+    font-size: 14px;
+  }
+
+  .session-expire-text {
+    top: 50%;
+    font-size: 20px;
+    padding: 8px 16px;
+  }
+
+  .absolute.bottom-\[10\%\] {
+    bottom: 3% !important;
+  }
+
+  .btnCnx {
+    height: 44px;
+    margin-top: 4% !important;
+  }
+}

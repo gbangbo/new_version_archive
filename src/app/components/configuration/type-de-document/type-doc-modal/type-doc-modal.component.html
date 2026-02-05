@@ -1,0 +1,292 @@
+<div class="modal  fade show modal-backdrop">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content category-popup">
+            <div class="modal-header">
+                <h5 class="modal-title">{{validationForm.value.uid ? 'MODIFICATION DU TYPE DE DOCUMENT':'CREATION DE TYPE DE DOCUMENT'}}</h5>
+                <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close" (click)="closeModal()"></button>
+            </div>
+            <div class="modal-body p-0 custom-input">
+
+
+
+
+                <app-card [headerTitle]="''"
+                          [header]="'pb-0'"
+                          [border]="true"
+                          [padding]="false"
+                          [cardBodyClass]="'basic-wizard important-validation'">
+                    <div class="stepper-horizontal custom-scrollbar" id="stepper1">
+                        @for(tab of numberingTabs; track tab) {
+                        <div class="stepper-{{ tab.class }}" [ngClass]="{'active done': tab.id < activeTab || (activeTab === numberingTabs.length && tab.id === numberingTabs.length)}">
+                        <div class="step-circle">
+                          <span>{{ tab.id}}</span>
+                        </div>
+                        <div class="step-title">{{ tab.title }}</div>
+                        <div class="step-bar-left"></div>
+                        <div class="step-bar-right"></div>
+                      </div>
+                        }
+                    </div>
+                    <div id="msform  mt-8">
+
+                        <div [ngStyle]="{ 'display': (activeTab === 1 ? '' : 'none') }">
+                            <form class="grid grid-cols-12 gap-6" [formGroup]="formDataTypeDoc" (ngSubmit)="submitForm()">
+
+                                <div class="col-span-12">
+                                    <label for="libelle_type_docs" class="form-label text-left block mb-2">
+                                        Libellé <code class="text-red-500">*</code>
+                                    </label>
+                                    <input class="form-control hSoc"
+                                           formControlName="libelle_type_docs"
+                                           id="libelle_type_docs"
+                                           type="text"
+                                           placeholder="Entrez le type de document"
+                                           [ngClass]="{ 'is-invalid' : formDataTypeDoc.controls['libelle_type_docs'].touched &&
+                                            formDataTypeDoc.controls['libelle_type_docs'].errors?.['required'] , 'is-valid' : formDataTypeDoc.controls['libelle_type_docs'].valid}"
+                                    >
+                                    <div class="invalid-feedback"
+                                         *ngIf="formDataTypeDoc.controls['libelle_type_docs'].touched &&
+                                         formDataTypeDoc.controls['libelle_type_docs'].invalid">
+                                          <span *ngIf="formDataTypeDoc.controls['libelle_type_docs'].errors?.['required']">
+                                            Champ obligatoire
+                                          </span>
+                                    </div>
+                                </div>
+
+                                <div class="col-span-6">
+                                    <label for="dure_prearchive" class="form-label text-left block mb-2">Délais au service (ans)</label>
+                                    <input class="form-control hSoc"
+                                           formControlName="dure_prearchive"
+                                           id="dure_prearchive"
+                                           type="text"
+                                           placeholder="Entrez le libellé de la direction"
+                                           [ngClass]="{
+                                              'is-invalid':
+                                                formDataTypeDoc.controls['dure_prearchive'].touched &&
+                                                formDataTypeDoc.controls['dure_prearchive'].invalid,
+                                              'is-valid':
+                                                formDataTypeDoc.controls['dure_prearchive'].touched &&
+                                                formDataTypeDoc.controls['dure_prearchive'].valid
+                                            }"
+                                    >
+                                    <div class="invalid-feedback"
+                                         *ngIf="formDataTypeDoc.controls['dure_prearchive'].touched &&
+                                         formDataTypeDoc.controls['dure_prearchive'].invalid">
+                                          <span *ngIf="formDataTypeDoc.controls['dure_prearchive'].errors?.['required']">
+                                            Champ obligatoire
+                                          </span>
+                                        <span *ngIf="formDataTypeDoc.controls['dure_prearchive'].errors?.['pattern']">Seuls les chiffres sont autorisés</span>
+                                        <span *ngIf="formDataTypeDoc.controls['dure_prearchive'].errors?.['min'] || formDataTypeDoc.controls['dure_prearchive'].errors?.['max']">
+                                            Valeur comprise entre 1 et 999
+                                          </span>
+                                    </div>
+                                </div>
+                                <div class="col-span-6">
+                                    <label for="dure_conservatoire" class="form-label text-left block mb-2">
+                                        Délais de conservation aux archives (ans)</label>
+                                    <input class="form-control hSoc"
+                                           formControlName="dure_conservatoire"
+                                           id="dure_conservatoire"
+                                           type="text"
+                                           placeholder="Entrez le delai de conservation"
+                                           [ngClass]="{
+                                              'is-invalid':
+                                                formDataTypeDoc.controls['dure_conservatoire'].touched &&
+                                                formDataTypeDoc.controls['dure_conservatoire'].invalid,
+                                              'is-valid':
+                                                formDataTypeDoc.controls['dure_conservatoire'].touched &&
+                                                formDataTypeDoc.controls['dure_conservatoire'].valid
+                                            }"
+                                    >
+                                    <div class="invalid-feedback"
+                                         *ngIf="formDataTypeDoc.controls['dure_conservatoire'].touched &&
+                                         formDataTypeDoc.controls['dure_conservatoire'].invalid">
+                                          <span *ngIf="formDataTypeDoc.controls['dure_conservatoire'].errors?.['required']">
+                                            Champ obligatoire
+                                          </span>
+                                          <span *ngIf="formDataTypeDoc.controls['dure_conservatoire'].errors?.['pattern']">Seuls les chiffres sont autorisés</span>
+                                          <span *ngIf="formDataTypeDoc.controls['dure_conservatoire'].errors?.['min'] || formDataTypeDoc.controls['dure_conservatoire'].errors?.['max']">
+                                            Valeur comprise entre 1 et 999
+                                          </span>
+                                      </div>
+
+                                </div>
+                                <div class="col-span-6">
+                                    <label class="flex items-center gap-3 cursor-pointer">
+                                        <nz-switch formControlName="etat_type_docs"></nz-switch>
+                                        <span class="form-label mb-0">A detruire après pré-archivage ?</span>
+                                    </label>
+                                </div>
+                                <div class="col-span-6">
+                                    <label class="flex items-center gap-3 cursor-pointer">
+                                        <nz-switch formControlName="etat_localite"></nz-switch>
+                                        <span class="form-label mb-0">Souhaitez vous ajouter les départements ?</span>
+                                    </label>
+                                </div>
+                                <div class="col-span-6">
+                                    <label class="flex items-center gap-3 cursor-pointer">
+                                        <nz-switch formControlName="etat_personnel"></nz-switch>
+                                        <span class="form-label mb-0">Selectionnez un personnel ?</span>
+                                    </label>
+                                </div>
+                                <div class="col-span-6">
+                                    <label class="flex items-center gap-3 cursor-pointer">
+                                        <nz-switch formControlName="etat_engagement"></nz-switch>
+                                        <span class="form-label mb-0">Ajouter les articles ?</span>
+                                    </label>
+                                </div>
+
+                            </form>
+                        </div>
+
+                        <div [ngStyle]="{ 'display': (activeTab === 2 ? '' : 'none') }">
+                            <div class="grid grid-cols-12 gap-4 audio-wrapper">
+                                <div class="col-span-12 mt-8">
+                                    <button (click)="addRow()" class="btn btn-light absolute left-0  w-[40%] float-left btnAdd" type="button">
+                                        <i class="fa-solid fa-plus-circle"></i> Champs additionnels
+                                    </button>
+                                    </div>
+                                    <div class="col-span-12 mt-8">
+                            <div class="overflow-x-auto custom-scrollbar">
+                                <table class="table audio-table table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th scope="col"  style="width: 13% !important;">Unique ?</th>
+                                        <th scope="col">Colonne</th>
+                                        <th scope="col" class="w-[7%]">Type</th>
+                                        <th scope="col"> </th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    @for(data of dataLigneFields; track data; let i = $index) {
+                                    <tr>
+                                        <td>
+                                            <div class="common-f-start gap-2">
+                                                <div class="form-check form-switch form-check-inline">
+                                                <input class="form-check-input
+                                                 switch-primary
+                                                  check-size"
+                                                  type="checkbox"
+                                                  role="switch"
+                                                  [(ngModel)]="data.default_proprietes_docs"
+                                                  [disabled]="data.ligneDisabled"
+                                                  >
+                                              </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                           <div class="flex items-center gap-2">
+                                              <input
+                                                class="form-input px-3 py-2 border rounded w-full"
+                                                type="text"
+                                                placeholder="Entrez le nom de la colonne"
+                                                [(ngModel)]="data.lib_proprietes_docs"
+                                                [disabled]="data.ligneDisabled"
+                                              />
+                                              <a
+                                              class="relative icoColor"
+                                              href="javascript:void(0)"
+                                              placement="top"
+                                              [class.opacity-50]="data.ligneDisabled"
+                                              (click)="!data.ligneDisabled && addSubFields(data.lib_proprietes_docs,i)"
+                                            >
+                                              <i class="fa-solid fa-plus"></i>
+                                              <app-tooltip
+                                                [title]="'Ajouter un element pour la ligne ' + i"
+                                                [direction]="'left'">
+                                              </app-tooltip>
+                                            </a>
+                                            </div>
+
+                                              @if(data?.proprietes_select){
+                                                @for(subData of data?.proprietes_select ; track subData;let j = $index) {
+                                                    <div class="flex items-center gap-2">
+                                                        <input
+                                                        class="form-input px-3 py-2 border rounded w-[280px] ml-[5%] mt-[2%]"
+                                                        type="text"
+                                                        placeholder="Entrez le nom de la colonne"
+                                                        [(ngModel)]="subData.value_proprietes_docs"
+                                                        />
+
+                                                        <a
+                                                        class="group relative"
+                                                        href="javascript:void(0)"
+                                                        placement="top"
+                                                        [class.disabled]="data.ligneDisabled"
+                                                        [attr.aria-disabled]="data.ligneDisabled"
+                                                        (click)="deleteSub(subData,i,j)"
+                                                        >
+                                                        <i class="icofont icofont-ui-delete"></i>
+                                                        <app-tooltip [title]="'Supprimer'" [direction]="'left'"></app-tooltip>
+                                                        </a>
+                                                      </div>
+
+                                    }
+                                            }
+                                        </td>
+                                        <td>
+                                           <div class="w-full max-w-[180px]">
+                                              <select2
+                                                [data]="dataFields"
+                                                placeholder="Selectionnez le type de la colonne"
+                                                noResultMessage="Aucune donnée !"
+                                                resettable
+                                                [(ngModel)]="data.type_proprietes_docs"
+                                                [disabled]="data.ligneDisabled">
+                                              </select2>
+                                            </div>
+
+                                        </td>
+                                        <td>
+                                                <a class="group relative"
+                                                   href="javascript:void(0)"
+                                                   placement="top"
+                                                   [class.disabled]="data.ligneDisabled"
+                                                   [attr.aria-disabled]="data.ligneDisabled"
+                                                   (click)="deleteRow(data)">
+
+                                                  <i class="icofont icofont-ui-delete"></i>
+                                                  <app-tooltip [title]="'Supprimer'" [direction]="'left'"></app-tooltip>
+                                            </a>
+
+                                        </td>
+                                    </tr>
+
+                                    }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        </div>
+                        </div>
+
+                        <div [ngStyle]="{ 'display': (activeTab === 3 ? '' : 'none') }">
+
+                        </div>
+
+                    </div>
+                    <div class="wizard-footer flex gap-2 justify-end mt-16">
+                        <button class="btn button-light-primary"
+                                id="backbtn"
+                                (click)="handleStep(-1)"
+                                [disabled]="activeTab == 1"><i class="icofont icofont-curved-left"></i> Précédent</button>
+                        <button
+                                class="btn btn-primary text-white newBtn"
+                                id="nextbtn"
+                                (click)="handleStep(1)">
+                            {{ activeTab == numberingTabs.length ? 'Valider' : 'Suivant' }}
+                            <i class="icofont icofont-{{activeTab == numberingTabs.length ? 'check' : 'curved-right'}}"></i>
+
+                        </button>
+                    </div>
+                </app-card>
+
+
+
+
+
+
+            </div>
+        </div>
+    </div>
+</div>

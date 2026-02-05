@@ -1,0 +1,132 @@
+.modal .modal-dialog .modal-content .modal-header {
+  padding: 11px;
+  background-color: rgba(0, 54, 110);
+  color: #fff !important;
+  border-top-right-radius: 6px;
+  border-top-left-radius: 6px;
+}
+
+.modal-header > h5 {
+  color: #fff !important;
+}
+
+.modal-header .btn-close {
+  filter: var(--tw-btn-close-white-filter);
+  opacity: 1;
+}
+
+
+.newBtn {
+  background-color: #00141e !important;
+}
+
+.select-loader {
+  position: absolute;
+  right: 12px;
+  top: 70%;
+  transform: translateY(-50%);
+}
+
+
+
+
+
+
+
+// Container pour l'input avec icône
+.input-with-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  .form-control {
+    padding-right: 45px; // Espace pour l'icône à droite
+    width: 100%;
+  }
+
+  // Icône œil à l'intérieur du champ
+  .password-toggle-icon {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #6c757d;
+    font-size: 18px;
+    z-index: 10;
+    padding: 5px;
+    transition: color 0.3s ease;
+
+    &:hover {
+      color: #495057;
+    }
+
+    i {
+      pointer-events: none; // Évite les problèmes de clic
+    }
+  }
+}
+
+// Messages de validation des exigences
+.password-requirements {
+  .requirement {
+    font-size: 0.875rem;
+    line-height: 1.8;
+    color: #dc3545; // Rouge par défaut
+    transition: color 0.3s ease;
+
+    i {
+      width: 18px;
+      margin-right: 8px;
+      font-size: 0.75rem;
+    }
+
+    // Quand la règle est respectée
+    &.valid {
+      color: #28a745; // Vert
+    }
+  }
+}
+
+// Ajustement pour le champ valide/invalide
+.form-control {
+  &.is-valid {
+    border-color: #28a745;
+    padding-right: 70px; // Plus d'espace pour icône + checkmark
+
+    & ~ .password-toggle-icon {
+      right: 0px; // Décaler l'œil si checkmark présent
+    }
+  }
+
+  &.is-invalid {
+    border-color: #dc3545;
+  }
+}
+
+
+// Messages de feedback
+.invalid-feedback,
+.valid-feedback {
+  display: none;
+  margin-top: 8px;
+  font-size: 14px;
+
+  &.d-block {
+    display: flex !important;
+    align-items: center;
+    gap: 6px;
+  }
+
+  i {
+    font-size: 14px;
+  }
+}
+
+.invalid-feedback {
+  color: #ef4444;
+}
+
+.valid-feedback {
+  color: #10b981;
+}

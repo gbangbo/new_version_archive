@@ -18,8 +18,11 @@
 }
 
 .login-card .login-main {
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, .04), 0 4px 16px -4px rgba(0, 0, 0, .16) !important;
+  //box-shadow: 0 0 0 1px rgba(0, 0, 0, .04), 0 4px 16px -4px rgba(0, 0, 0, .16) !important;
+  //box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px !important;
+  box-shadow: rgba(17, 17, 26, 0.05) 0px 1px 0px, rgba(17, 17, 26, 0.1) 0px 0px 8px;
   height: 592px !important;
+  background-color: #ffffffb5 !important;
 }
 
 .btnCnx {
@@ -28,6 +31,161 @@
   font-size: 16px;
   margin-top: 12% !important;
 }
-.logoTaille{
+
+.logoTaille {
   width: 50px !important;
+}
+
+//.infoTexte {
+//  color: #fff;
+//  position: absolute;
+//  width: 100%;
+//  top: 6%;
+//  left: 59%;
+//  transform: translateX(-50%);
+//  margin: 0;
+//  font-size: 18px;
+//  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+//  z-index: 10;
+//}
+.infoTexte {
+  color: #fff;
+  position: absolute;
+  width: 100%;
+  top: 6%;
+  left: 59%;
+  transform: translateX(-50%);
+  margin: 0;
+  font-size: 20px; /* Augmenté */
+  font-weight: 600; /* Plus épais */
+  text-shadow: 3px 3px 10px rgba(0, 0, 0, 0.9); /* Ombre plus forte */
+  z-index: 10;
+  line-height: 1.6; /* Meilleur espacement */
+}
+
+.infoTexte small {
+  font-size: 14px;
+  font-weight: 400;
+  display: block;
+  margin-top: 10px;
+}
+
+/* Masquer le texte sur les petits écrans (quand l'image disparaît) */
+@media (max-width: 1198px) {
+  .infoTexte {
+    display: none;
+  }
+}
+
+/* Ou si vous utilisez le breakpoint xl de Tailwind */
+@media (max-width: 1198px) {
+  .infoTexte {
+    display: none;
+  }
+}
+
+
+//*************Overlay
+
+.image-container {
+  position: relative;
+  min-height: 100vh;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.3));
+  z-index: 1;
+}
+
+.infoTexte {
+  z-index: 10;
+  position: relative; /* Pour être au-dessus de l'overlay */
+}
+
+@media (max-width: 1279px) {
+  .overlay {
+    display: none;
+  }
+}
+
+
+//*********Logo
+
+.logoTaille {
+  max-width: 180px; /* Au lieu de trop petit */
+  height: auto;
+  margin-bottom: 20px;
+}
+
+
+//Ajout de icon au champ input
+
+.input-with-icon {
+  position: relative;
+}
+
+.input-with-icon i {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
+  font-size: 18px;
+  z-index: 2;
+}
+
+.form-control.with-icon {
+  padding-left: 45px;
+}
+
+
+//Bouton de connexion
+
+.btnCnx {
+  transition: all 0.3s ease;
+  font-weight: 600;
+  padding: 12px 24px;
+  border-radius: 8px;
+}
+
+.btnCnx:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(109, 40, 217, 0.4);
+}
+
+.btnCnx:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+
+////Alerte
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+//Footer
+
+.footer-text {
+  opacity: 0.7;
+  font-size: 13px;
+  transition: opacity 0.3s ease;
+}
+
+.footer-text:hover {
+  opacity: 1;
 }

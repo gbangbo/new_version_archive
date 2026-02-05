@@ -1,10 +1,10 @@
 <div class="bottom-info">
     <div class="flex cb-info">
       @if(paginateDetails) {
-        <p>Showing 
-          {{ paginate.total_items > 0 ? paginate.start_index + 1 : 0}}- {{ paginate.total_items > 0 ? paginate.end_index + 1 : 0}} of {{ paginate.total_items > 0 ? paginate.total_items : 0 }} 
-          entries
-        </p>
+        <p>Affichage de
+          {{ paginate.total_items > 0 ? paginate.start_index + 1 : 0}}- {{ paginate.total_items > 0 ? paginate.end_index + 1 : 0}} sur {{ paginate.total_items > 0 ? paginate.total_items : 0 }}
+       éléments
+    </p>
       }
   
       @if(selectedItems && selectedRows) {
