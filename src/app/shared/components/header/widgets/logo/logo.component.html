@@ -1,7 +1,7 @@
 <div class="logo-wrapper">
     <a href="javascript:void(0)" [routerLink]="['/']">
-        <img class="max-w-full for-light" src="assets/images/logo/logo.png" alt="logo">
-        <img class="max-w-full for-dark" src="assets/images/logo/logo_dark.png" alt="logo">
+        <img class="max-w-full for-light" [attr.src]="logoIn || null" alt="logo">
+        <img class="max-w-full for-dark"  [attr.src]="logoDark || null" alt="logo">
     </a>
 
     @if(type == 'sidebar') {

@@ -1,0 +1,31 @@
+name: Angular Deploy Windows Nginx
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - run: npm install -g @angular/cli
+      - run: npm install
+      - run: ng build --configuration production
+
+      - name: Copy dist to Windows VPS
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          source: "dist/*"
+          target: "C:/nginx/html/html_php74/ged"

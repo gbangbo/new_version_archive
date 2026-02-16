@@ -1,0 +1,115 @@
+<div class="modal  fade show modal-backdrop">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content category-popup">
+            <div class="modal-header">
+                <h5 class="modal-title">{{validationForm.value.uid ? 'MODIFIER LE SERVICE':'AJOUTER UN SERVICE '}}</h5>
+                <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close" (click)="closeModal()"></button>
+            </div>
+            <div class="modal-body p-0 custom-input">
+                <div class="text-start">
+                    <div class="p-20">
+                        <div class="alert alert-danger flex items-center gap-3" role="alert"
+                             style="animation: slideDown 0.3s ease;" *ngIf="errorTexte">
+                            <div>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-circle stroke-danger">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                </svg>
+                            </div>
+                            <span class="txt-light">{{errorTexte}}</span>
+                        </div>
+                        <form class="grid grid-cols-12 gap-4 needs-validation" novalidate="" [formGroup]="validationForm" (ngSubmit)="submitForm()">
+
+                            <div class="col-span-12 position-relative">
+                                <label class="form-label" for="iddirection">Direction
+                                    <span class="txt-danger">*</span>
+                                </label>
+                                <select2 [data]="dataDirection"
+                                         placeholder="Selectionnez la direction"
+                                         id="iddirection"
+                                         formControlName="iddirection"
+                                         [disabled]="loadingDir"
+                                         [overlay]="false"
+                                         [resettable]="true"
+                                         [listPosition]="'below'"
+                                         [minCountForSearch]="1"
+                                         (update)="onChange($event)"
+                                         noResultMessage="Aucune donnée trouvée"
+                                         class="raise-input-select" [ngClass]="{ 'is-invalid' : validationForm.controls['iddirection'].touched &&  validationForm.controls['iddirection'].errors?.['required'] , 'is-valid' : validationForm.controls['iddirection'].valid}">
+
+                                </select2>
+                                <div class="select-loader" *ngIf="loadingDir">
+                                    <i class="fas fa-spin fa-circle-notch"></i>
+                                </div>
+                                @if(validationForm.controls['iddirection'].valid) {
+                                <!--<div class="valid-feedback">Looks's Good!</div>-->
+                                } @else if(validationForm.controls['iddirection'].touched && validationForm.controls['iddirection'].errors?.['required']) {
+                                <div class="invalid-feedback"> Veuillez selectionner la direction svp.</div>
+                                }
+                            </div>
+                            <div class="col-span-12 position-relative">
+                                <label class="form-label" for="iddepartement">Departement
+                                    <span class="txt-danger">*</span>
+                                </label>
+                                <select2 [data]="dataDepartement"
+                                         placeholder="Selectionnez le departement"
+                                         id="iddepartement"
+                                         formControlName="iddepartement"
+                                         [disabled]="loadingDep"
+                                         [overlay]="false"
+                                         [resettable]="true"
+                                         [listPosition]="'below'"
+                                         [minCountForSearch]="1"
+                                         noResultMessage="Aucune donnée trouvée"
+                                         class="raise-input-select" [ngClass]="{ 'is-invalid' : validationForm.controls['iddepartement'].touched &&  validationForm.controls['iddepartement'].errors?.['required'] , 'is-valid' : validationForm.controls['iddepartement'].valid}">
+
+                                </select2>
+                                <div class="select-loader" *ngIf="loadingDep">
+                                    <i class="fas fa-spin fa-circle-notch"></i>
+                                </div>
+                                @if(validationForm.controls['iddepartement'].valid) {
+                                <!--<div class="valid-feedback">Looks's Good!</div>-->
+                                } @else if(validationForm.controls['iddepartement'].touched && validationForm.controls['iddepartement'].errors?.['required']) {
+                                <div class="invalid-feedback"> Veuillez selectionner le departement svp.</div>
+                                }
+                            </div>
+                            <div class="col-span-12">
+                                <label class="form-label" for="sigle_service">Cote
+                                    <span class="txt-danger">*</span>
+                                </label>
+                                <input class="form-control" id="sigle_service" type="text" placeholder="Entrez la côte" formControlName="sigle_service"
+                                       [ngClass]="{ 'is-invalid' : validationForm.controls['sigle_service'].touched &&  validationForm.controls['sigle_service'].errors?.['required'] , 'is-valid' : validationForm.controls['sigle_service'].valid}">
+                                @if(validationForm.controls['sigle_service'].valid) {
+                                <!--<div class="valid-feedback">Looks's Good!</div>-->
+                                } @else if(validationForm.controls['sigle_service'].touched && validationForm.controls['sigle_service'].errors?.['required']) {
+                                <div class="invalid-feedback"> Veuillez saisir la cote svp.</div>
+                                }
+                            </div>
+                            <div class="col-span-12">
+                                <label class="form-label" for="libelle_service">Intitulé
+                                    <span class="txt-danger">*</span>
+                                </label>
+                                <input class="form-control" id="libelle_service" type="text" placeholder="Entrez l'intitulé de la direction" formControlName="libelle_service"
+                                       [ngClass]="{ 'is-invalid' : validationForm.controls['libelle_service'].touched &&  validationForm.controls['libelle_service'].errors?.['required'] , 'is-valid' : validationForm.controls['libelle_service'].valid}">
+                                @if(validationForm.controls['libelle_service'].valid) {
+                                <!--<div class="valid-feedback">Looks's Good!</div>-->
+                                } @else if(validationForm.controls['libelle_service'].touched && validationForm.controls['libelle_service'].errors?.['required']) {
+                                <div class="invalid-feedback"> Veuillez saisir l'Intitulé svp.</div>
+                                }
+                            </div>
+
+                            <div class="col-span-12 flex justify-end">
+                                <button class="btn btn-primary text-white w-full mt-8 newBtn" type="submit">
+                                    <i class="{{isloading?'fas fa-spin fa-circle-notch':''}}"></i>
+                                    {{validationForm.value.uid ? 'Modifier':' Créer +'}}
+
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

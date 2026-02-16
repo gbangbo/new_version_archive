@@ -11,36 +11,48 @@ import {NzTableModule} from "ng-zorro-antd/table";
 import {NzToolTipModule} from "ng-zorro-antd/tooltip";
 import {Select2Module} from "ng-select2-component";
 import {NzSelectModule} from "ng-zorro-antd/select";
+import {ServicesModalComponent} from "./services-modal/services-modal.component";
+import {TableClickedAction, TableConfigs} from "../../../shared/interface/common";
+import {SupportDB} from "../../../shared/interface/support-ticket";
+import {TableComponent} from "../../../shared/components/ui/table/table.component";
+import moment from "moment";
 
 
 @Component({
     selector: 'app-services',
     imports: [
         CommonModule,
-        CardComponent,
-        FormsModule,
-        ReactiveFormsModule,
-        NzSwitchModule,
-        NzToolTipModule,
-        NzSelectModule,
-        Select2Module,
-        NzTableModule],
+        CardComponent, ServicesModalComponent, TableComponent],
     providers: [],
     templateUrl: './services.component.html',
     styleUrl: './services.component.scss',
 })
 export class ServicesComponent implements OnInit {
-    societeService!: FormGroup;
     dataSociete: any = [];
-    dataDirection: any = [];
-    dataDepartement: any = [];
-    dataServices: any = [];
-
-
     private users: any = [];
     errorTexte: string = '';
     isloading: boolean = false;
-    isLoad: boolean = false;
+    modalOpen: boolean = false;
+    dataOneLigne: any = {};
+    tableConfig: TableConfigs = {
+        columns: [
+            {title: 'Direction', field_value: 'libelle_direction', sort: true},
+            {title: 'Departement', field_value: 'libelle_departement', sort: true},
+            {title: 'Cote services', field_value: 'sigle_service', sort: true},
+            {title: 'Intitulé', field_value: 'libelle_service', sort: true},
+            {title: 'Créé le', field_value: 'created_at', sort: true},
+        ],
+        data: [] as SupportDB[],
+        row_action: [
+            {
+                label: "Edit",
+                action_to_perform: "edit",
+                icon: "edit-content",
+                class: "btn-sm"
+            }
+        ],
+
+    };
 
     constructor(private autor: Authorization,
                 private fb: FormBuilder,
@@ -53,114 +65,29 @@ export class ServicesComponent implements OnInit {
     ngOnInit(): void {
         window.scrollTo({top: 0, behavior: 'smooth'});
         this.users = this.autor.getInfosUsers();
-        this.societeService = this.fb.group({
-            action: [''],
-            idservice: [''],
-            iddirection: [''],
-            idsociete: [''],
-            iddepartement: [''],
-            sigle_service: ['', Validators.required],
-            libelle_service: ['', Validators.required]
-        });
-
-        this.direction(this.users?.dataSociete?.uid, '');
-        this.services(this.users?.dataSociete?.uid, '', '');
-        console.log(this.users)
+        this.showServices(this.users?.dataSociete?.uid, '', '');
     }
 
-    submitForm(): void {
-        this.errorTexte = ''
-
-        if (this.societeService.valid) {
-            this.isLoad = true;
-            this.societeService.value.action = this.societeService.value.action ? this.societeService.value.action : 1;
-            this.societeService.value.idsociete = this.societeService.value.idsociete ? this.societeService.value.idsociete : this.users?.dataSociete?.uid
-            console.log(this.societeService.value)
-            this.httService.postData(`${environment.api_url}auth/:saveservice`, this.societeService.value, this.users?.access_token)
-                .toPromise()
-                .then((res: any) => {
-                    this.isLoad = false;
-                    window.scrollTo({top: 0, behavior: 'smooth'});
-                    if (res.body.status) {
-
-                        this.societeService.reset({});
-                        this.services(this.users?.dataSociete?.uid, '', '');
-                        this.toast.success(`${res.body.message}`, '',
-                            {
-                                positionClass: 'toast-top-right',
-                                closeButton: true,
-                                timeOut: 3000
-                            })
-                    }
-                })
-                .catch((err) => {
-                    this.isLoad = false;
-                    console.log(err?.error)
-                    this.toast.error(`${err?.error?.err?.message || 'Une erreur est survenue.'} `, '',
-                        {
-                            positionClass: 'toast-top-right',
-                            closeButton: true,
-                            timeOut: 3000
-                        })
-                    setTimeout(() => {
-                        this.errorTexte = `${err?.error?.err?.message || 'Une erreur est survenue.'} `;
-                    }, 3000)
-                });
-        } else {
-            Object.values(this.societeService.controls).forEach(control => {
-                if (control.invalid) {
-                    control.markAsDirty();
-                    control.updateValueAndValidity({onlySelf: true});
-                }
-            });
-        }
-    }
-
-    resetForm(): void {
-        this.errorTexte = '';
-        this.societeService.reset({});
-    }
-
-    direction(idsociete: string = '', iddirection: string = '') {
-        this.dataDirection = [];
-        this.httService.getData(`${environment.api_url}auth/:savedirection?idsociete=${idsociete}&iddirection=${iddirection}`, false, this.users?.access_token || '')
-            .toPromise()
-            .then((res: any) => {
-                if (res.body.status) {
-                    this.dataDirection = res.body.data;
-                }
-            })
-            .catch((err) => {
-            });
-
-    }
-
-    departement(idsociete: string = '', iddirection: string = '', iddepartement: string = '') {
-
-        this.dataDepartement = [];
-        this.httService.getData(`${environment.api_url}auth/:savedepartement?idsociete=${idsociete}&iddirection=${iddirection}&iddepartement=${iddepartement}`, false, this.users?.access_token || '')
-            .toPromise()
-            .then((res: any) => {
-                if (res.body.status) {
-                    this.dataDepartement = res.body.data;
-                    console.log(res.body.data)
-                }
-            })
-            .catch((err) => {
-            });
-
-    }
-
-    services(idsociete: string = '', idservice: string = '', iddepartement: string = '') {
+    showServices(idsociete: string = '', idservice: string = '', iddepartement: string = '') {
         this.isloading = true;
-        this.dataServices = [];
+        this.tableConfig.data = [];
         this.httService.getData(`${environment.api_url}auth/:saveservice?idsociete=${idsociete}&idservice=${idservice}&iddepartement=${iddepartement}`, false, this.users?.access_token || '')
             .toPromise()
             .then((res: any) => {
                 this.isloading = false;
                 if (res.body.status) {
-                    this.dataServices = res.body.data;
-                    console.log(res.body.data)
+                    this.tableConfig = {
+                        ...this.tableConfig,
+                        data: res.body.data.map((d: any) => {
+                            return {
+                                ...d,
+                                libelle_direction: d?.datadepartement?.datadirection?.libelle_direction,
+                                libelle_departement: d?.datadepartement?.libelle_departement,
+                                created_at: moment(d.created_at).format('DD/MM/YYYY')
+                            }
+                        })
+                    }
+                    console.log("services =======", res.body.data)
                 }
             })
             .catch((err) => {
@@ -169,26 +96,42 @@ export class ServicesComponent implements OnInit {
 
     }
 
-    actionBtn(data: any) {
-        this.errorTexte = ''
-        let payload = {
-            action: 2,
-            iddepartement: data?.datadepartement?.uid,
-            iddirection: data?.datadepartement?.datadirection?.uid,
-            idservice: data.uid,
-            idsociete: data.datadepartement?.datadirection?.datasociete?.uid,
-            sigle_service: data.sigle_service,
-            libelle_service: data.libelle_service
+    handleModal(value: boolean) {
+        if (value) {
+            this.showServices(this.users?.dataSociete?.uid, '', '');
         }
-        console.log(data)
-
-        this.societeService.setValue(payload);
+        this.modalOpen = false;
     }
 
-    changeDirection(uid: string) {
-        this.dataDepartement = [];
-        if (!uid) return;
-        this.departement(this.users?.dataSociete?.uid, uid, '');
+    openModal() {
+        this.modalOpen = true;
+        this.dataOneLigne = {};
+    }
+
+    handleAction(value: TableClickedAction) {
+        switch (value.action_to_perform) {
+            case 'edit':
+                this.modalOpen = true;
+                this.dataOneLigne = value.data;
+                break;
+            default:
+        }
+    }
+
+    handleExport(event: { type: string, data: any[] }) {
+        console.log('Type d\'export:', event.type);
+        console.log('Données:', event.data);
+
+        // Logique personnalisée selon le type
+        if (event.type === 'csv') {
+            // Traitement personnalisé pour CSV
+            console.log('Export CSV personnalisé');
+        }
+
+        if (event.type === 'pdf') {
+            // Traitement personnalisé pour PDF
+            console.log('Export PDF personnalisé');
+        }
     }
 }
 

@@ -312,52 +312,6 @@ export class HttpService {
         );
     }
 
-    // put(url, payload, options?: { key: string, value: string }[]): Observable<HttpResponse<any>> {
-    //   if (options) {
-    //     options.forEach(h => {
-    //       HEADER_OPTIONS.set(h.key, h.value)
-    //     })
-    //   }
-    //   const body = JSON.stringify(payload)
-    //   return this.http.put(url, body, {
-    //     headers: HEADER_OPTIONS,
-    //     observe: 'response',
-    //   }).pipe(
-    //     catchError((error) => {
-    //       let errorMessage
-    //       switch (error.status) {
-    //         // case 201 || 200 || 400 || 422:
-    //         //     errorMessage = responseDecode(error.error.response, this.env.environment.config.exchange_key)
-    //         //   break;
-    //         case 201:
-    //           errorMessage = ""
-    //           break;
-    //         case 200:
-    //           errorMessage = ""
-    //           break;
-    //         case 400:
-    //           errorMessage = ""
-    //           break;
-    //         case 422:
-    //           errorMessage = ""
-    //           break;
-    //         case 401:
-    //           document.location.href = "public/expire"
-    //           break;
-    //         default:
-    //           errorMessage = {message: error.statusText}
-    //           break;
-    //       }
-    //       return throwError({
-    //         status: error.status,
-    //         ok: error.ok,
-    //         statusText: error.statusText,
-    //         error: errorMessage
-    //       });
-    //     })
-    //   );
-    // }
-
     cleanCache(interval: number) {
         setInterval(() => {
             this.cache = []

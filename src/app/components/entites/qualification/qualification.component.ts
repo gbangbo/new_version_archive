@@ -1,49 +1,50 @@
 import {Component, OnInit} from '@angular/core';
 import {CardComponent} from "../../../shared/components/ui/card/card.component";
 import {CommonModule} from "@angular/common";
-import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
 import {Authorization} from "../../../protect/authorization.service";
 import {HttpService} from "../../../core/http.service";
 import {environment} from "../../../../environments/environment";
-import {ToastrService} from "ngx-toastr";
-import {NzSwitchModule} from "ng-zorro-antd/switch";
-import {NzTableModule} from "ng-zorro-antd/table";
-import {NzToolTipModule} from "ng-zorro-antd/tooltip";
-import {Select2Module} from "ng-select2-component";
-import {NzSelectModule} from "ng-zorro-antd/select";
+import {QualifModalComponent} from "./qualif-modal/qualif-modal.component";
+import {TableClickedAction, TableConfigs} from "../../../shared/interface/common";
+import {SupportDB} from "../../../shared/interface/support-ticket";
+import {TableComponent} from "../../../shared/components/ui/table/table.component";
+import moment from "moment";
 
 
 @Component({
     selector: 'app-qualification',
     imports: [
         CommonModule,
-        CardComponent,
-        FormsModule,
-        ReactiveFormsModule,
-        NzSwitchModule,
-        NzToolTipModule,
-        NzSelectModule,
-        Select2Module,
-        NzTableModule],
+        CardComponent,QualifModalComponent, TableComponent],
     providers: [],
     templateUrl: './qualification.component.html',
     styleUrl: './qualification.component.scss',
 })
 export class QualificationComponent implements OnInit {
-    posteForm!: FormGroup;
-    dataDirection: any = [];
-    dataPostes: any = [];
-
-
     private users: any = [];
     errorTexte: string = '';
     isloading: boolean = false;
-    isLoad: boolean = false;
+    modalOpen: boolean = false;
+    dataOneLigne: any = {};
+    tableConfig: TableConfigs = {
+        columns: [
+            {title: 'Sigle', field_value: 'sigle_poste', sort: true},
+            {title: 'Intitulé', field_value: 'libelle_poste', sort: true},
+            {title: 'Créé le', field_value: 'created_at', sort: true},
+        ],
+        data: [] as SupportDB[],
+        row_action: [
+            {
+                label: "Edit",
+                action_to_perform: "edit",
+                icon: "edit-content",
+                class: "btn-sm"
+            }
+        ],
 
-    constructor(private autor: Authorization,
-                private fb: FormBuilder,
-                private httService: HttpService,
-                private toast: ToastrService) {
+    };
+
+    constructor(private autor: Authorization, private httService: HttpService) {
 
     }
 
@@ -51,77 +52,27 @@ export class QualificationComponent implements OnInit {
     ngOnInit(): void {
         window.scrollTo({top: 0, behavior: 'smooth'});
         this.users = this.autor.getInfosUsers();
-        this.posteForm = this.fb.group({
-            action: [''],
-            idposte: [''],
-            idsociete: [''],
-            sigle_poste: ['', Validators.required],
-            libelle_poste: ['', Validators.required]
-        });
-        this.postes(this.users?.dataSociete?.uid);
+        this.showPostes(this.users?.dataSociete?.uid);
     }
 
-    submitForm(): void {
-        this.errorTexte = ''
 
-        if (this.posteForm.valid) {
-            this.isLoad = true;
-            this.posteForm.value.action = this.posteForm.value.action ? this.posteForm.value.action : 1;
-            this.posteForm.value.idsociete = this.posteForm.value.idsociete ? this.posteForm.value.idsociete : this.users?.dataSociete?.uid
-            console.log(this.posteForm.value)
-            this.httService.postData(`${environment.api_url}auth/:savepostes`, this.posteForm.value, this.users?.access_token)
-                .toPromise()
-                .then((res: any) => {
-                    this.isLoad = false;
-                    window.scrollTo({top: 0, behavior: 'smooth'});
-                    if (res.body.status) {
-                        this.posteForm.reset({});
-                        this.postes(this.users?.dataSociete?.uid);
-                        this.toast.success(`${res.body.message}`, '',
-                            {
-                                positionClass: 'toast-top-right',
-                                closeButton: true,
-                                timeOut: 3000
-                            })
-                    }
-                })
-                .catch((err) => {
-                    this.isLoad = false;
-                    console.log(err?.error)
-                    this.toast.error(`${err?.error?.err?.message || 'Une erreur est survenue.'} `, '',
-                        {
-                            positionClass: 'toast-top-right',
-                            closeButton: true,
-                            timeOut: 3000
-                        })
-                    setTimeout(() => {
-                        this.errorTexte = `${err?.error?.err?.message || 'Une erreur est survenue.'} `;
-                    }, 3000)
-                });
-        } else {
-            Object.values(this.posteForm.controls).forEach(control => {
-                if (control.invalid) {
-                    control.markAsDirty();
-                    control.updateValueAndValidity({onlySelf: true});
-                }
-            });
-        }
-    }
-
-    resetForm(): void {
-        this.errorTexte = '';
-        this.posteForm.reset({});
-    }
-
-    postes(idsociete: string = '') {
+    showPostes(idsociete: string = '') {
         this.isloading = true;
-        this.dataPostes = [];
+        this.tableConfig.data = [];
         this.httService.getData(`${environment.api_url}auth/:savepostes?idsociete=${idsociete}`, false, this.users?.access_token || '')
             .toPromise()
             .then((res: any) => {
                 this.isloading = false;
                 if (res.body.status) {
-                    this.dataPostes = res.body.data;
+                    this.tableConfig = {
+                        ...this.tableConfig,
+                        data: res.body.data.map((d: any) => {
+                            return {
+                                ...d,
+                                created_at: moment(d.created_at).format('DD/MM/YYYY')
+                            }
+                        })
+                    }
                 }
             })
             .catch((err) => {
@@ -130,16 +81,37 @@ export class QualificationComponent implements OnInit {
 
     }
 
-    actionBtn(data: any) {
-        this.errorTexte = ''
-        let payload = {
-            action: 2,
-            idposte: data.uid,
-            idsociete: data.datasociete.uid,
-            sigle_poste: data.sigle_poste,
-            libelle_poste: data.libelle_poste
+    handleModal(value: boolean) {
+        if (value) {
+            this.showPostes(this.users?.dataSociete?.uid);
         }
-        console.log(data)
-        this.posteForm.setValue(payload);
+        this.modalOpen = false;
+    }
+
+    openModal() {
+        this.modalOpen = true;
+        this.dataOneLigne = {};
+    }
+
+    handleAction(value: TableClickedAction) {
+
+        switch (value.action_to_perform) {
+            case 'edit':
+                this.modalOpen = true;
+                this.dataOneLigne = value.data;
+                break;
+            default:
+        }
+    }
+
+    handleExport(event: { type: string, data: any[] }) {
+        // Logique personnalisée selon le type
+        if (event.type === 'csv') {
+            // Traitement personnalisé pour CSV
+        }
+
+        if (event.type === 'pdf') {
+            // Traitement personnalisé pour PDF
+        }
     }
 }

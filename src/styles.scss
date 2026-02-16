@@ -2,15 +2,39 @@
 
 @use "../public/assets/scss/app.scss";
 
+
+/* Importez une de ces polices dans votre fichier CSS principal ou dans index.html */
+
+/* 1. Quicksand - Très similaire, arrondie et élégante */
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
+
+/* 2. Comfortaa - Arrondie et géométrique */
+@import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;500;600;700&display=swap');
+
+/* 3. Nunito - Arrondie et très lisible */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700&display=swap');
+
+/* 4. Varela Round - Arrondie et compacte */
+@import url('https://fonts.googleapis.com/css2?family=Varela+Round&display=swap');
+
+/* 5. Poppins - Moderne et géométrique */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+
 body {
-  font-family: "Cocon-Regular" !important;
+  font-family: "Cocon-Regular", Arial, sans-serif !important;
 }
 
 .page-wrapper.compact-wrapper .page-body-wrapper div.sidebar-wrapper .sidebar-main .sidebar-links li a span {
   text-transform: none !important;
-  font-family: "Cocon-Regular" !important;
+  font-family: "Cocon-Regular", Arial, sans-serif !important;
 }
 
 body.dark-sidebar .page-wrapper.compact-wrapper .page-body-wrapper div.sidebar-wrapper .sidebar-main .sidebar-links > li .sidebar-submenu li a {
   text-transform: none !important;
+}
+
+/* Appliquez une police différente uniquement pour les inputs */
+input, textarea, select {
+  font-family:  "Nunito", sans-serif !important;
 }
