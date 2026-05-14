@@ -2,7 +2,6 @@
 
 @use "../public/assets/scss/app.scss";
 
-
 /* Importez une de ces polices dans votre fichier CSS principal ou dans index.html */
 
 /* 1. Quicksand - Très similaire, arrondie et élégante */
@@ -22,12 +21,14 @@
 
 
 body {
-  font-family: "Cocon-Regular", Arial, sans-serif !important;
+  font-family: 'Roboto', sans-serif;
+  //font-family: "Cocon-Regular", Arial, sans-serif !important;
 }
 
 .page-wrapper.compact-wrapper .page-body-wrapper div.sidebar-wrapper .sidebar-main .sidebar-links li a span {
   text-transform: none !important;
-  font-family: "Cocon-Regular", Arial, sans-serif !important;
+  font-family: 'Roboto', sans-serif;
+  //font-family: "Cocon-Regular", Arial, sans-serif !important;
 }
 
 body.dark-sidebar .page-wrapper.compact-wrapper .page-body-wrapper div.sidebar-wrapper .sidebar-main .sidebar-links > li .sidebar-submenu li a {
@@ -36,5 +37,52 @@ body.dark-sidebar .page-wrapper.compact-wrapper .page-body-wrapper div.sidebar-w
 
 /* Appliquez une police différente uniquement pour les inputs */
 input, textarea, select {
-  font-family:  "Nunito", sans-serif !important;
+  font-family: "Nunito", sans-serif !important;
+}
+
+//Taille des menus
+.page-wrapper.compact-wrapper .page-body-wrapper div.sidebar-wrapper .sidebar-main .sidebar-links > li a {
+  font-size: 13px !important;
+}
+
+.page-wrapper .sidebar-main-title h6 {
+  font-size: 12px !important;
+}
+
+.page-wrapper.compact-wrapper .page-body-wrapper div.sidebar-wrapper {
+
+  z-index: 9999 !important;
+}
+
+//-----------------------POUR DATE PICKER
+// Owl au-dessus de tout
+.owl-dt-container,
+.owl-dt-popup-container,
+.cdk-overlay-container,
+.cdk-overlay-pane {
+  z-index: 999999 !important;
+  position: fixed !important;
+}
+
+.owl-dt-backdrop {
+  z-index: 999998 !important;
+  position: fixed !important;
+}
+
+.modal-backdrop.show {
+  z-index: 99999 !important;
+}
+
+.swal2-shown {
+  overflow: hidden !important;
+}
+
+.swal2-backdrop-show {
+  z-index: 99998 !important;
+  pointer-events: all !important; // ← bloque les clics derrière
+}
+
+.swal2-container {
+  z-index: 99999 !important;
+  pointer-events: all !important;
 }

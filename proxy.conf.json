@@ -4,5 +4,11 @@
     "secure": false,
     "logLevel": "debug",
     "changeOrigin": true
+  },
+  "/medias": {
+    "target": "http://api-ged.archivepro.ci",
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin": true
   }
 }

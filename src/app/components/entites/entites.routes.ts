@@ -4,6 +4,7 @@ import {DirectionComponent} from "./direction/direction.component";
 import {DepartementComponent} from "./departement/departement.component";
 import {ServicesComponent} from "./services/services.component";
 import {QualificationComponent} from "./qualification/qualification.component";
+import {OrganigrammeComponent} from "./organigramme/organigramme.component";
 
 
 export const entites: Routes = [
@@ -46,6 +47,13 @@ export const entites: Routes = [
             title: 'Qualification',
             breadcrumb: 'Qualification'
         }
-    },
+    },   {
+        path: 'organigramme',
+        component: OrganigrammeComponent,
+        data: {
+            title: 'Organigramme',
+            breadcrumb: 'Organigramme'
+        }
+    }
 
 ]

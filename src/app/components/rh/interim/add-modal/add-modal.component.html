@@ -1,0 +1,159 @@
+<div class="modal  fade show modal-backdrop">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content category-popup">
+            <div class="modal-header">
+                <h5 class="modal-title">{{validationForm.value.idinterim ? 'MODIFIER LA FONCTION':'AJOUTER UNE FONCTION'}}</h5>
+                <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close" (click)="closeModal()"></button>
+            </div>
+            <div class="modal-body p-0 custom-input">
+                <div class="text-start">
+                    <div class="p-20">
+                        <div class="alert alert-danger flex items-center gap-3" role="alert"
+                             style="animation: slideDown 0.3s ease;" *ngIf="errorTexte">
+                            <div>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-circle stroke-danger">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                </svg>
+                            </div>
+                            <span class="txt-light">{{errorTexte}}</span>
+                        </div>
+
+                        <form class="grid grid-cols-12 gap-4 needs-validation" novalidate="" [formGroup]="validationForm" (ngSubmit)="submitForm()">
+
+                            <div class="col-span-12">
+                                <label class="form-label" for="motif">
+                                    Motif de l'intérim<span class="txt-danger">*</span>
+                                </label>
+                                <input class="form-control"
+                                       id="motif"
+                                       type="text"  placeholder=""
+                                       formControlName="motif"
+                                       [ngClass]="{
+                                            'is-invalid': validationForm.controls['motif'].touched && validationForm.controls['motif'].invalid,
+                                            'is-valid': validationForm.controls['motif'].touched && validationForm.controls['motif'].valid
+                                        }">
+                                @if(validationForm.controls['motif'].touched) {
+                                @if(validationForm.controls['motif'].errors?.['pattern']) {
+                                <div class="invalid-feedback d-block">
+                                    Veuillez saisir le motif svp.
+                                </div>
+                                }
+                                }
+                            </div>
+                            <div class="col-span-12 position-relative">
+                                <label class="form-label" for="remplacant">Remplaçant
+                                    <span class="txt-danger">*</span>
+                                </label>
+                                <select2 [data]="dataRemplacant"
+                                         placeholder="Selectionnez le remplaçant"
+                                         id="remplacant"
+                                         formControlName="remplacant"
+                                         [disabled]="loadingRemplace"
+                                         [overlay]="false"
+                                         [resettable]="true"
+                                         [listPosition]="'below'"
+                                         [minCountForSearch]="1"
+                                         (update)="selectInterim($event)"
+                                         noResultMessage="Aucune donnée trouvée"
+                                         class="raise-input-select"
+                                         [ngClass]="{ 'is-invalid' : validationForm.controls['remplacant'].touched &&  validationForm.controls['remplacant'].errors?.['required'] , 'is-valid' : validationForm.controls['remplacant'].valid}">
+
+                                </select2>
+                                <div class="select-loader" *ngIf="loadingRemplace">
+                                    <i class="fas fa-spin fa-circle-notch"></i>
+                                </div>
+                                @if(validationForm.controls['remplacant'].valid) {
+                                <!--<div class="valid-feedback">Looks's Good!</div>-->
+                                } @else if(validationForm.controls['remplacant'].touched &&
+                                validationForm.controls['remplacant'].errors?.['required']) {
+                                <div class="invalid-feedback"> Veuillez selectionner le remplaçant.</div>
+                                }
+                            </div>
+                            <div class="col-span-12 position-relative">
+                                <label class="form-label" for="remplace">Remplacé
+                                    <span class="txt-danger">*</span>
+                                </label>
+                                <select2 [data]="dataRemplace"
+                                         placeholder="Selectionnez le remplacé"
+                                         id="remplace"
+                                         formControlName="remplace"
+                                         [overlay]="false"
+                                         [resettable]="true"
+                                         [listPosition]="'below'"
+                                         [minCountForSearch]="1"
+                                         noResultMessage="Aucune donnée trouvée"
+                                         class="raise-input-select"
+                                         [ngClass]="{ 'is-invalid' : validationForm.controls['remplace'].touched &&  validationForm.controls['remplace'].errors?.['required'] , 'is-valid' : validationForm.controls['remplace'].valid}">
+                                </select2>
+                                @if(validationForm.controls['remplace'].valid) {
+                                <!--<div class="valid-feedback">Looks's Good!</div>-->
+                                } @else if(validationForm.controls['remplace'].touched &&
+                                validationForm.controls['remplace'].errors?.['required']) {
+                                <div class="invalid-feedback"> Veuillez selectionner le remplacé.</div>
+                                }
+                            </div>
+                            <div class="col-span-12 position-relative">
+                                <label class="form-label" for="date_debut">Date début
+                                    <span class="txt-danger">*</span>
+                                </label>
+                                <div class="input-group flatpicker-calender">
+                                    <input class="form-control"
+                                           [owlDateTimeTrigger]="dt1"
+                                           [owlDateTime]="dt1"
+                                           id="date_debut"
+                                           formControlName="date_debut"
+                                           [ngClass]="{
+                                                         'is-invalid': validationForm.controls['date_debut'].touched && validationForm.controls['date_debut'].errors?.['required'],
+                                                         'is-valid': validationForm.controls['date_debut'].valid
+                                                       }">
+                                    <owl-date-time name="date_debut" #dt1 [pickerType]="'calendar'"></owl-date-time>
+                                </div>
+                                @if(validationForm.controls['date_debut'].valid) {
+                                <!--<div class="valid-feedback">Looks's Good!</div>-->
+                                } @else if(validationForm.controls['date_debut'].touched &&
+                                validationForm.controls['date_debut'].errors?.['required']) {
+                                <div class="invalid-feedback"> Veuillez selectionner la date de debut contract svp.</div>
+                                }
+                            </div>
+                            <div class="col-span-12 position-relative">
+                                <label class="form-label" for="date_fin">Date de fin
+                                    <span class="txt-danger">*</span>
+                                </label>
+                                <div class="input-group flatpicker-calender">
+                                    <input class="form-control"
+                                           [owlDateTimeTrigger]="dt2"
+                                           [owlDateTime]="dt2"
+                                           id="date_fin"
+                                           formControlName="date_fin"
+                                           [ngClass]="{
+                                     'is-invalid': (validationForm.controls['date_fin'].touched && validationForm.controls['date_fin'].errors?.['required']) || (validationForm.errors?.['dateInvalide'] && validationForm.controls['date_fin'].touched),
+                                     'is-valid': validationForm.controls['date_fin'].valid && !validationForm.errors?.['dateInvalide']
+                                   }">
+                                    <owl-date-time name="date_fin" #dt2 [pickerType]="'calendar'"></owl-date-time>
+                                </div>
+
+                                @if(validationForm.controls['date_fin'].touched && validationForm.controls['date_fin'].errors?.['required']) {
+                                <div class="invalid-feedback d-block">Veuillez sélectionner la date de fin svp.</div>
+                                }
+                                @if(validationForm.errors?.['dateInvalide'] && validationForm.controls['date_fin'].touched) {
+                                <div class="alert alert-danger flex items-center gap-2 mt-2" style="padding: 8px 12px; border-radius: 8px; font-size: 13px;">
+                                 <span>La date de fin ne peut pas être antérieure à la date de début.</span>
+                              </div>
+                                }
+                            </div>
+                            <div class="col-span-12 flex justify-end">
+                                <button class="btn btn-primary text-white w-full mt-8 newBtn" type="submit">
+                                    <i class="{{isloading?'fas fa-spin fa-circle-notch':''}}"></i>
+                                    {{validationForm.value.idinterim ? 'Modifier':' Créer +'}}
+
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

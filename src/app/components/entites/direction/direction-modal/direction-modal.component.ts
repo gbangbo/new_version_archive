@@ -45,7 +45,7 @@ export class DirectionModalComponent {
 
     submitForm() {
         this.errorTexte = '';
-        console.log("this.validationForm ===", this.validationForm.value)
+
         this.validationForm.markAllAsTouched();
         if (!this.validationForm.valid) {
             return;
@@ -55,10 +55,10 @@ export class DirectionModalComponent {
         let payload = {
             "action": this.validationForm.value.uid ? 2 : 1,
             "iddirection": this.validationForm.value.uid || '',
-            "idsociete": this.users?.dataSociete?.uid,
+            "idsociete": this.users?.datasociete?.uid,
             ...this.validationForm.value
         }
-
+        console.log("payload===",payload)
         this.httService.postData(`${environment.api_url}auth/:savedirection`, payload, this.users?.access_token || '')
             .toPromise()
             .then((res: any) => {

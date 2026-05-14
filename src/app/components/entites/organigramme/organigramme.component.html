@@ -1,0 +1,17 @@
+<div class="bg-navbar tabs">
+    <ul class="tab-links flex nav-primary">
+        <li class="tab-link" [class.active]="activeTab == 'create'" (click)="handleTab('create')">Création</li>
+        <li class="tab-link" [class.active]="activeTab == 'view'" (click)="handleTab('view')">Aperçu</li>
+    </ul>
+    <div class="container user-list-wrapper">
+        <div class="grid grid-cols-12">
+            <div class="col-span-12  mt-5 ">
+                @if(activeTab == 'create') {
+                <app-create></app-create>
+                }@else if(activeTab == 'view') {
+                <app-preview></app-preview>
+                }
+            </div>
+        </div>
+    </div>
+</div>

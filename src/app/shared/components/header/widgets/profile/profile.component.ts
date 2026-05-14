@@ -14,11 +14,15 @@ import {Authorization} from "../../../../../protect/authorization.service";
 
 export class ProfileComponent {
 
-    public profile = profile;
-    public users: any = [];
+    profile = profile;
+    users: any = [];
+    nameUser: string;
+    photo: string;
 
     constructor(private autor: Authorization, private router: Router) {
         this.users = this.autor.getInfosUsers();
+        this.nameUser = `${this.users?.datapersonnel?.nom || 'Inconnu'} ${this.users?.datapersonnel?.prenom || ''}`
+        this.photo = `${this.users?.datapersonnel?.photo || 'assets/images/dashboard/profile.png'}`
     }
 
     logOut() {

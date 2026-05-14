@@ -1,0 +1,125 @@
+.export-wrap {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-background-primary, #fff);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+// ── Toolbar ──────────────────────────────────────────────────────────────
+.export-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-bottom: 1px solid #F1F5F9;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.export-toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.export-icon {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #F19106;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.export-title {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: #0F172A;
+  letter-spacing: 0.02em;
+}
+
+.export-sub {
+  display: block;
+  font-size: 11px;
+  color: #94A3B8;
+  margin-top: 1px;
+}
+
+.export-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-export {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  height: 34px;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 8px;
+  background: #fff;
+  color: #475569;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  i { font-size: 13px; }
+
+  &:hover {
+    border-color: #F19106;
+    color: #F19106;
+    background: #FFF7ED;
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+}
+
+// ── Canvas ────────────────────────────────────────────────────────────────
+.export-canvas-wrap {
+  padding: 20px;
+  min-height: 200px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.canvas-scroll {
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: calc(100vh - 260px);
+  width: 100%;
+  border: 1px solid #F1F5F9;
+  border-radius: 8px;
+
+  &::-webkit-scrollbar { width: 5px; height: 5px; }
+  &::-webkit-scrollbar-thumb {
+    background: #CBD5E1;
+    border-radius: 4px;
+  }
+
+  canvas {
+    display: block;
+  }
+}
+
+// ── Empty state ───────────────────────────────────────────────────────────
+.export-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 48px 24px;
+  color: #94A3B8;
+
+  i { font-size: 36px; opacity: 0.4; }
+  span { font-size: 13px; font-weight: 500; }
+}

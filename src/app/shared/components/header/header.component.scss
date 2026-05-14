@@ -1,0 +1,307 @@
+// ═══════════════════════════════════════════════════════════
+// HEADER — styles améliorés
+// À mettre dans votre fichier header SCSS ou styles.scss global
+// ═══════════════════════════════════════════════════════════
+
+// ── Wrapper principal ─────────────────────────────────────
+.header-wrapper {
+  background: #ffffff !important;
+  border-bottom: 1px solid #f1f5f9 !important;
+  box-shadow: 0 1px 20px rgba(15, 23, 42, 0.06) !important;
+  backdrop-filter: blur(10px);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  transition: box-shadow 0.3s ease;
+
+  // Ligne accent colorée en bas
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg,
+            #1565C0 0%,
+            #2196F3 35%,
+            #F19106 65%,
+            #1565C0 100%
+    );
+    background-size: 200% 100%;
+    animation: headerGradient 6s linear infinite;
+  }
+}
+
+@keyframes headerGradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+// ── Centre — Breadcrumb ───────────────────────────────────
+.header-center {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 8px;
+}
+
+.header-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 14px;
+  background: #f8fafc;
+  border: 1px solid #e8edf3;
+  border-radius: 20px;
+  transition: all 0.2s;
+
+  &:hover {
+    background: #eff6ff;
+    border-color: #bfdbfe;
+  }
+}
+
+.hb-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1565C0, #2196F3);
+  flex-shrink: 0;
+  box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.15);
+  animation: pulse 2.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.15);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(33, 150, 243, 0.05);
+  }
+}
+
+// ── Nav menus ─────────────────────────────────────────────
+.nav-menus {
+  display: flex !important;
+  align-items: center !important;
+  gap: 2px !important;
+  height: 100%;
+  padding: 0 8px;
+  list-style: none;
+  margin: 0;
+}
+
+// ── Séparateur vertical ───────────────────────────────────
+.nav-separator {
+  width: 1px !important;
+  height: 24px !important;
+  background: linear-gradient(180deg, transparent, #e2e8f0, transparent) !important;
+  margin: 0 6px !important;
+  flex-shrink: 0;
+  list-style: none;
+}
+
+// ── Bouton icône nav ──────────────────────────────────────
+.nav-item-icon {
+  list-style: none;
+
+  .nav-icon-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #64748b;
+    background: transparent;
+    border: 1px solid transparent;
+
+    &:hover {
+      background: #f1f5f9;
+      border-color: #e2e8f0;
+      color: #1565C0;
+      transform: scale(1.05);
+    }
+
+    &:active {
+      transform: scale(0.95);
+    }
+
+    svg, i, app-toggle-screen, app-mode {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+}
+
+// ── Notification bell — badge animé ──────────────────────
+.nav-menus .onhover-dropdown {
+  position: relative;
+
+  // Badge point rouge animé
+  &.has-notif::before {
+    content: '';
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ef4444;
+    border: 2px solid white;
+    z-index: 1;
+    animation: notifPulse 1.5s ease-in-out infinite;
+  }
+}
+
+@keyframes notifPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 0.8;
+  }
+}
+
+// ── Profil ────────────────────────────────────────────────
+.profile-nav {
+  padding-left: 8px !important;
+
+  // Cercle avatar amélioré
+  ::ng-deep .media {
+    align-items: center;
+    gap: 8px;
+  }
+
+  ::ng-deep img,
+  ::ng-deep .user-img {
+    width: 34px !important;
+    height: 34px !important;
+    border-radius: 100% !important;
+    border: 2px solid #e2e8f0 !important;
+    object-fit: cover;
+    transition: border-color 0.2s, box-shadow 0.2s;
+
+    &:hover {
+      border-color: #1565C0 !important;
+      box-shadow: 0 0 0 3px rgba(21, 101, 192, 0.12) !important;
+    }
+  }
+}
+
+// ── Dark mode ─────────────────────────────────────────────
+:host-context(.dark-only) {
+  .header-wrapper {
+    background: #1e293b !important;
+    border-bottom-color: #334155 !important;
+    box-shadow: 0 1px 20px rgba(0, 0, 0, 0.3) !important;
+  }
+
+  .header-breadcrumb {
+    background: #0f172a;
+    border-color: #334155;
+    color: #94a3b8;
+
+    &:hover {
+      background: #1e3a5f;
+      border-color: #1d4ed8;
+    }
+  }
+
+  .nav-separator {
+    background: linear-gradient(180deg, transparent, #334155, transparent) !important;
+  }
+
+  .nav-item-icon .nav-icon-btn {
+    color: #94a3b8;
+
+    &:hover {
+      background: #334155;
+      border-color: #475569;
+      color: #60a5fa;
+    }
+  }
+
+  .profile-nav ::ng-deep img,
+  .profile-nav ::ng-deep .user-img {
+    border-color: #334155 !important;
+
+    &:hover {
+      border-color: #3b82f6 !important;
+    }
+  }
+}
+
+// ── Responsive ────────────────────────────────────────────
+@media (max-width: 768px) {
+  .header-breadcrumb {
+    display: none; // ← masquer sur mobile pour gagner de la place
+  }
+
+  .nav-separator {
+    display: none !important;
+  }
+
+  .nav-menus {
+    gap: 0 !important;
+    padding: 0 4px;
+  }
+
+  .nav-item-icon .nav-icon-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+  }
+}
+
+.header-wrapper {
+  min-height: 50px !important;
+  height: 50px !important;
+}
+
+::ng-deep .page-wrapper .page-header .header-wrapper {
+  padding: 8px 30px !important;
+}
+
+
+// Bouton hamburger
+.toggle-sidebar {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #64748b;
+  transition: all 0.2s;
+
+  &:hover {
+    background: #f1f5f9;
+    color: #1565C0;
+  }
+
+  @media (max-width: 991px) {
+    display: flex !important; // ← visible seulement sur mobile
+  }
+}
+
+@media only screen and (max-width: 991.98px) {
+  body.dark-only .page-wrapper.compact-wrapper .page-header .header-wrapper .toggle-sidebar {
+    border-right: none;
+  }
+}
+
+.toggleMenu {
+  cursor: pointer;
+}

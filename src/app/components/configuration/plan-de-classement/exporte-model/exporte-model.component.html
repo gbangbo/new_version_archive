@@ -1,0 +1,36 @@
+<div class="export-wrap">
+
+    <!-- Toolbar -->
+    <div class="export-toolbar">
+        <div class="export-toolbar-left">
+            <div class="export-icon">
+                <i class="far fa-sitemap"></i>
+            </div>
+            <div>
+                <span class="export-title">{{ title }}</span>
+                <span class="export-sub">{{ layoutNodes?.length || 0 }} nœud(s)</span>
+            </div>
+        </div>
+        <div class="export-toolbar-right">
+            <button class="btn-export"
+                    nz-tooltip
+                    nzTooltipTitle="Télécharger en PNG"
+                    (click)="exportPNG()">
+                <i class="far fa-download"></i>
+                <span>Exporter PNG</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Canvas -->
+    <div class="export-canvas-wrap">
+        <div *ngIf="!treeData?.length" class="export-empty">
+            <i class="far fa-folder-open"></i>
+            <span>Aucune donnée à afficher</span>
+        </div>
+        <div class="canvas-scroll" *ngIf="treeData?.length">
+            <canvas #treeCanvas></canvas>
+        </div>
+    </div>
+
+</div>

@@ -16,6 +16,7 @@ export class HttpService {
     });
     cache: any[] = [];
     cacheSubject = new Subject<any>();
+    sessionExpired$ = new Subject<any>();
 
     constructor(
         public http: HttpClient
@@ -46,7 +47,8 @@ export class HttpService {
                         errorMessage = ""
                         break;
                     case 401:
-                        document.location.href = "auth/expire"
+                        this.sessionExpired$.next(error?.error || undefined);
+                        //document.location.href = "auth/expire"
                         break;
                     default:
                         errorMessage = {message: error.statusText, err: error.error}
@@ -61,11 +63,12 @@ export class HttpService {
             })
         );
     }
+
     deleteData(url: string, data: any, token: string): Observable<HttpResponse<any>> {
         const body = JSON.stringify(data);
         let headers = token ? this.HEADER_OPTIONS.set('Authorization', 'Bearer ' + token) : this.HEADER_OPTIONS;
 
-        return this.http.delete(url,  {
+        return this.http.delete(url, {
             headers: headers,
             observe: 'response',
             body: {data: postDataCrypte(data)}
@@ -82,7 +85,8 @@ export class HttpService {
                         errorMessage = ""
                         break;
                     case 401:
-                        document.location.href = "auth/expire"
+                        this.sessionExpired$.next(error?.error || undefined);
+                        //document.location.href = "auth/expire"
                         break;
                     default:
                         errorMessage = {message: error.statusText, err: error.error}
@@ -97,6 +101,7 @@ export class HttpService {
             })
         );
     }
+
     putData(url: string, data: any): Observable<HttpResponse<any>> {
         const body = JSON.stringify(data);
 
@@ -131,7 +136,8 @@ export class HttpService {
                         errorMessage = ""
                         break;
                     case 401:
-                        document.location.href = "public/expire"
+
+                        // document.location.href = "public/expire"
                         break;
                     default:
                         errorMessage = {message: error.statusText}
@@ -146,7 +152,6 @@ export class HttpService {
             })
         );
     }
-
 
 
     getData(url: string, useCache = false, token: string): Observable<HttpResponse<any>> {
@@ -199,10 +204,46 @@ export class HttpService {
                         errorMessage = ""
                         break;
                     case 401:
-                        document.location.href = "auth/expire"
+                        this.sessionExpired$.next(error?.error || undefined);
                         break;
                     default:
                         errorMessage = {message: error.statusText}
+                        break;
+                }
+                return throwError({
+                    status: error.status,
+                    ok: error.ok,
+                    statusText: error.statusText,
+                    error: errorMessage
+                });
+            })
+        );
+    }
+
+    postDataForLogin(url: string, data: any, token: string): Observable<HttpResponse<any>> {
+        const body = JSON.stringify(data);
+        let headers = token ? this.HEADER_OPTIONS.set('Authorization', 'Bearer ' + token) : this.HEADER_OPTIONS;
+
+        return this.http.post(url, {data: postDataCrypte(data)}, {
+            headers: headers,
+            observe: 'response',
+        }).pipe(
+            map((res: any) => {
+                let rep = decryptData(res.body.data)
+                res.body = rep
+                return (res);
+            }),
+            catchError((error) => {
+                let errorMessage
+                switch (error.status) {
+                    case 422:
+                        errorMessage = ""
+                        break;
+                    case 401:
+                        errorMessage = {message: error, err: error.error}
+                        break;
+                    default:
+                        errorMessage = {message: error, err: error.error}
                         break;
                 }
                 return throwError({
@@ -260,7 +301,7 @@ export class HttpService {
                         errorMessage = ""
                         break;
                     case 401:
-                        //document.location.href = "public/expire"
+                        this.sessionExpired$.next(error?.error || undefined);
                         break;
                     default:
                         errorMessage = {message: error.statusText}
@@ -377,6 +418,7 @@ export class HttpService {
                         errorMessage = ""
                         break;
                     case 401:
+                        this.sessionExpired$.next(error?.error || undefined);
                         break;
                     default:
                         errorMessage = {message: error.statusText, err: error}

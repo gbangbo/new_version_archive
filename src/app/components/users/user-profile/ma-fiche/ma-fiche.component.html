@@ -1,0 +1,213 @@
+<!-- fiche-agent.component.html -->
+
+<!-- Barre d'actions -->
+<div class="print-bar no-print">
+    <button class="btn btn-primary" (click)="exportPDF()">
+        <i class="fa-solid fa-download"></i> Télécharger
+    </button>
+</div>
+
+<div class="fiche-wrapper" id="ficheAgent">
+
+    <!-- ═══════════════ HEADER ═══════════════ -->
+    <div class="fiche-header">
+
+        <div class="fiche-header-logos">
+            <img *ngIf="logoGaucheBase64; else logoGaucheFallback"
+                 [src]="logoGaucheBase64" alt="Logo République" class="logo-img">
+            <ng-template #logoGaucheFallback>
+                <div class="logo-placeholder">LOGO</div>
+            </ng-template>
+            <span class="logo-caption">
+        <strong>République de Côte d'Ivoire</strong><br>
+        Union – Discipline – Travail<br>
+        <span class="logo-sub">Ministère d'État, Ministère<br>de la Fonction Publique<br>et de la Modernisation</span>
+      </span>
+        </div>
+
+        <div class="fiche-header-center">
+            <h1>FICHE DE RENSEIGNEMENT</h1>
+        </div>
+
+        <div class="fiche-header-logos fiche-header-right">
+            <img *ngIf="userData.datasociete.logo; else logoSocieteFallback"
+                 [src]="userData.datasociete.logo" alt="Logo société" class="logo-img">
+            <ng-template #logoSocieteFallback>
+                <div class="logo-placeholder">{{ userData?.datasociete?.raison_sociale | slice:0:3 }}</div>
+            </ng-template>
+            <span class="logo-caption text-center">
+        <strong>{{ userData?.datasociete?.raison_sociale }}</strong>
+      </span>
+        </div>
+    </div>
+
+    <!-- ═══════════════ IDENTITÉ ═══════════════ -->
+    <div class="agent-identity">
+        <img *ngIf="userData.datapersonnel.photo; else photoFallback"
+             [src]="userData.datapersonnel.photo" alt="Photo agent" class="agent-photo">
+        <ng-template #photoFallback>
+            <div class="agent-photo-placeholder">
+                {{ getInitiales() }}
+            </div>
+        </ng-template>
+        <div class="agent-name">M. {{ getNomComplet() }}</div>
+        <div class="agent-poste">
+            Badge N° {{ userData?.datastatut_personnel?.numero_badge }} —
+            {{ userData?.datasociete?.raison_sociale }}
+        </div>
+        <span class="badge-statut" [ngClass]="getStatutClass()">
+      {{ getStatutLabel() }}
+    </span>
+    </div>
+
+    <!-- ═══════════════ INFORMATIONS PERSONNELLES ═══════════════ -->
+    <div class="section">
+        <div class="section-header">Informations Personnelles</div>
+        <div class="section-body">
+            <div class="field-row">
+                <span class="field-label">Nom :</span>
+                <span class="field-value">{{ userData?.datapersonnel?.nom || '—' }}</span>
+            </div>
+            <div class="field-row">
+                <span class="field-label">Prénom :</span>
+                <span class="field-value">{{ userData?.datapersonnel?.prenom || '—' }}</span>
+            </div>
+            <div class="field-row">
+                <span class="field-label">Sexe :</span>
+                <span class="field-value">{{ formatSexe(userData?.datapersonnel?.sexe) }}</span>
+            </div>
+            <div class="field-row">
+                <span class="field-label">Email agent :</span>
+                <span class="field-value">{{ userData?.datapersonnel?.emailAgent || '—' }}</span>
+            </div>
+            <div class="field-row">
+                <span class="field-label">Tél. mobile :</span>
+                <span class="field-value">{{ userData?.datapersonnel?.telMobile || '—' }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════ EMPLOI & AFFECTATION ═══════════════ -->
+    <div class="section">
+        <div class="section-header">Emploi &amp; Affectation</div>
+        <div class="section-body">
+            <div class="field-row">
+                <span class="field-label">Société :</span>
+                <span class="field-value red">{{ userData?.datasociete?.raison_sociale || '—' }}</span>
+            </div>
+            <div class="field-row">
+                <span class="field-label">Code société :</span>
+                <span class="field-value">{{ userData?.datasociete?.code_societe || '—' }}</span>
+            </div>
+            <div class="field-row">
+                <span class="field-label">N° Badge :</span>
+                <span class="field-value red">{{ userData?.datastatut_personnel?.numero_badge || '—' }}</span>
+            </div>
+            <div class="field-row">
+                <span class="field-label">Localisation :</span>
+                <span class="field-value">{{ userData?.datasociete?.localisation || '—' }}</span>
+            </div>
+            <div class="field-row">
+                <span class="field-label">Service :</span>
+                <span class="field-value">{{ userData?.dataservice?.libelle_service || '—' }}</span>
+            </div>
+            <div class="field-row">
+                <span class="field-label">Poste :</span>
+                <span class="field-value">{{ userData?.dataposte?.libelle_poste || '—' }}</span>
+            </div>
+            <div class="field-row">
+                <span class="field-label">Fonction :</span>
+                <span class="field-value">{{ userData?.datafonction?.libelle_fonction || '—' }}</span>
+            </div>
+            <div class="field-row">
+                <span class="field-label">Statut :</span>
+                <span class="field-value" [ngClass]="getStatutClass()">{{ getStatutLabel() }}</span>
+            </div>
+            <div class="field-row">
+                <span class="field-label">Date début contrat :</span>
+                <span class="field-value">{{ userData?.datastatut_personnel?.date_debut_contrat | date:'dd/MM/yyyy' }}</span>
+            </div>
+            <div class="field-row">
+                <span class="field-label">Date fin contrat :</span>
+                <span class="field-value">{{ userData?.datastatut_personnel?.date_fin_contrat | date:'dd/MM/yyyy' }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════ COMPTE & ACCÈS ═══════════════ -->
+    <div class="section">
+        <div class="section-header">Compte &amp; Accès</div>
+        <div class="section-body">
+            <div class="field-row">
+                <span class="field-label">ID utilisateur :</span>
+                <span class="field-value">{{ userData?.id }}</span>
+            </div>
+            <div class="field-row">
+                <span class="field-label">Email compte :</span>
+                <span class="field-value">{{ userData?.email || '—' }}</span>
+            </div>
+            <div class="field-row">
+                <span class="field-label">Rôle :</span>
+                <span class="field-value">{{ getRoleLabel() }}</span>
+            </div>
+            <div class="field-row">
+                <span class="field-label">Double authentification :</span>
+                <span class="field-value" [ngClass]="userData?.datasociete?.double_auth ? 'green' : ''">
+          {{ userData?.datasociete?.double_auth ? 'Activée' : 'Non activée' }}
+        </span>
+            </div>
+            <div class="field-row">
+                <span class="field-label">Créé le :</span>
+                <span class="field-value">{{ userData?.datapersonnel?.created_at | date:'dd/MM/yyyy' }}</span>
+            </div>
+            <div class="field-row">
+                <span class="field-label">Mis à jour le :</span>
+                <span class="field-value">{{ userData?.datapersonnel?.updated_at | date:'dd/MM/yyyy' }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════ ACTES ═══════════════ -->
+    <div class="section">
+        <div class="section-header">Actes</div>
+        <div class="actes-wrapper">
+            <table class="actes-table" *ngIf="actes && actes.length > 0; else noActes">
+                <thead>
+                <tr>
+                    <th>N°</th>
+                    <th>Nature</th>
+                    <th>État</th>
+                    <th>Signature</th>
+                    <th>Effet</th>
+                    <th>Statut</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let acte of actes">
+                    <td>{{ acte.numero || '—' }}</td>
+                    <td>{{ acte.nature || '—' }}</td>
+                    <td>{{ acte.etat || '—' }}</td>
+                    <td>{{ acte.dateSignature | date:'dd/MM/yyyy' }}</td>
+                    <td>{{ acte.dateEffet | date:'dd/MM/yyyy' }}</td>
+                    <td>
+                        <span *ngIf="acte.statut === 'PDF'" class="pdf-icon">PDF</span>
+                        <span *ngIf="acte.statut?.includes('Non encore')" class="status-red">{{ acte.statut }}</span>
+                        <span *ngIf="acte.statut?.includes('traitement')" class="status-orange">{{ acte.statut }}</span>
+                        <span *ngIf="acte.statut === 'Validé'" class="status-green">{{ acte.statut }}</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <ng-template #noActes>
+                <p class="no-data">Aucun acte disponible pour cet agent.</p>
+            </ng-template>
+        </div>
+    </div>
+
+    <!-- ═══════════════ FOOTER ═══════════════ -->
+    <div class="fiche-footer">
+        © 2025, RCI – {{ userData?.datasociete?.raison_sociale }}, Fiche de renseignement. |
+        Imprimé le {{ today | date:'EEEE dd MMMM yyyy' : '' : 'fr' }}
+    </div>
+
+</div>

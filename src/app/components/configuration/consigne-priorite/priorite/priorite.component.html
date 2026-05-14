@@ -1,0 +1,158 @@
+<div class="container main-setting">
+    <div class="grid grid-cols-12 card-gap">
+        <div class="col-span-12">
+            <app-card [border]="true" [padding]="false">
+
+                <div class="grid grid-cols-12 gap-4 tabs">
+                    <div class="col-span-12">
+                        <div class="relative">
+
+                            <!-- ══ OVERLAY SPINNER ══════════════════════════════ -->
+                            <div *ngIf="isloading"
+                                 class="absolute inset-0 flex justify-center items-center z-10 rounded-lg"
+                                 style="background: rgba(248,250,252,0.85); backdrop-filter: blur(2px);">
+                                <div class="text-center">
+                                    <div class="op-spinner"></div>
+                                    <p class="mt-3" style="color:#64748b; font-size:13px; font-weight:600;">
+                                        Chargement des données...
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="table-container" [class.op-loading]="isloading">
+                                <!-- ══ TOOLBAR ══════════════════════════════════ -->
+                                <div class="op-toolbar">
+                                    <!-- Titre + compteur -->
+                                    <div class="op-toolbar-left">
+                                        <div class="op-toolbar-title">
+                                            <div class="op-toolbar-icon">
+                                                <i class="far fa-clipboard"></i>
+                                            </div>
+                                            <div>
+                                                <span class="op-toolbar-label">LISTE DES PRIORITES</span>
+                                                <span class="op-toolbar-count">
+                                                    {{ filteredData.length || 0 }} enregistrement(s)
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Actions droite -->
+                                    <div class="op-toolbar-right">
+
+                                        <!-- Recherche -->
+                                        <div class="op-search-wrap">
+                                            <svg class="op-search-icon" viewBox="0 0 24 24" fill="none"
+                                                 stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                                                <circle cx="11" cy="11" r="8"/>
+                                                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                                            </svg>
+                                            <input class="op-search-input"
+                                                   placeholder="Rechercher..."
+                                                   [(ngModel)]="searchValue"
+                                                   (ngModelChange)="onSearch($event)"/>
+                                            <button *ngIf="searchValue"
+                                                    class="op-search-clear"
+                                                    (click)="searchValue=''; onSearch('')">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                     stroke-width="2.5" stroke-linecap="round" width="12" height="12">
+                                                    <line x1="18" y1="6" x2="6" y2="18"/>
+                                                    <line x1="6" y1="6" x2="18" y2="18"/>
+                                                </svg>
+                                            </button>
+                                        </div>
+
+                                        <button class="op-btn op-btn-outline"
+                                                nz-tooltip nzTooltipTitle="Nouvelle priorité"
+                                                (click)="openModal()">
+                                            <i data-feather="edit-2" style="width: 15px;"></i>
+                                            <span class="btn-label">Nouveau</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- ══ TABLE ════════════════════════════════════ -->
+
+                                <div class="overflow-x-auto support-ticket-table custom-scrollbar">
+                                    <nz-table
+                                        #nzTable
+                                        [nzData]="filteredData"
+                                        [nzPageSize]="10"
+                                        [nzShowPagination]="true"
+                                        [nzShowTotal]="totalTemplate"
+                                        nzShowSizeChanger
+                                        nzBordered
+                                        nzSize="small"
+                                        [nzScroll]="filteredData.length > 0 ? { x: '1200px' } : {}"
+                                    >
+                                        <thead>
+                                        <tr>
+                                            <th nzWidth="200px"
+                                                nzColumnKey="lib_priorite"
+                                                [nzSortFn]="sortFns.lib_priorite"
+                                                [nzSortDirections]="['ascend','descend',null]"
+                                                [nzFilterFn]="filterFns.lib_priorite"
+                                                [nzFilters]="filters.lib_priorite">
+                                                Libellé
+                                            </th>
+                                            <th nzWidth="50px">
+                                                Créé le
+                                            </th>
+                                            <th nzWidth="30px" nzColumnKey="action" nzAlign="center">
+                                                Actions
+                                            </th>
+                                        </tr>
+                                        </thead>
+
+                                        <tbody>
+                                        <tr *ngFor="let row of nzTable.data; let i = index"
+                                            class="op-table-row">
+                                            <td>
+                                                <span class="cell-text">{{ row.lib_priorite }}</span>
+                                            </td>
+                                            <td>
+                                                <span class="cell-text">{{ row.created_at }}</span>
+                                            </td>
+                                            <td nzAlign="center">
+                                                <div class="op-actions">
+                                                    <button class="btn-round-edit"
+                                                            nz-tooltip
+                                                            [nzTooltipTitle]="'Modifier la priorité'"
+                                                            nzTooltipPlacement="top"
+                                                            (click)="openModal(row)">
+                                                        <app-feather-icon class="icon-small"
+                                                                          [icon]="'edit-3'"></app-feather-icon>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr *ngIf="!isloading && filteredData?.length === 0">
+                                            <td colspan="9">
+                                                <div class="op-empty-state">
+                                                    <app-feather-icon class="icon-inbox"
+                                                                      [icon]="'inbox'"></app-feather-icon>
+                                                    <span>Aucun donnée trouvé !</span>
+                                                    <small *ngIf="searchValue">
+                                                        Aucun résultat pour « {{ searchValue }} »
+                                                    </small>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </nz-table>
+                                </div>
+                                <ng-template #totalTemplate let-total>
+                                    Total : <strong>{{ total }}</strong> enregistrement(s)
+                                </ng-template>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </app-card>
+        </div>
+    </div>
+    @if(modalOpen){
+    <app-priorite-modal  [dataLigne]="dataLigne" (modalOpen)="handleModal($event)"></app-priorite-modal>
+    }
+</div>

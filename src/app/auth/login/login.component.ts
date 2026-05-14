@@ -1,5 +1,5 @@
 import {CommonModule} from '@angular/common';
-import {Component} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {Router, RouterModule} from '@angular/router';
 import {ToastrService} from 'ngx-toastr';
@@ -14,13 +14,14 @@ import {cryptSession, decode64} from "../../config/config";
     styleUrl: './login.component.scss'
 })
 
-export class LoginComponent {
+export class LoginComponent implements OnInit, OnDestroy {
 
     public show: boolean = false;
     public loginForm: FormGroup;
     public validate: boolean = false;
     loading: boolean = false;
     errorTexte: string = "";
+
 
     constructor(public router: Router, private toast: ToastrService, private httService: HttpService) {
 
@@ -34,6 +35,20 @@ export class LoginComponent {
             password: new FormControl("", Validators.required)
         })
     }
+
+    ngOnInit(): void {
+        // document.body.setAttribute('style',
+        //     "background-image: url('http://localhost:3011/assets/images/login/ged_cover.png') !important;" +
+        //     "background-size: cover !important;" +
+        //     "background-position: center center !important;" +
+        //     "background-repeat: no-repeat !important;"
+        // );
+    }
+
+    ngOnDestroy(): void {
+        // document.body.removeAttribute('style');
+    }
+
 
     showPassword() {
         this.show = !this.show;
@@ -58,16 +73,33 @@ export class LoginComponent {
                 .toPromise()
                 .then((res: any) => {
                     this.loading = false;
+
                     if (res.body.status) {
-                        const respons = res.body.data;
+
+                        let response: any = {...res.body.data, ...res.body.data.datas_users};
+                        delete response.datas_users;
+
+                        if (parseInt(response?.datasociete?.double_auth || 0)) {
+                            const mapDataTemp = {
+                                ...response,
+                                err: this.loginForm.value.password,
+                                _menu: [],
+                                dataUsers: []
+                            };
+                            const mapSessionTemp = cryptSession(JSON.stringify(mapDataTemp), decode64(environment.CONFIG.APP_PASS));
+                            sessionStorage.setItem(`_temp_`, mapSessionTemp);
+                            this.router.navigate(["/auth/confirme-auth-otp"]);
+                            return;
+                        }
+
                         const mapData = {
-                            ...respons,
+                            ...response,
                             _menu: [],
                             dataUsers: []
                         };
+
                         const mapSession = cryptSession(JSON.stringify(mapData), decode64(environment.CONFIG.APP_PASS));
                         sessionStorage.setItem(environment.CONFIG.APP_TOKEN_NAME, mapSession);
-
                         localStorage.setItem("user", JSON.stringify(user));
 
                         if (!localStorage.getItem(environment.CONFIG.layout_name)) {
@@ -75,6 +107,8 @@ export class LoginComponent {
                         }
                         this.router.navigate(["/dashboard/default"]);
                     }
+
+
                 })
                 .catch((err) => {
                     this.loading = false;
@@ -88,8 +122,6 @@ export class LoginComponent {
                         this.errorTexte = `${err?.error?.err?.non_field_errors[0] || 'Une erreur est survenue.'} `;
                     }, 3000)
                 });
-
-
         }
     }
 

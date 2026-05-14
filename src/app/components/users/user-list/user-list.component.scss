@@ -1,7 +1,7 @@
 .tab-links {
   justify-content: flex-start;
   margin-left: 0 !important;
-  background-color: #e8e8e8 !important;
+  //background-color: #e8e8e8 !important;
 }
 
 ::ng-deep .table-header label::before {
@@ -12,13 +12,6 @@
 .main-setting .tab-content {
   border-left: none !important;
 }
-
-
-::ng-deep app-table svg {
-
-
-}
-
 
 ::ng-deep .square-white svg {
   fill: rgba(82, 82, 108, 0.8);
@@ -76,4 +69,53 @@
   border-radius: 4px;
   height: 20px;
   line-height: inherit;
+}
+
+
+
+//-------------TABS
+
+// ===== Tabs wrapper =====
+.bg-navbar.tabs {
+  background: transparent !important;
+}
+
+.tab-links {
+  list-style: none;
+  margin: 0 0 20px 0;
+  padding: 4px;
+  display: inline-flex;
+  background: #f1f2f6;
+  border-radius: 10px;
+  gap: 4px;
+}
+
+.tab-link {
+  padding: 7px 20px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #9ca3af;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  user-select: none;
+
+  &:hover {
+    color: #6366f1;
+    background: rgba(99, 102, 241, 0.08);
+  }
+
+  &.active {
+    background: #ffffff;
+    color: #6366f1;
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.2);
+  }
+}
+
+.bg-navbar {
+  background: transparent !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+  border: none !important;
 }

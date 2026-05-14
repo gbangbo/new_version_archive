@@ -5,7 +5,10 @@ import {Router, RouterModule} from '@angular/router';
 import {ToastrService} from 'ngx-toastr';
 import {HttpService} from "../../core/http.service";
 import {environment} from "../../../environments/environment";
-import {cryptSession, decode64} from "../../config/config";
+import {cryptSession, decode64, decryptData, postDataCrypte} from "../../config/config";
+import {HttpClient, HttpHeaders} from "@angular/common/http";
+import Swal from "sweetalert2";
+import {Authorization} from "../../protect/authorization.service";
 
 @Component({
     selector: 'app-confirme-auth-otp',
@@ -24,13 +27,20 @@ export class ConfirmeAuthOtpComponent implements AfterViewInit {
     @ViewChildren('otpInput') otpInputs!: QueryList<ElementRef<HTMLInputElement>>;
     otpCode: string = '';
     private isPasting: boolean = false; // Flag pour éviter les conflits
-    constructor(public router: Router, private toast: ToastrService, private httService: HttpService) {
+    users: any = []
+    typeAlerte: string = 'info';
+    current: number;
+    isDisabled: boolean = true;
 
-        const userDetails = localStorage.getItem('user');
-        if (userDetails?.length != null) {
-            router.navigate(['/dashboard/default'])
-        }
+    constructor(public router: Router, private toast: ToastrService, private httService: HttpService,
+                private http: HttpClient, private autor: Authorization,) {
 
+        // const userDetails = localStorage.getItem('user');
+        // if (userDetails?.length != null) {
+        //     router.navigate(['/dashboard/accueil'])
+        // }
+        this.countdown(30);
+        this.users = this.autor.getInfosTemp();
         this.loginForm = new FormGroup({
             email: new FormControl("", [Validators.required, Validators.email]),
             password: new FormControl("", Validators.required)
@@ -41,58 +51,95 @@ export class ConfirmeAuthOtpComponent implements AfterViewInit {
         this.show = !this.show;
     }
 
-    login() {
+    async login(otp: string) {
         this.validate = true;
+        this.loading = true;
         this.errorTexte = "";
-        if (this.loginForm.valid) {
 
 
-            let user = {
-                email: "Test@gmail.com",
-                password: "test123"
-            };
+        let user = {
+            email: "Test@gmail.com",
+            password: "test123"
+        };
 
-            this.loading = true;
-            this.httService.postData(`${environment.api_url}auth/:login`, {
-                "email": this.loginForm.value.email,
-                "password": this.loginForm.value.password
-            }, '')
-                .toPromise()
-                .then((res: any) => {
-                    this.loading = false;
-                    if (res.body.status) {
-                        const respons = res.body.data;
-                        const mapData = {
-                            ...respons,
-                            _menu: [],
-                            dataUsers: []
-                        };
-                        const mapSession = cryptSession(JSON.stringify(mapData), decode64(environment.CONFIG.APP_PASS));
-                        sessionStorage.setItem(environment.CONFIG.APP_TOKEN_NAME, mapSession);
+        let rStatut: any = {}
 
-                        localStorage.setItem("user", JSON.stringify(user));
+        try {
+            let payloadStatut = {
+                "iduser": this.users?.uid,
+                "code_otp": otp,
+            }
+            console.log("this.users ====", this.users);
 
-                        if (!localStorage.getItem(environment.CONFIG.layout_name)) {
-                            localStorage.setItem(environment.CONFIG.layout_name, 'dark-sidebar');
-                        }
-                        this.router.navigate(["/dashboard/default"]);
-                    }
-                })
-                .catch((err) => {
-                    this.loading = false;
-                    this.toast.error(`${err?.error?.err?.non_field_errors[0] || 'Une erreur est survenue.'} `, '',
-                        {
-                            positionClass: 'toast-top-right',
-                            closeButton: true,
-                            timeOut: 3000
-                        })
-                    setTimeout(() => {
-                        this.errorTexte = `${err?.error?.err?.non_field_errors[0] || 'Une erreur est survenue.'} `;
-                    }, 3000)
-                });
+            console.log("payloadStatut =====", payloadStatut)
+            let responseForStatut: any = await this.newPostData(`${environment.api_url}auth/:verification-code-opt`, {data: postDataCrypte(payloadStatut)}, '')
+            rStatut = decryptData(responseForStatut.data);
+            console.log("retour de l'ajout statut ====", rStatut)
+            if (rStatut.status) {
+                // this.typeAlerte = 'success';
+                // this.errorTexte = `${rStatut?.message || 'Une erreur est survenue.'}`;
+                // Swal.fire({
+                //     title: rStatut?.message,
+                //     icon: 'success',
+                //     confirmButtonText: 'OK'
+                // })
+            } else {
+                this.loading = false;
+            }
 
-
+        } catch (e: any) {
+            this.errorTexte = `${e?.error?.message || 'Une erreur est survenue.'}`;
+            this.typeAlerte = 'danger';
+            console.log("=======e", e)
+            this.loading = false;
+            return
         }
+
+        this.httService.postData(`${environment.api_url}auth/:login`, {
+            "email": this.users.email,
+            "password": this.users.err
+        }, '')
+            .toPromise()
+            .then((res: any) => {
+                this.loading = false;
+                if (res.body.status) {
+
+                    sessionStorage.removeItem(`_temp_`);
+
+                    let response: any = {...res.body.data, ...res.body.data.datas_users};
+                    delete response.datas_users;
+
+                    const mapData = {
+                        ...response,
+                        _menu: [],
+                        dataUsers: []
+                    };
+
+                    const mapSession = cryptSession(JSON.stringify(mapData), decode64(environment.CONFIG.APP_PASS));
+                    sessionStorage.setItem(environment.CONFIG.APP_TOKEN_NAME, mapSession);
+                    localStorage.setItem("user", JSON.stringify(user));
+
+                    if (!localStorage.getItem(environment.CONFIG.layout_name)) {
+                        localStorage.setItem(environment.CONFIG.layout_name, 'dark-sidebar');
+                    }
+                    this.router.navigate(["/dashboard/default"]);
+                }
+
+            })
+            .catch((err) => {
+                this.loading = false;
+                this.toast.error(`${err?.error?.err?.non_field_errors[0] || 'Une erreur est survenue.'} `, '',
+                    {
+                        positionClass: 'toast-top-right',
+                        closeButton: true,
+                        timeOut: 3000
+                    })
+                setTimeout(() => {
+                    this.errorTexte = `${err?.error?.err?.non_field_errors[0] || 'Une erreur est survenue.'} `;
+                }, 3000)
+            });
+
+
     }
 
 
@@ -174,16 +221,10 @@ export class ConfirmeAuthOtpComponent implements AfterViewInit {
         event.preventDefault();
         event.stopPropagation();
 
-        this.isPasting = true; // Activer le flag
+        this.isPasting = true;
 
-        // Récupérer le texte collé
         const pastedText = event.clipboardData?.getData('text') || '';
-
-        // Extraire uniquement les chiffres
         const digits = pastedText.replace(/\D/g, '').slice(0, 6);
-
-        console.log('Texte collé:', pastedText);
-        console.log('Chiffres extraits:', digits);
 
         if (digits.length === 0) {
             this.isPasting = false;
@@ -192,32 +233,26 @@ export class ConfirmeAuthOtpComponent implements AfterViewInit {
 
         const inputs = this.otpInputs.toArray();
 
-        // Vider tous les champs d'abord
         inputs.forEach(input => {
             input.nativeElement.value = '';
         });
 
-        // Remplir les champs avec les chiffres
         setTimeout(() => {
             for (let i = 0; i < Math.min(digits.length, 6); i++) {
                 if (inputs[i]) {
-                    console.log("digits[i] ===", digits[i])
                     inputs[i].nativeElement.value = digits[i];
                 }
             }
 
-            // Focus sur le dernier champ rempli
             const lastIndex = Math.min(digits.length, 6) - 1;
             if (inputs[lastIndex]) {
                 inputs[lastIndex].nativeElement.focus();
             }
 
+            // ← Désactiver isPasting AVANT d'appeler updateOtpCode
+            this.isPasting = false;
             this.updateOtpCode();
 
-            // Désactiver le flag après un court délai
-            setTimeout(() => {
-                this.isPasting = false;
-            }, 100);
         }, 10);
     }
 
@@ -229,14 +264,10 @@ export class ConfirmeAuthOtpComponent implements AfterViewInit {
 
         // Si le code est complet (6 chiffres)
         if (this.otpCode.length === 6 && !this.isPasting) {
-            console.log('✅ Code OTP complet:', this.otpCode);
-            this.verifyOtp(this.otpCode);
-        }
-    }
 
-    verifyOtp(code: string): void {
-        console.log('Vérification du code:', code);
-        // Votre logique de vérification ici
+            console.log('✅ Code OTP complet:', this.otpCode);
+            this.login(this.otpCode);
+        }
     }
 
     resetOtp(): void {
@@ -250,4 +281,37 @@ export class ConfirmeAuthOtpComponent implements AfterViewInit {
         }
     }
 
+    newPostData(url: string, payload: any, token: any) {
+        const headers = new HttpHeaders({
+            Authorization: `Bearer ${token}`
+        });
+        return new Promise((resolve, reject) => {
+            this.http.post(url, payload, {headers})
+                .subscribe(
+                    (data) => {
+                        resolve(data)
+                    },
+                    (err) => {
+                        reject(err)
+                    }
+                )
+        })
+    }
+
+    renvoyerOtp() {
+        console.log("Re-envoi de OTP")
+    }
+
+    countdown(start: number = 30) {
+        this.current = start;
+        const interval = setInterval(() => {
+            if (this.current === 0) {
+                clearInterval(interval);
+                this.isDisabled = false;
+                console.log("Terminé !");
+                return
+            }
+            this.current--;
+        }, 1000);
+    }
 }

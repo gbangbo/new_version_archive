@@ -4,6 +4,7 @@ import {RouterModule} from '@angular/router';
 import {FeatherIconComponent} from "../../../ui/feather-icon/feather-icon.component";
 import {LayoutService} from '../../../../services/layout.service';
 import {CommonModule} from "@angular/common";
+import {Authorization} from "../../../../../protect/authorization.service";
 
 @Component({
     selector: 'app-header-logo',
@@ -17,11 +18,13 @@ export class LogoComponent implements OnInit {
     @Input() logoDark!: string;
     @Input() icon: string;
     @Input() type: string;
+    users: any = [];
 
-    constructor(public layoutService: LayoutService) {
+    constructor(private autor: Authorization, public layoutService: LayoutService,) {
     }
 
     ngOnInit() {
+        this.users = this.autor.getInfosUsers();
         console.log('logoIn:', this.logoIn);
         console.log('logoDark:', this.logoDark);
     }

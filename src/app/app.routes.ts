@@ -35,13 +35,14 @@ export const routes: Routes = [
         path: 'auth/confirme-auth-otp',
         component: ConfirmeAuthOtpComponent,
         data: {
-            title: 'Mot de passe oublié'
+            title: 'Confirmation du compte'
         }
-    },{
-        path: 'auth/confirme-auth-otp',
+    },
+    {
+        path: 'auth/update-pwd/:token',
         component: ResetPasswordComponent,
         data: {
-            title: 'Mot de passe oublié'
+            title: 'changer le mot de passe'
         }
     },
     {

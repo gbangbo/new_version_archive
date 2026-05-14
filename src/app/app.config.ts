@@ -1,5 +1,5 @@
 import {HttpClient, provideHttpClient} from '@angular/common/http';
-import {ApplicationConfig, importProvidersFrom, provideZoneChangeDetection} from '@angular/core';
+import {ApplicationConfig, importProvidersFrom, LOCALE_ID, provideZoneChangeDetection} from '@angular/core';
 import {provideAnimations} from '@angular/platform-browser/animations';
 import {provideRouter, withInMemoryScrolling} from '@angular/router';
 import {OWL_DATE_TIME_LOCALE} from '@danielmoncada/angular-datetime-picker';
@@ -27,13 +27,15 @@ import {
     FileWordTwoTone,
     SearchOutline,
     CloseOutline,
-    FileSearchOutline ,
+    FileSearchOutline,
     FileUnknownOutline, DownloadOutline,
     FolderTwoTone,
-    LoadingOutline
+    LoadingOutline, MinusOutline, FolderOpenTwoTone
 } from '@ant-design/icons-angular/icons';
+import localeFr from "@angular/common/locales/fr";
 
-registerLocaleData(fr);
+// registerLocaleData(fr);
+registerLocaleData(localeFr);
 
 export function HttpLoaderFactory(http: HttpClient) {
     return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -50,7 +52,9 @@ export const MY_NATIVE_FORMATS = {
 
 export const appConfig: ApplicationConfig = {
     providers: [
-        {provide: OWL_DATE_TIME_LOCALE, useValue: 'en'},
+        {provide: LOCALE_ID, useValue: 'fr'},
+        {provide: OWL_DATE_TIME_LOCALE, useValue: 'fr'},
+        // {provide: OWL_DATE_TIME_LOCALE, useValue: 'en'},
         {provide: NZ_I18N, useValue: fr_FR},
         provideNzIcons([
             PlusOutline,
@@ -66,10 +70,13 @@ export const appConfig: ApplicationConfig = {
             FilePdfTwoTone,
             SearchOutline,
             CloseOutline,
-            FileUnknownOutline, DownloadOutline,
+            FileUnknownOutline,
+            DownloadOutline,
             FolderTwoTone,
-            FileSearchOutline ,
-            LoadingOutline
+            FileSearchOutline,
+            LoadingOutline,
+            FolderOpenTwoTone,
+            MinusOutline
         ]),
         provideAnimations(),
         provideToastr(),

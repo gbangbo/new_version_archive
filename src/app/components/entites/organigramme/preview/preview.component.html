@@ -1,0 +1,35 @@
+<!-- ══ TOOLBAR ══════════════════════════════════ -->
+<div class="op-toolbar">
+    <div class="op-toolbar-left">
+        <div class="op-toolbar-title">
+            <div class="op-toolbar-icon">
+                <i class="fa-solid fa-reorder"></i>
+            </div>
+            <div>
+                <span class="op-toolbar-label">ORGANIGRAMME</span>
+                <span class="op-toolbar-count">
+                <!--  {{ treeControl.dataNodes?.length || 0 }} enregistrement(s)-->
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="op-toolbar-right">
+        <button class="op-btn op-btn-outline"
+                nz-tooltip nzTooltipTitle="Exporter en PNG"
+                (click)="exportPNG()">
+            <i data-feather="download" style="width:15px"></i>
+            <span class="btn-label">Exporter</span>
+        </button>
+    </div>
+</div>
+
+<!-- ══ CANVAS ORGANIGRAMME ══════════════════════ -->
+<div class="org-canvas-wrap">
+    <div *ngIf="!treeData?.length" class="op-empty-state">
+        <app-feather-icon class="icon-inbox" [icon]="'inbox'"></app-feather-icon>
+        <span>Aucune donnée à afficher</span>
+    </div>
+    <div class="canvas-scroll" *ngIf="treeData?.length">
+        <canvas #orgCanvas></canvas>
+    </div>
+</div>

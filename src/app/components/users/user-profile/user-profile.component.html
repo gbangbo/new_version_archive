@@ -1,49 +1,67 @@
 <div class="container">
-  @if(currentUser) {
     <div class="user-profile">
-      <app-user-personal-details [currentUser]="currentUser"></app-user-personal-details>
+<!--      <app-user-personal-details [currentUser]="currentUser"></app-user-personal-details>-->
       <div class="grid grid-cols-12 card-gap">
   
         <div class="col-span-12">
           <div class="grid grid-cols-12 card-gap scope-bottom-wrapper user-profile-wrapper tabs">
             <div class="col-span-3 xxl:col-span-4 xl:col-span-12 box-col-4">
-              <app-card>
-                <ul class="sidebar-left-icons nav tab-links" orientation="vertical">
+              <div class="side-nav-card">
+                <ul class="side-nav-list">
                   @for(tab of userDetailsTab; track tab) {
-                    <li>
-                      <a class="tab-link" [class.active]="activeTab == tab.value" (click)="handleTab(tab.value)">
-                        <div class="nav-rounded">
-                          <div class="product-icons">
-                            <i [class]="tab.icon"></i>
-                          </div>
-                        </div>
-                        <div class="product-tab-content">
-                          <h6>{{ tab.title }}</h6>
-                        </div>
-                      </a>
-                    </li>
+                  <li class="side-nav-item">
+                    <a class="side-nav-link"
+                       [class.active]="activeTab == tab.value"
+                       (click)="handleTab(tab.value)">
+
+                      <!-- Icône -->
+                      <div class="side-nav-icon" [class.active]="activeTab == tab.value">
+                        <i [class]="tab.icon"></i>
+                      </div>
+
+                      <!-- Texte -->
+                      <div class="side-nav-text">
+                        <span class="side-nav-title">{{ tab.title }}</span>
+
+                      </div>
+
+                      <!-- Chevron -->
+                      <svg class="side-nav-chevron" xmlns="http://www.w3.org/2000/svg"
+                           width="14" height="14" viewBox="0 0 24 24"
+                           fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                        <polyline points="9 18 15 12 9 6"/>
+                      </svg>
+
+                    </a>
+
+                    <!-- Séparateur sauf dernier -->
+                    <div class="side-nav-sep" *ngIf="!$last"></div>
+                  </li>
                   }
                 </ul>
-              </app-card>
+              </div>
             </div>
             <div class="col-span-9 xxl:col-span-8 xl:col-span-12 box-col-8e">
               <div>
                 <div class="grid grid-cols-12">
                   <div class="col-span-12">
-                    @if(activeTab == 'activity') {
-                      <div class="notification">
-                        <app-user-activity></app-user-activity>
+                    <app-card [border]="true" [padding]="false">
+
+                      <div class="grid grid-cols-12 gap-4 tabs">
+                        <div class="col-span-12">
+                          @if(activeTab == 'info') {
+                          <app-info-perso></app-info-perso>
+                          }@else if(activeTab == 'mdp') {
+                          <app-mot-de-passe></app-mot-de-passe>
+                          }@else if(activeTab == 'doc') {
+                          <app-mes-doc></app-mes-doc>
+                          }@else if(activeTab == 'fiche') {
+                          <app-ma-fiche></app-ma-fiche>
+                          }
+                        </div>
                       </div>
-                    }
-                    @if(activeTab == 'task') {
-                      <app-user-task></app-user-task>
-                    }
-                    @if(activeTab == 'notification') {
-                      <app-user-notification></app-user-notification>
-                    }
-                    @if(activeTab == 'setting') {
-                      <app-user-setting></app-user-setting>
-                    }
+
+                    </app-card>
                   </div>
                 </div>
               </div>
@@ -52,7 +70,8 @@
         </div>
       </div>
     </div>
-  } @else {
-    <p class="text-center">No User Found.</p>
-  }
+
 </div>
+
+
+<br><br><br>

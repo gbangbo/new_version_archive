@@ -33,6 +33,26 @@
                             <form class="grid grid-cols-12 gap-6" [formGroup]="formDataTypeDoc" (ngSubmit)="submitForm()">
 
                                 <div class="col-span-12">
+                                    <label for="code_type_docs" class="form-label text-left block mb-2">
+                                        Côte <code class="text-red-500">*</code>
+                                    </label>
+                                    <input class="form-control hSoc"
+                                           formControlName="code_type_docs"
+                                           id="code_type_docs"
+                                           type="text"
+                                           placeholder="Entrez le type de document"
+                                           [ngClass]="{ 'is-invalid' : formDataTypeDoc.controls['code_type_docs'].touched &&
+                                            formDataTypeDoc.controls['code_type_docs'].errors?.['required'] , 'is-valid' : formDataTypeDoc.controls['code_type_docs'].valid}"
+                                    >
+                                    <div class="invalid-feedback"
+                                         *ngIf="formDataTypeDoc.controls['code_type_docs'].touched &&
+                                         formDataTypeDoc.controls['code_type_docs'].invalid">
+                                          <span *ngIf="formDataTypeDoc.controls['code_type_docs'].errors?.['required']">
+                                            Champ obligatoire
+                                          </span>
+                                    </div>
+                                </div>
+                                <div class="col-span-12">
                                     <label for="libelle_type_docs" class="form-label text-left block mb-2">
                                         Libellé <code class="text-red-500">*</code>
                                     </label>
@@ -54,12 +74,12 @@
                                 </div>
 
                                 <div class="col-span-6">
-                                    <label for="dure_prearchive" class="form-label text-left block mb-2">Délais au service (ans)</label>
+                                    <label for="dure_prearchive" class="form-label text-left block mb-2">DUA (ans)</label>
                                     <input class="form-control hSoc"
                                            formControlName="dure_prearchive"
                                            id="dure_prearchive"
                                            type="text"
-                                           placeholder="Entrez le libellé de la direction"
+                                           placeholder="Durée d'Utilité Administrative"
                                            [ngClass]="{
                                               'is-invalid':
                                                 formDataTypeDoc.controls['dure_prearchive'].touched &&
@@ -83,12 +103,12 @@
                                 </div>
                                 <div class="col-span-6">
                                     <label for="dure_conservatoire" class="form-label text-left block mb-2">
-                                        Délais de conservation aux archives (ans)</label>
+                                        DUL (ans)</label>
                                     <input class="form-control hSoc"
                                            formControlName="dure_conservatoire"
                                            id="dure_conservatoire"
                                            type="text"
-                                           placeholder="Entrez le delai de conservation"
+                                           placeholder="Durée d'Utilité Légale"
                                            [ngClass]="{
                                               'is-invalid':
                                                 formDataTypeDoc.controls['dure_conservatoire'].touched &&
@@ -113,6 +133,13 @@
                                 </div>
                                 <div class="col-span-6">
                                     <label class="flex items-center gap-3 cursor-pointer">
+                                        <label>Sort final</label>
+                                        1. C (A conserver apres preachivage)
+                                        2. D (A detruire apres preachivage)
+                                        <i>
+                                            Conformément à l’article 8.j du décret n°2016-851  du 19  octobre 2016
+                                            FIXANT   LES  MODALITÉS   DE  MISE  EN  ŒUVRE  DE L'ARCHIVAGE  ELECTRONIQUE  en Côte d’ivoire, les documents détruits ne pourront être reconstitués ni en parti ni en tout.
+                                        </i>
                                         <nz-switch formControlName="etat_type_docs"></nz-switch>
                                         <span class="form-label mb-0">A detruire après pré-archivage ?</span>
                                     </label>

@@ -6,7 +6,7 @@ import {Authorization} from "../../../../protect/authorization.service";
 import {HttpService} from "../../../../core/http.service";
 import Swal from "sweetalert2";
 import {CardComponent} from "../../../../shared/components/ui/card/card.component";
-import {NzToolTipModule} from "ng-zorro-antd/tooltip";
+import {NzTooltipDirective} from "ng-zorro-antd/tooltip";
 import {NzSwitchModule} from "ng-zorro-antd/switch";
 import {TooltipComponent} from "../../../../shared/components/ui/tooltip/tooltip.component";
 import {audios} from '../../../../shared/data/search-result';
@@ -18,7 +18,7 @@ import {Select2Module} from "ng-select2-component";
         FormsModule,
         ReactiveFormsModule,
         CardComponent,
-        NzToolTipModule,
+        NzTooltipDirective,
         NzSwitchModule,
         TooltipComponent, Select2Module],
     templateUrl: './type-doc-modal.component.html',
@@ -31,19 +31,19 @@ export class TypeDocModalComponent {
     public numberingTabs = [
         {
             id: 1,
-            title: 'Info. de base',
+            title: 'Invantaire + calendrier',
             value: 'Info. de base',
             class: 'one stepper step editing'
         },
         {
             id: 2,
-            title: 'Formulaire',
+            title: 'Gestion des Metadonnee',
             value: 'Formulaire',
             class: 'two step'
         },
         {
             id: 3,
-            title: 'Feedback',
+            title: 'Resume',
             value: 'feedback',
             class: 'three step'
         }
@@ -127,13 +127,13 @@ export class TypeDocModalComponent {
             action: [''],
             idtype_documents: [''],
             idsociete: [''],
-            code_type_docs: [''],
             active_type_docs: ['1'], //1: actif, 0:Inactif
             etat_type_docs: [''], //1:publie, 0:Brouillon
             etat_localite: [''],
             etat_personnel: [''],
             etat_engagement: [''],
             uid: [''],
+            code_type_docs: ['', Validators.required],
             libelle_type_docs: ['', Validators.required],
             dure_prearchive: ['', [Validators.required, Validators.pattern('^[0-9]+$'), Validators.min(1), Validators.max(999)]],
             dure_conservatoire: ['', [Validators.required, Validators.pattern('^[0-9]+$'), Validators.min(1), Validators.max(999)]],
@@ -141,9 +141,10 @@ export class TypeDocModalComponent {
     }
 
     ngOnChanges(changes: SimpleChanges) {
-        if (changes['dataLigne'] && changes['dataLigne']?.currentValue) {
+        const data = changes['dataLigne']?.currentValue;
+        if (data && Object.keys(data).length > 0) {
             this.formDataTypeDoc.patchValue(changes['dataLigne']?.currentValue);
-            this.dataLigneFields = changes['dataLigne']?.currentValue?.dataPro.map((d: any, index: number) => {
+            this.dataLigneFields = changes['dataLigne']?.currentValue?.dataPro?.map((d: any, index: number) => {
                 return {
                     ...d,
                     proprietes_select: d?.dataValueSelectPro,
@@ -151,10 +152,10 @@ export class TypeDocModalComponent {
                     default_proprietes_docs: d?.default_proprietes_docs.toString().toLowerCase() != 'false'
                 }
             });
-
             console.log("this.dataLigneFields  :::", this.dataLigneFields)
             console.log("Les variables du type de document  :::", changes['dataLigne']?.currentValue)
         }
+
     }
 
 
@@ -163,8 +164,8 @@ export class TypeDocModalComponent {
         let payload = {
             "action": this.formDataTypeDoc.value.uid ? 2 : 1,
             "idtype_documents": this.formDataTypeDoc.value.uid || '',
-            "idsociete": this.users?.dataSociete?.uid,
-            "code_type_docs": this.dataLigneFields[0].lib_proprietes_docs,
+            "idsociete": this.users?.datasociete?.uid,
+            "code_type_docs": this.formDataTypeDoc.value.code_type_docs,
             "libelle_type_docs": this.formDataTypeDoc.value.libelle_type_docs,
             "dure_prearchive": this.formDataTypeDoc.value.dure_prearchive,
             "dure_conservatoire": this.formDataTypeDoc.value.dure_conservatoire,

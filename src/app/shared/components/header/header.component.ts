@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
 
 // import { BookmarkComponent } from './widgets/bookmark/bookmark.component';
@@ -15,26 +15,31 @@ import {ToggleScreenComponent} from "./widgets/toggle-screen/toggle-screen.compo
 import {LayoutService} from '../../services/layout.service';
 import {OutsideDirective} from '../../directives/outside.directive';
 import {Authorization} from "../../../protect/authorization.service";
+import {FeatherIconComponent} from "../ui/feather-icon/feather-icon.component";
 
 @Component({
     selector: 'app-header',
     imports: [CommonModule, OutsideDirective, SearchComponent,
         LogoComponent, LanguageComponent, ToggleScreenComponent,
         ModeComponent,
-        NotificationComponent, ProfileComponent,
+        NotificationComponent, ProfileComponent, FeatherIconComponent,
         NoticeComponent],
     templateUrl: './header.component.html',
     styleUrl: './header.component.scss'
 })
-export class HeaderComponent{
+export class HeaderComponent {
     users: any = {}
     logoIn1: string = 'assets/images/logo/logo.png';
     logoDark1: string = 'assets/images/logo/logo_dark.png';
+    @Input() icon: string;
+    @Input() type: string;
+    isIcon: string = 'menu';
 
-    constructor(public layoutService: LayoutService, private autor: Authorization) {
+    constructor(public layoutService: LayoutService, private autor: Authorization, private cdr: ChangeDetectorRef) {
         this.users = this.autor.getInfosUsers();
         //assets/images/logo/logo.png
         //assets/images/logo/logo_dark.png
+        console.log("this.layoutService.closeSidebar ===", this.layoutService.closeSidebar)
     }
 
     toggleLanguage() {
@@ -49,4 +54,14 @@ export class HeaderComponent{
         this.layoutService.isSearchOpen = true;
     }
 
+    toggleSidebar() {
+        this.layoutService.closeSidebar = !this.layoutService.closeSidebar;
+        this.isIcon = this.layoutService.closeSidebar ? 'x' : 'menu';
+        console.log("isIcon===", this.isIcon)
+        this.cdr.detectChanges();
+    }
+
+    get isClosed(): boolean {
+        return this.layoutService.closeSidebar;
+    }
 }

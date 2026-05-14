@@ -1,82 +1,241 @@
-<div class="bg-navbar tabs">
-    <ul class="tab-links flex nav-primary">
-        <li class="tab-link" [class.active]="activeTab == 'type_doc'" (click)="handleTab('type_doc')">Type de document</li>
-        <li class="tab-link" [class.active]="activeTab == 'plan_class'" (click)="handleTab('plan_class')">Plan de classement</li>
-    </ul>
 <div class="container main-setting">
-
-    <ngx-spinner
-            bdColor="rgba(0, 0, 0, 0.6)"
-            size="medium"
-            color="#fff"
-            type="ball-scale-multiple"
-    >
-        <p style="color: white">{{actionLoad}}...</p>
-    </ngx-spinner>
-
     <div class="grid grid-cols-12 card-gap">
-        <div class="col-span-12  mt-5 ">
-            <app-card [headerTitle]="titleCarde" [header]="'pb-0'" [border]="true" [padding]="false">
+        <div class="col-span-12">
+            <app-card [border]="true" [padding]="false">
+
                 <div class="grid grid-cols-12 gap-4 tabs">
-                    <div class="col-span-12 lg:col-span-12">
-                        @if(activeTab == 'type_doc') {
-                        <div>
-                            <div class="flex justify-end items-center mb-4">
-                                <button
-                                        *ngIf='!isloading'
-                                        (click)="openModal()"
-                                        class="btn button-light-primary btn-sm flex items-center justify-center gap-2 px-4 py-2 rounded-lg transition-all"
-                                        style="min-width: 183px; width:183px">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-3"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
-                                    Nouveau type
-                                </button>
+                    <div class="col-span-12">
+                        <div class="relative">
+
+                            <!-- ══ OVERLAY SPINNER ══════════════════════════════ -->
+                            <div *ngIf="isloading"
+                                 class="absolute inset-0 flex justify-center items-center z-10 rounded-lg"
+                                 style="background: rgba(248,250,252,0.85); backdrop-filter: blur(2px);">
+                                <div class="text-center">
+                                    <div class="op-spinner"></div>
+                                    <p class="mt-3" style="color:#64748b; font-size:13px; font-weight:600;">
+                                        Chargement des données...
+                                    </p>
+                                </div>
                             </div>
-                            <!-- Tableau -->
-                            <div class="relative">
-                                <!-- Overlay spinner -->
-                                <div *ngIf="isloading" class="absolute inset-0 bg-white bg-opacity-75 flex justify-center items-center z-10 rounded-lg">
-                                    <div class="text-center">
-                                        <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mx-auto"></div>
-                                        <p class="mt-4 text-gray-600 font-medium">Chargement des données...</p>
+                            <div class="table-container" [class.op-loading]="isloading">
+                                <!-- ══ TOOLBAR ══════════════════════════════════ -->
+                                <div class="op-toolbar">
+                                    <!-- Titre + compteur -->
+                                    <div class="op-toolbar-left">
+                                        <div class="op-toolbar-title">
+                                            <div class="op-toolbar-icon">
+                                                <i class="far fa-clipboard"></i>
+                                            </div>
+                                            <div>
+                                                <span class="op-toolbar-label">LISTE DES TYPES DE DOCUMENTS</span>
+                                                <span class="op-toolbar-count">
+                                                    {{ filteredData.length || 0 }} enregistrement(s)
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Actions droite -->
+                                    <div class="op-toolbar-right">
+
+                                        <!-- Recherche -->
+                                        <div class="op-search-wrap">
+                                            <svg class="op-search-icon" viewBox="0 0 24 24" fill="none"
+                                                 stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                                                <circle cx="11" cy="11" r="8"/>
+                                                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                                            </svg>
+                                            <input class="op-search-input"
+                                                   placeholder="Rechercher..."
+                                                   [(ngModel)]="searchValue"
+                                                   (ngModelChange)="onSearch($event)"/>
+                                            <button *ngIf="searchValue"
+                                                    class="op-search-clear"
+                                                    (click)="searchValue=''; onSearch('')">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                     stroke-width="2.5" stroke-linecap="round" width="12" height="12">
+                                                    <line x1="18" y1="6" x2="6" y2="18"/>
+                                                    <line x1="6" y1="6" x2="18" y2="18"/>
+                                                </svg>
+                                            </button>
+                                        </div>
+
+                                        <button class="op-btn op-btn-outline"
+                                                nz-tooltip nzTooltipTitle="Nouveau type de document"
+                                                (click)="openModal()">
+                                            <i data-feather="edit-2" style="width: 15px;"></i>
+                                            <span class="btn-label">Nouveau</span>
+                                        </button>
                                     </div>
                                 </div>
 
-                                <!-- Tableau -->
-                                <div class="overflow-x-auto support-ticket-table custom-scrollbar" [class.opacity-50]="isloading">
-                                    <app-table
-                                            [tableConfig]="tableConfig"
-                                            [searchLibelle]="''"
-                                            [searchPlaceholder]="'Rechercher ici...'"
-                                            [emptyTexte]="'Aucune donnée trouvée'"
-                                            [pageSize]="10"
-                                            [showPaginate]="true"
-                                            [paginateDetails]="true"
-                                            [downloadReports]="false"
-                                            [showCopyButton]="false"
-                                            [showCSVButton]="false"
-                                            [showPrintButton]="false"
-                                            [showPDFButton]="false"
-                                            [showExcelButton]="false"
-                                            (onExport)="handleExport($event)"
-                                            (action)="handleAction($event)"
-                                    >
-                                    </app-table>
-                                </div>
+                                <!-- ══ TABLE ════════════════════════════════════ -->
 
+                                <div class="overflow-x-auto support-ticket-table custom-scrollbar">
+                                    <nz-table
+                                        #nzTable
+                                        [nzData]="filteredData"
+                                        [nzPageSize]="10"
+                                        [nzShowPagination]="true"
+                                        [nzShowTotal]="totalTemplate"
+                                        nzShowSizeChanger
+                                        nzBordered
+                                        nzSize="small"
+                                        [nzScroll]="filteredData.length > 0 ? { x: '1200px' } : {}"
+                                    >
+                                        <thead>
+                                        <tr>
+                                            <th nzWidth="20px"></th>  <!-- ← colonne expand -->
+                                            <th nzWidth="100px">Côte</th>
+                                            <th nzWidth="200px">Libellé</th>
+                                            <th nzWidth="50px">DUA (ans)</th>
+                                            <th nzWidth="50px">DUL (ans)</th>
+                                            <th nzWidth="90px">Créé le</th>
+                                            <th nzWidth="70px" nzAlign="center">Actions</th>
+                                        </tr>
+                                        </thead>
+
+                                        <tbody>
+                                        <ng-container *ngFor="let row of nzTable.data; let i = index">
+
+                                            <!-- Ligne principale -->
+                                            <tr class="op-table-row">
+                                                <td [nzExpand]="row.expand" (nzExpandChange)="row.expand = $event"></td>
+                                                <td><span class="cell-text">{{ row.code_type_docs }}</span></td>
+                                                <td><span class="cell-text">{{ row.libelle_type_docs }}</span></td>
+                                                <td><span class="cell-text">{{ row.dure_conservatoire }}</span></td>
+                                                <td><span class="cell-text">{{ row.dure_prearchive }}</span></td>
+                                                <td><span class="cell-text">{{ row.cree }}</span></td>
+                                                <td nzAlign="center">
+                                                    <div class="op-actions">
+                                                        <button class="btn-round-edit mr-2"
+                                                                nz-tooltip [nzTooltipTitle]="'Modifier'"
+                                                                nzTooltipPlacement="top"
+                                                                (click)="openModal(row)">
+                                                            <app-feather-icon class="icon-small" [icon]="'edit-3'"></app-feather-icon>
+                                                        </button>
+                                                        <button class="btn-round-edit mr-2"
+                                                                nz-tooltip [nzTooltipTitle]="'Exporter le model'"
+                                                                nzTooltipPlacement="top"
+                                                                (click)="exportModel(row)">
+                                                            <i class="fa-regular fa-file-excel" style="font-size: 15px;"></i>
+                                                        </button>
+                                                        <button class="btn-round-edit"
+                                                                nz-tooltip [nzTooltipTitle]="'Supprimer'"
+                                                                nzTooltipPlacement="top"
+                                                                (click)="deleteType(row)">
+                                                            <i data-feather="trash-2"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+
+                                            <!-- Expand niveau 1 — dataPro -->
+                                            <tr [nzExpand]="row.expand">
+                                                <td colspan="7" style="padding: 0 !important; background: #f8fafc;">
+                                                    <nz-table
+                                                            [nzData]="row.dataPro || []"
+                                                            [nzShowPagination]="false"
+                                                            nzSize="small"
+                                                            nzBordered
+                                                            style="width: 1334px !important; display: block;"
+                                                            class="tableau-inner">
+                                        <thead>
+                                        <tr>
+                                            <th nzWidth="20px"></th>
+                                            <th>Propriété</th>
+                                            <th>Type</th>
+                                            <!--                                                                <th nzWidth="100px">Actif</th>-->
+                                            <!--                                                                <th nzWidth="80px">Actions</th>-->
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <ng-container *ngFor="let pro of row.dataPro">
+
+                                            <!-- Ligne dataPro -->
+                                            <tr>
+                                                <td [nzExpand]="pro.expand"
+                                                    (nzExpandChange)="pro.expand = $event"
+                                                    *ngIf="pro.dataValueSelectPro?.length > 0; else noExpand">
+                                                </td>
+                                                <ng-template #noExpand><td></td></ng-template>
+                                                <td>{{ pro.lib_proprietes_docs }}</td>
+                                                <td>
+                                                    <span class="badge-type">{{ pro.type_proprietes_docs }}</span>
+                                                </td>
+                                                <!--                                                                        <td>-->
+                                                <!--                                                                          <span [class]="pro.active_proprietes_docs ? 'badge-actif' : 'badge-inactif'">-->
+                                                <!--                                                                            {{ pro.active_proprietes_docs ? 'Actif' : 'Inactif' }}-->
+                                                <!--                                                                          </span>-->
+                                                <!--                                                                        </td>-->
+                                                <!--                                                                        <td nzAlign="center">-->
+                                                <!--                                                                            <button class="btn-round-edit" nz-tooltip nzTooltipTitle="Modifier">-->
+                                                <!--                                                                                <app-feather-icon class="icon-small" [icon]="'edit-3'"></app-feather-icon>-->
+                                                <!--                                                                            </button>-->
+                                                <!--                                                                        </td>-->
+                                            </tr>
+
+                                            <!-- Expand niveau 2 — dataValueSelectPro -->
+                                            <tr [nzExpand]="pro.expand" *ngIf="pro.dataValueSelectPro?.length > 0">
+                                                <td colspan="6" style="padding: 0; background: #f0f4f8;">
+                                                    <nz-table
+                                                            [nzData]="pro.dataValueSelectPro"
+                                                            [nzShowPagination]="false"
+                                                            nzSize="small"
+                                                            nzBordered
+                                                            style="margin: 6px 32px;"
+                                                    >
+                                        <thead>
+                                        <tr>
+                                            <th>Libellé</th>
+                                            <th>Valeur</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr *ngFor="let val of pro.dataValueSelectPro">
+                                            <td>{{ val.libelle_proprietes_docs }}</td>
+                                            <td><strong>{{ val.value_proprietes_docs }}</strong></td>
+                                        </tr>
+                                        </tbody>
+                                    </nz-table>
+                                    </td>
+                                    </tr>
+
+                                    </ng-container>
+                                    </tbody>
+                                    </nz-table>
+                                    </td>
+                                    </tr>
+
+                                    </ng-container>
+
+                                    <!-- État vide -->
+                                    <tr *ngIf="!isloading && filteredData?.length === 0">
+                                        <td colspan="7">
+                                            <div class="op-empty-state">
+                                                <app-feather-icon class="icon-inbox" [icon]="'inbox'"></app-feather-icon>
+                                                <span>Aucune donnée trouvée !</span>
+                                                <small *ngIf="searchValue">Aucun résultat pour « {{ searchValue }} »</small>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                    </nz-table>
+                                </div>
+                                <ng-template #totalTemplate let-total>
+                                    Total : <strong>{{ total }}</strong> enregistrement(s)
+                                </ng-template>
 
                             </div>
                         </div>
-                            }@else if(activeTab == 'plan_class') {
-
-                        }
-
-                        </div>
+                    </div>
                 </div>
+
             </app-card>
         </div>
     </div>
     @if(modalOpen){
-    <app-type-doc-modal [dataLigne]="dataOneLigne" (modalOpen)="handleModal($event)"></app-type-doc-modal>
+    <app-type-doc-modal  [dataLigne]="dataLigne" (modalOpen)="handleModal($event)"></app-type-doc-modal>
     }
-</div>
 </div>

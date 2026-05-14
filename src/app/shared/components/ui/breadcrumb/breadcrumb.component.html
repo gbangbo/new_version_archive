@@ -1,25 +1,38 @@
 <div class="container-fluid">
     <div class="page-title">
-        <div class="grid grid-cols-12 items-center mx-[12px]">
-          <div class="col-span-6 sm:col-span-12">
-            <h3>{{ title }} </h3>
-          </div>
-          <div class="col-span-6 sm:col-span-12">
-            <ol class="breadcrumb flex gap-2">
-              <li class="breadcrumb-item">
-                <a [routerLink]="['/']">
-                  <app-svg-icon [icon]="'stroke-home'"></app-svg-icon>
-                </a>
-              </li>
-              @if(breadcrumbs && breadcrumbs.parentBreadcrumb){
-                <li class="breadcrumb-item">{{ breadcrumbs.parentBreadcrumb }}</li>
-              }
-              @if(breadcrumbs.childBreadcrumb){
-                <li class="breadcrumb-item active">{{ breadcrumbs.childBreadcrumb }} </li>
-              }
-            </ol>
-          </div>
+        <div class="page-title-inner">
+
+            <div class="page-title-left">
+                <div>
+<!--                    <h3 class="page-title-text">{{ title }}</h3>-->
+                </div>
+            </div>
+
+            <div class="page-title-right">
+                <ol class="breadcrumb-custom">
+                    <li class="breadcrumb-custom-item">
+                        <a [routerLink]="['/']" class="breadcrumb-home">
+                            <i class="icon-home"></i>
+                            Accueil
+                        </a>
+                    </li>
+
+                    @if(breadcrumbs && breadcrumbs.parentBreadcrumb){
+                    <li class="breadcrumb-custom-item">
+                      <span class="breadcrumb-separator">›</span>
+                      <span class="breadcrumb-parent">{{ breadcrumbs.parentBreadcrumb }}</span>
+          </li>
+                    }
+
+                    @if(breadcrumbs.childBreadcrumb){
+                    <li class="breadcrumb-custom-item">
+                      <span class="breadcrumb-separator">›</span>
+                      <span class="breadcrumb-active">{{ breadcrumbs.childBreadcrumb }}</span>
+          </li>
+                    }
+                </ol>
+            </div>
+
         </div>
     </div>
-  </div>
-  
+</div>

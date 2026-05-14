@@ -38,7 +38,7 @@ export class DepartementModalComponent {
 
     constructor(private autor: Authorization, private httService: HttpService) {
         this.users = this.autor.getInfosUsers();
-        this.showDirection(this.users?.dataSociete?.uid, '');
+        this.showDirection(this.users?.datasociete?.uid, '');
     }
 
     ngOnChanges(changes: SimpleChanges) {
@@ -65,7 +65,7 @@ export class DepartementModalComponent {
         let payload = {
             "action": this.validationForm.value.uid ? 2 : 1,
             "iddepartement": this.validationForm.value.uid || '',
-            "idsociete": this.users?.dataSociete?.uid,
+            "idsociete": this.users?.datasociete?.uid,
             ...this.validationForm.value
         }
 

@@ -1,101 +1,148 @@
-
 <div class="container">
     <div class="grid grid-cols-12">
+        <div class="col-span-12 xl:col-span-12">
 
-        <div class="col-span-5 xl:col-span-12 b-center bg-size"
-             style="background-image: url(&quot;../assets/images/login/ged_cover.png&quot;);
-          background-size: contain;
-          /*background-position: center center;*/
-          display: block;
-          background-repeat: no-repeat;
-          background-attachment: fixed;">
-            <div class="overlay"></div>
-            <img class="bg-img-cover bg-center" src="../assets/images/login/ged_cover.png" alt="looginpage" style="display: none;">
-            <p class="infoTexte">
-                Logiciel d'Archivage et de<br>
-                Gestion Électronique de Documents (GED) <br>
-                <small>Du Chaos Documentaire à la Sécurité Numérique Intelligente.</small>
-            </p>
-        </div>
+            <div class="page-wrapper">
 
-        <div class="col-span-7 xl:col-span-12">
-            <div class="login-card login-dark">
-                <!--      <div class="login-card login-dark" style="background-image: url(&quot;../assets/images/login/back_apw.png&quot;) !important;">-->
-                <div>
-                    <div>
-                        <a class="logo" href="javascript:void(0)">
-                            <img class="max-w-full h-auto for-light logoTaille" src="assets/images/logo/logo_apw_full.png" alt="logo">
-                            <img class="max-w-full h-auto for-dark logoTaille" src="assets/images/logo/logo_apw_full.png" alt="logo">
-                        </a>
-                    </div>
-                    <div class="login-main" style="display: flex;flex-direction: column;">
-
-                        <form class="theme-form" [formGroup]="loginForm" (ngSubmit)="login()">
-                            <h4>Connectez-vous au compte</h4>
-                            <p>Entrez vos accès pour vous connecter.</p>
-                            <div class="alert alert-info flex items-center gap-3" role="alert"
-                                 style="animation: slideDown 0.3s ease;">
-                                <div>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-circle stroke-danger">
-                                        <circle cx="12" cy="12" r="10"></circle>
-                                        <line x1="12" y1="8" x2="12" y2="12"></line>
-                                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                                    </svg>
-                                </div>
-                                <span class="txt-light">{{errorTexte}}</span>
-                            </div>
-                            <div class="grid grid-cols-12 gap-4 mt-5">
-                                <div class="col-span-12 otp-generate">
-                                    <input #otpInput type="text" maxlength="1" inputmode="numeric" autocomplete="off"
-                                           class="form-control code-input"
-                                           (input)="handleInput($event, 0)"
-                                           (keydown)="handleKeydown($event, 0)"
-                                           (paste)="handlePaste($event)">
-                                    <input #otpInput type="text" maxlength="1" inputmode="numeric" autocomplete="off"
-                                           class="form-control code-input"
-                                           (input)="handleInput($event, 1)"
-                                           (keydown)="handleKeydown($event, 1)"
-                                           (paste)="handlePaste($event)">
-                                    <input #otpInput type="text" maxlength="1" inputmode="numeric" autocomplete="off"
-                                           class="form-control code-input"
-                                           (input)="handleInput($event, 2)"
-                                           (keydown)="handleKeydown($event, 2)"
-                                           (paste)="handlePaste($event)">
-                                    <input #otpInput type="text" maxlength="1" inputmode="numeric" autocomplete="off"
-                                           class="form-control code-input"
-                                           (input)="handleInput($event, 3)"
-                                           (keydown)="handleKeydown($event, 3)"
-                                           (paste)="handlePaste($event)">
-                                    <input #otpInput type="text" maxlength="1" inputmode="numeric" autocomplete="off"
-                                           class="form-control code-input"
-                                           (input)="handleInput($event, 4)"
-                                           (keydown)="handleKeydown($event, 4)"
-                                           (paste)="handlePaste($event)">
-                                    <input #otpInput type="text" maxlength="1" inputmode="numeric" autocomplete="off"
-                                           class="form-control code-input"
-                                           (input)="handleInput($event, 5)"
-                                           (keydown)="handleKeydown($event, 5)"
-                                           (paste)="handlePaste($event)">
-                                </div>
-                            </div>
-
-                            <div class="form-group mb-0 mt-3">
-                                <a class="link" [routerLink]="['/auth/connexion']">Revenir à la connexion</a>
-<!--                                <div class="text-end">-->
-<!--                                    <button class="btn btn-primary btn-block w-full text-white mt-[24px] btnCnx" type="submit" [disabled]="!loginForm.valid">-->
-<!--                                        <i class="icofont icofont-spinner-alt-5 icofont-spin" *ngIf="loading"></i> &nbsp; Se connecter</button>-->
-<!--                                </div>-->
-
-                            </div>
-                        </form>
-                        <p style="margin-top: auto !important;" class="text-center mt-[24px] !mb-0 footer-text">Build v4.0.0
-                            <i class="icofont icofont-heart-alt" style="color:#ad0631"></i>
-                            <a class="ms-2" href="https://www.logicielplus.net/" target="_blank">By Logiciel +</a>
-                        </p>
-
+                <!-- Header -->
+                <div class="bvpn-header">
+                    <div class="bvpn-left">
+            <span class="bvpn-title">
+              <img src="assets/images/logo/logo_apw_full.png" alt="logo" class="logo-header">
+            </span>
+                        <span class="bvpn-divider">
+            <svg width="12" height="50" viewBox="0 0 12 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6 0 C10 6, 2 12, 6 18 C10 24, 2 30, 6 36 C10 42, 2 48, 6 50"
+                    stroke="rgba(255,255,255,0.8)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+            </svg>
+          </span>
+                        <span class="bvpn-subtitle">
+              <b style="text-transform: capitalize; font-weight: bold">Archive Pro Web</b> est une plateforme de Gestion Électronique de Documents (GED). <br>
+              Du chaos documentaire à une gestion numérique sécurisée et intelligente.
+            </span>
                     </div>
                 </div>
+
+                <!-- Login Card -->
+                <div class="login-card login-dark">
+                    <div>
+                        <div class="login-main" style="display: flex; flex-direction: column;">
+
+                            <form class="theme-form" [formGroup]="loginForm">
+                                <h4>Connectez-vous au compte</h4>
+                                <p>Entrez vos accès pour vous connecter.</p>
+                                <div class="alert alert-{{typeAlerte}} flex items-center gap-3" role="alert"
+                                     style="animation: slideDown 0.3s ease;">
+                                    <div>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                             stroke-linecap="round" stroke-linejoin="round"
+                                             class="feather feather-alert-circle stroke-danger">
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                        </svg>
+                                    </div>
+                                    <span class="txt-light">{{errorTexte}}</span>
+                                </div>
+                                <div class="grid grid-cols-12 gap-4 mt-5">
+                                    <div class="col-span-12 otp-generate">
+                                        <input #otpInput type="text" maxlength="1" inputmode="numeric"
+                                               autocomplete="off"
+                                               class="form-control code-input"
+                                               (input)="handleInput($event, 0)"
+                                               (keydown)="handleKeydown($event, 0)"
+                                               (paste)="handlePaste($event)">
+                                        <input #otpInput type="text" maxlength="1" inputmode="numeric"
+                                               autocomplete="off"
+                                               class="form-control code-input"
+                                               (input)="handleInput($event, 1)"
+                                               (keydown)="handleKeydown($event, 1)"
+                                               (paste)="handlePaste($event)">
+                                        <input #otpInput type="text" maxlength="1" inputmode="numeric"
+                                               autocomplete="off"
+                                               class="form-control code-input"
+                                               (input)="handleInput($event, 2)"
+                                               (keydown)="handleKeydown($event, 2)"
+                                               (paste)="handlePaste($event)">
+                                        <input #otpInput type="text" maxlength="1" inputmode="numeric"
+                                               autocomplete="off"
+                                               class="form-control code-input"
+                                               (input)="handleInput($event, 3)"
+                                               (keydown)="handleKeydown($event, 3)"
+                                               (paste)="handlePaste($event)">
+                                        <input #otpInput type="text" maxlength="1" inputmode="numeric"
+                                               autocomplete="off"
+                                               class="form-control code-input"
+                                               (input)="handleInput($event, 4)"
+                                               (keydown)="handleKeydown($event, 4)"
+                                               (paste)="handlePaste($event)">
+                                        <input #otpInput type="text" maxlength="1" inputmode="numeric"
+                                               autocomplete="off"
+                                               class="form-control code-input"
+                                               (input)="handleInput($event, 5)"
+                                               (keydown)="handleKeydown($event, 5)"
+                                               (paste)="handlePaste($event)">
+                                    </div>
+
+                                </div>
+                                <!-- Spinner conditionnel -->
+                                <div *ngIf="loading" style="text-align: center; margin-top: 16px;">
+                                    <i class="fas fa-spin fa-circle-notch" style="font-size: 24px; color: #7366ff;"></i>
+                                </div>
+                                <div style="
+                                          display: flex;
+                                          flex-direction: column;
+                                          align-items: center;
+                                          gap: 12px;
+                                          margin-top: 24px;
+                                          width: 100%;
+                                          clear: both;
+                                        ">
+
+                                    <a style="
+                                                font-size: 13px;
+                                                color: #7366ff;
+                                                cursor: default;
+                                                text-align: center;
+                                                line-height: 1.5;
+                                            ">
+                                        Vous n'avez pas reçu le code OTP ?
+                                        <span    (click)="renvoyerOtp()"
+                                                 [class.disabled]="isDisabled"
+                                              style="font-weight: 600; text-decoration: underline;cursor: pointer">
+                                             Renvoyer<span *ngIf="isDisabled">({{ current }})</span>
+                                        </span>
+                                    </a>
+
+                                    <a [routerLink]="['/auth/connexion']" style="
+                                                font-size: 13px;
+                                                color: #888;
+                                                text-align: center;
+                                                cursor: pointer;
+                                            ">
+                                        <i class="fa-solid fa-angle-left"></i>  Revenir à la connexion
+                                    </a>
+
+                                </div>
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer en dehors de la card -->
+                <div class="login-footer">
+                    <p class="footer-text">
+                        Build v4.0.0
+                        <i class="icofont icofont-heart-alt" style="color:#ad0631"></i>
+                        <a class="ms-2" href="https://www.logicielplus.net/" target="_blank">By Logiciel +</a>
+                    </p>
+                </div>
+
             </div>
+            <!-- fin page-wrapper -->
+
         </div>
     </div>
 </div>

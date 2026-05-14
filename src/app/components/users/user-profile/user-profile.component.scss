@@ -1,0 +1,128 @@
+// ── Card conteneur ────────────────────────────────────────
+.side-nav-card {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #F1F5F9;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  padding: 8px;
+}
+
+// ── Liste ─────────────────────────────────────────────────
+.side-nav-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+// ── Item ──────────────────────────────────────────────────
+.side-nav-item {
+  display: flex;
+  flex-direction: column;
+}
+
+// ── Lien ──────────────────────────────────────────────────
+.side-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  position: relative;
+
+  &:hover {
+    background: #F8FAFF;
+
+    .side-nav-title {
+      color: #6366F1;
+    }
+
+    .side-nav-icon:not(.active) {
+      border-color: #E0E7FF;
+      background: #EEF2FF;
+      color: #6366F1;
+    }
+
+    .side-nav-chevron {
+      color: #6366F1;
+      transform: translateX(3px);
+    }
+  }
+
+  // ← Version subtile
+  &.active {
+    background: rgba(99, 102, 241, 0.08);
+    box-shadow: none;
+
+    .side-nav-title {
+      color: #6366F1;
+      font-weight: 700;
+    }
+
+    .side-nav-chevron {
+      color: #6366F1;
+    }
+  }
+}
+
+// ── Icône ─────────────────────────────────────────────────
+.side-nav-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  border: 1.5px solid #E5E7EB;
+  background: #F9FAFB;
+  color: #6B7280;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+  font-size: 16px;
+
+  // ← Icône active subtile
+  &.active {
+    background: rgba(99, 102, 241, 0.12);
+    border-color: rgba(99, 102, 241, 0.25);
+    color: #6366F1;
+  }
+}
+
+// ── Texte ─────────────────────────────────────────────────
+.side-nav-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.side-nav-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1F2937;
+  transition: color 0.2s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// ── Chevron ───────────────────────────────────────────────
+.side-nav-chevron {
+  color: #D1D5DB;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+// ── Séparateur ────────────────────────────────────────────
+.side-nav-sep {
+  height: 1px;
+  background: #F3F4F6;
+  margin: 2px 14px;
+}

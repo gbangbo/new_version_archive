@@ -1,123 +1,113 @@
-
 <div class="container">
   <div class="grid grid-cols-12">
+    <div class="col-span-12 xl:col-span-12">
 
-    <div class="col-span-5 xl:col-span-12 b-center bg-size"
-         style="background-image: url(&quot;../assets/images/login/ged_cover.png&quot;);
-          background-size: contain;
-          /*background-position: center center;*/
-          display: block;
-          background-repeat: no-repeat;
-          background-attachment: fixed;">
-      <div class="overlay"></div>
-      <img class="bg-img-cover bg-center" src="../assets/images/login/ged_cover.png" alt="looginpage" style="display: none;">
-      <p class="infoTexte">
-        Logiciel d'Archivage et de<br>
-        Gestion Électronique de Documents (GED) <br>
-        <small>Du Chaos Documentaire à la Sécurité Numérique Intelligente.</small>
-      </p>
-    </div>
+      <div class="page-wrapper">
 
-    <div class="col-span-7 xl:col-span-12">
-      <div class="login-card login-dark">
-<!--      <div class="login-card login-dark" style="background-image: url(&quot;../assets/images/login/back_apw.png&quot;) !important;">-->
-        <div>
-          <div>
-            <a class="logo" href="javascript:void(0)">
-              <img class="max-w-full h-auto for-light logoTaille" src="assets/images/logo/logo_apw_full.png" alt="logo">
-              <img class="max-w-full h-auto for-dark logoTaille" src="assets/images/logo/logo_apw_full.png" alt="logo">
-            </a>
-          </div>
-          <div class="login-main" style="display: flex;flex-direction: column;">
-
-            <form class="theme-form" [formGroup]="loginForm" (ngSubmit)="login()">
-              <h4>Connectez-vous au compte</h4>
-              <p>Entrez vos accès pour vous connecter.</p>
-
-              <div class="alert alert-danger flex items-center gap-3 mb-5" role="alert" *ngIf="errorTexte"
-                   style="animation: slideDown 0.3s ease;">
-                <div>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-circle stroke-danger">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="12" y1="8" x2="12" y2="12"></line>
-                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                  </svg>
-                </div>
-                <span class="txt-light">{{errorTexte}}</span>
-              </div>
-
-              <div class="form-group">
-                <div class="input-with-icon">
-                  <i class="icofont icofont-email"></i>
-                  <input class="form-control with-icon" type="email" placeholder="Votre adresse mail" formControlName="email">
-                </div>
-<!--                <label class="col-form-label">Email</label>-->
-<!--                <input class="form-control" type="email" placeholder="Votre adresse mail" formControlName="email">-->
-                @if(loginForm.controls['email'].touched && loginForm.controls['email'].errors?.['required']){
-                <div class="text text-danger mt-1">L'e-mail est requis</div>
-                }
-                @if(loginForm.controls['email'].touched && loginForm.controls['email'].errors?.['email']){
-                <div class="text text-danger mt-1">E-mail invalide</div>
-                }
-              </div>
-              <div class="form-group">
-                <label class="col-form-label">Mot de passe</label>
-                <div class="form-input relative input-with-icon">
-                  <i class="icofont icofont-lock"></i>
-                  <input class="form-control with-icon" [type]="show ? 'text' : 'password'" placeholder="*********" formControlName="password" style="    padding: 12px 48px 12px 44px !important;">
-                  @if(!show){
-                  <div class="show-hide" (click)="showPassword()">
-                    <span class="show"></span>
-                  </div>
-                  }@else{
-                  <div class="show-hide" (click)="showPassword()">
-                    <span class="Hide"></span>
-                  </div>
-                  }
-                </div>
-                @if(loginForm.controls['password'].touched && loginForm.controls['password'].errors?.['required']){
-                <div class="text text-danger mt-1">Le mot de passe est requis</div>
-                }
-              </div>
-<!--              <div class="form-group">-->
-<!--                <label class="col-form-label">Mot de passe</label>-->
-<!--                <div class="form-input relative">-->
-<!--                  <input class="form-control" [type]="show ? 'text' : 'password'" type="password" name="login[password]" placeholder="*********" formControlName="password">-->
-<!--                  @if(!show){-->
-<!--                  <div class="show-hide" (click)="showPassword()">-->
-<!--                    <span class="show"></span>-->
-<!--                  </div>-->
-<!--                  }@else{-->
-<!--                  <div class="show-hide" (click)="showPassword()">-->
-<!--                    <span class="Hide"></span>-->
-<!--                  </div>-->
-<!--                  }-->
-<!--                  @if(loginForm.controls['password'].touched && loginForm.controls['password'].errors?.['required']){-->
-<!--                  <div class="text text-danger mt-1">Le mot de passe est requis</div>-->
-<!--                  }-->
-<!--                </div>-->
-<!--              </div>-->
-              <div class="form-group mb-0">
-                <div class="form-check flex gap-2 items-center">
-                  <input class="checkbox-primary form-check-input custom-checkbox" id="checkbox1" type="checkbox">
-                  <label class="text-muted form-check-label !mb-0" for="checkbox1">Se souvenir de moi</label>
-                </div>
-                <a class="link" [routerLink]="['/auth/forgot-password']">Mot de passe oublié ?</a>
-                <div class="text-end">
-                  <button class="btn btn-primary btn-block w-full text-white mt-[24px] btnCnx" type="submit" [disabled]="!loginForm.valid">
-                    <i class=" {{!loading ? '':'fas fa-spin fa-circle-notch'}}"></i> &nbsp; Se connecter</button>
-                </div>
-
-              </div>
-            </form>
-            <p style="margin-top: auto !important;" class="text-center mt-[24px] !mb-0 footer-text">Build v4.0.0
-              <i class="icofont icofont-heart-alt" style="color:#ad0631"></i>
-              <a class="ms-2" href="https://www.logicielplus.net/" target="_blank">By Logiciel +</a>
-            </p>
-
+        <!-- Header -->
+        <div class="bvpn-header">
+          <div class="bvpn-left">
+            <span class="bvpn-title">
+              <img src="assets/images/logo/logo_apw_full.png" alt="logo" class="logo-header">
+            </span>
+            <span class="bvpn-divider">
+            <svg width="12" height="50" viewBox="0 0 12 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6 0 C10 6, 2 12, 6 18 C10 24, 2 30, 6 36 C10 42, 2 48, 6 50"
+                    stroke="rgba(255,255,255,0.8)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+            </svg>
+          </span>
+            <span class="bvpn-subtitle">
+              <b style="text-transform: capitalize; font-weight: bold">Archive Pro Web</b> est une plateforme de Gestion Électronique de Documents (GED). <br>
+              Du chaos documentaire à une gestion numérique sécurisée et intelligente.
+            </span>
           </div>
         </div>
+
+        <!-- Login Card -->
+        <div class="login-card login-dark">
+          <div>
+            <div class="login-main" style="display: flex; flex-direction: column;">
+
+              <form class="theme-form" [formGroup]="loginForm" (ngSubmit)="login()">
+                <h4>Connectez-vous au compte</h4>
+                <p>Entrez vos accès pour vous connecter.</p>
+
+                <div class="alert alert-danger flex items-center gap-3 mb-5" role="alert" *ngIf="errorTexte"
+                     style="animation: slideDown 0.3s ease;">
+                  <div>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                         class="feather feather-alert-circle stroke-danger">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <line x1="12" y1="8" x2="12" y2="12"></line>
+                      <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                  </div>
+                  <span class="txt-light">{{errorTexte}}</span>
+                </div>
+
+                <div class="form-group">
+                  <label class="col-form-label">Login <code>*</code></label>
+                  <div class="input-with-icon">
+                    <i class="icofont icofont-email"></i>
+                    <input class="form-control with-icon" type="email" placeholder="Votre adresse mail" formControlName="email">
+                  </div>
+                  @if(loginForm.controls['email'].touched && loginForm.controls['email'].errors?.['required']){
+                  <div class="text text-danger mt-1">L'e-mail est requis</div>
+                  }
+                  @if(loginForm.controls['email'].touched && loginForm.controls['email'].errors?.['email']){
+                  <div class="text text-danger mt-1">E-mail invalide</div>
+                  }
+                </div>
+
+                <div class="form-group">
+                  <label class="col-form-label">Mot de passe <code>*</code></label>
+                  <div class="form-input relative input-with-icon">
+                    <i class="icofont icofont-lock"></i>
+                    <input class="form-control with-icon" [type]="show ? 'text' : 'password'" placeholder="*********"
+                           formControlName="password" style="padding: 12px 48px 12px 44px !important;">
+                    @if(!show){
+                    <div class="show-hide" (click)="showPassword()">
+                      <span class="show"></span>
+                    </div>
+                    }@else{
+                    <div class="show-hide" (click)="showPassword()">
+                      <span class="Hide"></span>
+                    </div>
+                    }
+                  </div>
+                  @if(loginForm.controls['password'].touched && loginForm.controls['password'].errors?.['required']){
+                  <div class="text text-danger mt-1">Le mot de passe est requis</div>
+                  }
+                </div>
+
+                <div class="form-group mb-0 mt-5">
+                  <a class="link" [routerLink]="['/auth/forgot-password']">Mot de passe oublié ?</a>
+                  <div class="text-end">
+                    <button class="btn btn-primary btn-block w-full text-white mt-[24px] btnCnx" type="submit"
+                            [disabled]="!loginForm.valid">
+                      <i class="{{!loading ? '' : 'fas fa-spin fa-circle-notch'}}"></i> &nbsp; Se connecter
+                    </button>
+                  </div>
+                </div>
+              </form>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer en dehors de la card -->
+        <div class="login-footer">
+          <p class="footer-text">
+            Build v4.0.0
+            <i class="icofont icofont-heart-alt" style="color:#ad0631"></i>
+            <a class="ms-2" href="https://www.logicielplus.net/" target="_blank">By Logiciel +</a>
+          </p>
+        </div>
+
       </div>
+      <!-- fin page-wrapper -->
+
     </div>
   </div>
 </div>

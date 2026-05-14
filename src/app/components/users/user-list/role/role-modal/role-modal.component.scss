@@ -1,0 +1,315 @@
+// ═══════════════════════════════════════
+// MODAL DIALOG
+// ═══════════════════════════════════════
+.modal .modal-dialog {
+  //width: 770px !important;
+  max-width: 95vw !important;
+}
+
+// ═══════════════════════════════════════
+// MODAL CONTENT
+// ═══════════════════════════════════════
+.modal-content.category-popup {
+  border-radius: 4px !important;
+  border: none !important;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.18), 0 4px 16px rgba(0, 0, 0, 0.08) !important;
+  overflow: hidden;
+}
+
+// ═══════════════════════════════════════
+// MODAL HEADER — garde ta couleur rgba(0, 54, 110)
+// ═══════════════════════════════════════
+.modal .modal-dialog .modal-content .modal-header {
+  padding: 10px 20px;
+  background-color: rgba(0, 54, 110) !important;
+  color: #fff !important;
+  border-top-right-radius: 0px;
+  border-top-left-radius: 0px;
+  border-bottom: 3px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0 !important;
+}
+
+.modal-header > h5 {
+  color: #fff !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.modal-header .btn-close {
+  filter: var(--tw-btn-close-white-filter);
+  opacity: 0.8;
+  transition: opacity 0.2s, transform 0.2s;
+
+  &:hover {
+    opacity: 1;
+    transform: rotate(90deg);
+  }
+}
+
+// ═══════════════════════════════════════
+// MODAL BODY
+// ═══════════════════════════════════════
+.modal-body {
+  padding: 0 !important;
+  background: #fff;
+}
+
+// ═══════════════════════════════════════
+// FORM LABELS
+// ═══════════════════════════════════════
+.form-label {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  color: #475569 !important;
+  //text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 5px !important;
+}
+
+// ═══════════════════════════════════════
+// FORM CONTROLS
+// ═══════════════════════════════════════
+.form-control {
+  height: 40px !important;
+  border: 1.5px solid #E2E8F0 !important;
+  border-radius: 8px !important;
+  font-size: 13px !important;
+  color: #0F172A !important;
+  background: #F8FAFC !important;
+  transition: all 0.2s !important;
+
+  &::placeholder {
+    color: #CBD5E1 !important;
+  }
+
+  &:focus {
+    border-color: rgba(0, 54, 110) !important;
+    background: #fff !important;
+    box-shadow: 0 0 0 3px rgba(0, 54, 110, 0.1) !important;
+    outline: none !important;
+  }
+
+  &.is-invalid {
+    border-color: #EF4444 !important;
+    background: #FEF2F2 !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.08) !important;
+  }
+
+  &.is-valid {
+    border-color: #10B981 !important;
+    background: #F0FDF4 !important;
+  }
+}
+
+// ═══════════════════════════════════════
+// WIZARD FOOTER
+// ═══════════════════════════════════════
+.wizard-footer {
+  padding: 12px 20px 16px;
+  border-top: 1px solid #F1F5F9;
+  background: #F8FAFC;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+  flex-shrink: 0 !important;
+}
+
+// Bouton Précédent
+.btn.button-light-primary {
+  height: 38px;
+  padding: 0 18px;
+  border: 1.5px solid #E2E8F0 !important;
+  border-radius: 8px;
+  background: #fff !important;
+  color: #475569 !important;
+  font-size: 13px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+
+  &:hover:not(:disabled) {
+    border-color: rgba(0, 54, 110) !important;
+    color: rgba(0, 54, 110) !important;
+    background: #EFF6FF !important;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+// Bouton Suivant/Valider — garde ton #00141e
+.newBtn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 38px !important;
+  padding: 0 20px !important;
+  border-radius: 8px !important;
+  background-color: #00141e !important;
+  color: #fff !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  gap: 7px !important;
+  border: none !important;
+  box-shadow: 0 2px 8px rgba(0, 20, 30, 0.3) !important;
+  transition: all 0.2s !important;
+
+  &:hover:not(:disabled) {
+    background-color: #002a3d !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(0, 20, 30, 0.4) !important;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+}
+
+// ═══════════════════════════════════════
+// SELECT LOADER
+// ═══════════════════════════════════════
+.select-loader {
+  position: absolute;
+  right: 12px;
+  top: 70%;
+  transform: translateY(-50%);
+  color: rgba(0, 54, 110);
+}
+
+// ═══════════════════════════════════════
+// RESUME — section title garde ta couleur
+// ═══════════════════════════════════════
+.resume-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 0;
+}
+
+.resume-section {
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid #E8EDF2;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+}
+
+.resume-section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background-color: rgb(231, 231, 231);
+  color: #000;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-bottom: none;
+
+  svg {
+    stroke: #000 !important;
+  }
+
+  i {
+    color: #000;
+    font-size: 13px;
+  }
+}
+
+.resume-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 16px;
+  border-bottom: 1px solid #F8FAFC;
+  font-size: 13px;
+  transition: background 0.12s;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:nth-child(even) {
+    background: #FAFBFC;
+  }
+
+  &:hover {
+    background: #EFF6FF;
+  }
+}
+
+.resume-label {
+  color: #64748B;
+  font-weight: 500;
+  font-size: 12px;
+}
+
+.resume-value {
+  color: #0F172A;
+  text-align: right;
+  font-size: 13px;
+
+  strong {
+    font-weight: 700;
+    color: rgba(0, 54, 110);
+  }
+}
+
+// ═══════════════════════════════════════
+// ICON SM
+// ═══════════════════════════════════════
+::ng-deep .icon-sm svg {
+  width: 14px !important;
+  height: 14px !important;
+  stroke: #000 !important;
+}
+
+// ═══════════════════════════════════════
+// RESPONSIVE
+// ═══════════════════════════════════════
+@media (max-width: 768px) {
+  .modal .modal-dialog {
+    width: 95vw !important;
+    margin: 10px auto !important;
+  }
+
+  .modal-header > h5 {
+    font-size: 12px !important;
+  }
+
+  .wizard-footer {
+    padding: 10px 14px 12px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .newBtn, .btn.button-light-primary {
+    height: 36px !important;
+    font-size: 12px !important;
+    padding: 0 14px !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .resume-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+
+    .resume-value {
+      text-align: left;
+    }
+  }
+}
+
+::ng-deep .card .card-body {
+  padding: 5px !important;
+}

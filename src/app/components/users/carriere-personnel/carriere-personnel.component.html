@@ -1,0 +1,17 @@
+<div class="bg-navbar tabs">
+    <ul class="tab-links flex nav-primary">
+        <li class="tab-link" [class.active]="activeTab == 'carriere_personnel'" (click)="handleTab('carriere_personnel')">CARRIERE PERSONNEL</li>
+<!--        <li class="tab-link" [class.active]="activeTab == 'personnel'" (click)="handleTab('personnel')">PERSONNEL</li>-->
+    </ul>
+    <div class="container user-list-wrapper">
+        <div class="grid grid-cols-12">
+            <div class="col-span-12  mt-5 ">
+                @if(activeTab == 'carriere_personnel') {
+                <app-car-perso></app-car-perso>
+                }@else if(activeTab == 'personnel') {
+                <app-perso></app-perso>
+                }
+            </div>
+        </div>
+    </div>
+</div>

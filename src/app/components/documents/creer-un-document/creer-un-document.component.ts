@@ -1,4 +1,4 @@
-import {Component, ViewChild, AfterViewInit, OnInit, OnDestroy, ChangeDetectorRef} from '@angular/core';
+import {Component, ViewChild, AfterViewInit, OnInit, OnDestroy, ChangeDetectorRef, ElementRef} from '@angular/core';
 import {Select2Data, Select2Module} from "ng-select2-component";
 import {DropzoneConfigInterface, DropzoneModule, DropzoneDirective} from "ngx-dropzone-wrapper";
 import {Editor, NgxEditorModule} from "ngx-editor";
@@ -91,6 +91,13 @@ interface ExampleFlatNode {
 })
 export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild(DropzoneDirective, {static: false}) dropzoneDirective: DropzoneDirective;
+
+    @ViewChild('viewerContainer', {static: false})
+    viewerContainer!: ElementRef;
+
+    @ViewChild('pdfCanvas', {static: false})
+    pdfCanvas!: ElementRef<HTMLCanvasElement>;
+
 
     public addBlogCategory: Select2Data = addBlogCategory;
     public blogType = blogType;
@@ -561,27 +568,83 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
     }
 
     // Sécuriser l'URL pour l'iframe (pour PDF et images locales)
-    getSafeUrl(url: any) {
-        console.log('url ', url)
+    getSafeUrl(url: string) {
 
-        pdfjsLib.getDocument(url).promise.then((pdf: any) => {
+        // On remplace l'adresse absolue par le chemin relatif du proxy
+        // Si vous avez choisi l'Option A (intercepter /medias) :
+        const proxyUrl = environment.production ? url : url.replace('http://api-ged.archivepro.ci', '');
+
+        console.log('URL via Proxy:', proxyUrl);
+
+        const extension = proxyUrl.split('.').pop()?.toLowerCase();
+
+        if (extension === 'pdf') {
+            this.renderPdf(proxyUrl); // On passe l'URL proxifiée
+        } else if (['jpg', 'jpeg', 'png'].includes(extension!)) {
+            this.renderImage(proxyUrl);
+        }
+    }
+
+    renderPdf(url: string) {
+        // On passe un objet de chargement
+        const loadingTask = pdfjsLib.getDocument({
+            url: url,
+            // Si vous avez un mot de passe connu, mettez-le ici :
+            password: 'archive2025'
+        });
+
+        loadingTask.promise.then((pdf: any) => {
             pdf.getPage(1).then((page: any) => {
                 const canvas = document.getElementById('pdf-canvas') as HTMLCanvasElement;
+                if (!canvas) {
+                    console.error("Canvas 'pdf-canvas' introuvable dans le DOM");
+                    return;
+                }
                 const context = canvas.getContext('2d');
                 const viewport = page.getViewport({scale: 1.5});
 
                 canvas.height = viewport.height;
                 canvas.width = viewport.width;
 
-                // Rendu de la page sur le canvas
-                page.render({canvasContext: context, viewport: viewport});
+                page.render({canvasContext: context!, viewport: viewport});
             });
         }).catch((error: any) => {
-            console.error('Erreur de chargement du PDF:', error);
+            if (error.name === 'PasswordException') {
+                // Optionnel : demander le mot de passe dynamiquement
+                const pass = prompt('Ce PDF est protégé. Veuillez saisir le mot de passe :');
+                if (pass) {
+                    this.renderPdfWithPassword(url, pass);
+                }
+            } else {
+                console.error('Erreur de chargement du PDF:', error);
+            }
         });
-
-        //return this.sanitizer.bypassSecurityTrustResourceUrl(url);  //this.sanitizer.bypassSecurityTrustResourceUrl(url);
     }
+
+// Fonction utilitaire pour retenter avec mot de passe
+    renderPdfWithPassword(url: string, password: string) {
+        pdfjsLib.getDocument({url, password}).promise.then((pdf: any) => {
+            // ... recopier la logique de rendu ici ...
+        });
+    }
+
+    renderImage(url: string) {
+
+        if (!this.viewerContainer) {
+            console.error('viewerContainer non initialisé');
+            return;
+        }
+
+        const container = this.viewerContainer.nativeElement;
+        container.innerHTML = '';
+
+        const img = document.createElement('img');
+        img.src = url;
+        img.style.maxWidth = '100%';
+
+        container.appendChild(img);
+    }
+
 
     // Générer l'URL de prévisualisation pour les fichiers Office
     getOfficePreviewUrl(fileUrl: string): SafeResourceUrl {

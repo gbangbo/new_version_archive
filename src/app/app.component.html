@@ -3,3 +3,10 @@
 <app-loader></app-loader>
 
 <app-back-to-top></app-back-to-top>
+
+
+@if(showSessionModal) {
+<app-session-expired-modal [msgCnx]="msgCnx"
+(onReconnect)="closeSessionModal()">
+</app-session-expired-modal>
+}

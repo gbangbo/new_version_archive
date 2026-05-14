@@ -1,0 +1,233 @@
+<div class="container main-setting">
+    <div class="grid grid-cols-12 card-gap">
+        <div class="col-span-12">
+            <app-card [border]="true" [padding]="false">
+                <div class="grid grid-cols-12 gap-4 tabs">
+                    <div class="col-span-12">
+                        <div class="relative">
+
+                            <div *ngIf="isloading"
+                                 class="absolute inset-0 flex justify-center items-center z-10 rounded-lg"
+                                 style="background: rgba(248,250,252,0.85); backdrop-filter: blur(2px);">
+                                <div class="text-center">
+                                    <div class="op-spinner"></div>
+                                    <p class="mt-3" style="color:#64748b; font-size:13px; font-weight:600;">
+                                        Chargement des données...
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="table-container" [class.op-loading]="isloading">
+
+                                <!-- ══ TOOLBAR ══════════════════════════════════ -->
+                                <div class="op-toolbar">
+                                    <div class="op-toolbar-left">
+                                        <div class="op-toolbar-title">
+                                            <div class="op-toolbar-icon">
+                                                <i class="far fa-clipboard"></i>
+                                            </div>
+                                            <div>
+                                                <span class="op-toolbar-label">LISTE DES NIVEAUX DE L'ORGANIGRAMME</span>
+                                                <span class="op-toolbar-count">
+                                                    {{ treeControl.dataNodes?.length || 0 }} enregistrement(s)
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="op-toolbar-right">
+                                        <div class="op-search-wrap">
+                                            <svg class="op-search-icon" viewBox="0 0 24 24" fill="none"
+                                                 stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                                                <circle cx="11" cy="11" r="8"/>
+                                                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                                            </svg>
+                                            <input class="op-search-input"
+                                                   placeholder="Rechercher..."
+                                                   [(ngModel)]="searchValue"
+                                                   (ngModelChange)="onSearch($event)"/>
+                                            <button *ngIf="searchValue"
+                                                    class="op-search-clear"
+                                                    (click)="searchValue=''; onSearch('')">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                     stroke-width="2.5" stroke-linecap="round" width="12" height="12">
+                                                    <line x1="18" y1="6" x2="6" y2="18"/>
+                                                    <line x1="6" y1="6" x2="18" y2="18"/>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                        <button class="op-btn op-btn-outline"
+                                                nz-tooltip nzTooltipTitle="Ajouter un niveau"
+                                                (click)="openToNew()">
+                                            <i data-feather="file" style="width: 15px;"></i>
+                                            <span class="btn-label">Nouveau</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- ══ TREE TABLE ════════════════════════════════ -->
+
+                                <nz-tree-select
+                                        id="idsociete"
+                                        style="width: 100% !important; margin-bottom: 2% !important;margin-top: 2% !important;"
+                                        [nzExpandedKeys]="expandKeys"
+                                        [nzNodes]="dataSociete"
+                                        nzShowSearch
+                                        [(ngModel)]="idsociete"
+                                        nzPlaceHolder="Selectionnez la société"
+                                        (ngModelChange)="onChange($event)"/>
+                                <div class="tree-table-wrap">
+
+                                    <!-- Header colonnes -->
+                                    <div class="tree-table-header">
+                                        <!--                                        <div class="ttc-toggle"></div>-->
+                                        <div class="ttc-name">
+                                            Libellé
+                                            <span class="tt-sort-icons">
+                                            <span class="tt-sort-up">↑</span>
+                                            <span class="tt-sort-down">↓</span>
+                                        </span>
+                                        </div>
+                                        <div class="ttc-logo">Sigle</div>
+                                        <div class="ttc-mail">Créé le</div>
+                                        <div class="ttc-statut">Statut</div>
+                                        <div class="ttc-actions">Actions</div>
+                                    </div>
+
+
+                                    <!-- Tree view -->
+                                    <div class="tree-table-body">
+                                        <nz-tree-view
+                                                [nzTreeControl]="treeControl"
+                                                [nzDataSource]="dataSource"
+                                                nzBlockNode>
+
+                                            <!-- Nœud feuille -->
+                                            <nz-tree-node *nzTreeNodeDef="let node" nzTreeNodePadding>
+                                                <div class="tt-row"
+                                                     [class.tt-row-selected]="selectListSelection.isSelected(node)"
+                                                     (click)="onNodeSelect(node)">
+
+                                                    <!-- toggle + icône + nom dans la même cellule -->
+                                                    <div class="ttc-name" [style.padding-left.px]="node.level * 20">
+                                                        <nz-tree-node-toggle nzTreeNodeNoopToggle  style="display:inline-flex; align-items:center; height:14px; margin-left:2px;"></nz-tree-node-toggle>
+                                                        <i class="fa-solid fa-building" *ngIf="treeControl.isExpanded(node)"></i>
+                                                        <i class="icofont icofont-building-alt" *ngIf="!treeControl.isExpanded(node)"></i>
+                                                        <!--                                                        <span class="tt-name-text tt-parent">{{ node.name }}</span>-->
+                                                        <span class="tt-name-text tt-parent"
+                                                              [innerHTML]="highlightMatch(node.name, searchValue)">
+                                                        </span>
+                                                    </div>
+
+                                                    <div class="ttc-logo">
+                                                        {{ (node.sigle || '—')  }}
+                                                    </div>
+                                                    <div class="ttc-mail">{{ (node.created_at || '—') }}</div>
+                                                    <div class="ttc-statut">
+                                                        <nz-tag *ngIf="node.level === 0" [nzColor]="node._color">{{ node.libcolor }}</nz-tag>
+                                                    </div>
+                                                    <div class="ttc-actions">
+                                                        <button class="btn-round-edit tt-action-btn mr-2"
+                                                                nz-tooltip nzTooltipTitle="Ajouter une sous niveau"
+                                                                nzTooltipPlacement="top"
+                                                                (click)="openModal(node,'a'); $event.stopPropagation()">
+                                                            <app-feather-icon class="icon-small" [icon]="'plus'"></app-feather-icon>
+                                                        </button>
+                                                        <button class="btn-round-edit tt-action-btn mr-2"
+                                                                nz-tooltip nzTooltipTitle="Modifier le niveau {{node.name}}"
+                                                                nzTooltipPlacement="top"
+                                                                (click)="openModal(node,'m'); $event.stopPropagation()">
+                                                            <app-feather-icon class="icon-small" [icon]="'edit-3'"></app-feather-icon>
+                                                        </button>
+                                                        <button  class="btn-round-edit tt-action-btn"
+                                                                 nz-tooltip nzTooltipTitle="Supprimer le niveau {{node.name}}"
+                                                                 nzTooltipPlacement="top"
+                                                                 (click)="deleteFolder(node); $event.stopPropagation()">
+                                                            <i data-feather="trash-2"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </nz-tree-node>
+
+                                            <!-- Nœud parent -->
+                                            <nz-tree-node *nzTreeNodeDef="let node; when: hasChild" nzTreeNodePadding>
+                                                <div class="tt-row"
+                                                     [class.tt-row-selected]="selectListSelection.isSelected(node)"
+                                                     (click)="onNodeSelect(node)">
+
+                                                    <!-- toggle stopPropagation sur ttc-name pour éviter le conflit -->
+                                                    <div class="ttc-name" [style.padding-left.px]="node.level * 20"
+                                                         (click)="$event.stopPropagation()">
+                                                        <nz-tree-node-toggle (click)="onNodeSelect(node)">
+                                                            <nz-icon nzType="caret-down" nzTreeNodeToggleRotateIcon/>
+                                                        </nz-tree-node-toggle>
+                                                        <i class="fa-solid fa-building" *ngIf="treeControl.isExpanded(node)"></i>
+                                                        <i class="icofont icofont-building-alt" *ngIf="!treeControl.isExpanded(node)"></i>
+                                                        <!--                                                        <span class="tt-name-text tt-parent"-->
+                                                        <!--                                                              (click)="onNodeSelect(node); $event.stopPropagation()">-->
+                                                        <!--                                                            {{ node.name }}-->
+                                                        <!--                                                        </span>-->
+                                                        <span class="tt-name-text tt-parent"
+                                                              (click)="onNodeSelect(node); $event.stopPropagation()"
+                                                              [innerHTML]="highlightMatch(node.name, searchValue)">
+                                                        </span>
+                                                    </div>
+                                                    <div class="ttc-logo">
+                                                        {{ (node.sigle || '—')  }}
+                                                    </div>
+                                                    <div class="ttc-mail">{{(node.created_at || '—')  }}</div>
+                                                    <div class="ttc-statut">
+                                                        <nz-tag  [nzColor]="node._color">{{ node.libcolor }}</nz-tag>
+                                                    </div>
+                                                    <div class="ttc-actions">
+                                                        <button class="btn-round-edit tt-action-btn mr-2"
+                                                                nz-tooltip nzTooltipTitle="Ajouter un niveau"
+                                                                nzTooltipPlacement="top"
+                                                                (click)="openModal(node,'a'); $event.stopPropagation()">
+                                                            <app-feather-icon class="icon-small" [icon]="'plus'"></app-feather-icon>
+                                                        </button>
+                                                        <button class="btn-round-edit tt-action-btn mr-2"
+                                                                nz-tooltip nzTooltipTitle="Modifier le sous niveau {{node.name}}"
+                                                                nzTooltipPlacement="top"
+                                                                (click)="openModal(node,'m'); $event.stopPropagation()">
+                                                            <app-feather-icon class="icon-small" [icon]="'edit-3'"></app-feather-icon>
+                                                        </button>
+                                                        <button  class="btn-round-edit tt-action-btn"
+                                                                 nz-tooltip nzTooltipTitle="Supprimer le niveau {{node.name}}"
+                                                                 nzTooltipPlacement="top"
+                                                                 (click)="deleteFolder(node); $event.stopPropagation()">
+                                                            <i data-feather="trash-2"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </nz-tree-node>
+
+                                        </nz-tree-view>
+
+                                        <!-- Empty state -->
+                                        <div *ngIf="!isloading && (!treeControl.dataNodes || treeControl.dataNodes.length === 0)"
+                                             class="op-empty-state">
+                                            <app-feather-icon class="icon-inbox" [icon]="'inbox'"></app-feather-icon>
+                                            <span>Aucune donnée trouvée !</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Footer -->
+                                    <div class="tree-table-footer">
+                                    <span class="tt-total">
+                                        Total : <strong>{{ treeControl.dataNodes?.length || 0 }}</strong> enregistrement(s)
+                                    </span>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </app-card>
+        </div>
+    </div>
+    @if(modalOpen){
+    <app-add-modal [dataLigne]="dataLigne" (modalOpen)="handleModal($event)"></app-add-modal>
+    }
+</div>

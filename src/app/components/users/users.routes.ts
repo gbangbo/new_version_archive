@@ -5,22 +5,32 @@ import {AddUserComponent} from "./add-user/add-user.component";
 import {UserListComponent} from "./user-list/user-list.component";
 import {UserCardsComponent} from "./user-cards/user-cards.component";
 import {RolesPermissionComponent} from "./roles-permission/roles-permission.component";
+import {CarrierePersonnelComponent} from "./carriere-personnel/carriere-personnel.component";
+import {FonctionPosteComponent} from "./fonction-poste/fonction-poste.component";
 
 export const users: Routes = [
     {
         path: 'user-profile/:id',
         component: UserProfileComponent,
         data: {
-            title: 'User Profile',
-            breadcrumb: 'User Profile'
+            title: 'Profil utilisateur',
+            breadcrumb: 'Profil utilisateur'
         }
     },
     {
         path: 'add-user',
         component: AddUserComponent,
         data: {
-            title: 'AGENT',
-            breadcrumb: 'AGENT'
+            title: 'Personnel',
+            breadcrumb: 'Personnel'
+        }
+    },
+    {
+        path: 'carriere-personnele',
+        component: CarrierePersonnelComponent,
+        data: {
+            title: 'Personnel & Carrière',
+            breadcrumb: 'Personnel & Carrière'
         }
     },
     {
@@ -45,6 +55,14 @@ export const users: Routes = [
         data: {
             title: 'Roles & Permission',
             breadcrumb: 'Roles & Permission'
+        }
+    },
+    {
+        path: 'fonction',
+        component: FonctionPosteComponent,
+        data: {
+            title: 'Fonction',
+            breadcrumb: 'Fonction'
         }
     }
 ]

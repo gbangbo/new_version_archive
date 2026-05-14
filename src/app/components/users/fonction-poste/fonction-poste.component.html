@@ -1,0 +1,17 @@
+<div class="bg-navbar tabs">
+    <ul class="tab-links flex nav-primary">
+        <li class="tab-link" [class.active]="activeTab == 'fonction'" (click)="handleTab('fonction')">FONCTION</li>
+<!--        <li class="tab-link" [class.active]="activeTab == 'poste'" (click)="handleTab('poste')">POSTE</li>-->
+    </ul>
+    <div class="container user-list-wrapper">
+        <div class="grid grid-cols-12">
+            <div class="col-span-12  mt-5 ">
+                @if(activeTab == 'fonction') {
+                <app-fonction></app-fonction>
+                }@else if(activeTab == 'poste') {
+                <app-poste></app-poste>
+                }
+            </div>
+        </div>
+    </div>
+</div>

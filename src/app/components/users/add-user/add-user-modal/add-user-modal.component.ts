@@ -18,7 +18,8 @@ export class AddUserModalComponent {
     @Output() modalOpen = new EventEmitter<boolean>();
     @Input() dataLigne: any;
 
-    public validationForm = new FormGroup({
+
+     validationForm = new FormGroup({
         idservice: new FormControl('', Validators.required),
         idposte: new FormControl('', Validators.required),
         idtypeposte: new FormControl('', Validators.required),
@@ -73,11 +74,11 @@ export class AddUserModalComponent {
 
     constructor(private autor: Authorization, private httService: HttpService) {
         this.users = this.autor.getInfosUsers();
-        this.direction(this.users?.dataSociete?.uid, '');
-        this.departement(this.users?.dataSociete?.uid, '', '');
-        this.savetypepostes(this.users?.dataSociete?.uid, '');
-        this.savepostes(this.users?.dataSociete?.uid, '');
-        this.saveservice(this.users?.dataSociete?.uid, '');
+        this.direction(this.users?.datasociete?.uid, '');
+        this.departement(this.users?.datasociete?.uid, '', '');
+        this.savetypepostes(this.users?.datasociete?.uid, '');
+        this.savepostes(this.users?.datasociete?.uid, '');
+        this.saveservice(this.users?.datasociete?.uid, '');
     }
 
     direction(idsociete: string = '', iddirection: string = '') {
@@ -193,9 +194,9 @@ export class AddUserModalComponent {
             setTimeout(() => {
                 this.validationForm.patchValue({
                     ...changes['dataLigne']?.currentValue,
-                    idposte: changes['dataLigne']?.currentValue.dataposte.uid,
-                    idtypeposte: changes['dataLigne']?.currentValue.datatypeposte.uid,
-                    idservice: changes['dataLigne']?.currentValue.dataservice.uid
+                    idposte: changes['dataLigne']?.currentValue?.dataposte?.uid,
+                    idtypeposte: changes['dataLigne']?.currentValue?.datatypeposte?.uid,
+                    idservice: changes['dataLigne']?.currentValue?.dataservice?.uid
                 });
 
             }, 1000)
@@ -213,7 +214,7 @@ export class AddUserModalComponent {
         let payload = {
             "action": this.validationForm.value.uid ? 2 : 1,
             "idpersonnel": this.validationForm.value.uid || '',
-            "idsociete": this.users?.dataSociete?.uid,
+            "idsociete": this.users?.datasociete?.uid,
             ...this.validationForm.value
         }
 

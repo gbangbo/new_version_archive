@@ -1,6 +1,7 @@
 import {Routes} from "@angular/router";
 import {configuration} from "../../components/configuration/configuration.routes";
 import {voirdocuments} from "../../components/voir-document/voir-documents.routes";
+import {AdminGuard} from "../guard/admin.guard";
 
 export const content: Routes = [
     {
@@ -61,7 +62,7 @@ export const content: Routes = [
         path: 'user',
         loadChildren: () => import('../../components/users/users.routes').then(r => r.users),
         data: {
-            breadcrumb: "User"
+            breadcrumb: "Gestion des accès"
         }
     },
     {
@@ -300,21 +301,27 @@ export const content: Routes = [
         path: 'support-ticket',
         loadChildren: () => import('../../components/support-ticket/support-ticket.routes').then(r => r.supportTicket),
     },
+
+
+
     {
         path: 'entites',
+        canActivate:[AdminGuard],
         loadChildren: () => import('../../components/entites/entites.routes').then(r => r.entites),
         data: {
             breadcrumb: "Entité"
         },
     }, {
-        path: 'configuration',
+        path: 'records-management',
+        canActivate:[AdminGuard],
         loadChildren: () => import('../../components/configuration/configuration.routes').then(r => r.configuration),
         data: {
-            breadcrumb: "Configuration"
+            breadcrumb: "Records Management"
         },
     },
     {
         path: 'documents',
+        canActivate:[AdminGuard],
         loadChildren: () => import('../../components/documents/documents.routes').then(r => r.documents),
         data: {
             breadcrumb: "Documents"
@@ -322,9 +329,26 @@ export const content: Routes = [
     },
     {
         path: 'recherche',
+        canActivate:[AdminGuard],
         loadChildren: () => import('../../components/voir-document/voir-documents.routes').then(r => r.voirdocuments),
         data: {
             breadcrumb: "Recherche"
-        },
+        }
+    },
+    {
+        path: 'rh',
+        canActivate:[AdminGuard],
+        loadChildren: () => import('../../components/rh/rh.routes').then(r => r.rh),
+        data: {
+            breadcrumb: "Resources humaines"
+        }
+    },
+    {
+        path: 'menu',
+        canActivate:[AdminGuard],
+        loadChildren: () => import('../../components/menu/menu.routes').then(r => r.menuRoutes),
+        data: {
+            breadcrumb: "Menu"
+        }
     },
 ]

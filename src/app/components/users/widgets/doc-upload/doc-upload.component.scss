@@ -1,0 +1,210 @@
+.doc-upload-container {
+  width: 100%;
+}
+
+.doc-preview {
+  border: 2px dashed #E2E8F0;
+  border-radius: 10px;
+  background: #F8FAFC;
+  transition: all 0.2s;
+  cursor: pointer;
+  min-height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    border-color: hsl(208, 67%, 24%);
+    background: hsl(208, 67%, 97%);
+  }
+
+  &.drag-over {
+    border-color: hsl(208, 67%, 24%);
+    background: hsl(208, 67%, 95%);
+    transform: scale(1.01);
+  }
+
+  &.has-file {
+    cursor: default;
+    border-style: solid;
+    border-color: #DBEAFE;
+    background: #EFF6FF;
+
+    &:hover { background: #EFF6FF; }
+  }
+}
+
+.upload-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 24px;
+  text-align: center;
+}
+
+.upload-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #E2E8F0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94A3B8;
+  margin-bottom: 4px;
+}
+
+.upload-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.upload-subtitle {
+  font-size: 12px;
+  color: #94A3B8;
+}
+
+.upload-formats {
+  font-size: 11px;
+  color: #CBD5E1;
+  margin-top: 2px;
+}
+
+.file-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  width: 100%;
+}
+
+.file-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  &.icon-pdf {
+    background: #FEF2F2;
+    color: #DC2626;
+    border: 1px solid #FECACA;
+  }
+
+  &.icon-doc {
+    background: #EFF6FF;
+    color: hsl(208, 67%, 24%);
+    border: 1px solid #DBEAFE;
+  }
+}
+
+.file-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.file-name {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #0F172A;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file-size {
+  display: block;
+  font-size: 11px;
+  color: #94A3B8;
+  margin-top: 2px;
+}
+
+.file-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.btn-change, .btn-remove-doc {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1.5px solid #E2E8F0;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #64748B;
+
+  &:hover {
+    border-color: hsl(208, 67%, 24%);
+    color: hsl(208, 67%, 24%);
+    background: hsl(208, 67%, 95%);
+  }
+}
+
+.btn-remove-doc:hover {
+  border-color: #DC2626 !important;
+  color: #DC2626 !important;
+  background: #FEF2F2 !important;
+}
+
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  font-size: 12px;
+  color: #DC2626;
+  font-weight: 500;
+}
+
+
+
+
+
+.file-card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 0;
+}
+
+.file-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  width: 100%;
+}
+
+.file-preview {
+  width: 100%;
+  border-top: 1px solid #DBEAFE;
+  background: #fff;
+  border-radius: 0 0 8px 8px;
+  overflow: hidden;
+}
+
+.file-no-preview {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-top: 1px solid #E2E8F0;
+  background: #F8FAFC;
+  border-radius: 0 0 8px 8px;
+
+  span {
+    font-size: 12px;
+    color: #94A3B8;
+    font-style: italic;
+  }
+}

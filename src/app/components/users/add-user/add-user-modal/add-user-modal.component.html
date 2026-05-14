@@ -19,34 +19,38 @@
                             </div>
                             <span class="txt-light">{{errorTexte}}</span>
                         </div>
+
+
+
+
                         <form class="grid grid-cols-12 gap-4 needs-validation" novalidate="" [formGroup]="validationForm" (ngSubmit)="submitForm()">
-                            <div class="col-span-12 position-relative">
-                                <label class="form-label" for="idservice">Service
-                                    <span class="txt-danger">*</span>
-                                </label>
-                                <select2 [data]="dataService"
-                                         placeholder="Selectionnez le site"
-                                         id="idservice"
-                                         formControlName="idservice"
-                                         [disabled]="loadingService"
-                                         [overlay]="false"
-                                         [resettable]="true"
-                                         [listPosition]="'below'"
-                                         [minCountForSearch]="1"
+<!--                            <div class="col-span-12 position-relative">-->
+<!--                                <label class="form-label" for="idservice">Service-->
+<!--                                    <span class="txt-danger">*</span>-->
+<!--                                </label>-->
+<!--                                <select2 [data]="dataService"-->
+<!--                                         placeholder="Selectionnez le site"-->
+<!--                                         id="idservice"-->
+<!--                                         formControlName="idservice"-->
+<!--                                         [disabled]="loadingService"-->
+<!--                                         [overlay]="false"-->
+<!--                                         [resettable]="true"-->
+<!--                                         [listPosition]="'below'"-->
+<!--                                         [minCountForSearch]="1"-->
 
-                                         noResultMessage="Aucune donnée trouvée"
-                                         class="raise-input-select" [ngClass]="{ 'is-invalid' : validationForm.controls['idservice'].touched &&  validationForm.controls['idservice'].errors?.['required'] , 'is-valid' : validationForm.controls['idservice'].valid}">
+<!--                                         noResultMessage="Aucune donnée trouvée"-->
+<!--                                         class="raise-input-select" [ngClass]="{ 'is-invalid' : validationForm.controls['idservice'].touched &&  validationForm.controls['idservice'].errors?.['required'] , 'is-valid' : validationForm.controls['idservice'].valid}">-->
 
-                                </select2>
-                                <div class="select-loader" *ngIf="loadingService">
-                                    <i class="fas fa-spin fa-circle-notch"></i>
-                                </div>
-                                @if(validationForm.controls['idservice'].valid) {
-                                <!--<div class="valid-feedback">Looks's Good!</div>-->
-                                } @else if(validationForm.controls['idservice'].touched && validationForm.controls['idservice'].errors?.['required']) {
-                                <div class="invalid-feedback"> Veuillez selectionner le rayon.</div>
-                                }
-                            </div>
+<!--                                </select2>-->
+<!--                                <div class="select-loader" *ngIf="loadingService">-->
+<!--                                    <i class="fas fa-spin fa-circle-notch"></i>-->
+<!--                                </div>-->
+<!--                                @if(validationForm.controls['idservice'].valid) {-->
+<!--                                &lt;!&ndash;<div class="valid-feedback">Looks's Good!</div>&ndash;&gt;-->
+<!--                                } @else if(validationForm.controls['idservice'].touched && validationForm.controls['idservice'].errors?.['required']) {-->
+<!--                                <div class="invalid-feedback"> Veuillez selectionner le rayon.</div>-->
+<!--                                }-->
+<!--                            </div>-->
                             <div class="col-span-12">
                                 <label class="form-label" for="nom">Nom
                                     <span class="txt-danger">*</span>
@@ -118,59 +122,59 @@
                                 }
                                 }
                             </div>
-                            <div class="col-span-12 position-relative">
-                                <label class="form-label" for="idtypeposte">Type de poste
-                                    <span class="txt-danger">*</span>
-                                </label>
-                                <select2 [data]="dataTypePoste"
-                                         placeholder="Selectionnez le type de poste"
-                                         id="idtypeposte"
-                                         formControlName="idtypeposte"
-                                         [disabled]="loadingTypePoste"
-                                         [overlay]="false"
-                                         [resettable]="true"
-                                         [listPosition]="'below'"
-                                         [minCountForSearch]="1"
-                                         (update)="onUpdate($event)"
-                                         noResultMessage="Aucune donnée trouvée"
-                                         class="raise-input-select" [ngClass]="{ 'is-invalid' : validationForm.controls['idtypeposte'].touched &&  validationForm.controls['idtypeposte'].errors?.['required'] , 'is-valid' : validationForm.controls['idtypeposte'].valid}">
+<!--                            <div class="col-span-12 position-relative">-->
+<!--                                <label class="form-label" for="idtypeposte">Type de poste-->
+<!--                                    <span class="txt-danger">*</span>-->
+<!--                                </label>-->
+<!--                                <select2 [data]="dataTypePoste"-->
+<!--                                         placeholder="Selectionnez le type de poste"-->
+<!--                                         id="idtypeposte"-->
+<!--                                         formControlName="idtypeposte"-->
+<!--                                         [disabled]="loadingTypePoste"-->
+<!--                                         [overlay]="false"-->
+<!--                                         [resettable]="true"-->
+<!--                                         [listPosition]="'below'"-->
+<!--                                         [minCountForSearch]="1"-->
+<!--                                         (update)="onUpdate($event)"-->
+<!--                                         noResultMessage="Aucune donnée trouvée"-->
+<!--                                         class="raise-input-select" [ngClass]="{ 'is-invalid' : validationForm.controls['idtypeposte'].touched &&  validationForm.controls['idtypeposte'].errors?.['required'] , 'is-valid' : validationForm.controls['idtypeposte'].valid}">-->
 
-                                </select2>
-                                <div class="select-loader" *ngIf="loadingTypePoste">
-                                    <i class="fas fa-spin fa-circle-notch"></i>
-                                </div>
-                                @if(validationForm.controls['idtypeposte'].valid) {
-                                <!--<div class="valid-feedback">Looks's Good!</div>-->
-                                } @else if(validationForm.controls['idtypeposte'].touched && validationForm.controls['idtypeposte'].errors?.['required']) {
-                                <div class="invalid-feedback"> Veuillez selectionner le type de poste svp.</div>
-                                }
-                            </div>
-                            <div class="col-span-12 position-relative">
-                                <label class="form-label" for="idposte">Poste
-                                    <span class="txt-danger">*</span>
-                                </label>
-                                <select2 [data]="dataPoste"
-                                         placeholder="Selectionnez le poste"
-                                         id="idposte"
-                                         formControlName="idposte"
-                                         [disabled]="loadingPoste"
-                                         [overlay]="false"
-                                         [resettable]="true"
-                                         [listPosition]="'below'"
-                                         [minCountForSearch]="1"
-                                         noResultMessage="Aucune donnée trouvée"
-                                         class="raise-input-select" [ngClass]="{ 'is-invalid' : validationForm.controls['idposte'].touched &&  validationForm.controls['idposte'].errors?.['required'] , 'is-valid' : validationForm.controls['idposte'].valid}">
+<!--                                </select2>-->
+<!--                                <div class="select-loader" *ngIf="loadingTypePoste">-->
+<!--                                    <i class="fas fa-spin fa-circle-notch"></i>-->
+<!--                                </div>-->
+<!--                                @if(validationForm.controls['idtypeposte'].valid) {-->
+<!--                                &lt;!&ndash;<div class="valid-feedback">Looks's Good!</div>&ndash;&gt;-->
+<!--                                } @else if(validationForm.controls['idtypeposte'].touched && validationForm.controls['idtypeposte'].errors?.['required']) {-->
+<!--                                <div class="invalid-feedback"> Veuillez selectionner le type de poste svp.</div>-->
+<!--                                }-->
+<!--                            </div>-->
+<!--                            <div class="col-span-12 position-relative">-->
+<!--                                <label class="form-label" for="idposte">Poste-->
+<!--                                    <span class="txt-danger">*</span>-->
+<!--                                </label>-->
+<!--                                <select2 [data]="dataPoste"-->
+<!--                                         placeholder="Selectionnez le poste"-->
+<!--                                         id="idposte"-->
+<!--                                         formControlName="idposte"-->
+<!--                                         [disabled]="loadingPoste"-->
+<!--                                         [overlay]="false"-->
+<!--                                         [resettable]="true"-->
+<!--                                         [listPosition]="'below'"-->
+<!--                                         [minCountForSearch]="1"-->
+<!--                                         noResultMessage="Aucune donnée trouvée"-->
+<!--                                         class="raise-input-select" [ngClass]="{ 'is-invalid' : validationForm.controls['idposte'].touched &&  validationForm.controls['idposte'].errors?.['required'] , 'is-valid' : validationForm.controls['idposte'].valid}">-->
 
-                                </select2>
-                                <div class="select-loader" *ngIf="loadingPoste">
-                                    <i class="fas fa-spin fa-circle-notch"></i>
-                                </div>
-                                @if(validationForm.controls['idposte'].valid) {
-                                <!--<div class="valid-feedback">Looks's Good!</div>-->
-                                } @else if(validationForm.controls['idposte'].touched && validationForm.controls['idposte'].errors?.['required']) {
-                                <div class="invalid-feedback"> Veuillez selectionner le poste svp.</div>
-                                }
-                            </div>
+<!--                                </select2>-->
+<!--                                <div class="select-loader" *ngIf="loadingPoste">-->
+<!--                                    <i class="fas fa-spin fa-circle-notch"></i>-->
+<!--                                </div>-->
+<!--                                @if(validationForm.controls['idposte'].valid) {-->
+<!--                                &lt;!&ndash;<div class="valid-feedback">Looks's Good!</div>&ndash;&gt;-->
+<!--                                } @else if(validationForm.controls['idposte'].touched && validationForm.controls['idposte'].errors?.['required']) {-->
+<!--                                <div class="invalid-feedback"> Veuillez selectionner le poste svp.</div>-->
+<!--                                }-->
+<!--                            </div>-->
                             <div class="col-span-12 position-relative">
                                 <label class="form-label" for="sexe">Genre
                                     <span class="txt-danger">*</span>

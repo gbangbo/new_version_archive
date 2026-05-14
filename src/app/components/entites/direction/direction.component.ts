@@ -1,61 +1,105 @@
 import {Component, OnInit} from '@angular/core';
 import {CardComponent} from "../../../shared/components/ui/card/card.component";
 import {CommonModule} from "@angular/common";
-import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
+import {FormsModule} from "@angular/forms";
 import {Authorization} from "../../../protect/authorization.service";
 import {HttpService} from "../../../core/http.service";
 import {environment} from "../../../../environments/environment";
-import {ToastrService} from "ngx-toastr";
-import {NzToolTipModule} from "ng-zorro-antd/tooltip";
-import {TableClickedAction, TableConfigs} from "../../../shared/interface/common";
-import {SupportDB} from "../../../shared/interface/support-ticket";
-import {DirectionModalComponent} from "./direction-modal/direction-modal.component";
-import {TableComponent} from "../../../shared/components/ui/table/table.component";
 import moment from "moment";
+import {NzTableModule} from "ng-zorro-antd/table";
+import {NzInputModule} from "ng-zorro-antd/input";
+import {NzIconModule} from "ng-zorro-antd/icon";
+import {NzTagModule} from "ng-zorro-antd/tag";
+import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
+import {FeatherIconComponent} from "../../../shared/components/ui/feather-icon/feather-icon.component";
+import {DirectionModalComponent} from "./direction-modal/direction-modal.component";
 
 
+interface RowData {
+    raison_sociale: string;
+    sigle_direction: string;
+    libelle_direction: string;
+    cree: string;
+}
 @Component({
     selector: 'app-direction',
     imports: [
         CommonModule,
         CardComponent,
-        NzToolTipModule, DirectionModalComponent, TableComponent],
-    providers: [],
+        NzTableModule,
+        NzInputModule,
+        NzIconModule,
+        NzTagModule,
+        NzTooltipDirective,
+        FormsModule, FeatherIconComponent, DirectionModalComponent],
     templateUrl: './direction.component.html',
     styleUrl: './direction.component.scss',
 })
 export class DirectionComponent implements OnInit {
-    societeDirection!: FormGroup;
-    dataDirection: any = [];
-
-
+    dataSociete: any = [];
+    dataLigne: any = [];
     private users: any = [];
     errorTexte: string = '';
     isloading: boolean = false;
-    isLoad: boolean = false;
     modalOpen: boolean = false;
-    dataOneLigne: any = {};
-    tableConfig: TableConfigs = {
-        columns: [
-            {title: 'Cote', field_value: 'sigle_direction', sort: true},
-            {title: 'Intitulé', field_value: 'libelle_direction', sort: true},
-            {title: 'Créé le', field_value: 'created_at', sort: true},
-        ],
-        data: [] as SupportDB[],
-        row_action: [
-            {
-                label: "Edit",
-                action_to_perform: "edit",
-                icon: "edit-content",
-                class: "btn-sm"
-            }
-        ],
 
+
+    searchValue = '';
+
+    // ── Données ──────────────────────────────────────────────
+
+    filteredData: RowData[] = [];
+
+    // ── Fonctions de tri ──────────────────────────────────────
+    sortFns = {
+        raison_sociale: (a: RowData, b: RowData) =>
+            (a.raison_sociale ?? '').localeCompare(b.raison_sociale ?? ''),
+        libelle_direction: (a: RowData, b: RowData) =>
+            (a.libelle_direction ?? '').localeCompare(b.libelle_direction ?? ''),
+        sigle_direction: (a: RowData, b: RowData) =>
+            (a.sigle_direction ?? '').localeCompare(b.sigle_direction ?? ''),
+        cree: (a: RowData, b: RowData) =>
+            (a.cree ?? '').localeCompare(b.cree ?? '')
     };
 
-    constructor(private autor: Authorization,
-                private httService: HttpService,
-                private toast: ToastrService) {
+
+    // ── Filtres ───────────────────────────────────────────────
+    filters: {
+        raison_sociale: { text: string; value: string }[];
+        libelle_direction: { text: string; value: string }[];
+        sigle_direction: { text: string; value: string }[];
+        cree: { text: string; value: string }[];
+    } = {
+        raison_sociale: [],
+        libelle_direction: [],
+        sigle_direction: [],
+        cree: []
+    };
+
+    filterFns = {
+        // Filtre sur nom_beneficiaire
+        raison_sociale: (list: string[], item: RowData) =>
+            list.some(val =>
+                (item.raison_sociale ?? '').toLowerCase().includes(val.toLowerCase())
+            ),
+        libelle_direction: (list: string[], item: RowData) =>
+            list.some(val =>
+                (item.libelle_direction ?? '').toLowerCase().includes(val.toLowerCase())
+            ),
+        sigle_direction: (list: string[], item: RowData) =>
+            list.some(val =>
+                (item.sigle_direction ?? '').toLowerCase().includes(val.toLowerCase())
+            ),
+        email: (list: string[], item: RowData) =>
+            list.some(val =>
+                (item.cree ?? '').toLowerCase().includes(val.toLowerCase())
+            ),
+    };
+
+    private dataBenef: any = [];
+
+
+    constructor(private autor: Authorization, private httService: HttpService) {
 
     }
 
@@ -63,29 +107,75 @@ export class DirectionComponent implements OnInit {
     ngOnInit(): void {
         window.scrollTo({top: 0, behavior: 'smooth'});
         this.users = this.autor.getInfosUsers();
-        this.showDirection(this.users?.dataSociete?.uid, '');
+        this.showDirection(this.users?.datasociete?.uid, '');
     }
+
+
+    // ── Recherche globale ─────────────────────────────────────
+    onSearch(value: string): void {
+        const val = value.trim().toLowerCase();
+        this.filteredData = val
+            ? this.dataBenef.filter((row: any) =>
+                Object.values(row).some(v => String(v).toLowerCase().includes(val))
+            )
+            : [...this.dataBenef];
+    }
+
 
     showDirection(idsociete: string = '', iddirection: string = '') {
         this.isloading = true;
-        this.dataDirection = [];
-        this.tableConfig.data = [];
+        this.dataBenef = [];
+        this.filteredData = [];
         this.httService.getData(`${environment.api_url}auth/:savedirection?idsociete=${idsociete}&iddirection=${iddirection}`, false, this.users?.access_token || '')
             .toPromise()
             .then((res: any) => {
                 this.isloading = false;
+                console.log("res.body directe ===", res.body);
                 if (res.body.status) {
-                    this.dataDirection = res.body.data;
-                    this.tableConfig = {
-                        ...this.tableConfig,
-                        data: res.body.data.map((d: any) => {
-                            return {
-                                ...d,
-                                created_at: moment(d.created_at).format('DD/MM/YYYY')
-                            }
-                        })
+
+                    this.dataBenef = res.body.data.map((e: any) => {
+                        return {
+                            ...e,
+                            raison_sociale: e?.datasociete?.raison_sociale,
+                            cree: moment(e?.created_at).format('DD-MM-YYYY'),
+                            auth: `${e.double_auth == 1 ? 'Activée' : 'Non activée'}`,
+                            color: e.double_auth == 1 ? '#87d068' : '#2db7f5',
+                        }
+                    });
+                    this.filters = {
+                        ...this.filters,
+                        raison_sociale: [...new Set(this.dataBenef?.map((e: any) => e.raison_sociale))]
+                            .filter((v: any) => v)
+                            .map((v: any) => ({
+                                text: v,
+                                value: v
+                            })),
+                        libelle_direction: [...new Set(
+                            this.dataBenef
+                                ?.filter((e: any) => e?.libelle_direction)
+                                .map((e: any) => e.libelle_direction)
+                        )].map((v: any) => ({
+                            text: v,
+                            value: v
+                        })) || [],
+                        sigle_direction: [...new Set(
+                            this.dataBenef
+                                ?.filter((e: any) => e?.sigle_direction)
+                                .map((e: any) => e.sigle_direction)
+                        )].map((v: any) => ({
+                            text: v,
+                            value: v
+                        })) || [],
+                        cree: [...new Set(
+                            this.dataBenef
+                                ?.filter((e: any) => e?.cree)
+                                .map((e: any) => e.cree)
+                        )].map((v: any) => ({
+                            text: v,
+                            value: v
+                        })) || [],
                     }
-                    console.log("==", res.body.data)
+                    this.filteredData = [...this.dataBenef];
                 }
             })
             .catch((err) => {
@@ -94,59 +184,18 @@ export class DirectionComponent implements OnInit {
 
     }
 
-    actionBtn(data: any) {
-        this.errorTexte = ''
-        let payload = {
-            action: 2,
-            iddirection: data.uid,
-            idsociete: data.datasociete.uid,
-            sigle_direction: data.sigle_direction,
-            libelle_direction: data.libelle_direction
-        }
-        console.log(data)
-        this.societeDirection.setValue(payload);
+    handleAction(value: any) {
+    }
+
+    openModal(e?: any) {
+        this.modalOpen = true;
+        this.dataLigne = e || {};
     }
 
     handleModal(value: boolean) {
         if (value) {
-            this.showDirection(this.users?.dataSociete?.uid, '');
+            this.showDirection(this.users?.datasociete?.uid, '');
         }
         this.modalOpen = false;
-    }
-
-    openModal() {
-        this.modalOpen = true;
-        this.dataOneLigne = {};
-    }
-
-    handleAction(value: TableClickedAction) {
-
-        console.log('🎯 Action reçue:', value);
-        console.log('Données:', value.action_to_perform);
-
-        switch (value.action_to_perform) {
-            case 'edit':
-                this.modalOpen = true;
-                this.dataOneLigne = value.data;
-                break;
-            default:
-            //console.warn('⚠️ Action non gérée:', event.action);
-        }
-    }
-
-    handleExport(event: { type: string, data: any[] }) {
-        console.log('Type d\'export:', event.type);
-        console.log('Données:', event.data);
-
-        // Logique personnalisée selon le type
-        if (event.type === 'csv') {
-            // Traitement personnalisé pour CSV
-            console.log('Export CSV personnalisé');
-        }
-
-        if (event.type === 'pdf') {
-            // Traitement personnalisé pour PDF
-            console.log('Export PDF personnalisé');
-        }
     }
 }

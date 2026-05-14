@@ -1,9 +1,9 @@
 <div class="flex profile-media items-center">
-    <img class="-[10px]" src="assets/images/dashboard/profile.png" alt="profile">
+    <img class="-[10px]" src="{{photo}}" alt="profile">
     <div class="grow w-[calc(100%_-_250px)]">
-        <span>{{users?.full_name || 'Inconnu'}}</span>
-        <p class="mb-0">
-            {{users?.roles || 'Inconnu'}}
+        <span style="font-size: 12px">{{nameUser}}</span>
+        <p class="mb-0" style="font-size: 10px">
+            <small>{{users?.dataroles?.libelle_role || 'Inconnu'}}</small>
             <i class="align-middle fa-solid fa-angle-down"></i>
         </p>
     </div>

@@ -8,16 +8,31 @@
         <app-header-logo [icon]="'align-center'" [type]="'header'" [logoIn]="logoIn1" [logoDark]="logoDark1"></app-header-logo>
     </div>
 
-    <div class="left-header col-span-5 xxl:col-span-6 xl:col-span-5 lg:col-span-4 md:col-span-3">
+    <div class="left-header col-span-5 xxl:col-span-6 xl:col-span-5 lg:col-span-4 md:col-span-3" style="display: flex; align-items: center; gap: 30px;">
+
+        <div (click)="toggleSidebar()" style="cursor: pointer;">
+            <app-feather-icon *ngIf="isIcon === 'menu'"
+                              icon="menu"
+                              class="toggleMenu status_toggle middle sidebar-toggle">
+            </app-feather-icon>
+            <app-feather-icon *ngIf="isIcon === 'x'"
+                              icon="x"
+                              class="toggleMenu status_toggle middle sidebar-toggle">
+            </app-feather-icon>
+        </div>
+
         <app-header-notice></app-header-notice>
+
+        <ng-content select="[icon]"></ng-content>
+
     </div>
 
     <div class="nav-right col-span-7 xxl:col-span-6 xl:col-span-7 md:col-span-11 float-right right-header p-0 ms-auto">
         <ul class="nav-menus">
             
-            <li class="language-nav" (click)="toggleLanguage()" (clickOutside)="clickOutside()">
-                <app-header-language></app-header-language>
-            </li>
+<!--            <li class="language-nav" (click)="toggleLanguage()" (clickOutside)="clickOutside()">-->
+<!--                <app-header-language></app-header-language>-->
+<!--            </li>-->
 
             <li class="fullscreen-body">
                 <span>

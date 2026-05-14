@@ -17,4 +17,11 @@ export class Authorization {
         }
         return undefined;
     }
+    getInfosTemp() {
+        const userSession = sessionStorage.getItem(`_temp_`);
+        if (userSession) {
+            return JSON.parse(this.Conf.getDecrypt(userSession, decode64(environment.CONFIG.APP_PASS)));
+        }
+        return undefined;
+    }
 }

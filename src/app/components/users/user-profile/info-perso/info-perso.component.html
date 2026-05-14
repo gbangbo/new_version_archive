@@ -1,0 +1,124 @@
+<form class="grid grid-cols-12 gap-4 needs-validation" novalidate="" [formGroup]="validationForm"
+      (ngSubmit)="submitForm()">
+
+    <div class="col-span-6">
+        <label class="form-label" for="nom">Nom
+            <span class="txt-danger">*</span>
+        </label>
+        <input class="form-control"
+               id="nom"
+               type="text" placeholder=""
+               formControlName="nom"
+               [ngClass]="{ 'is-invalid' : validationForm.controls['nom'].touched &&  validationForm.controls['nom'].errors?.['required'] , 'is-valid' : validationForm.controls['nom'].valid}">
+        @if(validationForm.controls['nom'].valid) {
+        <!--<div class="valid-feedback">Looks's Good!</div>-->
+        } @else if(validationForm.controls['nom'].touched && validationForm.controls['nom'].errors?.['required']) {
+        <div class="invalid-feedback">Veuillez saisir le nom</div>
+        }
+    </div>
+    <div class="col-span-6">
+        <label class="form-label" for="prenom">Prénoms
+            <span class="txt-danger">*</span>
+        </label>
+        <input class="form-control"
+               id="prenom"
+               type="text" placeholder=""
+               formControlName="prenom"
+               [ngClass]="{ 'is-invalid' : validationForm.controls['prenom'].touched &&  validationForm.controls['prenom'].errors?.['required'] , 'is-valid' : validationForm.controls['prenom'].valid}">
+        @if(validationForm.controls['prenom'].valid) {
+        <!--<div class="valid-feedback">Looks's Good!</div>-->
+        } @else if(validationForm.controls['prenom'].touched &&
+        validationForm.controls['prenom'].errors?.['required']) {
+        <div class="invalid-feedback">Veuillez saisir le prénom</div>
+        }
+    </div>
+    <div class="col-span-6">
+        <label class="form-label" for="telMobile">Contact
+            <!--                                    <span class="txt-danger">*</span>-->
+        </label>
+        <input class="form-control"
+               id="telMobile"
+               type="text" placeholder="Ex : 0123456789"
+               formControlName="telMobile"
+               [ngClass]="{
+                                            'is-invalid': validationForm.controls['telMobile'].touched && validationForm.controls['telMobile'].invalid,
+                                            'is-valid': validationForm.controls['telMobile'].touched && validationForm.controls['telMobile'].valid
+                                        }">
+        @if(validationForm.controls['telMobile'].touched) {
+        @if(validationForm.controls['telMobile'].errors?.['pattern']) {
+        <div class="invalid-feedback d-block">
+            Numéro invalide. Format attendu: 0123456789
+        </div>
+        }
+        }
+    </div>
+    <div class="col-span-6">
+        <label class="form-label" for="emailAgent">Email
+            <span class="txt-danger">*</span>
+        </label>
+        <input class="form-control"
+               id="emailAgent"
+               [readOnly]="true"
+               type="text" placeholder=""
+               formControlName="emailAgent"
+               [ngClass]="{
+                                            'is-invalid': validationForm.controls['emailAgent'].touched && validationForm.controls['emailAgent'].invalid,
+                                            'is-valid': validationForm.controls['emailAgent'].touched && validationForm.controls['emailAgent'].valid
+                                        }">
+        @if(validationForm.controls['emailAgent'].touched) {
+        @if(validationForm.controls['emailAgent'].errors?.['required']) {
+        <div class="invalid-feedback d-block">Veuillez saisir l'adresse mail</div>
+        }
+        @if(validationForm.controls['emailAgent'].errors?.['email']) {
+        <div class="invalid-feedback d-block">L'email n'est pas valide</div>
+        }
+        }
+    </div>
+
+    <div class="col-span-6 position-relative">
+        <label class="form-label" for="sexe">Genre
+            <span class="txt-danger">*</span>
+        </label>
+        <select2 [data]="dataGenre"
+                 placeholder="Selectionnez le poste"
+                 id="sexe"
+                 formControlName="sexe"
+                 [overlay]="false"
+                 [resettable]="true"
+                 [listPosition]="'below'"
+                 [minCountForSearch]="1"
+                 noResultMessage="Aucune donnée trouvée"
+                 class="raise-input-select"
+                 [ngClass]="{ 'is-invalid' : validationForm.controls['sexe'].touched &&  validationForm.controls['sexe'].errors?.['required'] , 'is-valid' : validationForm.controls['sexe'].valid}">
+
+        </select2>
+        <div class="select-loader" *ngIf="loadingPoste">
+            <i class="fas fa-spin fa-circle-notch"></i>
+        </div>
+        @if(validationForm.controls['sexe'].valid) {
+        <!--<div class="valid-feedback">Looks's Good!</div>-->
+        } @else if(validationForm.controls['sexe'].touched && validationForm.controls['sexe'].errors?.['required']) {
+        <div class="invalid-feedback"> Veuillez selectionner le genre svp.</div>
+        }
+    </div>
+    <div class="col-span-6 flex flex-col items-center gap-2">
+        <label class="form-label text-center block">Photo</label>
+        <div class="photo-wrapper">
+            <app-image-upload
+                    [placeholder]="'Photo'"
+                    [maxSizeInMB]="2"
+                    [existingImageUrl]="users.datapersonnel.photo"
+                    (fileSelected)="onImageSelected($event)"
+                    (fileRemoved)="onImageRemoved()">
+            </app-image-upload>
+        </div>
+        <span style="font-size: 11px; color: #9CA3AF;">Taille Max 2MB</span>
+    </div>
+
+    <div class="col-span-12 flex justify-end">
+        <button class="btn btn-primary text-white  mt-8 newBtn" type="submit">
+            <i class="{{isloading?'fas fa-spin fa-circle-notch':''}}"></i>
+                VALIDER
+        </button>
+    </div>
+</form>

@@ -1,0 +1,133 @@
+.modal .modal-dialog .modal-content .modal-header {
+  padding: 11px;
+  background-color: rgba(0, 54, 110);
+  color: #fff !important;
+  border-top-right-radius: 6px;
+  border-top-left-radius: 6px;
+}
+
+.modal-header > h5 {
+  color: #fff !important;
+}
+
+.modal-header .btn-close {
+  filter: var(--tw-btn-close-white-filter);
+  opacity: 1;
+}
+
+
+.newBtn {
+  background-color: #00141e !important;
+}
+
+.btnAdd {
+  background-color: rgb(115 102 255 / 14%) !important
+}
+
+.icoColor {
+  //color: #00141e !important;
+}
+
+
+.select-loader {
+  position: absolute;
+  right: 12px;
+  top: 70%;
+  transform: translateY(-50%);
+}
+
+
+::ng-deep .image-preview {
+  width: 458px !important;
+}
+
+::ng-deep .image-upload-container {
+  max-width: 800px !important;
+}
+
+/* force la barre de recherche */
+.select2-container--default .select2-search--dropdown {
+  display: block !important;
+}
+
+.modal .modal-dialog {
+  width: 605px !important;
+}
+
+
+//--------------POUR LE RESUME
+
+
+.resume-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 0;
+}
+
+.resume-section {
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #f0f0f0;
+}
+
+.resume-section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background-color: #f5f7fa;
+  font-size: 11px;
+  font-weight: 700;
+  color: #6b7280;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border-bottom: 1px solid #f0f0f0;
+
+  svg {
+    color: hsl(208, 67%, 24%);
+    stroke: hsl(208, 67%, 24%);
+  }
+}
+
+.resume-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  border-bottom: 1px solid #f9f9f9;
+  font-size: 13px;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.resume-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #6b7280;
+  font-weight: 500;
+
+  svg {
+    stroke: #9ca3af;
+    flex-shrink: 0;
+  }
+}
+
+.resume-value {
+  color: #1f2937;
+  text-align: right;
+
+  strong {
+    font-weight: 700;
+    color: hsl(208, 67%, 24%);
+  }
+}
+
+
+::ng-deep .icon-sm svg {
+  width: 16px !important;
+  height: 16px !important;
+}

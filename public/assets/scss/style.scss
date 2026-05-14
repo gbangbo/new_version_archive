@@ -201,6 +201,9 @@
   --bs-table-bg: var(--bs-emphasis-color-rgb);
   --tw-heading-color: #333333;
 
+  //Icon
+  --ico-title: #F19106;
+
   // Tagify
   /* Do not show the "remove tag" (x) button when only a single tag remains */
   .customLook {
@@ -258,7 +261,7 @@
   --product-shadow: 0px 1px 0px rgb(55 70 87);
   --light-shade-primary: rgba(46, 53, 67, 1);
   --light-gray-1: linear-gradient(0deg, #fcfcfd, #fcfcfd),
-    linear-gradient(0deg, #ffffff, #ffffff);
+  linear-gradient(0deg, #ffffff, #ffffff);
   --bs-body-bg: rgba(255, 255, 255, 0.6);
   --bs-table-bg: transparent;
   --light-bg-primary: rgba(239, 238, 255);

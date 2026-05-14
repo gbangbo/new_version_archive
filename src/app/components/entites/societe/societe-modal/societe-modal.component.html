@@ -2,13 +2,15 @@
     <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content category-popup">
             <div class="modal-header">
-                <h5 class="modal-title">{{validationForm.value.uid ? 'MODIFIER LA SOCIETE':'AJOUTER UNE SOCIETE'}}</h5>
+                <h5 class="modal-title">
+                    {{title}}
+                </h5>
                 <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close" (click)="closeModal()"></button>
             </div>
             <div class="modal-body p-0 custom-input">
                 <div class="text-start">
                     <div class="p-20">
-                        <div class="alert alert-danger flex items-center gap-3" role="alert"
+                        <div class="alert alert-{{typeAlerte}} flex items-center gap-3" role="alert"
                              style="animation: slideDown 0.3s ease;" *ngIf="errorTexte">
                             <div>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-circle stroke-danger">
@@ -20,7 +22,7 @@
                             <span class="txt-light">{{errorTexte}}</span>
                         </div>
                         <form class="grid grid-cols-12 gap-4 needs-validation" novalidate="" [formGroup]="validationForm" (ngSubmit)="submitForm()">
-                            <div class="col-span-12">
+                            <div class="col-span-6">
                                 <label class="form-label" for="raison_sociale">Raison sociale
                                     <span class="txt-danger">*</span>
                                 </label>
@@ -33,7 +35,7 @@
                                 }
                             </div>
 
-                            <div class="col-span-12">
+                            <div class="col-span-6">
                                 <label for="telephone" class="form-label text-left block mb-2">Téléphone</label>
                                 <input class="form-control hSoc"
                                        formControlName="telephone"
@@ -42,7 +44,7 @@
                                        placeholder="+225 XX XX XX XX XX">
                             </div>
 
-                            <div class="col-span-12">
+                            <div class="col-span-6">
                                 <label for="email" class="form-label text-left block mb-2">Adresse mail</label>
                                 <input class="form-control hSoc"
                                        formControlName="email"
@@ -51,7 +53,7 @@
                                        placeholder="exemple@email.com">
                             </div>
 
-                            <div class="col-span-12">
+                            <div class="col-span-6">
                                 <label for="localisation" class="form-label text-left block mb-2">Localisation</label>
                                 <input class="form-control hSoc"
                                        formControlName="localisation"
@@ -60,21 +62,41 @@
                                        placeholder="Ville, Pays">
                             </div>
 
-                            <div class="col-span-12">
-                                <label class="flex items-center gap-3 cursor-pointer">
-                                    <nz-switch formControlName="active"></nz-switch>
+                            <div class="col-span-6">
+                                <label for="localisation" class="form-label text-left block mb-2">Rang</label>
+                                <input class="form-control hSoc"
+                                       formControlName="position"
+                                       id="position"
+                                       type="text"
+                                       placeholder="Ex: 1">
+                            </div>
+
+                            <div class="col-span-6">
+                                <label class="form-label text-left block mb-2">Logo</label>
+                                <div class="photo-wrapper">
+                                    <app-image-upload
+                                            [placeholder]="'Photo'"
+                                            [maxSizeInMB]="2"
+                                            [existingImageUrl]="imageUrl || null"
+                                            (fileSelected)="onImageSelected($event)"
+                                            (fileRemoved)="onImageRemoved()">
+                                    </app-image-upload>
+                                </div>
+                                <span style="font-size: 11px; color: #9CA3AF;">Taille Max 2MB</span>
+                            </div>
+
+
+                            <div class="col-span-6">
+                                <label class="flex items-center gap-3 cursor-pointer" style="margin-top: 5% !important;">
+                                    <nz-switch formControlName="double_auth"></nz-switch>
                                     <span class="form-label mb-0">Activer la double authentification</span>
                                 </label>
                             </div>
-
-                            <div class="col-span-12">
-                                <label class="form-label text-left block mb-2">Logo</label>
-                                <app-image-upload
-                                        [placeholder]="'Ajouter le logo'"
-                                        [maxSizeInMB]="5"
-                                        (fileSelected)="onImageSelected($event)"
-                                        (fileRemoved)="onImageRemoved()">
-                                </app-image-upload>
+                            <div class="col-span-6">
+                                <label class="flex items-center gap-3 cursor-pointer" style="margin-top: 5% !important;">
+                                    <nz-switch formControlName="actif" nzCheckedChildren="Actif" nzUnCheckedChildren="Desactivé" ></nz-switch>
+                                    <span class="form-label mb-0">Statut de la société</span>
+                                </label>
                             </div>
 
                             <div class="col-span-12 flex justify-end">

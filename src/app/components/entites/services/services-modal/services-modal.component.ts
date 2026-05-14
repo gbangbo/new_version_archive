@@ -45,7 +45,7 @@ export class ServicesModalComponent {
 
     constructor(private autor: Authorization, private httService: HttpService, private http: HttpClient) {
         this.users = this.autor.getInfosUsers();
-        this.showDirection(this.users?.dataSociete?.uid, '');
+        this.showDirection(this.users?.datasociete?.uid, '');
     }
 
 
@@ -59,7 +59,7 @@ export class ServicesModalComponent {
 
             try {
                 this.loadingDep = true;
-                let dDep: any = await this.getData(`${environment.api_url}auth/:savedepartement?idsociete=${this.users?.dataSociete?.uid}&iddirection=${uidDirection}&iddepartement=${uidDepartement}`, `${this.users.access_token}`)
+                let dDep: any = await this.getData(`${environment.api_url}auth/:savedepartement?idsociete=${this.users?.datasociete?.uid}&iddirection=${uidDirection}&iddepartement=${uidDepartement}`, `${this.users.access_token}`)
                 this.loadingDep = false;
                 let rDep = decryptData(dDep.data)?.data;
                 if (Array.isArray(rDep)) {
@@ -111,7 +111,7 @@ export class ServicesModalComponent {
         let payload = {
             "action": this.validationForm.value.uid ? 2 : 1,
             "idservice": this.validationForm.value.uid || '',
-            "idsociete": this.users?.dataSociete?.uid,
+            "idsociete": this.users?.datasociete?.uid,
             "iddepartement": this.validationForm.value.iddepartement,
             "sigle_service": this.validationForm.value.sigle_service,
             "libelle_service": this.validationForm.value.libelle_service,
@@ -193,7 +193,7 @@ export class ServicesModalComponent {
 
         this.dataDepartement = [];
         if (!event.value) return;
-        this.showDepartement(this.users?.dataSociete?.uid, event.value);
+        this.showDepartement(this.users?.datasociete?.uid, event.value);
     }
 
     getData(url: string, token: any) {
