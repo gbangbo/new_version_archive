@@ -80,6 +80,7 @@ export class HttpService {
             }),
             catchError((error) => {
                 let errorMessage
+                let res = decryptData(error?.data);
                 switch (error.status) {
                     case 422:
                         errorMessage = ""
@@ -89,7 +90,7 @@ export class HttpService {
                         //document.location.href = "auth/expire"
                         break;
                     default:
-                        errorMessage = {message: error.statusText, err: error.error}
+                        errorMessage = {message: error.statusText, err: res}
                         break;
                 }
                 return throwError({
@@ -380,6 +381,44 @@ export class HttpService {
             // error: responseDecode(error.error.response, this.core.config.exchange_key)
         });
     };
+
+    postDataMultipart(url: string, formData: FormData, token: string): Observable<HttpResponse<any>> {
+        // Ne pas définir Content-Type : le navigateur le pose automatiquement avec le boundary
+        let headers = new HttpHeaders();
+        if (token) {
+            headers = headers.set('Authorization', 'Bearer ' + token);
+        }
+        return this.http.post(url, formData, {
+            headers,
+            observe: 'response',
+        }).pipe(
+            map((res: any) => {
+                let rep = decryptData(res.body.data);
+                res.body = rep;
+                return res;
+            }),
+            catchError((error) => {
+                let errorMessage;
+                switch (error.status) {
+                    case 422:
+                        errorMessage = '';
+                        break;
+                    case 401:
+                        this.sessionExpired$.next(error?.error || undefined);
+                        break;
+                    default:
+                        errorMessage = { message: error.statusText, err: error.error };
+                        break;
+                }
+                return throwError({
+                    status: error.status,
+                    ok: error.ok,
+                    statusText: error.statusText,
+                    error: errorMessage
+                });
+            })
+        );
+    }
 
     postDataNoCrypt(url: string, data: any): Observable<HttpResponse<any>> {
 

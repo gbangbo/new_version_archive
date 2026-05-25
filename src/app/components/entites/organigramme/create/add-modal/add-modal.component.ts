@@ -90,7 +90,6 @@ export class AddModalComponent {
             .catch((err) => {
                 this.isload = false;
             });
-
     }
 
     formatNode(node: any): any {

@@ -8,9 +8,11 @@ import Swal from "sweetalert2";
 import {CardComponent} from "../../../../shared/components/ui/card/card.component";
 import {NzTooltipDirective} from "ng-zorro-antd/tooltip";
 import {NzSwitchModule} from "ng-zorro-antd/switch";
+import {NzTagModule} from "ng-zorro-antd/tag";
 import {TooltipComponent} from "../../../../shared/components/ui/tooltip/tooltip.component";
-import {audios} from '../../../../shared/data/search-result';
 import {Select2Module} from "ng-select2-component";
+import {FeatherIconComponent} from "../../../../shared/components/ui/feather-icon/feather-icon.component";
+import {NzTreeSelectModule} from "ng-zorro-antd/tree-select";
 
 @Component({
     selector: 'app-type-doc-modal',
@@ -20,7 +22,8 @@ import {Select2Module} from "ng-select2-component";
         CardComponent,
         NzTooltipDirective,
         NzSwitchModule,
-        TooltipComponent, Select2Module],
+        NzTagModule,
+        TooltipComponent, Select2Module, FeatherIconComponent, NzTreeSelectModule],
     templateUrl: './type-doc-modal.component.html',
     styleUrl: './type-doc-modal.component.scss',
 })
@@ -31,33 +34,27 @@ export class TypeDocModalComponent {
     public numberingTabs = [
         {
             id: 1,
-            title: 'Invantaire + calendrier',
+            title: 'Inventaire + calendrier',
             value: 'Info. de base',
             class: 'one stepper step editing'
         },
         {
             id: 2,
-            title: 'Gestion des Metadonnee',
+            title: 'Gestion des Métadonnées',
             value: 'Formulaire',
             class: 'two step'
         },
         {
             id: 3,
-            title: 'Resume',
+            title: 'Résumé',
             value: 'feedback',
             class: 'three step'
         }
     ];
     public activeTab: number = 1;
-
-
-    public validationForm = new FormGroup({
-        libconsigne: new FormControl('', Validators.required),
-        uid: new FormControl('',),
-
-    })
     errorTexte: string = '';
     isLoad: boolean = false;
+    dataOrg: any=[];
 
     @HostListener('document:keydown.escape', ['$event'])
     handleEscKey() {
@@ -119,10 +116,17 @@ export class TypeDocModalComponent {
             value: 'file'
         }
     ];
-    audios = audios;
+
+
+    dataSource = [];
+    expandKeys = [];
+    is: boolean = false;
+    isload: boolean = false;
 
     constructor(private autor: Authorization, private fb: FormBuilder, private httService: HttpService) {
         this.users = this.autor.getInfosUsers();
+        this.showCategorieClassement('', '', '');
+
         this.formDataTypeDoc = this.fb.group({
             action: [''],
             idtype_documents: [''],
@@ -132,8 +136,11 @@ export class TypeDocModalComponent {
             etat_localite: [''],
             etat_personnel: [''],
             etat_engagement: [''],
+            sort_conserver: [''],
+            sort_detruire: [''],
             uid: [''],
             code_type_docs: ['', Validators.required],
+            idcategories: ['', Validators.required],
             libelle_type_docs: ['', Validators.required],
             dure_prearchive: ['', [Validators.required, Validators.pattern('^[0-9]+$'), Validators.min(1), Validators.max(999)]],
             dure_conservatoire: ['', [Validators.required, Validators.pattern('^[0-9]+$'), Validators.min(1), Validators.max(999)]],
@@ -158,6 +165,24 @@ export class TypeDocModalComponent {
 
     }
 
+    showCategorieClassement(idsociete: string = '', idtype_document: string = '', idcategories: string = '') {
+        this.isload = true;
+        this.dataSource = [];
+        this.httService.getData(`${environment.api_url}api/:save-categorie-plan-classement?idsociete=${idsociete}&idtype_document=${idtype_document}&idcategories=${idcategories}`, false, this.users?.access_token || '')
+            .toPromise()
+            .then((res: any) => {
+                this.isload = false;
+                if (res.body.status || res.body.success) {
+                    this.dataSource = res.body.data.map((e: any) => {
+                        return this.formatNode(e);
+                    });
+                }
+            })
+            .catch((err) => {
+                this.isload = false;
+            });
+
+    }
 
     submitForm(): void {
         this.errorTexte = ''
@@ -169,6 +194,7 @@ export class TypeDocModalComponent {
             "libelle_type_docs": this.formDataTypeDoc.value.libelle_type_docs,
             "dure_prearchive": this.formDataTypeDoc.value.dure_prearchive,
             "dure_conservatoire": this.formDataTypeDoc.value.dure_conservatoire,
+            "idcategories": this.formDataTypeDoc.value.idcategories,
             "active_type_docs": 1,
             "etat_type_docs": this.formDataTypeDoc.value.etat_type_docs ? 1 : 0,
             "etat_localite": this.formDataTypeDoc.value.etat_localite ? 1 : 0,
@@ -201,7 +227,7 @@ export class TypeDocModalComponent {
                 // this.toast.error(`${err?.error?.err?.message || 'Une erreur est survenue.'} `, '',
                 //     {
                 //         positionClass: 'toast-top-right',
-                //         closeButton: true,
+                //          closeButton: true,
                 //         timeOut: 3000
                 //     })
                 setTimeout(() => {
@@ -333,6 +359,19 @@ export class TypeDocModalComponent {
             }
         ];
         console.log("this.dataLigneFields[i] ===", this.dataLigneFields[i])
+    }
+
+    formatNode(node: any): any {
+        return {
+            title: node.name_categories,
+            key: node.uid,
+
+            isLeaf: !node.children || node.children.length === 0,
+
+            children: node.children?.map((child: any) => {
+                return this.formatNode(child);
+            }) || []
+        };
     }
 }
 

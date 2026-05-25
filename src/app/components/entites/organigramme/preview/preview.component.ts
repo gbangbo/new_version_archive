@@ -43,6 +43,12 @@ export class PreviewComponent implements OnInit, AfterViewInit {
     isloading: boolean = false;
     modalOpen: boolean = false;
 
+    isDownloading: boolean = false;
+    zoomLevel: number = 1;
+    readonly ZOOM_STEP = 0.1;
+    readonly ZOOM_MIN = 0.3;
+    readonly ZOOM_MAX = 2.0;
+
 
     searchValue = '';
     idsociete: string = '';
@@ -495,14 +501,40 @@ export class PreviewComponent implements OnInit, AfterViewInit {
         ctx.fillStyle = '#999999';
         ctx.fill();
     }
+    zoomIn(): void {
+        this.zoomLevel = Math.min(this.ZOOM_MAX, +(this.zoomLevel + this.ZOOM_STEP).toFixed(1));
+    }
+
+    zoomOut(): void {
+        this.zoomLevel = Math.max(this.ZOOM_MIN, +(this.zoomLevel - this.ZOOM_STEP).toFixed(1));
+    }
+
+    resetZoom(): void {
+        this.zoomLevel = 1;
+    }
+
 // ── Export PNG ────────────────────────────────────────────────────────────
 
     exportPNG(): void {
-        this.renderOrg();
-        const canvas = this.canvasRef.nativeElement;
-        const link = document.createElement('a');
-        link.download = 'organigramme.png';
-        link.href = canvas.toDataURL('image/png');
-        link.click();
+        if (this.isDownloading) return;
+        this.isDownloading = true;
+        try {
+            this.renderOrg();
+            const src = this.canvasRef.nativeElement;
+            const padding = 40;
+            const out = document.createElement('canvas');
+            out.width = src.width + padding * 2;
+            out.height = src.height + padding * 2;
+            const ctx = out.getContext('2d')!;
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, out.width, out.height);
+            ctx.drawImage(src, padding, padding);
+            const link = document.createElement('a');
+            link.download = `organigramme_${new Date().toISOString().slice(0, 10)}.png`;
+            link.href = out.toDataURL('image/png');
+            link.click();
+        } finally {
+            this.isDownloading = false;
+        }
     }
 }

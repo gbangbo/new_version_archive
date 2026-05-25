@@ -295,8 +295,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   background: #ffffff;
   border: 1px solid #e2e8f0;
@@ -635,7 +635,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: row;
   gap: 6px;
+  height: 100%;
+  padding: 4px 0;
 }
 
 // ── Empty state ───────────────────────────────────────────
@@ -952,4 +955,19 @@
     min-width: unset !important;
     width: auto !important;
   }
+}
+
+.cell-wrap {
+  white-space: normal !important;  // ← autorise le retour à la ligne
+  word-break: break-word;
+  overflow: visible !important;
+  text-overflow: unset !important;
+  line-height: 1.4;
+}
+
+// Force la cellule Actions en flex
+:host ::ng-deep .ant-table-tbody > tr > td:last-child {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }

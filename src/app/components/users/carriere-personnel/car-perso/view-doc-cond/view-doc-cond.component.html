@@ -1,0 +1,125 @@
+<div class="modal fade show modal-backdrop">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content category-popup">
+
+            <!-- ══ HEADER ═══════════════════════════════════════════ -->
+            <div class="modal-header">
+                <div class="header-info">
+                    <i class="fa-regular fa-file-pdf header-icon"></i>
+                    <div>
+                        <h5 class="modal-title">PIÈCE JOINTE — CONTRAT</h5>
+                        <span class="header-sub" *ngIf="personnel?.name">{{ personnel?.name }}</span>
+                    </div>
+                </div>
+                <button class="btn-close" type="button" aria-label="Close" (click)="closeModal()"></button>
+            </div>
+
+            <!-- ══ INFO BAR ══════════════════════════════════════════ -->
+            <div class="info-bar" *ngIf="personnel?.name">
+                <div class="info-item">
+                    <span class="info-label">Site</span>
+                    <span class="info-value">{{ personnel?.libelle_site || '—' }}</span>
+                </div>
+                <div class="info-sep"></div>
+                <div class="info-item">
+                    <span class="info-label">Service</span>
+                    <span class="info-value">{{ personnel?.libelle_service || '—' }}</span>
+                </div>
+                <div class="info-sep"></div>
+                <div class="info-item">
+                    <span class="info-label">Fonction</span>
+                    <span class="info-value">{{ personnel?.libelle_fonction || '—' }}</span>
+                </div>
+                <div class="info-sep"></div>
+                <div class="info-item">
+                    <span class="info-label">Période</span>
+                    <span class="info-value">{{ personnel?.periode || '—' }}</span>
+                </div>
+                <div class="info-sep"></div>
+                <div class="info-item">
+                    <nz-tag [nzColor]="personnel?.color">{{ personnel?.nbreJourRestant }}</nz-tag>
+                </div>
+            </div>
+
+            <!-- ══ TOOLBAR ═══════════════════════════════════════════ -->
+            <div class="pdf-toolbar" *ngIf="pdfUrl && !pdfError">
+                <div class="toolbar-left">
+                    <span class="zoom-label">Zoom : {{ zoom }}%</span>
+                    <button class="tool-btn" nz-tooltip nzTooltipTitle="Réduire" (click)="zoomOut()" [disabled]="zoom <= 50">
+                        <i class="fa-solid fa-minus"></i>
+                    </button>
+                    <button class="tool-btn" nz-tooltip nzTooltipTitle="Réinitialiser" (click)="resetZoom()">
+                        <i class="fa-solid fa-arrows-rotate"></i>
+                    </button>
+                    <button class="tool-btn" nz-tooltip nzTooltipTitle="Agrandir" (click)="zoomIn()" [disabled]="zoom >= 200">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                </div>
+                <div class="toolbar-right">
+                    <button class="tool-btn" nz-tooltip nzTooltipTitle="Ouvrir dans un nouvel onglet" (click)="openInNewTab()">
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    </button>
+                    <button class="tool-btn tool-btn-primary" nz-tooltip nzTooltipTitle="Télécharger" (click)="downloadPdf()">
+                        <i class="fa-solid fa-download"></i>
+                        <span>Télécharger</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ══ BODY — PDF VIEWER ═════════════════════════════════ -->
+            <div class="modal-body p-0">
+                <div class="pdf-wrapper">
+
+                    <!-- Spinner de chargement -->
+                    <div class="pdf-loading" *ngIf="isLoadingPdf && pdfUrl">
+                        <div class="op-spinner"></div>
+                        <p>Chargement du document...</p>
+                    </div>
+
+                    <!-- Iframe PDF -->
+                    <div class="pdf-zoom-container" *ngIf="pdfUrl && !pdfError">
+                        <iframe
+                            [src]="pdfUrl"
+                            class="pdf-iframe"
+                            [style.transform]="'scale(' + zoom / 100 + ')'"
+                            [style.transformOrigin]="'top center'"
+                            [style.height]="(zoom > 100 ? (560 * zoom / 100) : 560) + 'px'"
+                            frameborder="0"
+                            (load)="onIframeLoad()"
+                            (error)="onIframeError()"
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+
+                    <!-- État vide / erreur -->
+                    <div class="pdf-empty" *ngIf="!pdfUrl || pdfError">
+                        <div class="pdf-empty-icon">
+                            <i class="fa-regular fa-file-pdf"></i>
+                        </div>
+                        <p class="pdf-empty-title">Aucun document disponible</p>
+                        <p class="pdf-empty-sub">Aucune pièce jointe n'a été associée à ce contrat.</p>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- ══ FOOTER ════════════════════════════════════════════ -->
+            <div class="wizard-footer flex gap-2 justify-between items-center">
+                <div class="footer-meta" *ngIf="personnel?.data_fichiers?.[0]?.nom_fichiers">
+                    <i class="fa-regular fa-paperclip" style="color:#64748b; font-size:12px;"></i>
+                    <span class="footer-filename">{{ personnel?.data_fichiers?.[0]?.nom_fichiers }}</span>
+                </div>
+                <div class="flex gap-2 ml-auto">
+                    <button class="newBtn" *ngIf="pdfUrl && !pdfError" (click)="downloadPdf()">
+                        <i class="fa-solid fa-download"></i>
+                        Télécharger
+                    </button>
+                    <button class="btn button-light-primary" (click)="closeModal()">
+                        Fermer
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

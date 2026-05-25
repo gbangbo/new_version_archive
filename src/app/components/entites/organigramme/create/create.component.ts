@@ -123,7 +123,7 @@ export class CreateComponent implements OnInit {
         this.showSociete(this.users?.datasociete?.code_societe)
     }
 
-    showOrganigramme(idsociete: string = '', niveau: string = '',) {
+    showOrganigramme(idsociete: string = '', niveau: string = '') {
         this.isloading = true;
         this.dataBenef = [];
         this.httService.getData(`${environment.api_url}auth/:save-service-organigramme?societe=${idsociete}&niveau=${niveau}`, false, this.users?.access_token || '')

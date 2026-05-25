@@ -2,7 +2,7 @@
     <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content category-popup">
             <div class="modal-header">
-                <h5 class="modal-title">{{validationForm.value.uid ? 'MODIFICATION DU TYPE DE DOCUMENT':'CREATION DE TYPE DE DOCUMENT'}}</h5>
+                <h5 class="modal-title">{{formDataTypeDoc.value.uid ? 'MODIFICATION DU TYPE DE DOCUMENT':'CREATION DE TYPE DE DOCUMENT'}}</h5>
                 <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close" (click)="closeModal()"></button>
             </div>
             <div class="modal-body p-0 custom-input">
@@ -31,8 +31,30 @@
 
                         <div [ngStyle]="{ 'display': (activeTab === 1 ? '' : 'none') }">
                             <form class="grid grid-cols-12 gap-6" [formGroup]="formDataTypeDoc" (ngSubmit)="submitForm()">
-
                                 <div class="col-span-12">
+                                    <label class="form-label" for="idcategories">Catégorie
+                                        <span class="txt-danger">*</span>
+                                    </label>
+                                    <nz-tree-select
+                                            id="idcategories"
+                                            style="width: 100% !important;"
+                                            [nzDisabled]="is"
+                                            [nzAsyncData]="isload"
+                                            [nzExpandedKeys]="expandKeys"
+                                            [nzNodes]="dataSource"
+                                            nzShowSearch
+                                            nzPlaceHolder="Selectionnez la catégorie"
+                                            formControlName="idcategories"
+                                            [ngClass]="{ 'is-invalid' : formDataTypeDoc.controls['idcategories'].touched &&  formDataTypeDoc.controls['idcategories'].errors?.['required'] , 'is-valid' : formDataTypeDoc.controls['idcategories'].valid}"
+                                    />
+                                    @if(formDataTypeDoc.controls['idcategories'].valid) {
+                                    <!--<div class="valid-feedback">Looks's Good!</div>-->
+                                    } @else if(formDataTypeDoc.controls['idcategories'].touched
+                                    && formDataTypeDoc.controls['idcategories'].errors?.['required']) {
+                                    <div class="invalid-feedback"> Veuillez selectionner la catégorie svp.</div>
+                                    }
+                                </div>
+                                <div class="col-span-6">
                                     <label for="code_type_docs" class="form-label text-left block mb-2">
                                         Côte <code class="text-red-500">*</code>
                                     </label>
@@ -52,7 +74,7 @@
                                           </span>
                                     </div>
                                 </div>
-                                <div class="col-span-12">
+                                <div class="col-span-6">
                                     <label for="libelle_type_docs" class="form-label text-left block mb-2">
                                         Libellé <code class="text-red-500">*</code>
                                     </label>
@@ -131,18 +153,52 @@
                                       </div>
 
                                 </div>
-                                <div class="col-span-6">
-                                    <label class="flex items-center gap-3 cursor-pointer">
-                                        <label>Sort final</label>
-                                        1. C (A conserver apres preachivage)
-                                        2. D (A detruire apres preachivage)
-                                        <i>
-                                            Conformément à l’article 8.j du décret n°2016-851  du 19  octobre 2016
-                                            FIXANT   LES  MODALITÉS   DE  MISE  EN  ŒUVRE  DE L'ARCHIVAGE  ELECTRONIQUE  en Côte d’ivoire, les documents détruits ne pourront être reconstitués ni en parti ni en tout.
-                                        </i>
-                                        <nz-switch formControlName="etat_type_docs"></nz-switch>
-                                        <span class="form-label mb-0">A detruire après pré-archivage ?</span>
-                                    </label>
+                                <div class="col-span-12">
+                                    <label class="form-label mb-3">Sort final</label>
+
+                                    <div style="border: 1.5px solid #E2E8F0; border-radius: 10px; padding: 4px 16px; background: #fff;">
+
+                                        <!-- C : Conserver -->
+                                        <div style="display: flex; align-items: center; gap: 14px; padding: 0px 0; border-bottom: 1px solid #F1F5F9;">
+                                            <nz-switch formControlName="sort_conserver"></nz-switch>
+                                            <div>
+                                                <p style="font-size: 13px; font-weight: 600; color: #0F172A; margin: 0 0 2px;">
+                                                  <span style="font-size:16px; font-weight:900;
+                                                   padding: 2px 8px; border-radius: 20px; margin-right: 6px;">C</span>
+                                                    (À conserver après pré-archivage)
+                                                </p>
+                                                <p style="font-size: 12px; color: #94A3B8; margin: 0;">
+                                                    Les documents seront conservés après la période de pré-archivage.
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <!-- D : Détruire -->
+                                        <div style="display: flex; align-items: center; gap: 14px; padding: 0px 0;">
+                                            <nz-switch formControlName="sort_detruire"></nz-switch>
+                                            <div>
+                                                <p style="font-size: 13px; font-weight: 600; color: #0F172A; margin: 0 0 2px;">
+                                                  <span style="font-size:16px; font-weight:900;
+                                                               padding: 2px 8px; border-radius: 20px; margin-right: 6px;">D</span>
+                                                    (À détruire après pré-archivage)
+                                                </p>
+                                                <p style="font-size: 12px; color: #94A3B8; margin: 0;">
+                                                    Les documents seront supprimés après la période de pré-archivage.
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    <!-- Mention légale -->
+                                    <div style="display: flex; gap: 8px; padding: 10px 14px; border-radius: 8px;
+                                       background: #FEF9EC; border: 1px solid #FCD34D; margin-top: 12px;">
+                                        <i class="fa-solid fa-info-circle" style="color: #92400E !important;"></i>
+                                        <p style="font-size: 11px; color: #92400E; margin: 0; line-height: 1.6;">
+                                            Conformément à l'article 8.j du décret n°2016-851 du 19 octobre 2016, les documents
+                                            détruits ne pourront être reconstitués ni en partie ni en tout.
+                                        </p>
+                                    </div>
                                 </div>
                                 <div class="col-span-6">
                                     <label class="flex items-center gap-3 cursor-pointer">
@@ -288,7 +344,115 @@
                         </div>
 
                         <div [ngStyle]="{ 'display': (activeTab === 3 ? '' : 'none') }">
+                            <div class="resume-container">
 
+                                <!-- ── Section 1 : Informations générales ── -->
+                                <div class="resume-section">
+                                    <div class="resume-section-title">
+                                        <app-feather-icon [icon]="'file-text'" class="icon-sm"></app-feather-icon>
+                                        INFORMATIONS GÉNÉRALES
+                                    </div>
+
+                                    <div class="resume-row">
+                                        <div class="resume-label">Côte</div>
+                                        <div class="resume-value">
+                                            <strong>{{ formDataTypeDoc.value.code_type_docs || '—' }}</strong>
+                                        </div>
+                                    </div>
+
+                                    <div class="resume-row">
+                                        <div class="resume-label">Libellé</div>
+                                        <div class="resume-value">
+                                            <strong>{{ formDataTypeDoc.value.libelle_type_docs || '—' }}</strong>
+                                        </div>
+                                    </div>
+
+                                    <div class="resume-row">
+                                        <div class="resume-label">DUA (ans)</div>
+                                        <div class="resume-value">{{ formDataTypeDoc.value.dure_prearchive || '—' }}</div>
+                                    </div>
+
+                                    <div class="resume-row">
+                                        <div class="resume-label">DUL (ans)</div>
+                                        <div class="resume-value">{{ formDataTypeDoc.value.dure_conservatoire || '—' }}</div>
+                                    </div>
+
+                                    <div class="resume-row">
+                                        <div class="resume-label">Sort final — Conserver (C)</div>
+                                        <div class="resume-value">
+                                            <nz-tag [nzColor]="formDataTypeDoc.value.sort_conserver ? 'success' : 'error'">
+                                                {{ formDataTypeDoc.value.sort_conserver ? 'Oui' : 'Non' }}
+                                            </nz-tag>
+                                        </div>
+                                    </div>
+
+                                    <div class="resume-row">
+                                        <div class="resume-label">Sort final — Détruire (D)</div>
+                                        <div class="resume-value">
+                                            <nz-tag [nzColor]="formDataTypeDoc.value.sort_detruire ? 'success' : 'error'">
+                                                {{ formDataTypeDoc.value.sort_detruire ? 'Oui' : 'Non' }}
+                                            </nz-tag>
+                                        </div>
+                                    </div>
+
+                                    <div class="resume-row">
+                                        <div class="resume-label">Ajouter les départements</div>
+                                        <div class="resume-value">
+                                            <nz-tag [nzColor]="formDataTypeDoc.value.etat_localite ? 'success' : 'error'">
+                                                {{ formDataTypeDoc.value.etat_localite ? 'Oui' : 'Non' }}
+                                            </nz-tag>
+                                        </div>
+                                    </div>
+
+                                    <div class="resume-row">
+                                        <div class="resume-label">Sélectionner un personnel</div>
+                                        <div class="resume-value">
+                                            <nz-tag [nzColor]="formDataTypeDoc.value.etat_personnel ? 'success' : 'error'">
+                                                {{ formDataTypeDoc.value.etat_personnel ? 'Oui' : 'Non' }}
+                                            </nz-tag>
+                                        </div>
+                                    </div>
+
+                                    <div class="resume-row">
+                                        <div class="resume-label">Ajouter les articles</div>
+                                        <div class="resume-value">
+                                            <nz-tag [nzColor]="formDataTypeDoc.value.etat_engagement ? 'success' : 'error'">
+                                                {{ formDataTypeDoc.value.etat_engagement ? 'Oui' : 'Non' }}
+                                            </nz-tag>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- ── Section 2 : Champs additionnels ── -->
+                                <div class="resume-section">
+                                    <div class="resume-section-title">
+                                        <app-feather-icon [icon]="'list'" class="icon-sm"></app-feather-icon>
+                                        CHAMPS ADDITIONNELS
+                                        <span class="resume-count">{{ dataLigneFields?.length || 0 }}</span>
+                                    </div>
+
+                                    <ng-container *ngIf="dataLigneFields?.length > 0; else noFields">
+                                        <div class="resume-row" *ngFor="let field of dataLigneFields; let i = index">
+                                            <div class="resume-label">
+                                                <span class="field-index">{{ i + 1 }}</span>
+                                                {{ field.lib_proprietes_docs || '—' }}
+                                            </div>
+                                            <div class="resume-value" style="display: flex; align-items: center; gap: 4px;">
+                                                <nz-tag nzColor="processing">{{ field.type_proprietes_docs || '—' }}</nz-tag>
+                                                <nz-tag *ngIf="field.default_proprietes_docs" nzColor="orange">Unique</nz-tag>
+                                            </div>
+                                        </div>
+                                    </ng-container>
+
+                                    <ng-template #noFields>
+                                        <div class="resume-empty">
+                                            <app-feather-icon [icon]="'inbox'" class="icon-sm"></app-feather-icon>
+                                            Aucun champ additionnel défini
+                                        </div>
+                                    </ng-template>
+                                </div>
+
+                            </div>
                         </div>
 
                     </div>

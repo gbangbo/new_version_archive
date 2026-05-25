@@ -1,0 +1,86 @@
+<div class="modal  fade show modal-backdrop">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content category-popup">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                  {{title}}
+                </h5>
+                <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close" (click)="closeModal()"></button>
+            </div>
+            <div class="modal-body p-0 custom-input">
+                <div class="text-start">
+                    <div class="p-20">
+                        <div class="alert alert-{{typeAlerte}} flex items-center gap-3" role="alert"
+                             style="animation: slideDown 0.3s ease;" *ngIf="errorTexte">
+                            <div>
+                                <app-svg-nomination></app-svg-nomination>
+                            </div>
+                            <span class="txt-light">{{errorTexte}}</span>
+                        </div>
+                        <form class="grid grid-cols-12 gap-4 needs-validation" novalidate="" [formGroup]="validationForm" (ngSubmit)="submitForm()">
+
+                            <div class="col-span-12 position-relative">
+                                <label class="form-label" for="idagent">Personnel
+                                    <span class="txt-danger">*</span>
+                                </label>
+                                <select2 [data]="dataUser"
+                                         placeholder="Selectionnez le personnel"
+                                         id="idagent"
+                                         formControlName="idagent"
+                                         [disabled]="isloadService"
+                                         [overlay]="true"
+                                         [resettable]="true"
+                                         [listPosition]="'below'"
+                                         [minCountForSearch]="1"
+                                         noResultMessage="Aucune donnée trouvée"
+                                         class="raise-input-select" [ngClass]="{ 'is-invalid' : validationForm.controls['idagent'].touched &&  validationForm.controls['idagent'].errors?.['required'] , 'is-valid' : validationForm.controls['idagent'].valid}">
+
+                                </select2>
+                                <div class="select-loader" *ngIf="isloadService">
+                                    <i class="fas fa-spin fa-circle-notch"></i>
+                                </div>
+                                @if(validationForm.controls['idagent'].valid) {
+                                <!--<div class="valid-feedback">Looks's Good!</div>-->
+                                } @else if(validationForm.controls['idagent'].touched && validationForm.controls['idagent'].errors?.['required']) {
+                                <div class="invalid-feedback"> Veuillez selectionner l'agent svp.</div>
+                                }
+                            </div>
+                            <div class="col-span-12 position-relative">
+                                <label class="form-label" for="date_nommination">Date de nomination
+                                    <span class="txt-danger">*</span>
+                                </label>
+                                <div class="input-group flatpicker-calender">
+                                    <input class="form-control"
+                                           [owlDateTimeTrigger]="dt1"
+                                           [owlDateTime]="dt1"
+                                           id="date_nommination"
+                                           formControlName="date_nommination"
+                                           [ngClass]="{
+                                                         'is-invalid': validationForm.controls['date_nommination'].touched && validationForm.controls['date_nommination'].errors?.['required'],
+                                                         'is-valid': validationForm.controls['date_nommination'].valid
+                                                       }">
+                                    <owl-date-time name="date_nommination" #dt1
+                                                   [pickerType]="'calendar'"></owl-date-time>
+                                </div>
+                                @if(validationForm.controls['date_nommination'].valid) {
+                                <!--<div class="valid-feedback">Looks's Good!</div>-->
+                                } @else if(validationForm.controls['date_nommination'].touched &&
+                                validationForm.controls['date_nommination'].errors?.['required']) {
+                                <div class="invalid-feedback"> Veuillez selectionner la date de nomination svp.</div>
+                                }
+                            </div>
+
+                            <div class="col-span-12 flex justify-end">
+                                <button class="btn btn-primary text-white w-full mt-8 newBtn" type="submit">
+                                    <i class="{{isloading?'fas fa-spin fa-circle-notch':''}}"></i>
+                                    {{'Nommer'}}
+
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

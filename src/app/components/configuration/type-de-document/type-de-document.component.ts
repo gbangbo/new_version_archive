@@ -39,7 +39,7 @@ interface RowData {
         Select2Module,
         NzTabsModule,
         NzIconModule,
-        NzTableModule, TableComponent, FeatherIconComponent,TypeDocModalComponent , DatePipe],
+        NzTableModule, TableComponent, FeatherIconComponent, TypeDocModalComponent, DatePipe],
     providers: [],
     templateUrl: './type-de-document.component.html',
     styleUrl: './type-de-document.component.scss',
@@ -195,16 +195,13 @@ export class TypeDeDocumentComponent implements OnInit {
     }
 
     deleteType(row?: any) {
-        console.log(row)
-
-
         Swal.fire({
             title: `Êtes-vous sûr de bien vouloir supprimer ?`,
             html: `
         <p style="font-size: 14px; color: #475569; margin-bottom: 12px;">
-            Type de document : ${row.libelle_type_docs}
+            Type de document : <strong>${row.libelle_type_docs}</strong>
         </p>
-        <textarea 
+        <textarea
             id="motif-suppression"
             class="swal2-textarea"
             placeholder="Saisissez le motif..."
@@ -229,7 +226,7 @@ export class TypeDeDocumentComponent implements OnInit {
             confirmButtonColor: '#DC2626',
             cancelButtonColor: '#E2E8F0',
             reverseButtons: true,
-            customClass: { cancelButton: 'swal-cancel-custom' },
+            customClass: {cancelButton: 'swal-cancel-custom'},
             preConfirm: async () => {
                 const motif = (document.getElementById('motif-suppression') as HTMLTextAreaElement)?.value?.trim();
 
@@ -238,29 +235,41 @@ export class TypeDeDocumentComponent implements OnInit {
                     return false;
                 }
 
-                // ← Affiche le spinner directement dans le même Swal
                 Swal.showLoading();
 
+                const payload = {
+                    idtype_documents: row.uid,
+                    idsociete: this.users?.datasociete?.uid,
+                };
+
                 try {
-                    // const res: any = await this.gestionCtrl.supprimerTypeDoc(row.uid, motif);
-                    //return res;
+                    const res: any = await this.httService
+                        .deleteData(`${environment.api_url}api/:savetypedocuments`, payload, this.users?.access_token)
+                        .toPromise();
+
+                    if (res.body.status || res.body.success) {
+                        return res;
+                    } else {
+                        Swal.showValidationMessage(res.body.message || 'Une erreur est survenue, veuillez réessayer.');
+                        return false;
+                    }
                 } catch (err: any) {
-                    Swal.showValidationMessage(`Erreur : ${err?.message || 'Une erreur est survenue.'}`);
+                    Swal.showValidationMessage(
+                        err?.error?.err?.message || err?.message || 'Une erreur est survenue, veuillez réessayer.'
+                    );
                     return false;
                 }
             }
-        }).then((result) => {
+        }).then((result:any) => {
             if (result.isConfirmed) {
-                const motif = result.value;
-                console.log('Motif :', motif);
-                // Swal.fire({
-                //     title: 'Supprimé !',
-                //     text: 'Le type de document a été supprimé avec succès.',
-                //     icon: 'success',
-                //     confirmButtonText: 'OK',
-                //     confirmButtonColor: '#DC2626'
-                // });
-                // this.listTypeDoc();
+                this.showTypeDoc(this.users?.datasociete?.uid, '');
+                Swal.fire({
+                    title: 'Supprimé !',
+                    text: result.body?.message || 'Le type de document a été supprimé avec succès.',
+                    icon: 'success',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#16A34A'
+                });
             }
         });
     }

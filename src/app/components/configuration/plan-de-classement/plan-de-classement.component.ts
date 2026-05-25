@@ -20,6 +20,9 @@ import {ExporteModelComponent} from "./exporte-model/exporte-model.component";
 import {FlatNode, TreeNode} from "./tree-node.model";
 import Swal from "sweetalert2";
 import {DomSanitizer, SafeHtml} from "@angular/platform-browser";
+import {
+    TreeStructureSitemapComponent
+} from "../../sitemap/widgets/tree-structure-sitemap/tree-structure-sitemap.component";
 
 
 const TREE_DATA: TreeNode[] = [];
@@ -38,7 +41,7 @@ const TREE_DATA: TreeNode[] = [];
         FeatherIconComponent,
         NzTreeViewModule,
         NzSplitterModule,
-        AddModalComponent, ExporteModelComponent
+        AddModalComponent, ExporteModelComponent,TreeStructureSitemapComponent
     ],
     templateUrl: './plan-de-classement.component.html',
     styleUrl: './plan-de-classement.component.scss',

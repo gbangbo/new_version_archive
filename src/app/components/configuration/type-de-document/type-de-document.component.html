@@ -109,19 +109,19 @@
                                                 <td><span class="cell-text">{{ row.cree }}</span></td>
                                                 <td nzAlign="center">
                                                     <div class="op-actions">
-                                                        <button class="btn-round-edit mr-2"
+                                                        <button class="btn-round-edit btnTaille mr-2"
                                                                 nz-tooltip [nzTooltipTitle]="'Modifier'"
                                                                 nzTooltipPlacement="top"
                                                                 (click)="openModal(row)">
                                                             <app-feather-icon class="icon-small" [icon]="'edit-3'"></app-feather-icon>
                                                         </button>
-                                                        <button class="btn-round-edit mr-2"
+                                                        <button class="btn-round-edit btnTaille mr-2"
                                                                 nz-tooltip [nzTooltipTitle]="'Exporter le model'"
                                                                 nzTooltipPlacement="top"
                                                                 (click)="exportModel(row)">
                                                             <i class="fa-regular fa-file-excel" style="font-size: 15px;"></i>
                                                         </button>
-                                                        <button class="btn-round-edit"
+                                                        <button class="btn-round-edit btnTaille"
                                                                 nz-tooltip [nzTooltipTitle]="'Supprimer'"
                                                                 nzTooltipPlacement="top"
                                                                 (click)="deleteType(row)">
@@ -138,14 +138,12 @@
                                                             [nzData]="row.dataPro || []"
                                                             [nzShowPagination]="false"
                                                             nzSize="small"
-                                                            nzBordered
-                                                            style="width: 1334px !important; display: block;"
                                                             class="tableau-inner">
                                         <thead>
                                         <tr>
-                                            <th nzWidth="20px"></th>
+                                            <th nzWidth="40px"></th>
                                             <th>Propriété</th>
-                                            <th>Type</th>
+                                            <th nzWidth="220px">Type</th>
                                             <!--                                                                <th nzWidth="100px">Actif</th>-->
                                             <!--                                                                <th nzWidth="80px">Actions</th>-->
                                         </tr>

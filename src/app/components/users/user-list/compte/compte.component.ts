@@ -133,18 +133,18 @@ export class CompteComponent implements OnInit {
             .toPromise()
             .then((res: any) => {
                 this.isloading = false;
-                console.log("Liste des comptes ===", res.body.data)
+                console.log("Liste des comptes ===", res.body)
                 if (res.body.status) {
 
                     this.dataBenef = res.body.data.map((e: any) => {
                         return {
                             ...e,
-                            name: `${e.datapersonnel.nom} ${e.datapersonnel.prenom}`,
-                            photo: `${e.datapersonnel.photo}`,
-                            emailAgent: `${e.datapersonnel.emailAgent}`,
-                            libelle_service: `${e.dataservice.libelle_service}`,
-                            color: !e.is_active ? '#f50' : '#87d068',
-                            libcolor: !e.is_active ? 'Inactif' : 'Actif',
+                            name: `${e?.datapersonnel?.nom} ${e?.datapersonnel?.prenom}`,
+                            photo: `${e.datapersonnel?.photo}`,
+                            emailAgent: `${e.datapersonnel?.emailAgent}`,
+                            libelle_service: `${e?.dataservice?.libelle_service}`,
+                            color: !e?.is_active ? '#f50' : '#87d068',
+                            libcolor: !e?.is_active ? 'Inactif' : 'Actif',
                             created_at: moment(e?.created_at).format('DD/MM/YYYY')
                         }
                     });

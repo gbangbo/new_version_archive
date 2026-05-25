@@ -14,11 +14,23 @@
         </div>
     </div>
     <div class="op-toolbar-right">
+        <div class="org-zoom-controls">
+            <button class="org-tool-btn" (click)="zoomOut()" [disabled]="zoomLevel <= ZOOM_MIN" title="Dézoomer">
+                <i class="fa-solid fa-magnifying-glass-minus"></i>
+            </button>
+            <span class="org-zoom-value">{{ (zoomLevel * 100).toFixed(0) }}%</span>
+            <button class="org-tool-btn" (click)="zoomIn()" [disabled]="zoomLevel >= ZOOM_MAX" title="Zoomer">
+                <i class="fa-solid fa-magnifying-glass-plus"></i>
+            </button>
+            <button class="org-tool-btn" (click)="resetZoom()" title="Vue normale (100%)">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+        </div>
         <button class="op-btn op-btn-outline"
                 nz-tooltip nzTooltipTitle="Exporter en PNG"
-                (click)="exportPNG()">
-            <i data-feather="download" style="width:15px"></i>
-            <span class="btn-label">Exporter</span>
+                (click)="exportPNG()" [disabled]="isDownloading">
+            <i [class]="isDownloading ? 'fa-solid fa-circle-notch fa-spin' : 'icofont icofont-download-alt'"></i>
+            <span class="btn-label">{{ isDownloading ? 'Export…' : 'Exporter' }}</span>
         </button>
     </div>
 </div>
@@ -29,7 +41,7 @@
         <app-feather-icon class="icon-inbox" [icon]="'inbox'"></app-feather-icon>
         <span>Aucune donnée à afficher</span>
     </div>
-    <div class="canvas-scroll" *ngIf="treeData?.length">
+    <div class="canvas-scroll" *ngIf="treeData?.length" [style.zoom]="zoomLevel">
         <canvas #orgCanvas></canvas>
     </div>
 </div>

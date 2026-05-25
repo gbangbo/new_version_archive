@@ -3,6 +3,7 @@ import {TypeDeDocumentComponent} from "./type-de-document/type-de-document.compo
 import {SiteRayonBoiteComponent} from "./site-rayon-boite/site-rayon-boite.component";
 import {ConsignePrioriteComponent} from "./consigne-priorite/consigne-priorite.component";
 import {PlanDeClassementComponent} from "./plan-de-classement/plan-de-classement.component";
+import {CategorieComponent} from "./categorie/categorie.component";
 
 
 export const configuration: Routes = [
@@ -43,6 +44,14 @@ export const configuration: Routes = [
         data: {
             title: 'Workflow',
             breadcrumb: 'Workflow'
+        }
+    },
+    {
+        path: 'categorie',
+        component: CategorieComponent,
+        data: {
+            title: 'Catégorie',
+            breadcrumb: 'Catégorie'
         }
     }
 ]

@@ -1,1 +1,283 @@
-hello
+<div class="search-page">
+
+    <!-- ══════════════════════════════════════════════════
+         BARRE PLEIN TEXTE — pleine largeur
+    ═══════════════════════════════════════════════════ -->
+    <div class="fulltext-bar" [class.fulltext-bar-active]="activeMode === 'fulltext'">
+        <div class="fulltext-bar-inner">
+
+            <!-- Bouton filtres (mobile uniquement) -->
+            <button class="btn-toggle-sidebar"
+                    [class.btn-toggle-active]="sidebarOpen"
+                    (click)="sidebarOpen = !sidebarOpen"
+                    title="Afficher / masquer les filtres">
+                <i class="fa-solid fa-sliders"></i>
+                <span>Filtres</span>
+            </button>
+
+            <div class="fulltext-input-wrap">
+                <input
+                    type="text"
+                    class="fulltext-input"
+                    placeholder="Mots-clés, référence, contenu OCR…"
+                    [(ngModel)]="fulltextQuery"
+                    (keydown.enter)="onFulltextSearch()"
+                    autocomplete="off"
+                >
+                <div class="ft-right-actions">
+                    <button class="ft-action-btn ft-clear-btn"
+                            *ngIf="fulltextQuery"
+                            (click)="clearFulltext()"
+                            title="Effacer">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                    <span class="ft-sep" *ngIf="fulltextQuery"></span>
+                    <button class="ft-action-btn ft-mic-btn"
+                            *ngIf="voiceSupported"
+                            (click)="startVoiceSearch()"
+                            [class.ft-mic-active]="isListening"
+                            [title]="isListening ? 'Arrêter la dictée' : 'Recherche vocale'">
+                        <i [class]="isListening ? 'fa-solid fa-circle-notch fa-spin' : 'fa-solid fa-microphone'"></i>
+                    </button>
+                    <button class="ft-action-btn ft-search-btn"
+                            (click)="onFulltextSearch()"
+                            [class.ft-searching]="isSearching && activeMode === 'fulltext'"
+                            title="Rechercher">
+                        <i [class]="isSearching && activeMode === 'fulltext' ? 'fa-solid fa-circle-notch fa-spin' : 'fa-solid fa-magnifying-glass'"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════
+         CORPS : sidebar spécifique + résultats
+    ═══════════════════════════════════════════════════ -->
+    <div class="search-body">
+
+        <!-- SIDEBAR — Recherche spécifique ─────────────── -->
+        <aside class="search-sidebar" [class.sidebar-visible]="sidebarOpen">
+            <div class="sidebar-card" [class.sidebar-card-active]="activeMode === 'advanced'">
+                <div class="sidebar-card-header">
+                    <span class="sidebar-card-icon adv-icon">
+                        <i class="fa-solid fa-sliders"></i>
+                    </span>
+                    <div>
+                        <span class="sidebar-card-title">Recherche spécifique</span>
+                        <span class="sidebar-card-sub">Filtrez par critères précis</span>
+                    </div>
+                    <!-- Fermer sur mobile -->
+                    <button class="btn-sidebar-close" (click)="sidebarOpen = false" title="Fermer">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <div class="sidebar-card-body">
+
+                    <!-- Référence -->
+                    <div class="filter-field">
+                        <label class="filter-label">
+                            <i class="fa-solid fa-hashtag"></i> Référence
+                        </label>
+                        <input type="text" class="filter-input" placeholder="Ex : DOC-2025-001"
+                               [(ngModel)]="advSearch.reference">
+                    </div>
+
+                    <!-- Type de document -->
+                    <div class="filter-field">
+                        <label class="filter-label">
+                            <i class="fa-regular fa-file"></i> Type de document
+                        </label>
+                        <nz-select
+                            [(ngModel)]="advSearch.idtype_document"
+                            nzPlaceHolder="Tous les types"
+                            nzAllowClear
+                            class="filter-select">
+                            <nz-option *ngFor="let t of dataTypeDocument"
+                                       [nzValue]="t.uid"
+                                       [nzLabel]="t.libelle_type_docs || t.libelle">
+                            </nz-option>
+                        </nz-select>
+                    </div>
+
+                    <!-- Service -->
+                    <div class="filter-field">
+                        <label class="filter-label">
+                            <i class="fa-solid fa-building"></i> Service
+                        </label>
+                        <nz-select
+                            [(ngModel)]="advSearch.idservice"
+                            nzPlaceHolder="Tous les services"
+                            nzAllowClear
+                            nzShowSearch
+                            class="filter-select">
+                            <nz-option *ngFor="let s of dataService"
+                                       [nzValue]="s.uid"
+                                       [nzLabel]="s.libelle || s.lib_service || s.name">
+                            </nz-option>
+                        </nz-select>
+                    </div>
+
+                    <!-- Période -->
+                    <div class="filter-field">
+                        <label class="filter-label">
+                            <i class="fa-regular fa-calendar"></i> Période
+                        </label>
+                        <div class="date-range-wrap">
+                            <nz-date-picker
+                                [(ngModel)]="advSearch.date_debut"
+                                nzPlaceHolder="Du"
+                                nzFormat="dd/MM/yyyy"
+                                class="filter-date">
+                            </nz-date-picker>
+                            <span class="date-sep">→</span>
+                            <nz-date-picker
+                                [(ngModel)]="advSearch.date_fin"
+                                nzPlaceHolder="Au"
+                                nzFormat="dd/MM/yyyy"
+                                class="filter-date">
+                            </nz-date-picker>
+                        </div>
+                    </div>
+
+                    <!-- Priorité -->
+                    <div class="filter-field">
+                        <label class="filter-label">
+                            <i class="fa-solid fa-flag"></i> Priorité
+                        </label>
+                        <nz-select
+                            [(ngModel)]="advSearch.idpriorite"
+                            nzPlaceHolder="Toutes les priorités"
+                            nzAllowClear
+                            class="filter-select">
+                            <nz-option *ngFor="let p of dataPriorite"
+                                       [nzValue]="p.uid"
+                                       [nzLabel]="p.lib_priorite || p.libelle">
+                            </nz-option>
+                        </nz-select>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="filter-actions">
+                        <button class="btn-reset" (click)="resetAdvanced()">
+                            <i class="fa-solid fa-rotate-left"></i>
+                            Réinitialiser
+                        </button>
+                        <button class="btn-search btn-search-adv"
+                                (click)="onAdvancedSearch(); sidebarOpen = false"
+                                [disabled]="isSearching">
+                            <i [class]="isSearching && activeMode === 'advanced' ? 'fa-solid fa-circle-notch fa-spin' : 'fa-solid fa-search'"></i>
+                            <span>{{ isSearching && activeMode === 'advanced' ? 'Recherche…' : 'Rechercher' }}</span>
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </aside>
+
+        <!-- ZONE RÉSULTATS ──────────────────────────────── -->
+        <main class="search-main">
+
+            <!-- Placeholder (aucune recherche) -->
+            <div class="results-placeholder" *ngIf="!hasSearched && !isSearching">
+                <div class="placeholder-icon">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </div>
+                <p class="placeholder-title">Trouvez vos documents</p>
+                <p class="placeholder-sub">
+                    Utilisez la barre de recherche en haut pour une recherche rapide,<br>
+                    ou les filtres pour une recherche ciblée.
+                </p>
+                <div class="placeholder-tips">
+                    <div class="tip">
+                        <i class="fa-solid fa-bolt"></i>
+                        <span>Plein texte : recherche dans le titre, la référence et le contenu OCR</span>
+                    </div>
+                    <div class="tip">
+                        <i class="fa-solid fa-sliders"></i>
+                        <span>Spécifique : filtrez par type, service, date et priorité</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chargement -->
+            <div class="results-loading" *ngIf="isSearching">
+                <div class="loading-spinner"></div>
+                <p>Recherche en cours…</p>
+            </div>
+
+            <!-- Résultats -->
+            <ng-container *ngIf="hasSearched && !isSearching">
+
+                <div class="results-header">
+                    <div class="results-count">
+                        <strong>{{ totalResults }}</strong>
+                        document{{ totalResults > 1 ? 's' : '' }}
+                        trouvé{{ totalResults > 1 ? 's' : '' }}
+                    </div>
+                    <div class="results-context">
+                        <span class="ctx-badge ctx-badge-ft" *ngIf="activeMode === 'fulltext'">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            « {{ fulltextQuery }} »
+                        </span>
+                        <span class="ctx-badge ctx-badge-adv" *ngIf="activeMode === 'advanced'">
+                            <i class="fa-solid fa-sliders"></i>
+                            Recherche spécifique
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Aucun résultat -->
+                <div class="results-empty" *ngIf="results.length === 0">
+                    <i class="fa-solid fa-circle-xmark"></i>
+                    <p>Aucun document ne correspond à votre recherche</p>
+                    <small>Essayez d'autres mots-clés ou élargissez vos critères de filtrage</small>
+                </div>
+
+                <!-- Cartes -->
+                <div class="results-list" *ngIf="results.length > 0">
+                    <div class="doc-card" *ngFor="let doc of results; let i = index">
+                        <div class="doc-icon-wrap">
+                            <nz-icon
+                                [nzType]="getFileIcon(doc.extension)"
+                                nzTheme="twotone"
+                                [nzTwotoneColor]="getFileIconColor(doc.extension)">
+                            </nz-icon>
+                        </div>
+                        <div class="doc-info">
+                            <div class="doc-ref">N° : {{ doc.code_docs || '—' }}</div>
+                            <div class="doc-title">{{ doc.lib_docs }}</div>
+                            <div class="doc-meta">
+                                <nz-tag *ngIf="doc.libelle_type_docs"
+                                        [nzColor]="'rgba(115, 102, 255, 0.1)'">
+                                    {{ doc.libelle_type_docs }}
+                                </nz-tag>
+                                <span class="meta-item" *ngIf="doc.date_docs">
+                                    <i class="fa-regular fa-calendar"></i>
+                                    {{ doc.date_docs }}
+                                </span>
+                                <span class="meta-item" *ngIf="doc.datauser">
+                                    <i class="fa-solid fa-building"></i>
+                                    {{ doc?.datauser?.dataservice?.libelle }}
+                                </span>
+                                <span class="meta-item" *ngIf="doc.datauser">
+                                    <i class="fa-solid fa-user"></i>
+                                    {{ doc?.datauser?.datapersonnel?.nom }}&nbsp;{{ doc?.datauser?.datapersonnel?.prenom }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="doc-actions">
+                            <button class="doc-btn-view" title="Voir le document">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                            <button class="doc-btn-download" title="Télécharger" *ngIf="doc.url_file">
+                                <i class="icofont icofont-download-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </ng-container>
+        </main>
+
+    </div><!-- /.search-body -->
+</div><!-- /.search-page -->

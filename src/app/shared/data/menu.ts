@@ -37,13 +37,13 @@ export const menuItems: Menu[] =
                     id: 'general-widgets'
                 },
                 {
-                    path: '/widgets/charts',
+                    path: '/documents/scan-document',
                     title: 'Scanner',
                     type: 'link',
                     id: 'chart-widgets'
                 },
                 {
-                    path: '/widgets/charts',
+                    path: '/documents/mes-documents',
                     title: 'Mes documents',
                     type: 'link',
                     id: 'chart-widgets'
@@ -73,6 +73,24 @@ export const menuItems: Menu[] =
                 //     id: 'chart-widgets'
                 // },
             ],
+        },
+        {
+            title: 'Rechercher un document',
+            id: 'search',
+            icon: 'search',
+            type: 'link',
+            path: 'recherche/trouver-un-document',
+            bookmark: true,
+            level: 1,
+        },
+        {
+            title: 'Imputation',
+            id: 'mail-box',
+            icon: 'editors',
+            type: 'link',
+            path: '/mail-box',
+            bookmark: true,
+            level: 1,
         },
         {
             main_title: "RH"
@@ -148,6 +166,13 @@ export const menuItems: Menu[] =
                 {
                     path: '/user/user-list',
                     title: 'Compte',
+                    type: 'link',
+                    badge: false,
+                    badge_value: 'New',
+                    badge_color: 'success'
+                },{
+                    path: '/user/nomination',
+                    title: 'Nomination',
                     type: 'link',
                     badge: false,
                     badge_value: 'New',
@@ -319,17 +344,7 @@ export const menuItems: Menu[] =
         //     badge_value: "0",
         //     level: 1,
         // },
-        // {
-        //     title: 'Imputation',
-        //     id: 'mail-box',
-        //     icon: 'editors',
-        //     type: 'link',
-        //     path: '/mail-box',
-        //     badge: true,
-        //     badge_color: 'success',
-        //     badge_value: "0",
-        //     level: 1,
-        // },
+
         // {
         //     title: 'Flash Info',
         //     id: 'faq',
@@ -369,6 +384,11 @@ export const menuItems: Menu[] =
             badge_color: "success",
             children: [
                 {
+                    path: '/records-management/categorie',
+                    title: 'Catégorie',
+                    type: 'link'
+                },
+                {
                     path: '/records-management/type-de-document',
                     title: 'Inventaire et calendrier de conservation',
                     type: 'link'
@@ -378,6 +398,15 @@ export const menuItems: Menu[] =
                     title: 'Plan de classement',
                     type: 'link'
                 },
+                {
+                    path: '/records-management/procedure-versement',
+                    title: 'Procédure de versement',
+                    type: 'link'
+                },{
+                    path: '/records-management/procedure-elimination',
+                    title: 'Procédure d\'élimination',
+                    type: 'link'
+                },
                 // {
                 //     path: '/records-management/workflow',
                 //     title: 'Workflow',
@@ -385,7 +414,7 @@ export const menuItems: Menu[] =
                 // },
                 {
                     path: '/records-management/site-rayon-boite',
-                    title: 'Site, Rayons & Boîte d\'archivage',
+                    title: 'Site, Rayons & Boîte',
                     type: 'link'
                 },
                 {

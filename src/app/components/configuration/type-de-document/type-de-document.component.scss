@@ -791,38 +791,48 @@
 }
 
 .tableau-inner {
-  border: 1px solid #DBEAFE;
-  border-radius: 8px;
+  border: none !important;
+  border-radius: 0 !important;
   overflow: hidden;
   margin: 0 !important;
 
+  ::ng-deep .ant-table {
+    background: transparent !important;
+  }
+
+  ::ng-deep .ant-table-container,
+  ::ng-deep .ant-table-bordered .ant-table-container {
+    border: none !important;
+    box-shadow: none !important;
+  }
+
   ::ng-deep .ant-table-thead > tr > th {
-    background: hsl(208, 67%, 24%) !important;
-    color: #ffffff !important;
+    background: #F1F5F9 !important;
+    color: #374151 !important;
     font-size: 11px !important;
     font-weight: 600 !important;
-    padding: 8px 10px !important;
+    padding: 8px 12px !important;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    border-right: 1px solid rgba(255, 255, 255, 0.15) !important;
-    border-bottom: none !important;
+    border-right: none !important;
+    border-bottom: 1px solid #E2E8F0 !important;
   }
 
   ::ng-deep .ant-table-tbody > tr > td {
     font-size: 12px !important;
-    padding: 7px 10px !important;
+    padding: 8px 12px !important;
     color: #374151 !important;
-    background: #ffffff !important;
-    border-bottom: 1px solid #F0F7FF !important;
-    border-right: 1px solid #F0F7FF !important;
+    background: transparent !important;
+    border-bottom: 1px solid #F1F5F9 !important;
+    border-right: none !important;
   }
 
   ::ng-deep .ant-table-tbody > tr:nth-child(even) > td {
-    background: #F8FBFF !important;
+    background: transparent !important;
   }
 
   ::ng-deep .ant-table-tbody > tr:hover > td {
-    background: #EFF6FF !important;
+    background: #F8FAFC !important;
   }
 }
 
@@ -1003,7 +1013,6 @@
   margin: 0 !important;
   border-radius: 0 !important;
   border: none !important;
-  border-top: 1px solid #DBEAFE !important;
 
   ::ng-deep .ant-table {
     width: 100% !important;
@@ -1047,4 +1056,10 @@
 
 ::ng-deep .support-ticket-table table {
   margin-top: 0px !important;
+}
+
+
+.btnTaille {
+  width: 35px !important;
+  height: 35px !important;
 }

@@ -1587,6 +1587,50 @@ $col-actions: 70px;
 
 //--------------------------Organigramme
 
+// ── Zoom controls ─────────────────────────────────────────
+.org-zoom-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.org-zoom-value {
+  min-width: 44px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #475569;
+  user-select: none;
+}
+
+.org-tool-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid #E2E8F0;
+  border-radius: 6px;
+  background: #F8FAFC;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.15s;
+  padding: 0;
+
+  i { font-size: 13px; }
+
+  &:hover:not(:disabled) {
+    background: #EFF6FF;
+    border-color: rgba(0, 54, 110, 0.3);
+    color: rgba(0, 54, 110);
+  }
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+}
+
 
 
 .org-canvas-wrap {

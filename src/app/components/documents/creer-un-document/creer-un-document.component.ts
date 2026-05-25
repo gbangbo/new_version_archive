@@ -1,4 +1,5 @@
 import {Component, ViewChild, AfterViewInit, OnInit, OnDestroy, ChangeDetectorRef, ElementRef} from '@angular/core';
+import {CommonModule} from '@angular/common';
 import {Select2Data, Select2Module} from "ng-select2-component";
 import {DropzoneConfigInterface, DropzoneModule, DropzoneDirective} from "ngx-dropzone-wrapper";
 import {Editor, NgxEditorModule} from "ngx-editor";
@@ -7,7 +8,7 @@ import {addBlogCategory, blogType} from '../../../shared/data/blog';
 import {DropzoneComponent} from 'ngx-dropzone-wrapper';
 import {environment} from "../../../../environments/environment";
 import {Authorization} from "../../../protect/authorization.service";
-import {FormBuilder} from "@angular/forms";
+import {FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {HttpService} from "../../../core/http.service";
 import {ToastrService} from "ngx-toastr";
 import {NzSplitterModule} from 'ng-zorro-antd/splitter';
@@ -23,6 +24,14 @@ import {NzSelectModule} from 'ng-zorro-antd/select';
 import {NzDatePickerModule} from 'ng-zorro-antd/date-picker';
 
 import * as pdfjsLib from 'pdfjs-dist';
+import {OwlDateTimeModule, OwlNativeDateTimeModule} from "@danielmoncada/angular-datetime-picker";
+import {TreeNode} from "../../configuration/plan-de-classement/tree-node.model";
+import {NzTagModule} from "ng-zorro-antd/tag";
+import {NzPopoverModule} from "ng-zorro-antd/popover";
+import {NzTreeSelectModule} from "ng-zorro-antd/tree-select";
+import {SvgIconComponent} from "../../../shared/components/ui/svg-icon/svg-icon.component";
+import Swal from 'sweetalert2';
+import moment from "moment";
 // Désactiver l'auto-découverte AU NIVEAU MODULE (en dehors de la classe)
 Dropzone.autoDiscover = false;
 
@@ -34,7 +43,9 @@ interface FoodNode {
     nombre_page?: string;
     uid?: string;
     iduser_save?: string;
+    password_file?: string;
     disabled?: boolean;
+    isFile?: boolean;
     children?: FoodNode[];
 }
 
@@ -58,6 +69,7 @@ const TREE_DATA: FoodNode[] = [
         ]
     }
 ];
+const TREE_DATAA: TreeNode[] = [];
 
 /** Flat node with expandable and level information */
 interface ExampleFlatNode {
@@ -69,22 +81,26 @@ interface ExampleFlatNode {
     nombre_page: string;
     uid: string;
     iduser_save: string;
+    password_file: string;
     level: number;
     disabled: boolean;
+    isFile: boolean;
 }
 
 @Component({
     selector: 'app-creer-un-document',
-    imports: [Select2Module,
+    imports: [CommonModule, Select2Module,
         DropzoneModule,
         NgxEditorModule,
         CardComponent,
         NzSplitterModule,
         NzIconModule,
         NzTreeViewModule,
+        ReactiveFormsModule,
         FormsModule,
         NzSelectModule,
-        NzDatePickerModule
+        NzDatePickerModule, OwlDateTimeModule,
+        OwlNativeDateTimeModule, NzTagModule, NzPopoverModule, NzTreeSelectModule, SvgIconComponent
     ],
     templateUrl: './creer-un-document.component.html',
     styleUrl: './creer-un-document.component.scss',
@@ -232,6 +248,9 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
     public editor2: Editor;
     dataFileTemps: any = [];
     isloading: boolean = false;
+    isLoadingPreview: boolean = false;
+    private officeLoaderTimer: any = null;
+    private readonly OFFICE_EXTENSIONS = ['doc', 'docx', 'xls', 'xlsx'];
 
     private transformer = (node: FoodNode, level: number): ExampleFlatNode => ({
         expandable: !!node.children && node.children.length > 0,
@@ -240,8 +259,10 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
         url_file: node?.url_file || '',
         desc_ocr_text: node?.desc_ocr_text || '',
         nombre_page: node?.nombre_page || '',
+        password_file: node?.password_file || '',
         uid: node?.uid || '',
         iduser_save: node?.iduser_save || '',
+        isFile: node?.isFile || false,
         level,
         disabled: !!node.disabled
     });
@@ -274,9 +295,45 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
     notifyBeneficiary: boolean = false;
     dataTypeDocument: any = [];
     ligneTypeOfDoc: any = [];
-    uidTypeDocument: string = ''
-    devis: string = ''
-    ndate: string = ''
+    uidTypeDocument: string = '';
+    dynamicValues: { [key: string]: any } = {};
+    treeData: any[] = [];
+
+    validationForm = new FormGroup({
+        idtype_docs: new FormControl('', Validators.required),
+        idboites: new FormControl('',),
+        code_docs: new FormControl('', Validators.required),
+        lib_docs: new FormControl('', Validators.required),
+        date_docs: new FormControl('', Validators.required),
+        publishe: new FormControl('', Validators.required),
+        typeArchivage: new FormControl('courante', Validators.required),
+        idrayon: new FormControl('',),
+        idsite: new FormControl('',),
+        date_sig: new FormControl('',),
+        dataservices: new FormControl('',),
+        desc_docs: new FormControl('',),
+        iddocuments: new FormControl('',),
+        etat_docs: new FormControl('',),
+        active_docs: new FormControl('',),
+        region: new FormControl('',),
+        departement: new FormControl('',),
+        statut_docs: new FormControl('',),
+        fulltexts_docs: new FormControl('',),
+        idproprietaire: new FormControl('',),
+        sendmail: new FormControl('',),
+    })
+    loadingType: boolean = false;
+    loadingService: boolean = false;
+    loadingBoite: boolean = false;
+    dataServices: any;
+
+
+    value: string[] = ['0-0-0'];
+    dataOrg: any = [];
+    dataRayon: any = [];
+    dataBoites: any = [];
+    isload: boolean = false;
+    dataSites: any = [];
 
     constructor(private autor: Authorization,
                 private fb: FormBuilder,
@@ -293,9 +350,11 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
         window.scrollTo({top: 0, behavior: 'smooth'});
         this.users = this.autor.getInfosUsers();
         this.loadFileTemps(this.users?.dataSociete?.uid, this.users?.uid);
-        this.typedocuments(this.users?.dataSociete?.uid, '');
-        console.log(this.users)
-
+        this.showTypeDoc(this.users?.datasociete?.uid, '');
+        this.showOrganigramme(this.users?.datasociete?.uid, '');
+        this.showSites(this.users?.datasociete?.uid, '');
+        // Forcer la mise à jour de l'icône dossier à chaque toggle
+        this.treeControl.expansionModel.changed.subscribe(() => setTimeout(() => this.cdr.detectChanges(), 0));
     }
 
     hasChild = (_: number, node: ExampleFlatNode): boolean => node.expandable;
@@ -429,55 +488,126 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
             .toPromise()
             .then((res: any) => {
                 this.isloading = false;
-                console.log(res.body)
                 if (res.body.status) {
                     this.dataFileTemps = res.body.data;
-                    TREE_DATA[0] = {
-                        ...TREE_DATA[0],
-                        children: res.body.data.map((d: any) => ({
-                            ...d,
-                            name: d.name_file_docs,
-                            extension: this.getFileExtension(d?.url_file)
-                        }))
-                    };
-                    this.dataSource.setData(TREE_DATA);
-                    console.log(res.body.data)
-                    setTimeout(() => {
-                        this.treeControl.expand(this.getNode('Fichiers')!);
-                    }, 300);
-                    this.cdr.detectChanges();
+                    console.log("all file ", res.body.data)
+                    if (this.treeData.length > 0) {
+                        this.injectFilesIntoLastNode();
+                        this.dataSource.setData([...this.treeData]);
+                        setTimeout(() => this.treeControl.expandAll(), 300);
+                        this.cdr.detectChanges();
+                    }
                 }
             })
             .catch((err) => {
                 this.isloading = false;
             });
+    }
 
+    private mapFilesToTreeNodes(): any[] {
+        return (this.dataFileTemps || []).map((d: any) => ({
+            name: d.name_file_docs,
+            key: d.uid,
+            uid: d.uid,
+            url_file: d.url_file,
+            extension: this.getFileExtension(d?.url_file),
+            desc_ocr_text: d.desc_ocr_text,
+            nombre_page: d.nombre_page,
+            password_file: d.password_file,
+            iduser_save: d.iduser_save,
+            isFile: true,
+            disabled: false,
+            children: undefined
+        }));
+    }
+
+    private injectFilesIntoLastNode() {
+        if (!this.treeData?.length || !this.dataFileTemps?.length) return;
+        const lastNode = this.treeData[this.treeData.length - 1];
+        const existingChildren = (lastNode.children || []).filter((n: any) => !n.isFile);
+        lastNode.children = [...existingChildren, ...this.mapFilesToTreeNodes()];
+    }
+
+    async deleteFile(node: any, event: Event) {
+        event.stopPropagation();
+
+        console.log("to delete ::::", node)
+
+        const result = await Swal.fire({
+            html: `
+              <div style="margin-top: 8px;">
+                <p style="font-size: 17px; font-weight: 700; color: #0F172A; margin-bottom: 10px;">
+                  Êtes-vous sûr de vouloir supprimer ce fichier ?
+                </p>
+                <p style="font-size: 13px; color: #64748B; margin: 0;">
+                  Le fichier <strong>${node.name}.${node.extension}</strong> sera définitivement supprimé.
+                </p>
+              </div>
+            `,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Oui, supprimer',
+            cancelButtonText: 'Annuler',
+            confirmButtonColor: '#EF4444',
+            cancelButtonColor: '#94A3B8',
+            reverseButtons: true,
+        });
+
+        if (!result.isConfirmed) return;
+
+        const formData = new FormData();
+        formData.append('action', '2');
+        formData.append('idfile_temp', node.uid ?? '');
+        formData.append('idsociete', this.users?.datasociete?.uid ?? '');
+
+        this.httService
+            .postDataMultipart(`${environment.api_url}api/:saveuploadfile-temps`, formData, this.users?.access_token || '')
+            .toPromise()
+            .then((res: any) => {
+                if (res.body.status || res.body.success) {
+                    this.toast.success('Fichier supprimé avec succès.', 'Succès');
+                    if (this.selectedFile?.uid === node.uid) {
+                        this.selectedFile = null;
+                    }
+                    this.loadFileTemps(this.users?.datasociete?.uid, this.users?.uid);
+                } else {
+                    this.toast.error(res.body.message || 'Erreur lors de la suppression.', 'Erreur');
+                }
+            })
+            .catch(() => {
+                this.toast.error('Erreur lors de la suppression du fichier.', 'Erreur');
+            });
     }
 
     onSending(event: any) {
         const [file, xhr, formData] = event;
-        console.log("Envoi du fichier:", file.name);
-        // Démarrer le loader
+
+        if (!this.validationForm.controls['idtype_docs'].value) {
+            xhr.abort();
+            this.toast.warning('Veuillez sélectionner un type de document avant d\'importer un fichier.', 'Type requis', {timeOut: 4000});
+            if (this.dropzoneInstance) {
+                setTimeout(() => this.dropzoneInstance?.removeFile(file), 500);
+            }
+            return;
+        }
+
         this.isUploading = true;
         this.currentFileName = file.name;
         this.uploadProgress = 0;
         // Vérifier si les données utilisateur sont disponibles
-        if (this.users && this.users.dataSociete && this.users.uid) {
+        if (this.users && this.users.datasociete && this.users.uid) {
 
             // Ajouter des données supplémentaires au formData
             formData.append("action", 1);
-            formData.append("idsociete", this.users.dataSociete.uid);
+            formData.append("idsociete", this.users.datasociete.uid);
             formData.append("idfile_temp", "");
             formData.append("iduser_file_temp", this.users.uid);
-            formData.append("statut_ocr", 1);
+            formData.append("statut_ocr", this.applyOCR ? 1 : 0);
             formData.append("lib_file_temp", file);
 
             // Ajouter un en-tête Authorization à la requête XHR
             xhr.setRequestHeader("Authorization", `Bearer ${this.users?.access_token}`);
             // xhr.setRequestHeader("Content-Type", "multipart/form-data");
-            // Optionnel : Si tu veux afficher les données ajoutées au formData pour vérifier
-            console.log(" file:=========", file);
-            console.log("Form Data ajouté:", formData);
         }
     }
 
@@ -491,31 +621,54 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
 
     onSuccess(event: any) {
         const [file, response] = event;
-        console.log("Upload réussi:", file.name, response);
+
+        this.isUploading = false;
+        this.uploadProgress = 0;
+        this.currentFileName = '';
+
+        // Vérifier le statut retourné par l'API (HTTP 200 ne garantit pas le succès métier)
+        const isSuccess = response?.status === true || response?.success === true;
+
+        if (!isSuccess) {
+            const msg = response?.message || 'Échec de l\'enregistrement du fichier.';
+            this.toast.error(msg, 'Erreur', {timeOut: 5000});
+
+            // Marquer le fichier en erreur dans le dropzone puis le retirer après 3 s
+            if (this.dropzoneInstance) {
+                this.dropzoneInstance.emit('error', file, msg);
+                setTimeout(() => this.dropzoneInstance?.removeFile(file), 3000);
+            }
+            return;
+        }
 
         this.uploadedFiles++;
-
-        // Cacher le loader après un court délai
-        setTimeout(() => {
-            this.isUploading = false;
-            this.uploadProgress = 0;
-            this.currentFileName = '';
-            this.loadFileTemps(this.users?.dataSociete?.uid, this.users?.uid);
-        }, 500);
+        this.toast.success('Fichier enregistré avec succès.', 'Succès');
+        this.loadFileTemps(this.users?.dataSociete?.uid, this.users?.uid);
     }
 
     onError(event: any) {
         const [file, errorMessage] = event;
-        console.error("Erreur d'upload:", errorMessage);
 
-        // Cacher le loader en cas d'erreur
         this.isUploading = false;
         this.uploadProgress = 0;
-        console.error("Erreur d'upload:", errorMessage);
+        let message = 'Erreur réseau lors de l’opération';
+
+        if (typeof errorMessage === 'string') {
+            message = errorMessage;
+        } else if (errorMessage?.detail) {
+            message = errorMessage.detail;
+        }
+        this.toast.error(message, 'Erreur upload', {timeOut: 5000});
+
+        // Retirer le fichier du dropzone après 3 s
+        if (this.dropzoneInstance) {
+            setTimeout(() => this.dropzoneInstance?.removeFile(file), 3000);
+        }
     }
 
-    onDropzoneInit(dropzone: any) {
-        console.log('Dropzone initialisé', dropzone);
+    onDropzoneInit(dropzoneRef: any) {
+        // ngx-dropzone-wrapper émet la directive ; on récupère l'instance native
+        this.dropzoneInstance = dropzoneRef?.dropzone ? dropzoneRef.dropzone() : (dropzoneRef as Dropzone);
     }
 
     getFileType(filename: string): string {
@@ -555,42 +708,77 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
 
     // Pour gérer la sélection
     onNodeClick(node: any) {
-        // Ne sélectionner que les fichiers (pas les dossiers)
         if (!node.children) {
+            console.log("node ====", node)
             this.selectListSelection.toggle(node);
             this.selectedFile = node;
-            this.getSafeUrl(node.url_file)
+            if (node.extension) {
+                this.isLoadingPreview = true;
+                if (this.OFFICE_EXTENSIONS.includes(node.extension)) {
+                    this.startOfficeLoaderTimer();
+                }
+            }
+            this.getSafeUrl(node);
         } else {
-            // Pour les dossiers, juste toggle l'expansion
             this.selectListSelection.toggle(node);
             this.selectedFile = null;
+            this.isLoadingPreview = false;
         }
+
+        console.log("desc_ocr_text  ===", node)
+    }
+
+    onPreviewLoaded(): void {
+        setTimeout(() => {
+            this.isLoadingPreview = false;
+        }, 0);
+    }
+
+    onOfficePreviewLoaded(): void {
+        if (this.officeLoaderTimer) {
+            clearTimeout(this.officeLoaderTimer);
+            this.officeLoaderTimer = null;
+        }
+        // Petit délai pour que l'iframe ait le temps d'afficher son contenu
+        setTimeout(() => {
+            this.isLoadingPreview = false;
+        }, 800);
+    }
+
+    private startOfficeLoaderTimer(): void {
+        if (this.officeLoaderTimer) clearTimeout(this.officeLoaderTimer);
+        // Repli : cache le loader après 10s si l'iframe ne répond pas
+        this.officeLoaderTimer = setTimeout(() => {
+            this.isLoadingPreview = false;
+            this.officeLoaderTimer = null;
+        }, 10000);
     }
 
     // Sécuriser l'URL pour l'iframe (pour PDF et images locales)
-    getSafeUrl(url: string) {
+    getSafeUrl(data: any) {
 
         // On remplace l'adresse absolue par le chemin relatif du proxy
         // Si vous avez choisi l'Option A (intercepter /medias) :
-        const proxyUrl = environment.production ? url : url.replace('http://api-ged.archivepro.ci', '');
+        const proxyUrl = environment.production ? data.url_file : data.url_file.replace('http://api-ged.archivepro.ci', '');
 
         console.log('URL via Proxy:', proxyUrl);
 
         const extension = proxyUrl.split('.').pop()?.toLowerCase();
 
         if (extension === 'pdf') {
-            this.renderPdf(proxyUrl); // On passe l'URL proxifiée
-        } else if (['jpg', 'jpeg', 'png'].includes(extension!)) {
-            this.renderImage(proxyUrl);
+            this.renderPdf(proxyUrl, data.password_file);
         }
     }
 
-    renderPdf(url: string) {
+    renderPdf(url: string, pwd: string) {
+
+        console.log("url ====", url)
+
         // On passe un objet de chargement
         const loadingTask = pdfjsLib.getDocument({
             url: url,
             // Si vous avez un mot de passe connu, mettez-le ici :
-            password: 'archive2025'
+            password: pwd
         });
 
         loadingTask.promise.then((pdf: any) => {
@@ -606,7 +794,14 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
                 canvas.height = viewport.height;
                 canvas.width = viewport.width;
 
-                page.render({canvasContext: context!, viewport: viewport});
+                page.render({canvasContext: context!, viewport: viewport}).promise
+                    .then(() => setTimeout(() => {
+                        this.isLoadingPreview = false;
+                        this.cdr.detectChanges();
+                    }, 0))
+                    .catch(() => setTimeout(() => {
+                        this.isLoadingPreview = false;
+                    }, 0));
             });
         }).catch((error: any) => {
             if (error.name === 'PasswordException') {
@@ -708,34 +903,57 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
     //     });
     // }
 
-    typedocuments(idsociete: string = '', idtypedocuments: string = '') {
+
+    showTypeDoc(idsociete: string = '', idtypedocuments: string = '') {
         this.dataTypeDocument = [];
+        this.loadingType = true;
         this.httService.getData(`${environment.api_url}api/:savetypedocuments?idsociete=${idsociete}`, false, this.users?.access_token || '')
             .toPromise()
             .then((res: any) => {
-                console.log("res.body ====", res.body)
+                console.log("Type doc ====", res.body)
+                this.loadingType = false;
                 if (res.body.status) {
-                    this.dataTypeDocument = res.body.data;
+                    this.dataTypeDocument = res.body.data.map((d: any) => {
+                        return {
+                            ...d,
+                            label: d.libelle_type_docs,
+                            value: d.uid
+                        }
+                    });
                     console.log(res.body.data)
                 }
             })
             .catch((err) => {
+                this.loadingType = false;
             });
 
     }
 
     changeType(event: any) {
         this.ligneTypeOfDoc = [];
-        if (!event) return;
-        this.ligneTypeOfDoc = this.dataTypeDocument.find((d: any) => d.uid == event);
+        console.log("event===", event.value)
+
+        if (!event.value) return;
+        this.showCatOrder('', event.value, '');
+
+        this.ligneTypeOfDoc = this.dataTypeDocument.find((d: any) => d.uid == event.value);
         this.ligneTypeOfDoc.dataPro = this.ligneTypeOfDoc.dataPro.map((d: any) => {
             return {
                 ...d,
                 lib_proprietes_docs: this.capitalize(d.lib_proprietes_docs)
             }
         })
-        console.log("event===", event)
-        console.log(this.ligneTypeOfDoc)
+        const elementsARetirer = [
+            "Numéro du document",
+            "Objet du document",
+            "Date du document"
+        ];
+
+        this.ligneTypeOfDoc.dataPro = this.ligneTypeOfDoc.dataPro.filter(
+            (item: any) => !elementsARetirer.includes(item.lib_proprietes_docs)
+        );
+
+        console.log("pour les meta donnees ", this.ligneTypeOfDoc.dataPro)
     }
 
     capitalize(str: string | null | undefined): string {
@@ -744,4 +962,312 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
         return str.charAt(0).toUpperCase() + str.slice(1);
     }
 
+    resetAfterSave(): void {
+        this.validationForm.reset({
+            typeArchivage: 'courante',
+            publishe: '',
+        });
+        this.validationForm.markAsPristine();
+        this.validationForm.markAsUntouched();
+
+        this.ligneTypeOfDoc = [];
+        this.dynamicValues = {};
+        this.archiveStatus = 'courante';
+        this.documentStatus = 'privee';
+        this.applyOCR = false;
+        this.notifyBeneficiary = false;
+        this.dataRayon = [];
+        this.dataBoites = [];
+        this.dataFileTemps = [];
+        this.isUploading = false;
+        this.uploadProgress = 0;
+        this.currentFileName = '';
+        this.uploadedFiles = 0;
+
+        if (this.dropzoneInstance) {
+            this.dropzoneInstance.removeAllFiles(true);
+        }
+
+        this.resetTree();
+    }
+
+    submitForm() {
+
+        if (this.validationForm.value.typeArchivage == "definitive") {
+            if (!this.validationForm.value.idboites) {
+                return;
+            }
+        } else {
+            this.validationForm.get('idboites')?.setValue('');
+        }
+
+        console.log("ligneTypeOfDoc?.dataPro =====", this.ligneTypeOfDoc?.dataPro);
+
+        const payload = {
+            "action": 1,
+            "iddocuments": "",
+            "idsociete": this.users.datasociete.uid,
+            "iduser": this.users?.uid,
+            "idtype_docs": this.validationForm.value.idtype_docs,
+            "idboites": this.validationForm.value.idboites || '',
+            "code_docs": this.validationForm.value.code_docs,
+            "lib_docs": this.validationForm.value.lib_docs,
+            "date_docs": moment(this.validationForm.value.date_docs).format('YYYY-MM-DD'),
+            "date_sig": "",
+            "desc_docs": this.validationForm.value.desc_docs,
+            "etat_docs": 0,
+            "active_docs": true,
+            "region": "",
+            "departement": "",
+            "proprietes_docs": this.ligneTypeOfDoc?.dataPro
+                ?.filter((e: any) => e.value_proprietes_docs)
+                .map((e: any) => {
+                    return {
+                        "idproprietes_docs": e.uid,
+                        "value_proprietes_docs": e.value_proprietes_docs,
+                        "active": true
+                    };
+                }),
+            "dataservices": this.setTranformer(this.validationForm.value.dataservices),
+            "statut_docs": 0,
+            "publishe": true,
+            "fulltexts_docs": "",
+            "idproprietaire": 0,
+            "sendmail": this.validationForm.value.sendmail || false
+        }
+        console.log("payload =====", payload);
+        this.isloading = true;
+        this.httService.postData(`${environment.api_url}api/:savedocuments`, payload, this.users?.access_token || '')
+            .toPromise()
+            .then((res: any) => {
+                this.isloading = false;
+                console.log("res.body ===", res.body)
+                if (res.body.status || res.body.success) {
+                    this.resetAfterSave();
+                    Swal.fire({
+                        title: res?.body?.message,
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    });
+                } else {
+                    Swal.fire({
+                        title: res?.body?.message,
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            })
+            .catch((err: any) => {
+                this.isloading = false;
+                console.log("err", err)
+                Swal.fire({
+                    title: err?.error?.err?.message || 'Une erreur est survenue !',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            });
+
+    }
+
+    setTranformer(e: any) {
+        if (!e || !e.length) return [];
+        return e.map((e: string) => ({
+            "idservices": e
+        }))
+    }
+
+    private resetTree(): void {
+        this.treeData = [];
+        this.dataSource.setData([]);
+        this.selectedFile = null;
+        this.isLoadingPreview = false;
+    }
+
+    showCatOrder(idsociete: string = '', idtype_document: string = '', idcategories: string = '') {
+        const params = new URLSearchParams();
+
+        if (idsociete) {
+            params.append('idsociete', idsociete);
+        }
+
+        if (idtype_document) {
+            params.append('idtype_document', idtype_document);
+        }
+
+        if (idcategories) {
+            params.append('idcategories', idcategories);
+        }
+
+        this.resetTree();
+
+        const url = `${environment.api_url}api/save-categorie-plan-classement?${params.toString()}`;
+        this.httService.getData(url, false, this.users?.access_token || '')
+            .toPromise()
+            .then((res: any) => {
+                console.log("Plan de classement ====", res.body)
+                if (res.body.status || res.body.success) {
+                    const mapped = this.mapApiToTree(res.body.data);
+                    if (!mapped?.length) {
+                        this.resetTree();
+                        return;
+                    }
+                    this.treeData = mapped;
+                    this.injectFilesIntoLastNode();
+                    this.dataSource.setData([...this.treeData]);
+                    setTimeout(() => this.treeControl.expandAll(), 300);
+                    console.log("dataSource ===", this.dataSource)
+                } else {
+                    this.resetTree();
+                }
+            })
+            .catch(() => {
+                this.resetTree();
+            });
+
+    }
+
+    showOrganigramme(idsociete: string = '', niveau: string = '') {
+        this.dataOrg = [];
+        this.isload = true;
+        this.httService.getData(`${environment.api_url}auth/:save-service-organigramme?societe=${idsociete}&niveau=${niveau}`, false, this.users?.access_token || '')
+            .toPromise()
+            .then((res: any) => {
+                this.isload = false;
+                if (res.body.status || res.body.success) {
+                    console.log('service===', res.body.data)
+                    this.dataOrg = res.body.data.map((e: any, index: number) => {
+                        return this.formatNode(e, index === 0);
+                    });
+                }
+            })
+            .catch((err) => {
+                this.isload = false;
+            });
+    }
+
+    mapApiToTree(data: any[]): TreeNode[] {
+        return data.map(item => ({
+            name: item?.name_categories,   // ← nom affiché dans le tree
+            key: item?.uid,                // ← identifiant unique
+            id: item?.id,
+            position: item?.position,
+            actif: item?.actif,
+            apiLevel: item?.level,
+            auth: `${item?.actif ? 'Actif' : 'Inactif'}`,
+            color: item?.actif ? '#87d068' : '#9a0218',
+            code_type_docs: item?.code_type_docs,
+            libelle_type_docs: item?.libelle_type_docs,
+            idtype_document: item?.idtype_document,
+            uid_type_docs: item?.uid_type_docs,
+            disabled: false,
+            children: item.children?.length > 0
+                ? this.mapApiToTree(item.children)
+                : undefined
+        }));
+    }
+
+    onChange($event: string[]): void {
+        console.log($event);
+    }
+
+    formatNode(node: any, isFirstNode: boolean = false): any {
+        return {
+            title: node.libelle,
+            key: node.uid,
+            expanded: isFirstNode,
+            isLeaf: !node.children || node.children.length === 0,
+            children: node.children?.map((child: any) => {
+                return this.formatNode(child);
+            }) || []
+        };
+    }
+
+
+    setArchive(value: 'courante' | 'definitive'): void {
+        this.validationForm.get('typeArchivage')?.setValue(value);
+    }
+
+    disableFutureDates = (date: Date): boolean => {
+        return date > new Date();
+    };
+
+    generateDocumentNumber(): void {
+        const now = new Date();
+        const pad = (n: number) => n.toString().padStart(2, '0');
+        const datePart = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}`;
+        const randPart = Math.random().toString(36).substring(2, 7).toUpperCase();
+        const code = `DOC-${datePart}-${randPart}`;
+        this.validationForm.get('code_docs')?.setValue(code);
+        this.validationForm.get('code_docs')?.markAsTouched();
+    }
+
+    showSites(idsociete: string = '', idsite: string = '') {
+        this.dataSites = [];
+        this.httService.getData(`${environment.api_url}api/:savesites?idsociete=${idsociete}&idsite=${idsite}`, false, this.users?.access_token || '')
+            .toPromise()
+            .then((res: any) => {
+                if (res.body.status) {
+                    this.dataSites = res.body.data.map((e: any) => {
+                        return {
+                            ...e,
+                            label: e.libelle_sites,
+                            value: e.uid
+                        }
+                    });
+                }
+            })
+            .catch((err) => {
+            });
+    }
+
+    showRayons(idsociete: string = '', idrayon: string = '', idsite: string = '') {
+        this.dataRayon = [];
+        this.httService.getData(`${environment.api_url}api/:saverayons?idsociete=${idsociete}&idrayon=${idrayon}&idsite=${idsite}`, false, this.users?.access_token || '')
+            .toPromise()
+            .then((res: any) => {
+                this.isloading = false;
+                if (res.body.status) {
+                    this.dataRayon = res.body.data.map((e: any) => {
+                        return {
+                            ...e,
+                            label: e.libelle_rayon,
+                            value: e.uid
+                        }
+                    });
+                }
+            })
+            .catch((err) => {
+            });
+    }
+
+    changeSite(event: any) {
+        if (!event.value) return;
+        this.showRayons(this.users.datasociete.uid, '', event.value);
+    }
+
+    changeRayon(event: any) {
+        if (!event.value) return;
+        this.showBoites(this.users.datasociete.uid, event.value, '');
+    }
+
+    showBoites(idsociete: string = '', idrayon: string = '', idsite: string = '') {
+        this.dataBoites = [];
+        this.loadingBoite = true;
+        this.httService.getData(`${environment.api_url}api/:saveboites?idsociete=${idsociete}&idrayon=${idrayon}&idsite=${idsite}`, false, this.users?.access_token || '')
+            .toPromise()
+            .then((res: any) => {
+                this.loadingBoite = false;
+                if (res.body.status) {
+                    this.dataBoites = res.body.data.map((e: any) => {
+                        return {
+                            label: e.code_boites,
+                            value: e.uid
+                        }
+                    });
+                }
+            })
+            .catch((err) => {
+                this.loadingBoite = false;
+            });
+    }
 }

@@ -23,6 +23,12 @@ import {decryptData, postDataCrypte} from "../../../../../config/config";
 import {ToastrService} from "ngx-toastr";
 import moment from "moment";
 import {DocUploadComponent} from "../../../widgets/doc-upload/doc-upload.component";
+import {NzTreeSelectModule} from "ng-zorro-antd/tree-select";
+import {FlatNode, TreeNode} from "../../../../entites/organigramme/tree-node.model";
+import {NzTreeFlatDataSource, NzTreeFlattener} from "ng-zorro-antd/tree-view";
+import {FlatTreeControl} from "@angular/cdk/tree";
+
+const TREE_DATA: TreeNode[] = [];
 
 @Component({
     selector: 'app-add-modal',
@@ -30,7 +36,7 @@ import {DocUploadComponent} from "../../../widgets/doc-upload/doc-upload.compone
         ReactiveFormsModule, NzSwitchModule,
         Select2Module, CardComponent, OwlDateTimeModule,
         OwlNativeDateTimeModule,
-        FeatherIconComponent, DocUploadComponent],
+        FeatherIconComponent, DocUploadComponent, NzTreeSelectModule],
     providers: [
         {provide: OWL_DATE_TIME_LOCALE, useValue: 'fr'}
     ],
@@ -88,6 +94,7 @@ export class AddModalComponent {
     statutForm = new FormGroup({
         idservice: new FormControl('', Validators.required),
         idposte: new FormControl(''),
+        idsociete: new FormControl(''),
         // idtypeposte: new FormControl('', Validators.required),
         idfonction: new FormControl('', Validators.required),
         numero_badge: new FormControl(''),
@@ -129,6 +136,45 @@ export class AddModalComponent {
     loadingDir: boolean = false;
     isLodDep: boolean = false;
     isDirection: boolean = false;
+    isload: boolean = false;
+
+
+    dataSociete: any = [];
+    dataOrganigramme: any = [];
+    expandKeys = [];
+    is: boolean = false;
+
+    treeData: TreeNode[] = TREE_DATA;
+    private transformer = (node: TreeNode, level: number): FlatNode => ({
+        expandable: !!node.children && node.children.length > 0,
+        name: node.name,
+        sigle: node.sigle || '',
+        datasociete: node.datasociete || {},
+        libelle: node.libelle || '',
+        created_at: node.created_at || '',
+        actif: node.actif ?? true,
+        position: node.position || 0,
+        libcolor: node.libcolor,
+        _color: node._color,
+        key: node.key,
+        id: node.id,
+        level,
+        disabled: !!node.disabled
+    });
+
+    treeControl = new FlatTreeControl<FlatNode>(
+        node => node.level,
+        node => node.expandable
+    );
+
+    treeFlattener = new NzTreeFlattener<TreeNode, FlatNode>(
+        this.transformer,
+        node => node.level,
+        node => node.expandable,
+        node => node.children
+    );
+
+    dataSource = new NzTreeFlatDataSource(this.treeControl, this.treeFlattener);
 
     constructor(private toast: ToastrService, private autor: Authorization, private httService: HttpService, private http: HttpClient) {
         this.users = this.autor.getInfosUsers();
@@ -136,8 +182,46 @@ export class AddModalComponent {
         this.showFonction(this.users?.datasociete?.uid, '');
         this.showDirection(this.users?.datasociete?.uid, '');
         this.showSite(this.users?.datasociete?.uid, '');
+        this.showSociete(this.users?.datasociete?.code_societe)
     }
 
+    showSociete(code_societe: string = '') {
+        this.dataSociete = [];
+        this.isload = true;
+        this.httService.getData(`${environment.api_url}auth/:savesociete?code_societe=${code_societe}`, false, this.users?.access_token || '')
+            .toPromise()
+            .then((res: any) => {
+                this.isload = false;
+                if (res.body.status || res.body.success) {
+                    this.dataSociete = res.body.data.map((e: any) => {
+                        return this.formatNode(e);
+                    });
+                }
+            })
+            .catch((err) => {
+                this.isload = false;
+            });
+    }
+
+    showOrganigramme(idsociete: string = '', niveau: string = '',) {
+        this.isloading = true;
+        this.dataOrganigramme = []
+        this.httService.getData(`${environment.api_url}auth/:save-service-organigramme?societe=${idsociete}&niveau=${niveau}`, false, this.users?.access_token || '')
+            .toPromise()
+            .then((res: any) => {
+                this.isloading = false;
+                if (res.body.status || res.body.success) {
+                    this.dataOrganigramme = res.body.data.map((e: any) => {
+                        return this.formatNode(e);
+                    });
+
+                }
+            })
+            .catch((err) => {
+                this.isloading = false;
+            });
+
+    }
 
     departement(idsociete: string = '', iddirection: string, iddepartement: string = '') {
         this.isLodDep = true;
@@ -580,4 +664,19 @@ export class AddModalComponent {
         console.log('Document supprimé');
     }
 
+    onChange($event: string): void {
+        this.showOrganigramme($event, '');
+        console.log($event);
+    }
+
+    formatNode(node: any): any {
+        return {
+            title: node.raison_sociale || node.libelle,
+            key: node.uid,
+            isLeaf: !node.children || node.children.length === 0,
+            children: node.children?.map((child: any) => {
+                return this.formatNode(child);
+            }) || []
+        };
+    }
 }

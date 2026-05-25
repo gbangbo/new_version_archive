@@ -1,0 +1,122 @@
+<!-- Barre d'outils -->
+<div class="org-toolbar">
+    <div class="org-zoom-controls">
+        <button class="org-tool-btn" (click)="zoomOut()" [disabled]="zoomLevel <= ZOOM_MIN" title="Dézoomer">
+            <i class="fa-solid fa-magnifying-glass-minus"></i>
+        </button>
+        <span class="org-zoom-value">{{ (zoomLevel * 100).toFixed(0) }}%</span>
+        <button class="org-tool-btn" (click)="zoomIn()" [disabled]="zoomLevel >= ZOOM_MAX" title="Zoomer">
+            <i class="fa-solid fa-magnifying-glass-plus"></i>
+        </button>
+        <button class="org-tool-btn" (click)="resetZoom()" title="Vue normale (100%)">
+            <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+    </div>
+    <button class="org-download-btn" (click)="downloadChart()" [disabled]="isDownloading" title="Télécharger en image PNG">
+        <i [class]="isDownloading ? 'fa-solid fa-circle-notch fa-spin' : 'icofont icofont-download-alt'"></i>
+        <span>{{ isDownloading ? 'Export…' : 'Télécharger' }}</span>
+    </button>
+</div>
+
+<div class="org-scroll-wrap" *ngIf="treeData?.length">
+    <div class="org-tree" [style.zoom]="zoomLevel" #orgChart>
+
+        <!-- ① Nœud DG (rootNode) -->
+        <ng-container *ngIf="rootNode">
+            <div class="org-card-l0-wrap">
+                <div class="org-card-l0"
+                     [class.selected]="selectedNode?.key === rootNode?.key"
+                     (click)="onNodeClick(rootNode)">
+                    <div class="org-card-l0-body">
+                        <div class="org-card-sigle">{{ rootNode.sigle }}</div>
+                        <div class="org-card-name-l0">{{ rootNode.name }}</div>
+                    </div>
+                    <div class="org-card-user">
+                        <div class="org-avatar"
+                             [class.no-user]="!rootNode['auth'] || rootNode['auth'] === ''">
+                            {{ (rootNode['auth'] && rootNode['auth'] !== '') ? rootNode.sigle?.slice(0, 2) : '?' }}
+                        </div>
+                        <span class="org-user-name">
+                            {{ (rootNode['auth'] && rootNode['auth'] !== '') ? rootNode['auth'] : 'Non nommé' }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="org-vline-root"></div>
+        </ng-container>
+
+        <!-- ② Barre horizontale principale -->
+        <div class="org-main-hbar"></div>
+
+        <!-- ③ Colonnes L1 -->
+        <div class="org-main-row">
+            <div class="org-main-col" *ngFor="let root of treeData">
+
+                <!-- Flèche depuis la barre principale -->
+                <div class="org-arrow-from-bar">
+                    <div class="org-vline-from-bar"></div>
+                    <div class="org-arrow-head"></div>
+                </div>
+
+                <!-- Template récursif à partir de L1 -->
+                <ng-container
+                        *ngTemplateOutlet="nodeTree; context: { node: root, depth: 0 }">
+                </ng-container>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ══ TEMPLATE RÉCURSIF (N niveaux) ══════════════════ -->
+<ng-template #nodeTree let-node="node" let-depth="depth">
+
+    <!-- Carte du nœud -->
+    <div class="org-card"
+         [ngClass]="getCardClass(depth)"
+         [class.selected]="selectedNode?.key === node.key"
+         (click)="onNodeClick(node)">
+        <div class="org-card-top">
+            <div class="org-card-sigle">{{ node.sigle }}</div>
+            <div class="org-card-name">{{ node.name || node.libelle }}</div>
+        </div>
+        <div class="org-card-user">
+            <div class="org-avatar" [class.no-user]="!node.auth || node.auth === ''">
+                <img *ngIf="node?.datausers?.datapersonnel?.photo" style="border-radius: 100%;width: 22px;height: 22px;"
+                     src="{{node?.datausers?.datapersonnel?.photo || 'assets/images/avatar/anonyme.jpg'}}"
+                     alt="visuel">
+               <span *ngIf="!node?.datausers?.datapersonnel?.photo">{{ (node.auth && node.auth !== '') ? node.sigle?.slice(0, 2) : '?' }}</span>
+            </div>
+            <span class="org-user-name">
+                {{ (node?.datausers?.datapersonnel) ? node?.datausers?.datapersonnel?.nom +' '+node?.datausers?.datapersonnel?.prenom: 'Non nommé' }}
+            </span>
+        </div>
+    </div>
+
+    <!-- Enfants récursifs -->
+    <div class="org-children" *ngIf="node.children?.length">
+        <div class="org-child-line"
+             [style.background]="getLineColor(depth)">
+        </div>
+
+        <div class="org-child-row" *ngFor="let child of node.children">
+            <div class="org-child-arrow"
+                 [style.color]="getArrowColor(depth)">→
+            </div>
+
+            <div class="org-child-block">
+                <!-- Appel récursif -->
+                <ng-container
+                        *ngTemplateOutlet="nodeTree; context: { node: child, depth: depth + 1 }">
+                </ng-container>
+            </div>
+        </div>
+    </div>
+
+</ng-template>
+
+
+@if(modalOpen){
+<app-add-modal [dataLigne]="dataLigne" (modalOpen)="handleModal($event)"></app-add-modal>
+}

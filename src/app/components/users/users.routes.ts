@@ -7,6 +7,7 @@ import {UserCardsComponent} from "./user-cards/user-cards.component";
 import {RolesPermissionComponent} from "./roles-permission/roles-permission.component";
 import {CarrierePersonnelComponent} from "./carriere-personnel/carriere-personnel.component";
 import {FonctionPosteComponent} from "./fonction-poste/fonction-poste.component";
+import {NominationComponent} from "./nomination/nomination.component";
 
 export const users: Routes = [
     {
@@ -63,6 +64,14 @@ export const users: Routes = [
         data: {
             title: 'Fonction',
             breadcrumb: 'Fonction'
+        }
+    },
+    {
+        path: 'nomination',
+        component: NominationComponent,
+        data: {
+            title: 'Nomination',
+            breadcrumb: 'Nomination'
         }
     }
 ]

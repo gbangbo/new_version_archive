@@ -207,83 +207,132 @@
                                             }
                                         </div>
 
-                                        <div class="col-span-6 position-relative">
-                                            <label class="form-label" for="iddirection">Direction
+
+                                        <div class="col-span-6">
+                                            <label class="form-label" for="idsociete">Raison sociale
                                                 <span class="txt-danger">*</span>
                                             </label>
-                                            <select2 [data]="dataDirection"
-                                                     placeholder="Selectionnez la direction"
-                                                     id="iddirection"
-                                                     formControlName="iddirection"
-                                                     [disabled]="loadingDir"
-                                                     [overlay]="false"
-                                                     [resettable]="true"
-                                                     [listPosition]="'below'"
-                                                     [minCountForSearch]="1"
-                                                     (update)="choixDirection($event)"
-                                                     noResultMessage="Aucune donnée trouvée"
-                                                     class="raise-input-select"
-                                            >
-                                            </select2>
-                                            <div class="select-loader" *ngIf="loadingDir">
-                                                <i class="fas fa-spin fa-circle-notch"></i>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-span-6 position-relative">
-                                            <label class="form-label" for="iddepartement">Sous-direction
-                                                <span class="txt-danger">*</span>
-                                            </label>
-                                            <select2 [data]="dataDepartement"
-                                                     placeholder="Selectionnez le Sous-direction"
-                                                     id="iddepartement"
-                                                     formControlName="iddepartement"
-                                                     [disabled]="isLodDep"
-                                                     [overlay]="false"
-                                                     [resettable]="true"
-                                                     [listPosition]="'below'"
-                                                     [minCountForSearch]="1"
-                                                     (update)="choixDep($event)"
-                                                     noResultMessage="Aucune donnée trouvée"
-                                                     class="raise-input-select"
-                                            >
-                                            </select2>
-                                            <div class="select-loader" *ngIf="isLodDep">
-                                                <i class="fas fa-spin fa-circle-notch"></i>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-span-6 position-relative">
-                                            <label class="form-label" for="idservice">Service
-                                                <span class="txt-danger">*</span>
-                                            </label>
-                                            <select2 [data]="dataService"
-                                                     placeholder="Selectionnez le service"
-                                                     id="idservice"
-                                                     formControlName="idservice"
-                                                     [disabled]="loadingService"
-                                                     [overlay]="false"
-                                                     [resettable]="true"
-                                                     [listPosition]="'below'"
-                                                     [minCountForSearch]="1"
-
-                                                     noResultMessage="Aucune donnée trouvée"
-                                                     class="raise-input-select"
-                                                     [ngClass]="{ 'is-invalid' : statutForm.controls['idservice'].touched &&  statutForm.controls['idservice'].errors?.['required'] , 'is-valid' : statutForm.controls['idservice'].valid}">
-
-                                            </select2>
-                                            <div class="select-loader" *ngIf="loadingService">
-                                                <i class="fas fa-spin fa-circle-notch"></i>
-                                            </div>
-                                            @if(statutForm.controls['idservice'].valid) {
+                                            <nz-tree-select
+                                                    id="idsociete"
+                                                    style="width: 100% !important;"
+                                                    [nzDisabled]="is"
+                                                    [nzAsyncData]="isload"
+                                                    [nzExpandedKeys]="expandKeys"
+                                                    [nzNodes]="dataSociete"
+                                                    nzShowSearch
+                                                    nzPlaceHolder="Selectionnez la société"
+                                                    formControlName="idsociete"
+                                                    (ngModelChange)="onChange($event)"
+                                                    [ngClass]="{ 'is-invalid' : statutForm.controls['idsociete'].touched &&  statutForm.controls['idsociete'].errors?.['required'] , 'is-valid' : statutForm.controls['idsociete'].valid}"
+                                            />
+                                            @if(statutForm.controls['idsociete'].valid) {
                                             <!--<div class="valid-feedback">Looks's Good!</div>-->
-                                            } @else if(statutForm.controls['idservice'].touched &&
-                                            statutForm.controls['idservice'].errors?.['required']) {
-                                            <div class="invalid-feedback"> Veuillez selectionner le service.</div>
+                                            } @else if(statutForm.controls['idsociete'].touched && statutForm.controls['idsociete'].errors?.['required']) {
+                                            <div class="invalid-feedback"> Veuillez selectionner la société svp.</div>
                                             }
                                         </div>
 
-                                        <div class="col-span-12 position-relative">
+                                        <div class="col-span-6">
+                                            <label class="form-label" for="idservice">Service
+                                                <span class="txt-danger">*</span>
+                                            </label>
+                                            <nz-tree-select
+                                                    id="idservice"
+                                                    style="width: 100% !important;"
+                                                    [nzDisabled]="is"
+                                                    [nzAsyncData]="isload"
+                                                    [nzExpandedKeys]="expandKeys"
+                                                    [nzNodes]="dataOrganigramme"
+                                                    nzShowSearch
+                                                    nzPlaceHolder="Selectionnez le service"
+                                                    formControlName="idservice"
+                                                    [ngClass]="{ 'is-invalid' : statutForm.controls['idservice'].touched &&  statutForm.controls['idservice'].errors?.['required'] , 'is-valid' : statutForm.controls['idservice'].valid}"
+                                            />
+                                            @if(statutForm.controls['idservice'].valid) {
+                                            <!--<div class="valid-feedback">Looks's Good!</div>-->
+                                            } @else if(statutForm.controls['idservice'].touched && statutForm.controls['idservice'].errors?.['required']) {
+                                            <div class="invalid-feedback"> Veuillez selectionner le service svp.</div>
+                                            }
+                                        </div>
+
+
+<!--                                        <div class="col-span-6 position-relative">-->
+<!--                                            <label class="form-label" for="iddirection">Direction-->
+<!--                                                <span class="txt-danger">*</span>-->
+<!--                                            </label>-->
+<!--                                            <select2 [data]="dataDirection"-->
+<!--                                                     placeholder="Selectionnez la direction"-->
+<!--                                                     id="iddirection"-->
+<!--                                                     formControlName="iddirection"-->
+<!--                                                     [disabled]="loadingDir"-->
+<!--                                                     [overlay]="false"-->
+<!--                                                     [resettable]="true"-->
+<!--                                                     [listPosition]="'below'"-->
+<!--                                                     [minCountForSearch]="1"-->
+<!--                                                     (update)="choixDirection($event)"-->
+<!--                                                     noResultMessage="Aucune donnée trouvée"-->
+<!--                                                     class="raise-input-select"-->
+<!--                                            >-->
+<!--                                            </select2>-->
+<!--                                            <div class="select-loader" *ngIf="loadingDir">-->
+<!--                                                <i class="fas fa-spin fa-circle-notch"></i>-->
+<!--                                            </div>-->
+<!--                                        </div>-->
+
+<!--                                        <div class="col-span-6 position-relative">-->
+<!--                                            <label class="form-label" for="iddepartement">Sous-direction-->
+<!--                                                <span class="txt-danger">*</span>-->
+<!--                                            </label>-->
+<!--                                            <select2 [data]="dataDepartement"-->
+<!--                                                     placeholder="Selectionnez le Sous-direction"-->
+<!--                                                     id="iddepartement"-->
+<!--                                                     formControlName="iddepartement"-->
+<!--                                                     [disabled]="isLodDep"-->
+<!--                                                     [overlay]="false"-->
+<!--                                                     [resettable]="true"-->
+<!--                                                     [listPosition]="'below'"-->
+<!--                                                     [minCountForSearch]="1"-->
+<!--                                                     (update)="choixDep($event)"-->
+<!--                                                     noResultMessage="Aucune donnée trouvée"-->
+<!--                                                     class="raise-input-select"-->
+<!--                                            >-->
+<!--                                            </select2>-->
+<!--                                            <div class="select-loader" *ngIf="isLodDep">-->
+<!--                                                <i class="fas fa-spin fa-circle-notch"></i>-->
+<!--                                            </div>-->
+<!--                                        </div>-->
+
+<!--                                        <div class="col-span-6 position-relative">-->
+<!--                                            <label class="form-label" for="idservice">Service-->
+<!--                                                <span class="txt-danger">*</span>-->
+<!--                                            </label>-->
+<!--                                            <select2 [data]="dataService"-->
+<!--                                                     placeholder="Selectionnez le service"-->
+<!--                                                     id="idservice"-->
+<!--                                                     formControlName="idservice"-->
+<!--                                                     [disabled]="loadingService"-->
+<!--                                                     [overlay]="false"-->
+<!--                                                     [resettable]="true"-->
+<!--                                                     [listPosition]="'below'"-->
+<!--                                                     [minCountForSearch]="1"-->
+
+<!--                                                     noResultMessage="Aucune donnée trouvée"-->
+<!--                                                     class="raise-input-select"-->
+<!--                                                     [ngClass]="{ 'is-invalid' : statutForm.controls['idservice'].touched &&  statutForm.controls['idservice'].errors?.['required'] , 'is-valid' : statutForm.controls['idservice'].valid}">-->
+
+<!--                                            </select2>-->
+<!--                                            <div class="select-loader" *ngIf="loadingService">-->
+<!--                                                <i class="fas fa-spin fa-circle-notch"></i>-->
+<!--                                            </div>-->
+<!--                                            @if(statutForm.controls['idservice'].valid) {-->
+<!--                                            &lt;!&ndash;<div class="valid-feedback">Looks's Good!</div>&ndash;&gt;-->
+<!--                                            } @else if(statutForm.controls['idservice'].touched &&-->
+<!--                                            statutForm.controls['idservice'].errors?.['required']) {-->
+<!--                                            <div class="invalid-feedback"> Veuillez selectionner le service.</div>-->
+<!--                                            }-->
+<!--                                        </div>-->
+
+                                        <div class="col-span-6 position-relative">
                                             <label class="form-label" for="idfonction">Fonction
                                                 <span class="txt-danger">*</span>
                                             </label>

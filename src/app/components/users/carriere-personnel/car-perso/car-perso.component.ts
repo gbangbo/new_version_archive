@@ -1,4 +1,5 @@
 import {Component, OnInit} from '@angular/core';
+import * as XLSX from 'xlsx';
 import {CardComponent} from "../../../../shared/components/ui/card/card.component";
 import {CommonModule} from "@angular/common";
 import {Authorization} from "../../../../protect/authorization.service";
@@ -17,6 +18,7 @@ import {FeatherIconComponent} from "../../../../shared/components/ui/feather-ico
 import moment from "moment";
 import {AddModalComponent} from "./add-modal/add-modal.component";
 import {NzTagModule} from "ng-zorro-antd/tag";
+import {ViewDocCondComponent} from "./view-doc-cond/view-doc-cond.component";
 
 interface RowData {
     name: string;
@@ -54,7 +56,7 @@ interface RowData {
         NzTabsModule,
         NzIconModule,
         NzTagModule,
-        NzTableModule, TableComponent, FeatherIconComponent, AddModalComponent],
+        NzTableModule, TableComponent, FeatherIconComponent, AddModalComponent, ViewDocCondComponent],
     providers: [],
     templateUrl: './car-perso.component.html',
     styleUrl: './car-perso.component.scss',
@@ -66,6 +68,7 @@ export class CarPersoComponent implements OnInit {
     errorTexte: string = '';
     isloading: boolean = false;
     modalOpen: boolean = false;
+    modalOpenDoc: boolean = false;
     dataOneLigne: any = {};
 
     searchValue = '';
@@ -188,7 +191,7 @@ export class CarPersoComponent implements OnInit {
                             name: `${e?.datapersonnel?.nom} ${e.datapersonnel?.prenom}`,
                             libelle_site: `${e?.datasite[0]?.libelle_sites || ''}`,
                             libelle_fonction: `${e?.datafonction?.libelle_fonction}`,
-                            libelle_service: `${e?.dataservice?.libelle_service}`,
+                            libelle_service: e?.dataservice?.libelle || '',
                             created_at: moment(e?.created_at).format('DD/MM/YYYY'),
                             date_debut_contrat: moment(e?.date_debut_contrat).format('DD-MM-YYYY'),
                             date_fin_contrat: moment(e?.date_fin_contrat).format('DD-MM-YYYY'),
@@ -256,21 +259,6 @@ export class CarPersoComponent implements OnInit {
 
     }
 
-    actionBtn(data: any) {
-        this.errorTexte = ''
-        let payload = {
-            action: 2,
-            iddepartement: data.uid,
-            iddirection: data.datadirection.uid,
-            idsociete: data.datadirection.datasociete.uid,
-            sigle_departement: data.sigle_departement,
-            libelle_departement: data.libelle_departement
-        }
-        console.log(data)
-
-    }
-
-
     handleModal(value: boolean) {
         if (value) {
             this.showStatutPersonnel(this.users?.datasociete?.uid, '', '');
@@ -278,8 +266,17 @@ export class CarPersoComponent implements OnInit {
         this.modalOpen = false;
     }
 
-    openModal(row?: any) {
-        this.modalOpen = true;
+    handleModalDoc(value: boolean) {
+        this.modalOpenDoc = false;
+    }
+
+    openModal(row?: any, e?: string) {
+        if (e) {
+            this.modalOpenDoc = true;
+        } else {
+            this.modalOpen = true;
+        }
+
         this.dataOneLigne = row || {};
     }
 
@@ -295,6 +292,29 @@ export class CarPersoComponent implements OnInit {
     }
 
     exportToExcel(filteredData: any) {
+        const rows = filteredData.map((row: any) => ({
+            'Nom & Prénoms': row.name || '',
+            'Email': row?.datapersonnel?.emailAgent || '',
+            'Sexe': row?.datapersonnel?.sexe || '',
+            'Site': row.libelle_site || '',
+            'Service': row.libelle_service || '',
+            'Fonction': row.libelle_fonction || '',
+            'Période': row.periode || '',
+            'Jours restants': row.nbreJourRestant || '',
+            'Contact': row.telDomicile || '',
+            'Date création': row.created_at || '',
+        }));
 
+        const ws = XLSX.utils.json_to_sheet(rows);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Liste du personnel');
+
+        const colWidths = Object.keys(rows[0] || {}).map(key => ({
+            wch: Math.max(key.length, ...rows.map((r: any) => String(r[key] || '').length)) + 2
+        }));
+        ws['!cols'] = colWidths;
+
+        const fileName = `personnel_${moment().format('YYYYMMDD_HHmmss')}.xlsx`;
+        XLSX.writeFile(wb, fileName);
     }
 }
