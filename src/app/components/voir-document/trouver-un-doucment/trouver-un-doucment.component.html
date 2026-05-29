@@ -244,34 +244,94 @@
                             </nz-icon>
                         </div>
                         <div class="doc-info">
-                            <div class="doc-ref">N° : {{ doc.code_docs || '—' }}</div>
-                            <div class="doc-title">{{ doc.lib_docs }}</div>
+                            <div class="doc-ref"  (click)="navToview(doc)">N° : {{ doc.code_docs || '—' }}</div>
+                            <div class="doc-title" (click)="navToview(doc)">{{ doc.lib_docs }}</div>
                             <div class="doc-meta">
                                 <nz-tag *ngIf="doc.libelle_type_docs"
-                                        [nzColor]="'rgba(115, 102, 255, 0.1)'">
+                                        [nzColor]="'rgba(115, 102, 255, 0.1)'" (click)="navToview(doc)">
                                     {{ doc.libelle_type_docs }}
                                 </nz-tag>
-                                <span class="meta-item" *ngIf="doc.date_docs">
+                                <span class="meta-item" *ngIf="doc.date_docs" (click)="navToview(doc)">
                                     <i class="fa-regular fa-calendar"></i>
                                     {{ doc.date_docs }}
                                 </span>
-                                <span class="meta-item" *ngIf="doc.datauser">
+                                <span class="meta-item" *ngIf="doc.datauser" (click)="navToview(doc)">
                                     <i class="fa-solid fa-building"></i>
                                     {{ doc?.datauser?.dataservice?.libelle }}
                                 </span>
-                                <span class="meta-item" *ngIf="doc.datauser">
+                                <span class="meta-item" *ngIf="doc.datauser" (click)="navToview(doc)">
                                     <i class="fa-solid fa-user"></i>
                                     {{ doc?.datauser?.datapersonnel?.nom }}&nbsp;{{ doc?.datauser?.datapersonnel?.prenom }}
                                 </span>
                             </div>
                         </div>
                         <div class="doc-actions">
-                            <button class="doc-btn-view" title="Voir le document">
-                                <i class="fa-solid fa-eye"></i>
+<!--                            <button class="doc-btn-view" title="Voir le document">-->
+<!--                                <i class="fa-solid fa-eye"></i>-->
+<!--                            </button>-->
+                            <button class="btn-context-menu"
+                                    nz-dropdown
+                                    [nzDropdownMenu]="actionMenu"
+                                    nzTrigger="click"
+                                    nzPlacement="bottomRight">
+                                <i class="fa-solid fa-ellipsis-vertical"></i>
                             </button>
-                            <button class="doc-btn-download" title="Télécharger" *ngIf="doc.url_file">
-                                <i class="icofont icofont-download-alt"></i>
-                            </button>
+                            <nz-dropdown-menu #actionMenu="nzDropdownMenu">
+                                <ul nz-menu class="doc-action-menu">
+                                    <li nz-menu-item>
+                                        <i class="fa-regular fa-eye mr-2"></i>
+                                        <span>Consulter</span>
+                                    </li>
+                                    <li nz-menu-item>
+                                        <i class="far fa-file-alt mr-2"></i>
+                                        <span>Voir le détail</span>
+                                    </li>
+                                    <li nz-menu-item>
+                                        <i class="fa-regular fa-pen-to-square mr-2"></i>
+                                        <span>Modifier le document</span>
+                                    </li>
+                                    <li nz-menu-item>
+                                        <i class="far fa-paper-plane mr-2"></i>
+                                        <span>Envoyer par mail</span>
+                                    </li>
+                                    <li nz-menu-item>
+                                        <i class="fa-solid fa-recycle mr-2"></i>
+                                        <span>Ajouter dans un workflow</span>
+                                    </li>
+                                    <li nz-menu-item>
+                                        <i class="fa-regular fa-folder-open mr-2"></i>
+                                        <span>Classer les fichiers</span>
+                                    </li>
+                                    <li nz-menu-item>
+                                        <i class="fa-solid fa-print mr-2"></i>
+                                        <span>Imprimer le document</span>
+                                    </li>
+                                    <li nz-menu-item>
+                                        <i class="fa-solid fa-exchange mr-2"></i>
+                                        <span>Prêter le document</span>
+                                    </li>
+                                    <li nz-menu-item>
+                                        <i class="fa-solid fa-tasks mr-2"></i>
+                                        <span>Imputer</span>
+                                    </li>
+                                    <li nz-menu-item>
+                                        <i class="fas fa-file-text mr-2"></i>
+                                        <span>Voir la situation</span>
+                                    </li>
+                                    <li nz-menu-item>
+                                        <i class="fas fa-trash-alt mr-2"></i>
+                                        <span>Demande de suppression</span>
+                                    </li>
+                                    <li nz-menu-divider></li>
+                                    <li nz-menu-item class="menu-item-danger">
+                                        <i class="fa-regular fa-trash-can mr-2"></i>
+                                        <span>Supprimer</span>
+                                    </li>
+                                </ul>
+                            </nz-dropdown-menu>
+<!--                            <button class="doc-btn-download" title="Télécharger" *ngIf="doc.url_file">-->
+<!--                                <i class="icofont icofont-download-alt"></i>-->
+<!--                            </button>-->
                         </div>
                     </div>
                 </div>

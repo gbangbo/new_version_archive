@@ -183,9 +183,206 @@ nz-splitter {
   color: #FFA000;
 }
 
-#pdf-canvas {
+// ═══════════════════════════════════════
+// PDF VIEWER — conteneur principal
+// ═══════════════════════════════════════
+.pdf-viewer-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  background: #F1F3F5;
+}
+
+// ── Barre de contrôles ──────────────────
+.pdf-toolbar-inner {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 10px;
+  background: #1e293b;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  min-height: 46px;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+
+.pdf-ctrl-group {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.pdf-ctrl-divider {
+  width: 1px;
+  height: 22px;
+  background: #334155;
+  margin: 0 6px;
+  flex-shrink: 0;
+}
+
+.pdf-ctrl-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #94a3b8;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  flex-shrink: 0;
+
+  &:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.1);
+    color: #f1f5f9;
+  }
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+
+  &.pdf-ctrl-btn-dl {
+    background: rgba(99, 102, 241, 0.25);
+    color: #a5b4fc;
+
+    &:hover:not(:disabled) {
+      background: rgba(99, 102, 241, 0.45);
+      color: #c7d2fe;
+    }
+  }
+}
+
+// ── Saisie de page ──────────────────────
+.pdf-page-wrap {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 28px;
+  padding: 0 8px;
+  border: 1px solid #334155;
+  background: #0f172a;
+  border-radius: 5px;
+}
+
+.pdf-page-input {
+  width: 32px;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #e2e8f0;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+  padding: 0;
+  -moz-appearance: textfield;
+
+  &::-webkit-inner-spin-button,
+  &::-webkit-outer-spin-button { -webkit-appearance: none; }
+}
+
+.pdf-page-sep {
+  font-size: 12px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+// ── Badge zoom ──────────────────────────
+.pdf-zoom-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 52px;
+  height: 28px;
+  padding: 0 8px;
+  border: 1px solid #334155;
+  background: #0f172a;
+  color: #e2e8f0;
+  border-radius: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+// ── Spinner de rendu page ───────────────
+.pdf-render-spinner {
+  display: flex;
+  align-items: center;
+  margin-left: 6px;
+}
+
+.pdf-mini-spin {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid #334155;
+  border-top-color: #94a3b8;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+// ── Image zoomable / rotatable ──────────
+.image-scroll-wrapper {
+  flex: 1;
+  overflow: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #E5E7EB;
+  min-height: 0;
+
+  .image-preview {
+    max-width: none;
+    display: block;
+    transition: transform 0.2s ease;
+    transform-origin: center center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
+  }
+}
+
+// ── Office iframe zoomable ──────────────
+.office-zoom-wrapper {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
   width: 100%;
-  height: auto;
+  min-height: 0;
+
+  .document-preview {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+    transform-origin: top left;
+    transition: transform 0.15s ease;
+  }
+}
+
+// ── Canvas scrollable ───────────────────
+.pdf-canvas-wrapper {
+  flex: 1;
+  overflow: auto;
+  display: flex;
+  justify-content: center;
+  padding: 16px;
+  background: #E5E7EB;
+
+  canvas {
+    display: block;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
+    background: #fff;
+    max-width: none !important;
+  }
+}
+
+#pdf-canvas {
+  display: block;
 }
 
 
@@ -612,25 +809,136 @@ input[type="checkbox"]:checked {
   padding: 8px 6px;
 }
 
-.file-delete-btn {
-  margin-left: auto;
-  padding: 2px 5px;
-  border-radius: 4px;
-  color: #94A3B8;
-  cursor: pointer;
-  flex-shrink: 0;
-  transition: color 0.15s, background 0.15s;
-  line-height: 1;
+// ═══════════════════════════════════════
+// DRAG-AND-DROP — fichiers vers dossiers
+// ═══════════════════════════════════════
 
-  i {
-    font-size: 13px;
-  }
+// Hint dans le label de section
+.drag-hint {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 500;
+  color: #94A3B8;
+  white-space: nowrap;
+
+  i { font-size: 11px; }
+}
+
+// Zone draggable autour du contenu d'un fichier
+.file-drag-zone {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: grab;
+  border-radius: 4px;
+  padding: 2px 4px;
+  transition: background 0.15s, opacity 0.15s;
+  user-select: none;
+
+  &:active { cursor: grabbing; }
 
   &:hover {
-    color: #EF4444;
-    background: #FEF2F2;
+    background: rgba(0, 54, 110, 0.05);
+  }
+
+  &.file-is-dragging {
+    opacity: 0.35;
+    background: rgba(0, 54, 110, 0.06);
   }
 }
+
+// Icône poignée de glissement
+.drag-handle-icon {
+  font-size: 11px;
+  color: #CBD5E1;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity 0.15s;
+
+  .file-drag-zone:hover & {
+    opacity: 1;
+  }
+}
+
+.file-name {
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+}
+
+// Dossier en état de réception (drag over)
+::ng-deep .folder-drop-active {
+  background: rgba(0, 54, 110, 0.07) !important;
+  border-radius: 6px !important;
+  outline: 2px dashed rgba(0, 54, 110, 0.35) !important;
+  outline-offset: 1px;
+
+  nz-tree-node-option {
+    background: transparent !important;
+  }
+}
+
+// Badge "Déposer ici" (dossiers avec et sans enfants)
+.folder-drop-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  margin-left: 6px;
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(0, 54, 110);
+  background: rgba(0, 54, 110, 0.1);
+  border-radius: 10px;
+  padding: 1px 7px;
+  animation: pulse-badge 0.6s ease-in-out infinite alternate;
+
+  i { font-size: 9px; }
+}
+
+// Icône de dossier pour les dossiers vides (feuilles)
+.folder-icon-empty {
+  font-size: 13px;
+  color: #94A3B8;
+  margin-right: 2px;
+  transition: color 0.15s;
+
+  .folder-drop-active & {
+    color: rgba(0, 54, 110);
+  }
+}
+
+@keyframes pulse-badge {
+  from { opacity: 0.7; }
+  to   { opacity: 1; }
+}
+
+// Bouton suppression fichier
+.file-delete-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  cursor: pointer;
+  flex-shrink: 0;
+  margin-left: 4px;
+  opacity: 0;
+  transition: opacity 0.15s, background 0.15s;
+
+  &:hover { background: #FEE2E2; }
+}
+
+// Rendre le bouton visible au survol de la ligne
+::ng-deep nz-tree-node:hover .file-delete-btn {
+  opacity: 1;
+}
+
 
 .preview-body {
   flex: 1;
@@ -1103,4 +1411,86 @@ input[type="checkbox"]:checked {
     cursor: not-allowed;
     transform: none;
   }
+}
+
+// ═══════════════════════════════════════
+// GENERATE DOC NUMBER — LOADER
+// ═══════════════════════════════════════
+.generate-num-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(0, 54, 110);
+  cursor: pointer;
+  transition: opacity 0.2s;
+  user-select: none;
+
+  &:hover:not(.generate-num-link--loading) {
+    text-decoration: underline;
+    opacity: 0.85;
+  }
+
+  &.generate-num-link--loading {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+}
+
+.gen-spinner {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border: 2px solid rgba(0, 54, 110, 0.25);
+  border-top-color: rgba(0, 54, 110);
+  border-radius: 50%;
+  animation: gen-spin 0.6s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes gen-spin {
+  to { transform: rotate(360deg); }
+}
+
+.code-input-wrap {
+  position: relative;
+}
+
+.input-generating {
+  color: transparent !important;
+  background: #F1F5F9 !important;
+  pointer-events: none;
+}
+
+.code-input-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 8px;
+  background: rgba(241, 245, 249, 0.9);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.code-gen-spin {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(0, 54, 110, 0.25);
+  border-top-color: rgba(0, 54, 110);
+  border-radius: 50%;
+  animation: gen-spin 0.6s linear infinite;
+  flex-shrink: 0;
+}
+
+.code-gen-text {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(0, 54, 110);
+  letter-spacing: 0.01em;
 }

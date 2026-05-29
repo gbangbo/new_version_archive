@@ -14,7 +14,7 @@ export const configuration: Routes = [
             title: 'Inventaire et calendrier de conservation',
             breadcrumb: 'Inventaire et calendrier de conservation'
         }
-    },{
+    }, {
         path: 'plan-de-classement',
         component: PlanDeClassementComponent,
         data: {
@@ -50,8 +50,8 @@ export const configuration: Routes = [
         path: 'categorie',
         component: CategorieComponent,
         data: {
-            title: 'Catégorie',
-            breadcrumb: 'Catégorie'
+            title: 'Série',
+            breadcrumb: 'Série'
         }
     }
 ]

@@ -23,6 +23,18 @@
                         </div>
                         <form class="grid grid-cols-12 gap-4 needs-validation" novalidate="" [formGroup]="validationForm" (ngSubmit)="submitForm()">
                             <div class="col-span-12">
+                                <label class="form-label" for="code_categories">Code du dossier
+                                    <span class="txt-danger">*</span>
+                                </label>
+                                <input class="form-control" id="code_categories" type="text" placeholder="Entrez la raison sociale" formControlName="code_categories"
+                                       [ngClass]="{ 'is-invalid' : validationForm.controls['code_categories'].touched &&  validationForm.controls['code_categories'].errors?.['required'] , 'is-valid' : validationForm.controls['code_categories'].valid}">
+                                @if(validationForm.controls['code_categories'].valid) {
+                                <!--<div class="valid-feedback">Looks's Good!</div>-->
+                                } @else if(validationForm.controls['code_categories'].touched && validationForm.controls['code_categories'].errors?.['required']) {
+                                <div class="invalid-feedback">Veuillez saisir le code du dossier svp.</div>
+                                }
+                            </div>
+                            <div class="col-span-12">
                                 <label class="form-label" for="name_categories">Nom du dossier
                                     <span class="txt-danger">*</span>
                                 </label>

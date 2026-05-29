@@ -1,0 +1,292 @@
+<div class="preview-wrapper">
+
+    <!-- ═══════════════════════════════════════════════
+         TEMPLATE ARBRE
+    ══════════════════════════════════════════════════ -->
+    <ng-template #treeTpl>
+        <div class="tree-panel" [class.collapsed]="treeCollapsed">
+
+            <div class="tree-header">
+                <i class="fa-regular fa-folder-open"></i>
+                <span>Plan de classement</span>
+                <button class="tree-toggle-btn"
+                        (click)="toggleTree()"
+                        [title]="treeCollapsed ? 'Développer' : 'Réduire'">
+                    <i [class]="treeCollapsed ? 'fa-solid fa-chevron-down' : 'fa-solid fa-chevron-up'"></i>
+                </button>
+            </div>
+
+            <!-- Barre de recherche -->
+            <div class="tree-search">
+                <div class="search-wrap">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    <input type="text"
+                           class="search-input"
+                           placeholder="Rechercher un fichier…"
+                           [(ngModel)]="searchQuery"
+                           (ngModelChange)="onSearchChange()"/>
+                    <button class="search-clear" *ngIf="searchQuery" (click)="clearSearch()" title="Effacer">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="tree-loading" *ngIf="isloading">
+                <div class="mini-spinner"></div>
+                <span>Chargement…</span>
+            </div>
+
+            <nz-tree-view *ngIf="!isloading"
+                          class="ant-tree-show-line"
+                          [nzTreeControl]="treeControl"
+                          [nzDataSource]="dataSource"
+                          [nzDirectoryTree]="true">
+
+                <!-- Nœud feuille -->
+                <nz-tree-node *nzTreeNodeDef="let node" nzTreeNodeIndentLine>
+                    <nz-tree-node-toggle nzTreeNodeNoopToggle></nz-tree-node-toggle>
+                    <nz-tree-node-option
+                            [nzDisabled]="node.disabled"
+                            [nzSelected]="selectListSelection.isSelected(node)"
+                            (nzClick)="onNodeClick(node)">
+
+                        <i *ngIf="!node.extension"
+                           [class]="selectListSelection.isSelected(node)
+                             ? 'fa-regular fa-folder-open node-icon folder-icon'
+                             : 'fa-regular fa-folder node-icon folder-icon'"></i>
+
+                        <nz-icon *ngIf="node.extension === 'pdf'" nzType="file-pdf"
+                                 nzTheme="twotone" [nzTwotoneColor]="'#ff4d4f'" class="node-icon"/>
+                        <nz-icon *ngIf="['jpg','JPG','jpeg','JPEG','png','PNG','gif','webp'].includes(node.extension)"
+                                 nzType="file-image" nzTheme="twotone" [nzTwotoneColor]="'#52c41a'" class="node-icon"/>
+                        <nz-icon *ngIf="['doc','docx'].includes(node.extension)"
+                                 nzType="file-word" nzTheme="twotone" [nzTwotoneColor]="'#1890ff'" class="node-icon"/>
+                        <nz-icon *ngIf="['xls','xlsx'].includes(node.extension)"
+                                 nzType="file-excel" nzTheme="twotone" [nzTwotoneColor]="'#52c41a'" class="node-icon"/>
+                        <nz-icon *ngIf="node.extension &&
+                                       !['pdf','jpg','JPG','jpeg','JPEG','png','PNG','gif','webp',
+                                         'doc','docx','xls','xlsx'].includes(node.extension)"
+                                 nzType="file" nzTheme="outline" class="node-icon"/>
+
+                        <span class="node-label"
+                              [innerHTML]="highlightMatch(
+                                node.name + (node.isFile && node.extension ? '.' + node.extension : ''),
+                                searchQuery)">
+                        </span>
+                    </nz-tree-node-option>
+                </nz-tree-node>
+
+                <!-- Nœud parent -->
+                <nz-tree-node *nzTreeNodeDef="let node; when: hasChild" nzTreeNodeIndentLine>
+                    <nz-tree-node-toggle>
+                        <nz-icon nzType="caret-down" nzTreeNodeToggleRotateIcon/>
+                    </nz-tree-node-toggle>
+                    <nz-tree-node-option
+                            [nzDisabled]="node.disabled"
+                            [nzSelected]="selectListSelection.isSelected(node)"
+                            (nzClick)="onNodeClick(node)">
+                        <i [class]="treeControl.isExpanded(node)
+                            ? 'fa-regular fa-folder-open node-icon folder-icon'
+                            : 'fa-regular fa-folder node-icon folder-icon'"></i>
+                        <span class="node-label"
+                              [innerHTML]="highlightMatch(node.name, searchQuery)">
+                        </span>
+                    </nz-tree-node-option>
+                </nz-tree-node>
+
+            </nz-tree-view>
+        </div>
+    </ng-template>
+
+    <!-- ═══════════════════════════════════════════════
+         TEMPLATE APERÇU
+    ══════════════════════════════════════════════════ -->
+    <ng-template #previewTpl>
+        <div class="preview-panel">
+
+            <!-- ── Barre d'outils ── -->
+            <div class="preview-toolbar" *ngIf="selectedFile">
+
+                <!-- Nom du fichier -->
+                <div class="tb-filename">
+                    <nz-icon nzType="file" nzTheme="outline" class="tb-file-icon"/>
+                    <span title="{{ selectedFile.name }}.{{ selectedFile.extension }}">
+                        {{ selectedFile.name }}.{{ selectedFile.extension }}
+                    </span>
+                </div>
+
+                <div class="tb-spacer"></div>
+
+                <!-- Groupe Zoom -->
+                <div class="tb-group">
+                    <button class="tb-btn"
+                            (click)="zoomOut()"
+                            [disabled]="zoomLevel <= 0.25"
+                            title="Dézoomer">
+                        <nz-icon nzType="zoom-out"/>
+                    </button>
+
+                    <button class="tb-zoom-label" (click)="resetZoom()" title="Réinitialiser le zoom">
+                        {{ zoomPercent }}&nbsp;%
+                    </button>
+
+                    <button class="tb-btn"
+                            (click)="zoomIn()"
+                            [disabled]="zoomLevel >= 4.0"
+                            title="Zoomer">
+                        <nz-icon nzType="zoom-in"/>
+                    </button>
+                </div>
+
+                <div class="tb-sep"></div>
+
+                <!-- Groupe Pages (PDF uniquement) -->
+                <div class="tb-group" *ngIf="selectedFile.extension === 'pdf' && totalPages > 0">
+                    <button class="tb-btn"
+                            (click)="prevPage()"
+                            [disabled]="currentPage <= 1"
+                            title="Page précédente">
+                        <nz-icon nzType="left"/>
+                    </button>
+                    <div class="tb-page-input-wrap">
+                        <input class="tb-page-input"
+                               type="number"
+                               [value]="currentPage"
+                               #pageInputEl
+                               [min]="1"
+                               [max]="totalPages"
+                               (keydown.enter)="goToPage(pageInputEl.value); pageInputEl.blur()"
+                               (blur)="goToPage(pageInputEl.value)"/>
+                        <span class="tb-page-total">/ {{ totalPages }}</span>
+                    </div>
+                    <button class="tb-btn"
+                            (click)="nextPage()"
+                            [disabled]="currentPage >= totalPages"
+                            title="Page suivante">
+                        <nz-icon nzType="right"/>
+                    </button>
+                </div>
+
+                <div class="tb-sep" *ngIf="selectedFile.extension === 'pdf' && totalPages > 0"></div>
+
+                <!-- Groupe Rotation (PDF + image uniquement) -->
+                <div class="tb-group"
+                     *ngIf="selectedFile.extension === 'pdf' || isImage(selectedFile.extension)">
+                    <button class="tb-btn" (click)="rotateLeft()" title="Pivoter à gauche">
+                        <i class="fas fa-undo"></i>
+                    </button>
+                    <button class="tb-btn" (click)="rotateRight()" title="Pivoter à droite">
+                        <i class="fas fa-redo"></i>
+                    </button>
+                </div>
+
+                <div class="tb-sep"
+                     *ngIf="selectedFile.extension === 'pdf' || isImage(selectedFile.extension)">
+                </div>
+
+                <!-- Groupe Actions -->
+                <div class="tb-group">
+                    <button class="tb-btn"
+                            (click)="printFile()"
+                            [disabled]="isOffice(selectedFile.extension)"
+                            title="Imprimer">
+                        <i class="fa-solid fa-print"></i>
+                    </button>
+                    <button class="tb-btn"
+                            (click)="downloadFile()"
+                            title="Télécharger">
+                        <nz-icon nzType="download"/>
+                    </button>
+                    <button class="tb-btn"
+                            [class.active]="isFullscreen"
+                            (click)="toggleFullscreen()"
+                            title="{{ isFullscreen ? 'Quitter le plein écran' : 'Plein écran' }}">
+                        <i class="{{isFullscreen ? 'fa-solid fa-maximize':'fa-solid fa-expand'}}"></i>
+                    </button>
+                </div>
+
+            </div>
+            <!-- /barre d'outils -->
+
+            <!-- ── Zone d'aperçu ── -->
+
+            <!-- Aucune sélection -->
+            <div class="preview-placeholder" *ngIf="!selectedFile">
+                <nz-icon nzType="file-search" nzTheme="outline" class="placeholder-icon"/>
+                <p class="placeholder-text">Sélectionnez un fichier pour l'aperçu</p>
+            </div>
+
+            <div class="preview-content-area" *ngIf="selectedFile"
+                 (contextmenu)="$event.preventDefault(); $event.stopPropagation()">
+
+                <!-- Spinner de chargement -->
+                <div class="preview-loading-overlay" *ngIf="isLoadingPreview">
+                    <div class="spinner"></div>
+                    <span>Chargement de l'aperçu…</span>
+                </div>
+
+                <!-- PDF -->
+                <div class="preview-scroll center" *ngIf="selectedFile.extension === 'pdf'">
+                    <canvas id="pdf-canvas"></canvas>
+                </div>
+
+                <!-- Image -->
+                <div class="preview-scroll center"
+                     *ngIf="isImage(selectedFile.extension)">
+                    <img [src]="getProxyUrl(selectedFile.url_file)"
+                         (load)="onPreviewLoaded()"
+                         alt="aperçu"
+                         class="preview-image"
+                         draggable="false"
+                         (dragstart)="$event.preventDefault()"
+                         [style.transform]="'scale(' + zoomLevel + ') rotate(' + rotation + 'deg)'"
+                         [style.transform-origin]="'center center'"/>
+                </div>
+
+                <!-- Word / Excel -->
+                <div class="office-zoom-wrapper" *ngIf="isOffice(selectedFile.extension)">
+                    <iframe *ngIf="officePreviewUrl"
+                            [src]="officePreviewUrl"
+                            (load)="onOfficePreviewLoaded()"
+                            frameborder="0"
+                            class="preview-iframe"
+                            [style.transform]="'scale(' + zoomLevel + ')'"
+                            [style.transform-origin]="'top left'"
+                            [style.width]="(100 / zoomLevel) + '%'"
+                            [style.height]="(100 / zoomLevel) + '%'">
+                    </iframe>
+                </div>
+
+                <!-- Type non prévisualisable -->
+                <div class="preview-placeholder"
+                     *ngIf="!selectedFile.extension && !isLoadingPreview">
+                    <nz-icon nzType="file-unknown" nzTheme="outline" class="placeholder-icon"/>
+                    <p class="placeholder-text">Aperçu non disponible pour ce type de fichier</p>
+                </div>
+
+            </div>
+
+        </div>
+    </ng-template>
+
+    <!-- ═══════════════════════════════════════════════
+         LAYOUT DESKTOP (≥ 769px) — splitter horizontal
+    ══════════════════════════════════════════════════ -->
+    <nz-splitter *ngIf="!isMobile" style="height: 100%">
+        <nz-splitter-panel nzDefaultSize="28%" nzMin="18%" nzMax="50%">
+            <ng-container *ngTemplateOutlet="treeTpl"></ng-container>
+        </nz-splitter-panel>
+        <nz-splitter-panel>
+            <ng-container *ngTemplateOutlet="previewTpl"></ng-container>
+        </nz-splitter-panel>
+    </nz-splitter>
+
+    <!-- ═══════════════════════════════════════════════
+         LAYOUT MOBILE (≤ 768px) — empilement vertical
+    ══════════════════════════════════════════════════ -->
+    <div *ngIf="isMobile" class="mobile-layout">
+        <ng-container *ngTemplateOutlet="treeTpl"></ng-container>
+        <ng-container *ngTemplateOutlet="previewTpl"></ng-container>
+    </div>
+
+</div>

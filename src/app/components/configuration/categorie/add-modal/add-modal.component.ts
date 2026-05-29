@@ -24,11 +24,10 @@ export class AddModalComponent {
         code_categories: new FormControl('', Validators.required),
         idcategories: new FormControl('',),
         actif: new FormControl(true,),
-        position: new FormControl('',),
         parent: new FormControl('',)
 
     })
-    errorTexte: string = 'AJOUTER UNE CATEGORIE';
+    errorTexte: string = '';
 
     @HostListener('document:keydown.escape', ['$event'])
     handleEscKey() {
@@ -38,7 +37,7 @@ export class AddModalComponent {
     isloading: boolean = false;
     users: any = [];
     typeAlerte: string = '';
-    title: string = `AJOUT D'UNE CATEGORIE`;
+    title: string = `AJOUTER UNE SERIE`;
 
     constructor(private autor: Authorization, private httService: HttpService, private http: HttpClient) {
         this.users = this.autor.getInfosUsers();
@@ -50,16 +49,15 @@ export class AddModalComponent {
         console.log("data ====", data)
         if (data && Object.keys(data).length > 0) {
             this.validationForm.patchValue({
-                name_categories: data.sens == 'a' ? '' : data?.name,
+                name_categories: data.sens == 'a' ? '' : data?.name_categories,
                 code_categories: data.sens == 'a' ? '' : data?.code_categories,
                 idcategories: data.sens == 'a' ? '' : data?.idcategories,
-                position: data?.position || '',
                 actif: data?.actif || true,
                 parent: data?.parent,
             });
             console.log("this.validationForm ===", this.validationForm.value)
-            this.title = data?.sens == 'a' ? `AJOUT DE SOUS-CATEGORIE` : `MODIFICATION DE  SOUS-CATEGORIE`
-            this.errorTexte = `Vous êtes sur le point ${data?.sens == 'a' ? `d’ajouter un` : `de modifier le`} sous-catégorie  ${data?.sens == 'a' ? `à la catégorie` : ``} « ${changes['dataLigne']?.currentValue?.name} ».`;
+            this.title = data?.sens == 'a' ? `AJOUT DE SERIE` : `MODIFICATION DE SERIE`
+            this.errorTexte = `Vous êtes sur le point de modifier la série « ${changes['dataLigne']?.currentValue?.name} ».`;
             this.typeAlerte = 'prim';
         }
     }
@@ -77,6 +75,7 @@ export class AddModalComponent {
             "action": this.validationForm.value.idcategories ? 2 : 1,
             "parent": this.validationForm.value.parent || '',
             "idsociete": "",
+            position: 1
         }
         console.log("payload ====", payload)
         this.httService.postData(`${environment.api_url}api/:save-categorie-plan-classement`, payload, this.users?.access_token || '')

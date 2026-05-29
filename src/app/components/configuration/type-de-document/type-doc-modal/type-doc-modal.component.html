@@ -32,26 +32,42 @@
                         <div [ngStyle]="{ 'display': (activeTab === 1 ? '' : 'none') }">
                             <form class="grid grid-cols-12 gap-6" [formGroup]="formDataTypeDoc" (ngSubmit)="submitForm()">
                                 <div class="col-span-12">
-                                    <label class="form-label" for="idcategories">Catégorie
+                                    <label class="form-label" for="idcategories">Série
                                         <span class="txt-danger">*</span>
                                     </label>
-                                    <nz-tree-select
-                                            id="idcategories"
-                                            style="width: 100% !important;"
-                                            [nzDisabled]="is"
-                                            [nzAsyncData]="isload"
-                                            [nzExpandedKeys]="expandKeys"
-                                            [nzNodes]="dataSource"
-                                            nzShowSearch
-                                            nzPlaceHolder="Selectionnez la catégorie"
-                                            formControlName="idcategories"
-                                            [ngClass]="{ 'is-invalid' : formDataTypeDoc.controls['idcategories'].touched &&  formDataTypeDoc.controls['idcategories'].errors?.['required'] , 'is-valid' : formDataTypeDoc.controls['idcategories'].valid}"
-                                    />
+<!--                                    <nz-tree-select-->
+<!--                                            id="idcategories"-->
+<!--                                            style="width: 100% !important;"-->
+<!--                                            [nzDisabled]="is"-->
+<!--                                            [nzAsyncData]="isload"-->
+<!--                                            [nzExpandedKeys]="expandKeys"-->
+<!--                                            [nzNodes]="dataSource"-->
+<!--                                            nzShowSearch-->
+<!--                                            nzPlaceHolder="Selectionnez la catégorie"-->
+<!--                                            formControlName="idcategories"-->
+<!--                                            [ngClass]="{ 'is-invalid' : formDataTypeDoc.controls['idcategories'].touched &&  formDataTypeDoc.controls['idcategories'].errors?.['required'] , 'is-valid' : formDataTypeDoc.controls['idcategories'].valid}"-->
+<!--                                    />-->
+                                    <select2 [data]="dataSource"
+                                             placeholder="Selectionnez la série"
+                                             id="idcategories"
+                                             formControlName="idcategories"
+                                             [disabled]="isload"
+                                             [overlay]="false"
+                                             [resettable]="true"
+                                             [listPosition]="'below'"
+                                             [minCountForSearch]="1"
+                                             noResultMessage="Aucune donnée trouvée"
+                                             class="raise-input-select" [ngClass]="{ 'is-invalid' : formDataTypeDoc.controls['idcategories'].touched &&  formDataTypeDoc.controls['idcategories'].errors?.['required'] , 'is-valid' : formDataTypeDoc.controls['idcategories'].valid}">
+
+                                    </select2>
+                                    <div class="select-loader" *ngIf="isload">
+                                        <i class="fas fa-spin fa-circle-notch"></i>
+                                    </div>
                                     @if(formDataTypeDoc.controls['idcategories'].valid) {
                                     <!--<div class="valid-feedback">Looks's Good!</div>-->
                                     } @else if(formDataTypeDoc.controls['idcategories'].touched
                                     && formDataTypeDoc.controls['idcategories'].errors?.['required']) {
-                                    <div class="invalid-feedback"> Veuillez selectionner la catégorie svp.</div>
+                                    <div class="invalid-feedback"> Veuillez selectionner la série svp.</div>
                                     }
                                 </div>
                                 <div class="col-span-6">

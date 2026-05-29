@@ -1,0 +1,749 @@
+/* ─── Conteneur principal ─── */
+.preview-wrapper {
+  height: calc(100vh - 120px);
+  display: flex;
+  flex-direction: column;
+
+  nz-splitter {
+    flex: 1;
+    height: 100%;
+  }
+}
+
+/* ─── Panneau gauche ─── */
+.tree-panel {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #fff;
+}
+
+.tree-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  font-weight: 600;
+  font-size: 13px;
+  color: #374151;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f9fafb;
+  flex-shrink: 0;
+
+  i {
+    color: #f59e0b;
+    font-size: 15px;
+  }
+}
+
+/* ─── Barre de recherche ─── */
+.tree-search {
+  padding: 8px 10px;
+  border-bottom: 1px solid #e5e7eb;
+  flex-shrink: 0;
+  background: #fff;
+}
+
+.search-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0 10px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+
+  &:focus-within {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+    background: #fff;
+  }
+}
+
+.search-icon {
+  color: #94a3b8;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.search-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 13px;
+  color: #1e293b;
+  padding: 7px 0;
+
+  &::placeholder {
+    color: #94a3b8;
+  }
+}
+
+.search-clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border: none;
+  background: #cbd5e1;
+  color: #fff;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 10px;
+  flex-shrink: 0;
+  transition: background 0.15s;
+
+  &:hover {
+    background: #94a3b8;
+  }
+}
+
+.tree-loading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.mini-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #e5e7eb;
+  border-top-color: #6366f1;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+nz-tree-view {
+  flex: 1;
+  overflow-y: auto;
+  padding: 6px 0;
+}
+
+.node-icon {
+  margin-right: 6px;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.folder-icon {
+  color: #f59e0b;
+}
+
+.node-label {
+  font-size: 13px;
+  line-height: 1.4;
+  color: #1e293b;
+}
+
+// ═══════════════════════════════════════
+// TRAITS VERTICAUX — BLOC UNIQUE
+// ═══════════════════════════════════════
+::ng-deep nz-tree-view {
+
+  // Supprime natif
+  .ant-tree-switcher-leaf-line,
+  .ant-tree-switcher-leaf-line::before,
+  .ant-tree-switcher-leaf-line::after {
+    display: none !important;
+    border: none !important;
+    background: none !important;
+  }
+
+  .ant-tree-show-line .ant-tree-switcher {
+    background: transparent !important;
+  }
+
+  // Chaque ligne
+  .ant-tree-treenode {
+    display: flex !important;
+    align-items: center !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    min-height: 28px;
+    position: relative;
+  }
+
+  .ant-tree-list-holder-inner {
+    gap: 0 !important;
+  }
+
+  .ant-tree-indent {
+    display: flex !important;
+    align-self: stretch !important;
+    overflow: visible !important;
+  }
+
+  // Reset global des unités
+  .ant-tree-indent-unit {
+    position: relative !important;
+    width: 20px !important;
+    align-self: stretch !important;
+    flex-shrink: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+
+    // Reset natif
+    &::before {
+      display: none !important;
+    }
+
+    &::after {
+      display: none !important;
+    }
+  }
+
+  // ── Trait vertical via border-left ──────────────────
+  // Sur toutes les unités sauf end = trait complet
+  .ant-tree-indent-unit:not(.ant-tree-indent-unit-end) {
+    border-left: 1px solid #c8cdd5 !important;
+    margin-left: 10px !important;
+    width: 10px !important;
+
+    // Trait horizontal
+    &::after {
+      display: none !important;
+    }
+  }
+
+  // Sur end = trait jusqu'au milieu seulement
+  .ant-tree-indent-unit-end {
+    position: relative !important;
+    border-left: none !important;
+
+    &::before {
+      display: block !important;
+      content: '' !important;
+      position: absolute !important;
+      top: 0 !important;
+      bottom: 50% !important;
+      left: 10px !important;
+      width: 1px !important;
+      background: #c8cdd5 !important;
+    }
+  }
+
+  // ── Trait horizontal sur dernière unité ─────────────
+  .ant-tree-indent-unit:last-child {
+    &::after {
+      display: block !important;
+      content: '' !important;
+      position: absolute !important;
+      top: 50% !important;
+      left: 10px !important;
+      width: 10px !important;
+      height: 1px !important;
+      background: #c8cdd5 !important;
+    }
+  }
+
+  // ── Toggle ──────────────────────────────────────────
+  .ant-tree-switcher {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 18px !important;
+    flex-shrink: 0 !important;
+    color: #6b7280 !important;
+    background: transparent !important;
+    position: relative !important;
+    z-index: 1 !important;
+
+    &::before, &::after {
+      display: none !important;
+    }
+  }
+
+  // ── Sélectionné ─────────────────────────────────────
+  .ant-tree-node-content-wrapper.ant-tree-node-selected {
+    background: #fef3c7 !important;
+    border-radius: 4px !important;
+
+    .node-label {
+      color: #92400e !important;
+      font-weight: 600 !important;
+    }
+
+    .folder-icon {
+      color: #d97706 !important;
+    }
+  }
+
+  // ── Hover ───────────────────────────────────────────
+  .ant-tree-node-content-wrapper:hover {
+    background: #f1f5f9 !important;
+    border-radius: 4px !important;
+  }
+}
+
+// ═══════════════════════════════════════
+// HIGHLIGHT RECHERCHE
+// ═══════════════════════════════════════
+::ng-deep mark.hl {
+  background: #FEF08A !important;
+  color: #713F12 !important;
+  border-radius: 3px;
+  padding: 0 2px;
+  font-weight: 700;
+  font-style: normal;
+}
+
+/* ─── Panneau droit ─── */
+.preview-panel {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #f1f5f9;
+}
+
+/* ════════════════════════════════════════
+   BARRE D'OUTILS
+════════════════════════════════════════ */
+.preview-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  background: #1e293b;
+  flex-shrink: 0;
+  min-height: 46px;
+}
+
+.tb-filename {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 220px;
+  overflow: hidden;
+
+  .tb-file-icon {
+    color: #94a3b8;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  span {
+    font-size: 12px;
+    color: #e2e8f0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.tb-spacer {
+  flex: 1;
+}
+
+.tb-group {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.tb-sep {
+  width: 1px;
+  height: 22px;
+  background: #334155;
+  margin: 0 6px;
+}
+
+.tb-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 15px;
+  transition: background 0.15s, color 0.15s;
+
+  &:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.1);
+    color: #f1f5f9;
+  }
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+
+  &.active {
+    background: rgba(99, 102, 241, 0.3);
+    color: #a5b4fc;
+  }
+}
+
+.tb-zoom-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 52px;
+  height: 28px;
+  padding: 0 8px;
+  border: 1px solid #334155;
+  background: #0f172a;
+  color: #e2e8f0;
+  border-radius: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.3px;
+  transition: background 0.15s, border-color 0.15s;
+
+  &:hover {
+    background: #1e3a5f;
+    border-color: #4f7ab3;
+    color: #bfdbfe;
+  }
+}
+
+.tb-page-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 28px;
+  padding: 0 8px;
+  border: 1px solid #334155;
+  background: #0f172a;
+  border-radius: 5px;
+}
+
+.tb-page-input {
+  width: 32px;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #e2e8f0;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+  padding: 0;
+
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  -moz-appearance: textfield;
+}
+
+.tb-page-total {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* ════════════════════════════════════════
+   ZONE D'APERÇU
+════════════════════════════════════════ */
+.preview-placeholder {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  color: #94a3b8;
+
+  .placeholder-icon {
+    font-size: 56px;
+    opacity: 0.55;
+  }
+
+  .placeholder-text {
+    font-size: 14px;
+    margin: 0;
+  }
+}
+
+.preview-content-area {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.preview-loading-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  background: rgba(241, 245, 249, 0.88);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-size: 14px;
+  color: #475569;
+}
+
+.spinner {
+  width: 38px;
+  height: 38px;
+  border: 3px solid #e2e8f0;
+  border-top-color: #6366f1;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.preview-scroll {
+  flex: 1;
+  overflow: auto;
+  padding: 20px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+
+  &.center {
+    justify-content: center;
+  }
+}
+
+.preview-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.14);
+  display: block;
+  transition: transform 0.2s ease;
+  -webkit-user-drag: none;
+  pointer-events: none;
+}
+
+#pdf-canvas {
+  max-width: 100%;
+  height: auto;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.14);
+  display: block;
+  pointer-events: none;
+}
+
+.office-zoom-wrapper {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.preview-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+  transform-origin: top left;
+  transition: transform 0.15s ease;
+}
+
+::ng-deep .ant-tree.ant-tree-directory .ant-tree-treenode-selected::before, .ant-tree.ant-tree-directory .ant-tree-treenode-selected:hover::before {
+  background: transparent;
+  border-left-color: var(--active-shadow);
+}
+
+/* ════════════════════════════════════════
+   BOUTON TOGGLE ARBRE
+════════════════════════════════════════ */
+.tree-toggle-btn {
+  display: none;
+  margin-left: auto;
+  background: none;
+  border: none;
+  padding: 4px 8px;
+  cursor: pointer;
+  color: #6b7280;
+  font-size: 13px;
+  border-radius: 4px;
+  line-height: 1;
+  transition: background 0.15s, color 0.15s;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.07);
+    color: #374151;
+  }
+}
+
+/* ════════════════════════════════════════
+   RESPONSIVE — TABLETTE (≤ 1024px)
+════════════════════════════════════════ */
+@media (max-width: 1024px) {
+  .preview-wrapper {
+    height: calc(100vh - 100px);
+  }
+
+  .tb-filename {
+    max-width: 180px;
+  }
+
+  .tb-zoom-label {
+    min-width: 46px;
+    font-size: 11px;
+  }
+}
+
+/* ════════════════════════════════════════
+   RESPONSIVE — MOBILE (≤ 768px)
+════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .preview-wrapper {
+    height: calc(100vh - 56px);
+  }
+
+  // ── Layout mobile : empilement vertical ──
+  .mobile-layout {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+
+    .preview-panel {
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+    }
+  }
+
+  // ── Arbre collapsible ────────────────────
+  .tree-panel {
+    flex-shrink: 0;
+    height: 42vh;
+    max-height: 42vh;
+    min-height: 44px;
+    transition: max-height 0.28s ease, height 0.28s ease;
+    overflow: hidden;
+
+    &.collapsed {
+      height: 44px;
+      max-height: 44px;
+
+      .tree-search,
+      nz-tree-view,
+      .tree-loading {
+        display: none !important;
+      }
+    }
+  }
+
+  .tree-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .tree-header {
+    font-size: 12px;
+    padding: 10px 12px;
+    min-height: 44px;
+  }
+
+  // ── Toolbar compact ──────────────────────
+  .preview-toolbar {
+    padding: 4px 6px;
+    min-height: 40px;
+    gap: 2px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .tb-filename {
+    max-width: 100px;
+    flex-shrink: 1;
+
+    span {
+      font-size: 11px;
+    }
+  }
+
+  .tb-btn {
+    width: 28px;
+    height: 28px;
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+
+  .tb-zoom-label {
+    min-width: 38px;
+    height: 26px;
+    padding: 0 5px;
+    font-size: 11px;
+  }
+
+  .tb-sep {
+    margin: 0 3px;
+    height: 18px;
+  }
+
+  .preview-scroll {
+    padding: 10px;
+  }
+
+  .node-label {
+    font-size: 12px;
+  }
+
+  .tree-search {
+    padding: 6px 8px;
+  }
+}
+
+/* ════════════════════════════════════════
+   RESPONSIVE — PETIT MOBILE (≤ 480px)
+════════════════════════════════════════ */
+@media (max-width: 480px) {
+  .preview-wrapper {
+    height: calc(100vh - 48px);
+  }
+
+  .tb-filename {
+    display: none;
+  }
+
+  .tb-btn {
+    width: 26px;
+    height: 26px;
+    font-size: 12px;
+  }
+
+  .tb-zoom-label {
+    min-width: 34px;
+    height: 24px;
+    font-size: 10px;
+    padding: 0 4px;
+  }
+
+  .tree-panel {
+    height: 38vh;
+    max-height: 38vh;
+  }
+}

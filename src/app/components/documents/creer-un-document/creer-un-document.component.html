@@ -220,6 +220,35 @@
                                 </div>
                             </div>
 
+                            <div class="col-span-12">
+                                <label class="form-label" for="idcategories">Série
+                                    <span class="txt-danger">*</span>
+                                </label>
+                                <select2 [data]="dataSeries"
+                                         placeholder="Selectionnez la série"
+                                         id="idcategories"
+                                         formControlName="idcategories"
+                                         [disabled]="isloadSerie"
+                                         [overlay]="false"
+                                         [resettable]="true"
+                                         [listPosition]="'below'"
+                                         (update)="selectSerie($event)"
+                                         [minCountForSearch]="1"
+                                         noResultMessage="Aucune donnée trouvée"
+                                         class="raise-input-select" [ngClass]="{ 'is-invalid' : validationForm.controls['idcategories'].touched &&  validationForm.controls['idcategories'].errors?.['required'] , 'is-valid' : validationForm.controls['idcategories'].valid}">
+
+                                </select2>
+                                <div class="select-loader" *ngIf="isloadSerie">
+                                    <i class="fas fa-spin fa-circle-notch"></i>
+                                </div>
+                                @if(validationForm.controls['idcategories'].valid) {
+                                <!--<div class="valid-feedback">Looks's Good!</div>-->
+                                } @else if(validationForm.controls['idcategories'].touched
+                                && validationForm.controls['idcategories'].errors?.['required']) {
+                                <div class="invalid-feedback"> Veuillez selectionner la série svp.</div>
+                                }
+                            </div>
+                            
                     <!-- Type de document -->
                     <div class="col-span-12 position-relative">
                         <label class="form-label" for="idtype_docs">
@@ -256,13 +285,28 @@
                                     <label class="form-label mb-0" for="code_docs">Numéro du document
                                         <span class="txt-danger">*</span>
                                     </label>
-                                    <a class="generate-num-link" (click)="generateDocumentNumber()">
-                                        <i class="ti ti-refresh"></i> Générer un numéro automatique
+                                    <a class="generate-num-link"
+                                       [class.generate-num-link--loading]="isGeneratingCode"
+                                       (click)="generateDocumentNumber()">
+                                        <span class="gen-spinner" *ngIf="isGeneratingCode"></span>
+                                        <i class="ti ti-refresh" *ngIf="!isGeneratingCode"></i>
+                                        {{ isGeneratingCode ? 'Génération en cours...' : 'Générer un numéro automatique' }}
                                     </a>
                                 </div>
-                                <input class="form-control" id="code_docs" type="text"
-                                       placeholder="Entrez le Numéro du document" formControlName="code_docs"
-                                       [ngClass]="{ 'is-invalid' : validationForm.controls['code_docs'].touched &&  validationForm.controls['code_docs'].errors?.['required'] , 'is-valid' : validationForm.controls['code_docs'].valid}">
+                                <div class="code-input-wrap">
+                                    <input class="form-control" id="code_docs" type="text"
+                                           placeholder="Entrez le Numéro du document"
+                                           formControlName="code_docs"
+                                           [ngClass]="{
+                                               'is-invalid': validationForm.controls['code_docs'].touched && validationForm.controls['code_docs'].errors?.['required'],
+                                               'is-valid':   validationForm.controls['code_docs'].valid,
+                                               'input-generating': isGeneratingCode
+                                           }">
+                                    <div class="code-input-overlay" *ngIf="isGeneratingCode">
+                                        <span class="code-gen-spin"></span>
+                                        <span class="code-gen-text">Génération du numéro...</span>
+                                    </div>
+                                </div>
                                 @if(validationForm.controls['code_docs'].valid) {
                                 <!--<div class="valid-feedback">Looks's Good!</div>-->
                                 } @else if(validationForm.controls['code_docs'].touched &&
@@ -459,43 +503,19 @@
                     <div class="upload-section">
                         <div class="upload-section-label">
                             <i class="ti ti-files"></i> Plan de classement + fichiers importés
+                            <span class="drag-hint" *ngIf="dataFileTemps?.length">
+                                <i class="ti ti-drag-drop"></i> Glissez un fichier vers un dossier
+                            </span>
                         </div>
                         <div class="upload-section-body tree-body">
                             <nz-tree-view [nzTreeControl]="treeControl" [nzDataSource]="dataSource" [nzDirectoryTree]="true">
-                                <nz-tree-node *nzTreeNodeDef="let node" nzTreeNodePadding>
-                                    <nz-tree-node-toggle nzTreeNodeNoopToggle></nz-tree-node-toggle>
-                                    <nz-tree-node-option
-                                            [nzDisabled]="node.disabled"
-                                            [nzSelected]="selectListSelection.isSelected(node)"
-                                            (nzClick)="onNodeClick(node)">
 
-                                        <!-- Dossier vide (catégorie sans enfants : extension absente) -->
-                                        <i *ngIf="!node.extension" [class]="selectListSelection.isSelected(node) ? 'fa-regular fa-folder-open' : 'fa-regular fa-folder'"></i>
-
-                                        <!-- Fichiers réels (extension présente) -->
-                                        <nz-icon *ngIf="node.extension === 'pdf'" nzType="file-pdf" nzTheme="twotone" [nzTwotoneColor]="'#ff4d4f'" class="file-icon pdf-icon"/>
-                                        <nz-icon *ngIf="['jpg','JPG','jpeg','JPEG','png','PNG'].includes(node.extension)" nzType="file-image" nzTheme="twotone" [nzTwotoneColor]="'#52c41a'" class="file-icon image-icon"/>
-                                        <nz-icon *ngIf="['doc','docx'].includes(node.extension)" nzType="file-word" nzTheme="twotone" [nzTwotoneColor]="'#1890ff'" class="file-icon word-icon"/>
-                                        <nz-icon *ngIf="node.extension === 'excel'" nzType="file-excel" nzTheme="twotone" [nzTwotoneColor]="'#52c41a'" class="file-icon excel-icon"/>
-                                        <nz-icon *ngIf="node.extension === 'ppt'" nzType="file-ppt" nzTheme="twotone" [nzTwotoneColor]="'#fa8c16'" class="file-icon ppt-icon"/>
-                                        <nz-icon *ngIf="node.extension && !['pdf','jpg','JPG','jpeg','JPEG','png','PNG','doc','docx','excel','ppt'].includes(node.extension)" nzType="file" nzTheme="outline" class="file-icon"/>
-
-                                        {{ node.name }}{{ node.extension ? ('.' + node.extension) : '' }}
-
-                                    </nz-tree-node-option>
-
-                                    <!-- Bouton suppression — forcé visible -->
-                                    <span  *ngIf="node.extension"
-                                          style="display:inline-flex; align-items:center; justify-content:center;
-                                                 width:24px; height:24px; border-radius:4px; cursor:pointer;
-                                                 color:#94A3B8; flex-shrink:0; margin-left:4px;"
-                                                                          (click)="deleteFile(node, $event); $event.stopPropagation()">
-                                        <i class="fas fa-trash-alt" style="font-size:14px; color:#EF4444;"></i>
-                                        <i data-feather="trash-2"  style="font-size:14px; color:#EF4444;"></i>
-                                    </span>
-
-                                </nz-tree-node>
-                                <nz-tree-node *nzTreeNodeDef="let node; when: hasChild" nzTreeNodePadding>
+                                <!-- ══ 1. DOSSIER avec enfants (expandable) — drop zone ══ -->
+                                <nz-tree-node *nzTreeNodeDef="let node; when: hasChild" nzTreeNodePadding
+                                              (dragover)="onFolderDragOver($event, node.key)"
+                                              (dragleave)="onFolderDragLeave($event)"
+                                              (drop)="onFolderDrop($event, node.key)"
+                                              [class.folder-drop-active]="dropTargetKey === node.key">
                                     <nz-tree-node-toggle>
                                         <nz-icon nzType="caret-down" nzTreeNodeToggleRotateIcon/>
                                     </nz-tree-node-toggle>
@@ -503,10 +523,66 @@
                                             [nzDisabled]="node.disabled"
                                             [nzSelected]="selectListSelection.isSelected(node)"
                                             (nzClick)="selectListSelection.toggle(node)">
-                                        <i [class]="treeControl.isExpanded(node) ? 'fa-regular fa-folder-open' : 'fa-regular fa-folder'"></i>
+                                        <i [class]="(treeControl.isExpanded(node) || dropTargetKey === node.key)
+                                                    ? 'fa-regular fa-folder-open' : 'fa-regular fa-folder'"></i>
                                         {{ node.name }}
+                                        <span class="folder-drop-badge" *ngIf="dropTargetKey === node.key">
+                                            <i class="ti ti-plus"></i> Déposer ici
+                                        </span>
                                     </nz-tree-node-option>
                                 </nz-tree-node>
+
+                                <!-- ══ 2. FICHIER (feuille avec extension) — draggable ══ -->
+                                <nz-tree-node *nzTreeNodeDef="let node; when: isFile" nzTreeNodePadding>
+                                    <nz-tree-node-toggle nzTreeNodeNoopToggle></nz-tree-node-toggle>
+                                    <nz-tree-node-option
+                                            [nzDisabled]="node.disabled"
+                                            [nzSelected]="selectListSelection.isSelected(node)"
+                                            (nzClick)="onNodeClick(node)">
+                                        <span class="file-drag-zone"
+                                              draggable="true"
+                                              (dragstart)="onFileDragStart($event, node)"
+                                              (dragend)="onDragEnd()"
+                                              [class.file-is-dragging]="draggedFileNode?.uid === node.uid"
+                                              title="Glisser vers un dossier">
+                                            <i class="drag-handle-icon ti ti-grip-vertical"></i>
+                                            <nz-icon *ngIf="node.extension === 'pdf'" nzType="file-pdf" nzTheme="twotone" [nzTwotoneColor]="'#ff4d4f'" class="file-icon"/>
+                                            <nz-icon *ngIf="['jpg','JPG','jpeg','JPEG','png','PNG'].includes(node.extension)" nzType="file-image" nzTheme="twotone" [nzTwotoneColor]="'#52c41a'" class="file-icon"/>
+                                            <nz-icon *ngIf="['doc','docx'].includes(node.extension)" nzType="file-word" nzTheme="twotone" [nzTwotoneColor]="'#1890ff'" class="file-icon"/>
+                                            <nz-icon *ngIf="['xls','xlsx'].includes(node.extension)" nzType="file-excel" nzTheme="twotone" [nzTwotoneColor]="'#52c41a'" class="file-icon"/>
+                                            <nz-icon *ngIf="['ppt','pptx'].includes(node.extension)" nzType="file-ppt" nzTheme="twotone" [nzTwotoneColor]="'#fa8c16'" class="file-icon"/>
+                                            <nz-icon *ngIf="node.extension && !['pdf','jpg','JPG','jpeg','JPEG','png','PNG','doc','docx','xls','xlsx','ppt','pptx'].includes(node.extension)"
+                                                     nzType="file" nzTheme="outline" class="file-icon"/>
+                                            <span class="file-name">{{ node.name }}{{ node.extension ? ('.' + node.extension) : '' }}</span>
+                                        </span>
+                                    </nz-tree-node-option>
+                                    <span class="file-delete-btn"
+                                          (click)="deleteFile(node, $event); $event.stopPropagation()">
+                                        <i class="fas fa-trash-alt" style="font-size:12px; color:#EF4444;"></i>
+                                    </span>
+                                </nz-tree-node>
+
+                                <!-- ══ 3. DOSSIER VIDE (feuille sans extension) — drop zone ══ -->
+                                <nz-tree-node *nzTreeNodeDef="let node" nzTreeNodePadding
+                                              (dragover)="onFolderDragOver($event, node.key)"
+                                              (dragleave)="onFolderDragLeave($event)"
+                                              (drop)="onFolderDrop($event, node.key)"
+                                              [class.folder-drop-active]="dropTargetKey === node.key">
+                                    <nz-tree-node-toggle nzTreeNodeNoopToggle></nz-tree-node-toggle>
+                                    <nz-tree-node-option
+                                            [nzDisabled]="node.disabled"
+                                            [nzSelected]="selectListSelection.isSelected(node)"
+                                            (nzClick)="selectListSelection.toggle(node)">
+                                        <i [class]="dropTargetKey === node.key
+                                                    ? 'fa-regular fa-folder-open folder-icon-empty'
+                                                    : 'fa-regular fa-folder folder-icon-empty'"></i>
+                                        {{ node.name }}
+                                        <span class="folder-drop-badge" *ngIf="dropTargetKey === node.key">
+                                            <i class="ti ti-plus"></i> Déposer ici
+                                        </span>
+                                    </nz-tree-node-option>
+                                </nz-tree-node>
+
                             </nz-tree-view>
                         </div>
                     </div>
@@ -548,29 +624,254 @@
                             </div>
 
                             <!-- Images -->
-                            <div *ngIf="selectedFile && ['jpg','JPG','jpeg','JPEG','png','PNG'].includes(selectedFile?.extension)" class="preview-content">
-                                <img [src]="selectedFile.url_file"
-                                     [alt]="selectedFile.name"
-                                     class="image-preview"
-                                     (load)="onPreviewLoaded()"
-                                     (error)="onPreviewLoaded()"/>
-                            </div>
+                            <div *ngIf="selectedFile && ['jpg','JPG','jpeg','JPEG','png','PNG'].includes(selectedFile?.extension)"
+                                 class="preview-content pdf-viewer-container">
 
-                            <!-- PDF -->
-                            <div *ngIf="selectedFile && selectedFile.extension === 'pdf'" class="preview-content">
-                                <canvas id="pdf-canvas"></canvas>
-                                <div #viewerContainer>
-                                    <canvas #pdfCanvas></canvas>
+                                <!-- ── Toolbar Image ───────────────────────────── -->
+                                <div class="pdf-toolbar-inner">
+
+                                    <!-- Zoom -->
+                                    <div class="pdf-ctrl-group">
+                                        <button class="pdf-ctrl-btn"
+                                                (click)="imageZoomOut()"
+                                                [disabled]="imageZoom <= 0.25"
+                                                title="Réduire (−25%)">
+                                            <i class="fa-solid fa-magnifying-glass-minus"></i>
+                                        </button>
+                                        <span class="pdf-zoom-badge">{{ imageZoomLabel }}</span>
+                                        <button class="pdf-ctrl-btn"
+                                                (click)="imageZoomIn()"
+                                                [disabled]="imageZoom >= 4"
+                                                title="Agrandir (+25%)">
+                                            <i class="fa-solid fa-magnifying-glass-plus"></i>
+                                        </button>
+                                        <button class="pdf-ctrl-btn"
+                                                (click)="imageZoomReset()"
+                                                title="Réinitialiser zoom et rotation">
+                                            <i class="fa-solid fa-compress"></i>
+                                        </button>
+                                    </div>
+
+                                    <div class="pdf-ctrl-divider"></div>
+
+                                    <!-- Rotation -->
+                                    <div class="pdf-ctrl-group">
+                                        <button class="pdf-ctrl-btn"
+                                                (click)="imageRotateLeft()"
+                                                title="Rotation gauche (−90°)">
+                                            <i class="fa-solid fa-rotate-left"></i>
+                                        </button>
+                                        <button class="pdf-ctrl-btn"
+                                                (click)="imageRotateRight()"
+                                                title="Rotation droite (+90°)">
+                                            <i class="fa-solid fa-rotate-right"></i>
+                                        </button>
+                                    </div>
+
+                                    <div class="pdf-ctrl-divider"></div>
+
+                                    <!-- Actions -->
+                                    <div class="pdf-ctrl-group">
+                                        <button class="pdf-ctrl-btn"
+                                                (click)="openFileNewTab()"
+                                                title="Ouvrir dans un nouvel onglet">
+                                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                                        </button>
+                                        <button class="pdf-ctrl-btn pdf-ctrl-btn-dl"
+                                                (click)="downloadSelectedFile()"
+                                                title="Télécharger l'image">
+                                            <i class="fa-solid fa-download"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- ── Image zoomable / rotatable ──────────────── -->
+                                <div class="image-scroll-wrapper">
+                                    <img [src]="selectedFile.url_file"
+                                         [alt]="selectedFile.name"
+                                         class="image-preview"
+                                         (load)="onPreviewLoaded()"
+                                         (error)="onPreviewLoaded()"
+                                         [style.transform]="'scale(' + imageZoom + ') rotate(' + imageRotation + 'deg)'"
+                                         [style.transform-origin]="'center center'"/>
                                 </div>
                             </div>
 
+                            <!-- PDF -->
+                            <div *ngIf="selectedFile && selectedFile.extension === 'pdf'" class="preview-content pdf-viewer-container">
+
+                                <!-- ── Barre de contrôles ─────────────────────── -->
+                                <div class="pdf-toolbar-inner" *ngIf="pdfDoc">
+
+                                    <!-- Navigation pages -->
+                                    <div class="pdf-ctrl-group">
+                                        <button class="pdf-ctrl-btn"
+                                                (click)="prevPage()"
+                                                [disabled]="currentPage <= 1 || isRenderingPdf"
+                                                title="Page précédente">
+                                            <i class="fa-solid fa-chevron-left"></i>
+                                        </button>
+                                        <div class="pdf-page-wrap">
+                                            <input class="pdf-page-input"
+                                                   type="number"
+                                                   [(ngModel)]="currentPageInput"
+                                                   [ngModelOptions]="{standalone: true}"
+                                                   (change)="goToPage()"
+                                                   (keydown.enter)="goToPage()"
+                                                   [min]="1" [max]="totalPages">
+                                            <span class="pdf-page-sep">/ {{ totalPages }}</span>
+                                        </div>
+                                        <button class="pdf-ctrl-btn"
+                                                (click)="nextPage()"
+                                                [disabled]="currentPage >= totalPages || isRenderingPdf"
+                                                title="Page suivante">
+                                            <i class="fa-solid fa-chevron-right"></i>
+                                        </button>
+                                    </div>
+
+                                    <div class="pdf-ctrl-divider"></div>
+
+                                    <!-- Zoom -->
+                                    <div class="pdf-ctrl-group">
+                                        <button class="pdf-ctrl-btn"
+                                                (click)="zoomOutPdf()"
+                                                [disabled]="pdfScale <= 0.25 || isRenderingPdf"
+                                                title="Réduire (−25%)">
+                                            <i class="fa-solid fa-magnifying-glass-minus"></i>
+                                        </button>
+                                        <span class="pdf-zoom-badge">{{ pdfZoomLabel }}</span>
+                                        <button class="pdf-ctrl-btn"
+                                                (click)="zoomInPdf()"
+                                                [disabled]="pdfScale >= 3 || isRenderingPdf"
+                                                title="Agrandir (+25%)">
+                                            <i class="fa-solid fa-magnifying-glass-plus"></i>
+                                        </button>
+                                    </div>
+
+                                    <div class="pdf-ctrl-divider"></div>
+
+                                    <!-- Ajustements -->
+                                    <div class="pdf-ctrl-group">
+                                        <button class="pdf-ctrl-btn"
+                                                (click)="fitWidthPdf()"
+                                                [disabled]="isRenderingPdf"
+                                                title="Ajuster à la largeur">
+                                            <i class="fa-solid fa-arrows-left-right"></i>
+                                        </button>
+                                        <button class="pdf-ctrl-btn"
+                                                (click)="resetZoomPdf()"
+                                                [disabled]="isRenderingPdf"
+                                                title="Zoom par défaut (100%)">
+                                            <i class="fa-solid fa-compress"></i>
+                                        </button>
+                                    </div>
+
+                                    <div class="pdf-ctrl-divider"></div>
+
+                                    <!-- Rotation -->
+                                    <div class="pdf-ctrl-group">
+                                        <button class="pdf-ctrl-btn"
+                                                (click)="rotatePdf('left')"
+                                                [disabled]="isRenderingPdf"
+                                                title="Rotation gauche (−90°)">
+                                            <i class="fa-solid fa-rotate-left"></i>
+                                        </button>
+                                        <button class="pdf-ctrl-btn"
+                                                (click)="rotatePdf('right')"
+                                                [disabled]="isRenderingPdf"
+                                                title="Rotation droite (+90°)">
+                                            <i class="fa-solid fa-rotate-right"></i>
+                                        </button>
+                                    </div>
+
+                                    <div class="pdf-ctrl-divider"></div>
+
+                                    <!-- Actions fichier -->
+                                    <div class="pdf-ctrl-group">
+                                        <button class="pdf-ctrl-btn"
+                                                (click)="openPdfNewTab()"
+                                                title="Ouvrir dans un nouvel onglet">
+                                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                                        </button>
+                                        <button class="pdf-ctrl-btn pdf-ctrl-btn-dl"
+                                                (click)="downloadCurrentPdf()"
+                                                title="Télécharger le PDF">
+                                            <i class="fa-solid fa-download"></i>
+                                        </button>
+                                    </div>
+
+                                    <!-- Spinner de rendu -->
+                                    <div class="pdf-render-spinner" *ngIf="isRenderingPdf">
+                                        <span class="pdf-mini-spin"></span>
+                                    </div>
+                                </div>
+
+                                <!-- ── Canvas scrollable ──────────────────────── -->
+                                <div class="pdf-canvas-wrapper" #pdfWrapper>
+                                    <canvas id="pdf-canvas"></canvas>
+                                </div>
+
+                            </div>
+
                             <!-- Word / Excel -->
-                            <div *ngIf="selectedFile && ['doc','docx','xls','xlsx'].includes(selectedFile?.extension)" class="preview-content">
-                                <iframe [src]="getGoogleDocsViewerUrl(selectedFile.url_file)"
-                                        class="document-preview"
-                                        frameborder="0"
-                                        (load)="onOfficePreviewLoaded()">
-                                </iframe>
+                            <div *ngIf="selectedFile && ['doc','docx','xls','xlsx'].includes(selectedFile?.extension)"
+                                 class="preview-content pdf-viewer-container">
+
+                                <!-- ── Toolbar Office ──────────────────────────── -->
+                                <div class="pdf-toolbar-inner" *ngIf="officePreviewUrl">
+
+                                    <!-- Zoom -->
+                                    <div class="pdf-ctrl-group">
+                                        <button class="pdf-ctrl-btn"
+                                                (click)="officeZoomOut()"
+                                                [disabled]="officeZoom <= 0.5"
+                                                title="Réduire (−25%)">
+                                            <i class="fa-solid fa-magnifying-glass-minus"></i>
+                                        </button>
+                                        <span class="pdf-zoom-badge">{{ officeZoomLabel }}</span>
+                                        <button class="pdf-ctrl-btn"
+                                                (click)="officeZoomIn()"
+                                                [disabled]="officeZoom >= 2"
+                                                title="Agrandir (+25%)">
+                                            <i class="fa-solid fa-magnifying-glass-plus"></i>
+                                        </button>
+                                        <button class="pdf-ctrl-btn"
+                                                (click)="officeZoomReset()"
+                                                title="Zoom par défaut (100%)">
+                                            <i class="fa-solid fa-compress"></i>
+                                        </button>
+                                    </div>
+
+                                    <div class="pdf-ctrl-divider"></div>
+
+                                    <!-- Actions -->
+                                    <div class="pdf-ctrl-group">
+                                        <button class="pdf-ctrl-btn"
+                                                (click)="openFileNewTab()"
+                                                title="Ouvrir dans un nouvel onglet">
+                                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                                        </button>
+                                        <button class="pdf-ctrl-btn pdf-ctrl-btn-dl"
+                                                (click)="downloadSelectedFile()"
+                                                title="Télécharger le fichier">
+                                            <i class="fa-solid fa-download"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- ── Iframe zoomable ────────────────────────── -->
+                                <div class="office-zoom-wrapper">
+                                    <iframe *ngIf="officePreviewUrl"
+                                            [src]="officePreviewUrl"
+                                            class="document-preview"
+                                            frameborder="0"
+                                            (load)="onOfficePreviewLoaded()"
+                                            [style.transform]="'scale(' + officeZoom + ')'"
+                                            [style.transform-origin]="'top left'"
+                                            [style.width]="(100 / officeZoom) + '%'"
+                                            [style.height]="(100 / officeZoom) + '%'">
+                                    </iframe>
+                                </div>
                             </div>
 
                             <!-- Aucun fichier sélectionné -->

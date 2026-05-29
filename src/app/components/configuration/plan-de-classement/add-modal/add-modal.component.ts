@@ -19,6 +19,7 @@ export class AddModalComponent {
     @Input() dataLigne: any;
 
     public validationForm = new FormGroup({
+        code_categories: new FormControl('', Validators.required),
         name_categories: new FormControl('', Validators.required),
         idcategories: new FormControl('',),
         idtype_document: new FormControl('',),
@@ -50,6 +51,7 @@ export class AddModalComponent {
         if (data && Object.keys(data).length > 0) {
             this.validationForm.patchValue({
                 name_categories: data.sens == 'a' ? '' : data?.name,
+                code_categories: data.sens == 'a' ? '' : data?.code_categories,
                 idcategories: data.sens == 'a' ? '' : data?.key,
                 idtype_document: data?.uid_type_docs,
                 position: data?.position || '',
@@ -59,6 +61,8 @@ export class AddModalComponent {
             this.title = data?.sens == 'a' ? `AJOUT DE SOUS-DOSSIER` : `MODIFICATION DE SOUS-DOSSIER`
             this.errorTexte = `Vous êtes sur le point ${data?.sens == 'a' ? `d’ajouter un` : `de modifier le`} sous-dossier  ${data?.sens == 'a' ? `au dossier` : ``} « ${changes['dataLigne']?.currentValue?.name} ».`;
             this.typeAlerte = 'prim';
+
+            console.log(" this.validationForm ====", this.validationForm.value)
         }
     }
 
@@ -68,6 +72,7 @@ export class AddModalComponent {
             "action": this.validationForm.value.idcategories ? 2 : 1,
             "idcategories": this.validationForm.value.idcategories || '',
             "idtype_document": this.validationForm.value.idtype_document || '',
+            "code_categories": this.validationForm.value.code_categories || '',
             "name_categories": this.validationForm.value.name_categories || '',
             position: parseInt(String(this.validationForm.value.position || 0)),
             "actif": this.validationForm.value.actif || '',
@@ -77,6 +82,7 @@ export class AddModalComponent {
 
         this.isloading = true;
         console.log("payload ======", payload)
+
         this.httService.postData(`${environment.api_url}api/:save-categorie-plan-classement`, payload, this.users?.access_token)
             .toPromise()
             .then((res: any) => {

@@ -37,6 +37,7 @@ Dropzone.autoDiscover = false;
 
 interface FoodNode {
     name: string;
+    key?: string;
     url_file?: string;
     extension?: string;
     desc_ocr_text?: string;
@@ -75,6 +76,7 @@ const TREE_DATAA: TreeNode[] = [];
 interface ExampleFlatNode {
     expandable: boolean;
     name: string;
+    key: string;
     extension: string;
     url_file: string;
     desc_ocr_text: string;
@@ -107,12 +109,9 @@ interface ExampleFlatNode {
 })
 export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild(DropzoneDirective, {static: false}) dropzoneDirective: DropzoneDirective;
-
-    @ViewChild('viewerContainer', {static: false})
-    viewerContainer!: ElementRef;
-
-    @ViewChild('pdfCanvas', {static: false})
-    pdfCanvas!: ElementRef<HTMLCanvasElement>;
+    @ViewChild('viewerContainer', {static: false}) viewerContainer!: ElementRef;
+    @ViewChild('pdfCanvas', {static: false}) pdfCanvas!: ElementRef<HTMLCanvasElement>;
+    @ViewChild('pdfWrapper', {static: false}) pdfWrapper!: ElementRef<HTMLDivElement>;
 
 
     public addBlogCategory: Select2Data = addBlogCategory;
@@ -252,9 +251,39 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
     private officeLoaderTimer: any = null;
     private readonly OFFICE_EXTENSIONS = ['doc', 'docx', 'xls', 'xlsx'];
 
+    // ── État du viewer PDF ───────────────────────────────────────
+    pdfDoc: any = null;
+    currentPage = 1;
+    totalPages = 0;
+    pdfScale = 1.0;
+    pdfRotation = 0;
+    isRenderingPdf = false;
+    currentPageInput = 1;
+    private idcategorie: string = 'i';
+
+    // ── État du viewer Office ────────────────────────────────────
+    officeZoom: number = 1.0;
+
+    // ── État du viewer Image ─────────────────────────────────────
+    imageZoom: number = 1.0;
+    imageRotation: number = 0;
+
+    get pdfZoomLabel(): string {
+        return Math.round(this.pdfScale * 100) + '%';
+    }
+
+    get officeZoomLabel(): string {
+        return Math.round(this.officeZoom * 100) + '%';
+    }
+
+    get imageZoomLabel(): string {
+        return Math.round(this.imageZoom * 100) + '%';
+    }
+
     private transformer = (node: FoodNode, level: number): ExampleFlatNode => ({
         expandable: !!node.children && node.children.length > 0,
         name: node.name,
+        key: (node as any)?.key || node?.uid || '',
         extension: node?.extension || '',
         url_file: node?.url_file || '',
         desc_ocr_text: node?.desc_ocr_text || '',
@@ -283,6 +312,15 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
 
     dataSource = new NzTreeFlatDataSource(this.treeControl, this.treeFlattener);
     selectedFile: any = null;
+
+    // ── Prévisualisation Office ───────────────────────────────────
+    officePreviewUrl: SafeResourceUrl | null = null;
+
+    // ── Drag & Drop ──────────────────────────────────────────────
+    private cleanTreeData: any[] = [];
+    fileAssignments = new Map<string, string>(); // fileUid → folderKey
+    draggedFileNode: ExampleFlatNode | null = null;
+    dropTargetKey: string | null = null;
 
 
     /*
@@ -321,9 +359,11 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
         fulltexts_docs: new FormControl('',),
         idproprietaire: new FormControl('',),
         sendmail: new FormControl('',),
+        idcategories: new FormControl('',),
     })
     loadingType: boolean = false;
     loadingService: boolean = false;
+    isGeneratingCode: boolean = false;
     loadingBoite: boolean = false;
     dataServices: any;
 
@@ -333,7 +373,9 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
     dataRayon: any = [];
     dataBoites: any = [];
     isload: boolean = false;
+    isloadSerie: boolean = false;
     dataSites: any = [];
+    dataSeries: any = [];
 
     constructor(private autor: Authorization,
                 private fb: FormBuilder,
@@ -350,14 +392,16 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
         window.scrollTo({top: 0, behavior: 'smooth'});
         this.users = this.autor.getInfosUsers();
         this.loadFileTemps(this.users?.dataSociete?.uid, this.users?.uid);
-        this.showTypeDoc(this.users?.datasociete?.uid, '');
+        //  this.showTypeDoc(this.users?.datasociete?.uid, '');
         this.showOrganigramme(this.users?.datasociete?.uid, '');
         this.showSites(this.users?.datasociete?.uid, '');
+        this.showSerie('', '', '');
         // Forcer la mise à jour de l'icône dossier à chaque toggle
         this.treeControl.expansionModel.changed.subscribe(() => setTimeout(() => this.cdr.detectChanges(), 0));
     }
 
     hasChild = (_: number, node: ExampleFlatNode): boolean => node.expandable;
+    isFile = (_: number, node: ExampleFlatNode): boolean => node.isFile || !!node.extension;
 
 
     getNode(name: string): ExampleFlatNode | null {
@@ -392,6 +436,7 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
             if (this.users && this.users.dataSociete && this.users.uid) {
                 formData.append("action", 1);
                 formData.append("idsociete", this.users.dataSociete.uid);
+                formData.append("idcategorie ", this.idcategorie);
                 formData.append("token", `Bearer ${this.users?.access_token}`);
                 formData.append("iduser_file_temp", this.users.uid);
                 formData.append("statut_ocr", 1);
@@ -490,12 +535,10 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
                 this.isloading = false;
                 if (res.body.status) {
                     this.dataFileTemps = res.body.data;
-                    console.log("all file ", res.body.data)
-                    if (this.treeData.length > 0) {
-                        this.injectFilesIntoLastNode();
-                        this.dataSource.setData([...this.treeData]);
-                        setTimeout(() => this.treeControl.expandAll(), 300);
-                        this.cdr.detectChanges();
+                    // datacats de l'API est désormais la source de vérité : on purge les overrides locaux
+                    this.fileAssignments.clear();
+                    if (this.cleanTreeData.length > 0) {
+                        this.rebuildTreeWithFiles();
                     }
                 }
             })
@@ -515,10 +558,125 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
             nombre_page: d.nombre_page,
             password_file: d.password_file,
             iduser_save: d.iduser_save,
+            datacats: d.datacats || null,
             isFile: true,
             disabled: false,
             children: undefined
         }));
+    }
+
+    // ── Drag & Drop handlers ──────────────────────────────────────
+
+    onFileDragStart(event: DragEvent, node: ExampleFlatNode) {
+        this.draggedFileNode = node;
+        event.dataTransfer!.effectAllowed = 'move';
+        event.dataTransfer!.setData('text/plain', node.uid);
+    }
+
+    onDragEnd() {
+        this.draggedFileNode = null;
+        this.dropTargetKey = null;
+    }
+
+    onFolderDragOver(event: DragEvent, folderKey: string) {
+        if (!this.draggedFileNode || !folderKey) return;
+        event.preventDefault();
+        event.dataTransfer!.dropEffect = 'move';
+        this.dropTargetKey = folderKey;
+
+        console.log("folderKey ", folderKey)
+    }
+
+    onFolderDragLeave(event: DragEvent) {
+        const target = event.currentTarget as HTMLElement;
+        const related = event.relatedTarget as HTMLElement;
+        if (!target.contains(related)) {
+            this.dropTargetKey = null;
+        }
+    }
+
+    onFolderDrop(event: DragEvent, folderKey: string) {
+        event.preventDefault();
+        event.stopPropagation();
+        if (!this.draggedFileNode || !folderKey) return;
+
+        // Capture synchrone : dragend se déclenche avant la réponse API et met draggedFileNode à null
+        const draggedUid = this.draggedFileNode.uid;
+        console.log('📁 Dossier cible :', folderKey);
+        console.log('📄 Fichier déplacé :', draggedUid);
+
+        this.draggedFileNode = null;
+        this.dropTargetKey = null;
+
+        const formData = new FormData();
+        formData.append('action', '2');
+        formData.append('idfile_temp', draggedUid ?? '');
+        formData.append('idcategorie', folderKey ?? '');
+        formData.append('idsociete', this.users?.datasociete?.uid ?? '');
+
+        this.httService
+            .postDataMultipart(`${environment.api_url}api/:saveuploadfile-temps`, formData, this.users?.access_token || '')
+            .toPromise()
+            .then((res: any) => {
+                if (res.body.status || res.body.success) {
+                    this.fileAssignments.set(draggedUid, folderKey);
+                    this.rebuildTreeWithFiles();
+                    this.toast.success('Fichier rangé avec succès.', 'Succès');
+                } else {
+                    this.toast.error(res.body.message || 'Erreur lors du déplacement.', 'Erreur');
+                }
+            })
+            .catch(() => {
+                this.toast.error('Erreur lors du déplacement du fichier.', 'Erreur');
+            });
+    }
+
+    private rebuildTreeWithFiles() {
+        if (!this.cleanTreeData?.length) return;
+
+        const allFiles = this.mapFilesToTreeNodes();
+        const grouped = new Map<string, any[]>();
+        const unassigned: any[] = [];
+
+        for (const file of allFiles) {
+            // Priorité : affectation manuelle (drag-drop) > datacats de l'API > non classé
+            const folderKey = this.fileAssignments.get(file.uid) || file.datacats?.uid || null;
+            if (folderKey) {
+                if (!grouped.has(folderKey)) grouped.set(folderKey, []);
+                grouped.get(folderKey)!.push(file);
+            } else {
+                unassigned.push(file);
+            }
+        }
+
+        const tree = this.injectFilesIntoFolders(
+            JSON.parse(JSON.stringify(this.cleanTreeData)),
+            grouped
+        );
+
+        // Fichiers non classés → dernier nœud
+        if (unassigned.length && tree.length) {
+            const last = tree[tree.length - 1];
+            last.children = [...(last.children || []).filter((n: any) => !n.isFile), ...unassigned];
+        }
+
+        this.treeData = tree;
+        this.dataSource.setData([...tree]);
+        setTimeout(() => this.treeControl.expandAll(), 100);
+        this.cdr.detectChanges();
+    }
+
+    private injectFilesIntoFolders(nodes: any[], grouped: Map<string, any[]>): any[] {
+        return nodes.map((node: any) => {
+            const nodeKey = node.key || node.uid || '';
+            const files = grouped.get(nodeKey) || [];
+            if (node.children) {
+                node.children = [...this.injectFilesIntoFolders(node.children, grouped), ...files];
+            } else if (files.length) {
+                node.children = [...files];
+            }
+            return node;
+        });
     }
 
     private injectFilesIntoLastNode() {
@@ -556,7 +714,7 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
         if (!result.isConfirmed) return;
 
         const formData = new FormData();
-        formData.append('action', '2');
+        formData.append('action', '3');
         formData.append('idfile_temp', node.uid ?? '');
         formData.append('idsociete', this.users?.datasociete?.uid ?? '');
 
@@ -601,6 +759,7 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
             formData.append("action", 1);
             formData.append("idsociete", this.users.datasociete.uid);
             formData.append("idfile_temp", "");
+            formData.append("idcategorie", this.idcategorie);
             formData.append("iduser_file_temp", this.users.uid);
             formData.append("statut_ocr", this.applyOCR ? 1 : 0);
             formData.append("lib_file_temp", file);
@@ -712,6 +871,9 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
             console.log("node ====", node)
             this.selectListSelection.toggle(node);
             this.selectedFile = node;
+            this.officeZoom = 1.0;
+            this.imageZoom = 1.0;
+            this.imageRotation = 0;
             if (node.extension) {
                 this.isLoadingPreview = true;
                 if (this.OFFICE_EXTENSIONS.includes(node.extension)) {
@@ -722,6 +884,10 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
         } else {
             this.selectListSelection.toggle(node);
             this.selectedFile = null;
+            this.officePreviewUrl = null;
+            this.officeZoom = 1.0;
+            this.imageZoom = 1.0;
+            this.imageRotation = 0;
             this.isLoadingPreview = false;
         }
 
@@ -735,14 +901,13 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
     }
 
     onOfficePreviewLoaded(): void {
+        // Google Docs Viewer déclenche "load" plusieurs fois (redirections internes).
+        // On annule le timer de secours et on cache le loader immédiatement.
         if (this.officeLoaderTimer) {
             clearTimeout(this.officeLoaderTimer);
             this.officeLoaderTimer = null;
         }
-        // Petit délai pour que l'iframe ait le temps d'afficher son contenu
-        setTimeout(() => {
-            this.isLoadingPreview = false;
-        }, 800);
+        this.isLoadingPreview = false;
     }
 
     private startOfficeLoaderTimer(): void {
@@ -756,71 +921,212 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
 
     // Sécuriser l'URL pour l'iframe (pour PDF et images locales)
     getSafeUrl(data: any) {
-
-        // On remplace l'adresse absolue par le chemin relatif du proxy
-        // Si vous avez choisi l'Option A (intercepter /medias) :
-        const proxyUrl = environment.production ? data.url_file : data.url_file.replace('http://api-ged.archivepro.ci', '');
-
-        console.log('URL via Proxy:', proxyUrl);
+        const proxyUrl = environment.production
+            ? data.url_file
+            : data.url_file.replace('http://api-ged.archivepro.ci', '');
 
         const extension = proxyUrl.split('.').pop()?.toLowerCase();
 
         if (extension === 'pdf') {
+            this.officePreviewUrl = null;
             this.renderPdf(proxyUrl, data.password_file);
+        } else if (this.OFFICE_EXTENSIONS.includes(extension || '')) {
+            // 1. Détruire l'iframe (null → *ngIf retire le DOM)
+            this.officePreviewUrl = null;
+            // 2. Après un tick Angular, recréer l'iframe avec la nouvelle URL
+            //    On n'appelle PAS cdr.detectChanges() : la zone Angular gère le timing
+            setTimeout(() => {
+                this.officePreviewUrl = this.getGoogleDocsViewerUrl(data.url_file);
+            }, 150);
         }
     }
 
+    // ── Chargement initial du PDF ────────────────────────────────
     renderPdf(url: string, pwd: string) {
+        this.pdfDoc = null;
+        this.currentPage = 1;
+        this.totalPages = 0;
+        this.pdfScale = 1.0;
+        this.pdfRotation = 0;
+        this.isRenderingPdf = false;
+        this.currentPageInput = 1;
 
-        console.log("url ====", url)
-
-        // On passe un objet de chargement
-        const loadingTask = pdfjsLib.getDocument({
-            url: url,
-            // Si vous avez un mot de passe connu, mettez-le ici :
-            password: pwd
-        });
-
-        loadingTask.promise.then((pdf: any) => {
-            pdf.getPage(1).then((page: any) => {
-                const canvas = document.getElementById('pdf-canvas') as HTMLCanvasElement;
-                if (!canvas) {
-                    console.error("Canvas 'pdf-canvas' introuvable dans le DOM");
-                    return;
+        pdfjsLib.getDocument({url, password: pwd}).promise
+            .then((pdf: any) => {
+                this.pdfDoc = pdf;
+                this.totalPages = pdf.numPages;
+                this.cdr.detectChanges();
+                this.renderPage(1);
+            })
+            .catch((error: any) => {
+                if (error.name === 'PasswordException') {
+                    const pass = prompt('Ce PDF est protégé. Veuillez saisir le mot de passe :');
+                    if (pass) this.renderPdfWithPassword(url, pass);
+                } else {
+                    console.error('Erreur de chargement du PDF:', error);
+                    this.isLoadingPreview = false;
                 }
-                const context = canvas.getContext('2d');
-                const viewport = page.getViewport({scale: 1.5});
-
-                canvas.height = viewport.height;
-                canvas.width = viewport.width;
-
-                page.render({canvasContext: context!, viewport: viewport}).promise
-                    .then(() => setTimeout(() => {
-                        this.isLoadingPreview = false;
-                        this.cdr.detectChanges();
-                    }, 0))
-                    .catch(() => setTimeout(() => {
-                        this.isLoadingPreview = false;
-                    }, 0));
             });
-        }).catch((error: any) => {
-            if (error.name === 'PasswordException') {
-                // Optionnel : demander le mot de passe dynamiquement
-                const pass = prompt('Ce PDF est protégé. Veuillez saisir le mot de passe :');
-                if (pass) {
-                    this.renderPdfWithPassword(url, pass);
-                }
-            } else {
-                console.error('Erreur de chargement du PDF:', error);
+    }
+
+    renderPdfWithPassword(url: string, password: string) {
+        pdfjsLib.getDocument({url, password}).promise
+            .then((pdf: any) => {
+                this.pdfDoc = pdf;
+                this.totalPages = pdf.numPages;
+                this.cdr.detectChanges();
+                this.renderPage(1);
+            })
+            .catch(() => {
+                this.isLoadingPreview = false;
+            });
+    }
+
+    // ── Rendu d'une page à l'échelle et rotation courantes ──────
+    renderPage(pageNum: number) {
+        if (!this.pdfDoc || this.isRenderingPdf) return;
+        this.isRenderingPdf = true;
+        this.currentPage = pageNum;
+        this.currentPageInput = pageNum;
+
+        this.pdfDoc.getPage(pageNum).then((page: any) => {
+            const canvas = document.getElementById('pdf-canvas') as HTMLCanvasElement;
+            if (!canvas) {
+                this.isRenderingPdf = false;
+                return;
             }
+            const ctx = canvas.getContext('2d')!;
+            const viewport = page.getViewport({scale: this.pdfScale, rotation: this.pdfRotation});
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            page.render({canvasContext: ctx, viewport}).promise
+                .then(() => {
+                    this.isRenderingPdf = false;
+                    this.isLoadingPreview = false;
+                    this.cdr.detectChanges();
+                })
+                .catch(() => {
+                    this.isRenderingPdf = false;
+                    this.isLoadingPreview = false;
+                });
         });
     }
 
-// Fonction utilitaire pour retenter avec mot de passe
-    renderPdfWithPassword(url: string, password: string) {
-        pdfjsLib.getDocument({url, password}).promise.then((pdf: any) => {
-            // ... recopier la logique de rendu ici ...
+    // ── Navigation ───────────────────────────────────────────────
+    prevPage() {
+        if (this.currentPage > 1 && !this.isRenderingPdf)
+            this.renderPage(this.currentPage - 1);
+    }
+
+    nextPage() {
+        if (this.currentPage < this.totalPages && !this.isRenderingPdf)
+            this.renderPage(this.currentPage + 1);
+    }
+
+    goToPage() {
+        const p = Math.max(1, Math.min(this.totalPages, this.currentPageInput || 1));
+        this.currentPageInput = p;
+        if (p !== this.currentPage) this.renderPage(p);
+    }
+
+    // ── Zoom ─────────────────────────────────────────────────────
+    zoomInPdf() {
+        if (this.pdfScale >= 3 || this.isRenderingPdf) return;
+        this.pdfScale = parseFloat(Math.min(3, this.pdfScale + 0.25).toFixed(2));
+        this.renderPage(this.currentPage);
+    }
+
+    zoomOutPdf() {
+        if (this.pdfScale <= 0.25 || this.isRenderingPdf) return;
+        this.pdfScale = parseFloat(Math.max(0.25, this.pdfScale - 0.25).toFixed(2));
+        this.renderPage(this.currentPage);
+    }
+
+    resetZoomPdf() {
+        if (this.isRenderingPdf) return;
+        this.pdfScale = 1.0;
+        this.renderPage(this.currentPage);
+    }
+
+    fitWidthPdf() {
+        if (!this.pdfDoc || !this.pdfWrapper || this.isRenderingPdf) return;
+        this.pdfDoc.getPage(this.currentPage).then((page: any) => {
+            const viewport = page.getViewport({scale: 1, rotation: this.pdfRotation});
+            const w = this.pdfWrapper.nativeElement.clientWidth - 32;
+            this.pdfScale = parseFloat((w / viewport.width).toFixed(2));
+            this.renderPage(this.currentPage);
         });
+    }
+
+    // ── Rotation ─────────────────────────────────────────────────
+    rotatePdf(dir: 'left' | 'right') {
+        if (this.isRenderingPdf) return;
+        this.pdfRotation = (this.pdfRotation + (dir === 'right' ? 90 : -90) + 360) % 360;
+        this.renderPage(this.currentPage);
+    }
+
+    // ── Actions fichier ──────────────────────────────────────────
+    downloadCurrentPdf() {
+        if (!this.selectedFile?.url_file) return;
+        const a = document.createElement('a');
+        a.href = this.selectedFile.url_file;
+        a.download = `${this.selectedFile.name}.${this.selectedFile.extension}`;
+        a.target = '_blank';
+        a.click();
+    }
+
+    openPdfNewTab() {
+        if (this.selectedFile?.url_file) window.open(this.selectedFile.url_file, '_blank');
+    }
+
+    // ── Zoom Office ───────────────────────────────────────────────
+    officeZoomIn(): void {
+        if (this.officeZoom < 2) this.officeZoom = parseFloat(Math.min(2, this.officeZoom + 0.25).toFixed(2));
+    }
+
+    officeZoomOut(): void {
+        if (this.officeZoom > 0.5) this.officeZoom = parseFloat(Math.max(0.5, this.officeZoom - 0.25).toFixed(2));
+    }
+
+    officeZoomReset(): void {
+        this.officeZoom = 1.0;
+    }
+
+    openFileNewTab(): void {
+        if (this.selectedFile?.url_file) window.open(this.selectedFile.url_file, '_blank');
+    }
+
+    downloadSelectedFile(): void {
+        if (!this.selectedFile?.url_file) return;
+        const a = document.createElement('a');
+        a.href = this.selectedFile.url_file;
+        a.download = `${this.selectedFile.name}.${this.selectedFile.extension}`;
+        a.target = '_blank';
+        a.click();
+    }
+
+    // ── Zoom / Rotation Image ─────────────────────────────────────
+    imageZoomIn(): void {
+        if (this.imageZoom < 4) this.imageZoom = parseFloat(Math.min(4, this.imageZoom + 0.25).toFixed(2));
+    }
+
+    imageZoomOut(): void {
+        if (this.imageZoom > 0.25) this.imageZoom = parseFloat(Math.max(0.25, this.imageZoom - 0.25).toFixed(2));
+    }
+
+    imageZoomReset(): void {
+        this.imageZoom = 1.0;
+        this.imageRotation = 0;
+    }
+
+    imageRotateLeft(): void {
+        this.imageRotation = (this.imageRotation - 90 + 360) % 360;
+    }
+
+    imageRotateRight(): void {
+        this.imageRotation = (this.imageRotation + 90) % 360;
     }
 
     renderImage(url: string) {
@@ -904,23 +1210,24 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
     // }
 
 
-    showTypeDoc(idsociete: string = '', idtypedocuments: string = '') {
+    showTypeDoc(idsociete: string = '', idtype_document: string = '', idcategories: string = '') {
+        this.dataTypeDocument = [];
         this.dataTypeDocument = [];
         this.loadingType = true;
-        this.httService.getData(`${environment.api_url}api/:savetypedocuments?idsociete=${idsociete}`, false, this.users?.access_token || '')
+        this.httService.getData(`${environment.api_url}api/:categories-type-documents?idsociete=${idsociete}&idtype_document=${idtype_document}&idcategories=${idcategories}`, false, this.users?.access_token || '')
+            // this.httService.getData(`${environment.api_url}api/:savetypedocuments?idsociete=${idsociete}`, false, this.users?.access_token || '')
             .toPromise()
             .then((res: any) => {
-                console.log("Type doc ====", res.body)
                 this.loadingType = false;
                 if (res.body.status) {
-                    this.dataTypeDocument = res.body.data.map((d: any) => {
+                    this.dataTypeDocument = res.body.data[0].children.map((d: any) => {
                         return {
-                            ...d,
-                            label: d.libelle_type_docs,
-                            value: d.uid
+                            ...d.datastype_document,
+                            label: d.datastype_document.libelle_type_docs,
+                            value: d.datastype_document.uid
                         }
                     });
-                    console.log(res.body.data)
+                    console.log(" this.dataTypeDocumen====", this.dataTypeDocument)
                 }
             })
             .catch((err) => {
@@ -1078,9 +1385,13 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
 
     private resetTree(): void {
         this.treeData = [];
+        this.cleanTreeData = [];
         this.dataSource.setData([]);
         this.selectedFile = null;
         this.isLoadingPreview = false;
+        this.fileAssignments.clear();
+        this.draggedFileNode = null;
+        this.dropTargetKey = null;
     }
 
     showCatOrder(idsociete: string = '', idtype_document: string = '', idcategories: string = '') {
@@ -1099,7 +1410,7 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
         }
 
         this.resetTree();
-
+        this.idcategorie = '';
         const url = `${environment.api_url}api/save-categorie-plan-classement?${params.toString()}`;
         this.httService.getData(url, false, this.users?.access_token || '')
             .toPromise()
@@ -1111,10 +1422,10 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
                         this.resetTree();
                         return;
                     }
+                    this.idcategorie = mapped[0].key;
+                    this.cleanTreeData = JSON.parse(JSON.stringify(mapped));
                     this.treeData = mapped;
-                    this.injectFilesIntoLastNode();
-                    this.dataSource.setData([...this.treeData]);
-                    setTimeout(() => this.treeControl.expandAll(), 300);
+                    this.rebuildTreeWithFiles();
                     console.log("dataSource ===", this.dataSource)
                 } else {
                     this.resetTree();
@@ -1192,13 +1503,33 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
     };
 
     generateDocumentNumber(): void {
-        const now = new Date();
-        const pad = (n: number) => n.toString().padStart(2, '0');
-        const datePart = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}`;
-        const randPart = Math.random().toString(36).substring(2, 7).toUpperCase();
-        const code = `DOC-${datePart}-${randPart}`;
-        this.validationForm.get('code_docs')?.setValue(code);
-        this.validationForm.get('code_docs')?.markAsTouched();
+        if (this.isGeneratingCode) return;
+        if (!this.validationForm.value.idtype_docs) {
+            Swal.fire({
+                title: `Veuillez selectionner le type de document svp.`,
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+
+        this.isGeneratingCode = true;
+        this.validationForm.get('code_docs')?.disable();
+
+        this.httService.getData(`${environment.api_url}api/:generate-code-documents?useruid=${this.users?.uid}&idtype_docs=${this.validationForm.value.idtype_docs}`, false, this.users?.access_token || '')
+            .toPromise()
+            .then((res: any) => {
+                if (res.body.status || res.body.success) {
+                    this.validationForm.get('code_docs')?.setValue(res.body.numero);
+                    this.validationForm.get('code_docs')?.markAsTouched();
+                }
+            })
+            .catch(() => {
+            })
+            .finally(() => {
+                this.isGeneratingCode = false;
+                this.validationForm.get('code_docs')?.enable();
+            });
     }
 
     showSites(idsociete: string = '', idsite: string = '') {
@@ -1269,5 +1600,32 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
             .catch((err) => {
                 this.loadingBoite = false;
             });
+    }
+
+    showSerie(idsociete: string = '', idtype_document: string = '', idcategories: string = '') {
+        this.isloadSerie = true;
+        this.dataSeries = [];
+        this.httService.getData(`${environment.api_url}api/:save-categorie-plan-classement?idsociete=${idsociete}&idtype_document=${idtype_document}&idcategories=${idcategories}`, false, this.users?.access_token || '')
+            .toPromise()
+            .then((res: any) => {
+                this.isloadSerie = false;
+                if (res.body.status || res.body.success) {
+                    this.dataSeries = res.body.data.map((e: any) => {
+                        return {
+                            label: `${e.code_categories || ''} ${e.code_categories ? '-' : ''} ${e?.name_categories}`,
+                            value: e.uid
+                        }
+                    });
+                }
+            })
+            .catch((err) => {
+                this.isloadSerie = false;
+            });
+    }
+
+    selectSerie(e: any) {
+        console.log(e)
+        if (!e.value) return;
+        this.showTypeDoc('', '', e.value)
     }
 }

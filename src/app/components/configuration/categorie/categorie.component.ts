@@ -71,6 +71,8 @@ export class CategorieComponent implements OnInit {
     private transformer = (node: TreeNode, level: number): FlatNode => ({
         expandable: !!node.children && node.children.length > 0,
         name: node.name,
+        name_categories: node.name_categories,
+        code_categories: node.code_categories,
         actif: node.actif ?? true,
         position: node.position,
         key: node.key,
@@ -115,7 +117,7 @@ export class CategorieComponent implements OnInit {
     ngOnInit(): void {
         window.scrollTo({top: 0, behavior: 'smooth'});
         this.users = this.autor.getInfosUsers();
-        this.showCategorieClassement('','','');
+        this.showCategorieClassement('', '', '');
     }
 
     showCategorieClassement(idsociete: string = '', idtype_document: string = '', idcategories: string = '') {
@@ -229,10 +231,16 @@ export class CategorieComponent implements OnInit {
                 .toPromise()
                 .then((res: any) => {
                     if (res.body.status || res.body.success) {
-                        this.showCategorieClassement('','','');
+                        this.showCategorieClassement('', '', '');
                         Swal.fire({
                             title: res?.body?.message,
                             icon: 'success',
+                            confirmButtonText: 'OK'
+                        })
+                    } else {
+                        Swal.fire({
+                            title: res?.body?.message,
+                            icon: 'error',
                             confirmButtonText: 'OK'
                         })
                     }
@@ -251,7 +259,7 @@ export class CategorieComponent implements OnInit {
 
     handleModal(value: boolean) {
         if (value) {
-            this.showCategorieClassement('','','');
+            this.showCategorieClassement('', '', '');
         }
         this.modalOpen = false;
     }
@@ -263,16 +271,18 @@ export class CategorieComponent implements OnInit {
 
     mapApiToTree(data: any[]): TreeNode[] {
         return data.map(item => ({
-            name: item?.name_categories,
+            name: `${item.code_categories || ''} ${item.code_categories ? '-' : ''} ${item?.name_categories}`,
             key: item?.uid,
+            name_categories: item?.name_categories,
+            code_categories: item?.code_categories,
             id: item?.id,
             position: item?.lft,
             actif: true,
             apiLevel: item?.level,
             disabled: false,
-            children: item.children?.length > 0
-                ? this.mapApiToTree(item.children)
-                : undefined
+            // children: item.children?.length > 0
+            //     ? this.mapApiToTree(item.children)
+            //     : undefined
         }));
     }
 

@@ -54,7 +54,7 @@ export class TypeDocModalComponent {
     public activeTab: number = 1;
     errorTexte: string = '';
     isLoad: boolean = false;
-    dataOrg: any=[];
+    dataOrg: any = [];
 
     @HostListener('document:keydown.escape', ['$event'])
     handleEscKey() {
@@ -173,8 +173,13 @@ export class TypeDocModalComponent {
             .then((res: any) => {
                 this.isload = false;
                 if (res.body.status || res.body.success) {
+                    console.log("Liste des series ===", res.body.data)
                     this.dataSource = res.body.data.map((e: any) => {
-                        return this.formatNode(e);
+                        return {
+                            label: `${e.code_categories || ''} ${e.code_categories ? '-' : ''} ${e?.name_categories}`,
+                            value: e.uid
+                        }
+                        //return this.formatNode(e);
                     });
                 }
             })

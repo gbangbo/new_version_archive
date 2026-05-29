@@ -1,5 +1,7 @@
 export interface TreeNode {
     name: string;
+    name_categories: string;
+    code_categories: string;
     key: string;
     disabled?: boolean;
     id: number;
@@ -14,6 +16,8 @@ export interface TreeNode {
 export interface FlatNode {
     expandable: boolean;
     name: string;
+    name_categories: string;
+    code_categories: string;
     id: number;
     actif: boolean;
     key: string;

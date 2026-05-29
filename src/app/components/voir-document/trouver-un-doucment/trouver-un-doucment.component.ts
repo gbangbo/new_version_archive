@@ -1,6 +1,6 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {RouterModule} from '@angular/router';
+import {Router, RouterModule} from '@angular/router';
 import {FormsModule} from '@angular/forms';
 import {NzSelectModule} from 'ng-zorro-antd/select';
 import {NzDatePickerModule} from 'ng-zorro-antd/date-picker';
@@ -10,12 +10,17 @@ import {Authorization} from '../../../protect/authorization.service';
 import {HttpService} from '../../../core/http.service';
 import {environment} from '../../../../environments/environment';
 import moment from "moment";
+import {NzDropDownModule} from "ng-zorro-antd/dropdown";
+import {cryptSession, decode64} from "../../../config/config";
 
 const SEARCH_STORAGE_KEY = 'trouver_document_last_search';
 
 @Component({
     selector: 'app-trouver-un-doucment',
-    imports: [CommonModule, RouterModule, FormsModule, NzSelectModule, NzDatePickerModule, NzTagModule, NzIconModule],
+    imports: [CommonModule, RouterModule,
+        FormsModule, NzSelectModule,
+        NzDatePickerModule, NzTagModule,
+        NzIconModule, NzDropDownModule,],
     templateUrl: './trouver-un-doucment.component.html',
     styleUrl: './trouver-un-doucment.component.scss',
 })
@@ -64,7 +69,7 @@ export class TrouverUnDoucmentComponent implements OnInit, OnDestroy {
     dataService: any[] = [];
     dataPriorite: any[] = [];
 
-    constructor(private autor: Authorization, private httService: HttpService) {
+    constructor(private autor: Authorization, private httService: HttpService, private router: Router) {
     }
 
     ngOnInit(): void {
@@ -297,5 +302,12 @@ export class TrouverUnDoucmentComponent implements OnInit, OnDestroy {
     getTypeBadgeColor(index: number): string {
         const colors = ['blue', 'purple', 'cyan', 'geekblue', 'volcano', 'orange'];
         return colors[index % colors.length];
+    }
+
+    navToview(doc: any) {
+        console.log(doc)
+        const mapSessionTemp = cryptSession(JSON.stringify(doc), decode64(environment.CONFIG.APP_PASS));
+        localStorage.setItem(`_eye_`, mapSessionTemp);
+        this.router.navigate(['/recherche/previsualisation'])
     }
 }

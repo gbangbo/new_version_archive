@@ -41,7 +41,7 @@ const TREE_DATA: TreeNode[] = [];
         FeatherIconComponent,
         NzTreeViewModule,
         NzSplitterModule,
-        AddModalComponent, ExporteModelComponent,TreeStructureSitemapComponent
+        AddModalComponent, ExporteModelComponent, TreeStructureSitemapComponent
     ],
     templateUrl: './plan-de-classement.component.html',
     styleUrl: './plan-de-classement.component.scss',
@@ -78,6 +78,8 @@ export class PlanDeClassementComponent implements OnInit {
         libelle_type_docs: node.libelle_type_docs,
         code_type_docs: node.code_type_docs,
         uid_type_docs: node.uid_type_docs,
+        type_document_id: node.type_document_id,
+        idtype_document: node.idtype_document,
         color: node.color,
         actif: node.actif,
         position: node.position,
@@ -124,7 +126,7 @@ export class PlanDeClassementComponent implements OnInit {
     ngOnInit(): void {
         window.scrollTo({top: 0, behavior: 'smooth'});
         this.users = this.autor.getInfosUsers();
-        this.showCatOrder(this.users?.datasociete?.uid, '');
+        this.showCatOrder('', '');
     }
 
     showCatOrder(idsociete: string = '', idtype_document: string = '', idcategories: string = '') {
@@ -136,7 +138,7 @@ export class PlanDeClassementComponent implements OnInit {
                 this.isloading = false;
 
                 if (res.body.status || res.body.success) {
-                    this.dataBenef = res.body.data.map((e: any) => {
+                    this.dataBenef = res.body.data.filter((d: any) => d.children.length).map((e: any) => {
                         return {
                             ...e,
                             auth: `${e.actif ? 'Activée' : 'Non activée'}`,
@@ -162,12 +164,17 @@ export class PlanDeClassementComponent implements OnInit {
 
     openModal(e?: any, sens?: string) {
         let parent: any = this.findParent(this.treeData, e.id);
+
+        console.log("parent ====", parent)
         this.modalOpen = true;
         this.dataLigne = {
             ...e,
             sens: sens,
-            parent: sens == 'a' ? e.key :  (parent?.key||'')
+            uid_type_docs: e.key,
+            parent: sens == 'a' ? e.key : (parent?.key || '')
         };
+
+        console.log(" this.dataLigne ===", this.dataLigne)
     }
 
     async enableOrDesable(e?: any) {
@@ -236,7 +243,7 @@ export class PlanDeClassementComponent implements OnInit {
                 .toPromise()
                 .then((res: any) => {
                     if (res.body.status || res.body.success) {
-                        this.showCatOrder(this.users?.datasociete?.uid, '');
+                        this.showCatOrder('', '');
                         Swal.fire({
                             title: res?.body?.message,
                             icon: 'success',
@@ -314,7 +321,7 @@ export class PlanDeClassementComponent implements OnInit {
                 .toPromise()
                 .then((res: any) => {
                     if (res.body.status || res.body.success) {
-                        this.showCatOrder(this.users?.datasociete?.uid, '');
+                        this.showCatOrder('', '');
                         Swal.fire({
                             title: res?.body?.message,
                             icon: 'success',
@@ -331,7 +338,7 @@ export class PlanDeClassementComponent implements OnInit {
 
     handleModal(value: boolean) {
         if (value) {
-            this.showCatOrder(this.users?.datasociete?.uid, '');
+            this.showCatOrder('', '');
         }
         this.modalOpen = false;
     }
@@ -347,6 +354,7 @@ export class PlanDeClassementComponent implements OnInit {
             key: item?.uid,                // ← identifiant unique
             id: item?.id,
             position: item?.position,
+            uidtype_doc: item?.type_document_id ? item.uid : '',
             actif: item?.actif,
             apiLevel: item?.level,
             auth: `${item?.actif ? 'Actif' : 'Inactif'}`,
@@ -394,6 +402,7 @@ export class PlanDeClassementComponent implements OnInit {
             name_categories: node.name,
             code_type_docs: node.code_type_docs,
             libelle_type_docs: node.libelle_type_docs,
+            type_document_id: node.type_document_id,
             position: node.position,
             actif: node.actif,
             color: node.color,

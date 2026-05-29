@@ -1,7 +1,7 @@
 import * as cryptojs from "crypto-js";
 
 export const environment = {
-    production: false,
+    production: true,
     key: cryptojs.enc.Utf8.parse('1234567890123456'),
     iv: cryptojs.enc.Utf8.parse('1234567890123456'),
     // api_url: 'http://localhost:3500/parseur-awp/:',

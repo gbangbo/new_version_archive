@@ -385,7 +385,7 @@ export const menuItems: Menu[] =
             children: [
                 {
                     path: '/records-management/categorie',
-                    title: 'Catégorie',
+                    title: 'Série',
                     type: 'link'
                 },
                 {

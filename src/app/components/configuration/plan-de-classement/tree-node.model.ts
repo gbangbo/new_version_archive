@@ -8,8 +8,9 @@ export interface TreeNode {
     actif: boolean;
     apiLevel?: number;
     libelle_type_docs: string;
+    type_document_id?: string;
+    idtype_document?: string;
     code_type_docs: string;
-    idtype_document?: number;
     uid_type_docs: string;
     color?: string;
     auth?: string;
@@ -20,6 +21,8 @@ export interface FlatNode {
     expandable: boolean;
     name: string;
     libelle_type_docs: string;
+    type_document_id?: string;
+    idtype_document?: string;
     code_type_docs: string;
     uid_type_docs: string;
     id: number;
