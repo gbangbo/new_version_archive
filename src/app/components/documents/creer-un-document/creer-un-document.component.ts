@@ -689,8 +689,6 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
     async deleteFile(node: any, event: Event) {
         event.stopPropagation();
 
-        console.log("to delete ::::", node)
-
         const result = await Swal.fire({
             html: `
               <div style="margin-top: 8px;">
@@ -1336,6 +1334,8 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
                     };
                 }),
             "dataservices": this.setTranformer(this.validationForm.value.dataservices),
+            "dataproprietaire": [],
+            "region_dep_localite": "",
             "statut_docs": 0,
             "publishe": true,
             "fulltexts_docs": "",

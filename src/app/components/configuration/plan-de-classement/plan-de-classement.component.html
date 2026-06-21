@@ -67,6 +67,13 @@
                                 <!-- ══ TREE TABLE ════════════════════════════════ -->
                                 <div class="tree-table-wrap">
 
+                                    <div class="alert txt-primary alert-bg-primary alert-dismissible fade show common-alert" role="alert" *ngIf="treeControl.dataNodes?.length">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-info"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                                        <p>
+                                            <strong>Plan de classement :</strong> déroulez à l’aide de la flèche pour ajouter des dossiers.
+                                        </p>
+                                        <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
                                     <!-- Header colonnes -->
                                     <div class="tree-table-header">
 <!--                                        <div class="ttc-toggle"></div>-->
@@ -113,26 +120,19 @@
                                                         <nz-tag *ngIf="node.level === 0" [nzColor]="node.color">{{ node.auth }}</nz-tag>
                                                     </div>
                                                     <div class="ttc-actions">
-                                                        <button class="btn-round-edit tt-action-btn mr-2"
+                                                        <button *ngIf="node.level > 0" class="btn-round-edit tt-action-btn mr-2"
                                                                 nz-tooltip nzTooltipTitle="Ajouter un sous-dossier"
                                                                 nzTooltipPlacement="top"
                                                                 (click)="openModal(node,'a'); $event.stopPropagation()">
                                                             <app-feather-icon class="icon-small" [icon]="'plus'"></app-feather-icon>
                                                         </button>
-                                                        <button class="btn-round-edit tt-action-btn mr-2"
+                                                        <button *ngIf="node.level > 0" class="btn-round-edit tt-action-btn mr-2"
                                                                 nz-tooltip nzTooltipTitle="Modifier le sous-dossier"
                                                                 nzTooltipPlacement="top"
                                                                 (click)="openModal(node,'m'); $event.stopPropagation()">
                                                             <app-feather-icon class="icon-small" [icon]="'edit-3'"></app-feather-icon>
                                                         </button>
-                                                        <button *ngIf="node.level === 0" class="btn-round-edit tt-action-btn mr-2"
-                                                                nz-tooltip
-                                                                [nzTooltipTitle]="node.actif ? 'Desactiver le dossier' : 'Activer le dossier'"
-                                                                nzTooltipPlacement="top"
-                                                                (click)="enableOrDesable(node); $event.stopPropagation()">
-                                                            <app-feather-icon class="icon-small" [icon]="'x'"></app-feather-icon>
-                                                        </button>
-                                                        <button *ngIf="node.level != 0" class="btn-round-edit tt-action-btn"
+                                                        <button *ngIf="node.level > 0" class="btn-round-edit tt-action-btn"
                                                                 nz-tooltip nzTooltipTitle="Supprimer le dossier"
                                                                 nzTooltipPlacement="top"
                                                                 (click)="deleteFolder(node); $event.stopPropagation()">
@@ -162,41 +162,34 @@
 <!--                                                        </span>-->
                                                         <span class="tt-name-text tt-parent"
                                                               (click)="onNodeSelect(node); $event.stopPropagation()"
-                                                              [innerHTML]="highlightMatch(node.name, searchValue)">
+                                                              [innerHTML]="highlightMatch(node.code_categories+' - '+node.name, searchValue)">
                                                         </span>
                                                     </div>
 
-                                                    <div class="ttc-email">{{ node.level === 0 ? (node.code_type_docs || '—') : '' }}</div>
-                                                    <div class="ttc-phone">{{ node.level === 0 ? (node.libelle_type_docs || '—') : '' }}</div>
+                                                    <div class="ttc-email">{{ (node.code_type_docs || '—')  }}</div>
+                                                    <div class="ttc-phone">{{  (node.libelle_type_docs || '—')  }}</div>
                                                     <div class="ttc-auth">
                                                         <nz-tag *ngIf="node.level === 0" [nzColor]="node.color">{{ node.auth }}</nz-tag>
                                                     </div>
                                                     <div class="ttc-actions">
-<!--                                                        <button class="btn-round-edit tt-action-btn mr-2"-->
-<!--                                                                nz-tooltip nzTooltipTitle="Ajouter un sous-dossier"-->
-<!--                                                                nzTooltipPlacement="top"-->
-<!--                                                                (click)="openModal(node,'a'); $event.stopPropagation()">-->
-<!--                                                            <app-feather-icon class="icon-small" [icon]="'plus'"></app-feather-icon>-->
-<!--                                                        </button>-->
-<!--                                                        <button class="btn-round-edit tt-action-btn mr-2"-->
-<!--                                                                nz-tooltip nzTooltipTitle="Modifier le sous-dossier"-->
-<!--                                                                nzTooltipPlacement="top"-->
-<!--                                                                (click)="openModal(node,'m'); $event.stopPropagation()">-->
-<!--                                                            <app-feather-icon class="icon-small" [icon]="'edit-3'"></app-feather-icon>-->
-<!--                                                        </button>-->
-<!--                                                        <button  *ngIf="node.level === 0" class="btn-round-edit tt-action-btn mr-2"-->
-<!--                                                                nz-tooltip-->
-<!--                                                                [nzTooltipTitle]="node.actif ? 'Desactiver le dossier' : 'Activer le dossier'"-->
-<!--                                                                nzTooltipPlacement="top"-->
-<!--                                                                (click)="enableOrDesable(node); $event.stopPropagation()">-->
-<!--                                                            <app-feather-icon class="icon-small" [icon]="'x'"></app-feather-icon>-->
-<!--                                                        </button>-->
-<!--                                                        <button *ngIf="node.level != 0" class="btn-round-edit tt-action-btn"-->
-<!--                                                                nz-tooltip nzTooltipTitle="Supprimer le dossier"-->
-<!--                                                                nzTooltipPlacement="top"-->
-<!--                                                                (click)="deleteFolder(node); $event.stopPropagation()">-->
-<!--                                                            <i data-feather="trash-2"></i>-->
-<!--                                                        </button>-->
+                                                        <button *ngIf="node.level > 0" class="btn-round-edit tt-action-btn mr-2"
+                                                                nz-tooltip nzTooltipTitle="Ajouter un sous-dossier"
+                                                                nzTooltipPlacement="top"
+                                                                (click)="openModal(node,'a'); $event.stopPropagation()">
+                                                            <app-feather-icon class="icon-small" [icon]="'plus'"></app-feather-icon>
+                                                        </button>
+                                                        <button *ngIf="node.level > 0" class="btn-round-edit tt-action-btn mr-2"
+                                                                nz-tooltip nzTooltipTitle="Modifier le sous-dossier"
+                                                                nzTooltipPlacement="top"
+                                                                (click)="openModal(node,'m'); $event.stopPropagation()">
+                                                            <app-feather-icon class="icon-small" [icon]="'edit-3'"></app-feather-icon>
+                                                        </button>
+                                                        <button *ngIf="node.level > 0" class="btn-round-edit tt-action-btn"
+                                                                nz-tooltip nzTooltipTitle="Supprimer le dossier"
+                                                                nzTooltipPlacement="top"
+                                                                (click)="deleteFolder(node); $event.stopPropagation()">
+                                                            <i data-feather="trash-2"></i>
+                                                        </button>
                                                     </div>
                                                 </div>
                                             </nz-tree-node>

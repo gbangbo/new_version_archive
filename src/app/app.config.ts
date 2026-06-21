@@ -25,12 +25,15 @@ import {
     FilePdfTwoTone,
     FileImageTwoTone,
     FileWordTwoTone,
+    FileExcelTwoTone,
+    FilePptTwoTone,
+    FileOutline,
     SearchOutline,
     CloseOutline,
     FileSearchOutline,
     FileUnknownOutline, DownloadOutline,
     FolderTwoTone,
-    LoadingOutline, MinusOutline, FolderOpenTwoTone
+    LoadingOutline, MinusOutline, FolderOpenTwoTone,CaretRightOutline
 } from '@ant-design/icons-angular/icons';
 import localeFr from "@angular/common/locales/fr";
 
@@ -68,6 +71,9 @@ export const appConfig: ApplicationConfig = {
             FileImageTwoTone,
             FileWordTwoTone,
             FilePdfTwoTone,
+            FileExcelTwoTone,
+            FilePptTwoTone,
+            FileOutline,
             SearchOutline,
             CloseOutline,
             FileUnknownOutline,
@@ -76,7 +82,8 @@ export const appConfig: ApplicationConfig = {
             FileSearchOutline,
             LoadingOutline,
             FolderOpenTwoTone,
-            MinusOutline
+            MinusOutline,
+            CaretRightOutline
         ]),
         provideAnimations(),
         provideToastr(),

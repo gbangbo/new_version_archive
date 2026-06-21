@@ -72,20 +72,37 @@
                     </button>
                 </div>
                 <div class="sidebar-card-body">
-
+                    <!-- Type de document -->
+                    <div class="filter-field mt-3 mb-3">
+                        <label class="filter-label">
+                            Critére de recherche
+                        </label>
+                        <nz-select
+                                [(ngModel)]="idCritere"
+                                nzPlaceHolder="Choix de critère"
+                                nzAllowClear
+                                [nzShowSearch]="true"
+                                class="filter-select">
+                            <nz-option *ngFor="let t of dataCritere"
+                                       [nzValue]="t.index"
+                                       [nzLabel]="t.libelle">
+                            </nz-option>
+                        </nz-select>
+                    </div>
+                    @if(idCritere===1){
                     <!-- Référence -->
                     <div class="filter-field">
                         <label class="filter-label">
-                            <i class="fa-solid fa-hashtag"></i> Référence
+                            Numéro du document
                         </label>
                         <input type="text" class="filter-input" placeholder="Ex : DOC-2025-001"
                                [(ngModel)]="advSearch.reference">
                     </div>
-
+                    }@else if(idCritere===2){
                     <!-- Type de document -->
                     <div class="filter-field">
                         <label class="filter-label">
-                            <i class="fa-regular fa-file"></i> Type de document
+                            Type de document
                         </label>
                         <nz-select
                             [(ngModel)]="advSearch.idtype_document"
@@ -102,7 +119,7 @@
                     <!-- Service -->
                     <div class="filter-field">
                         <label class="filter-label">
-                            <i class="fa-solid fa-building"></i> Service
+                            Service
                         </label>
                         <nz-select
                             [(ngModel)]="advSearch.idservice"
@@ -116,7 +133,7 @@
                             </nz-option>
                         </nz-select>
                     </div>
-
+                    }@else if(idCritere===3){
                     <!-- Période -->
                     <div class="filter-field">
                         <label class="filter-label">
@@ -138,7 +155,7 @@
                             </nz-date-picker>
                         </div>
                     </div>
-
+                    }@else if(idCritere===4){
                     <!-- Priorité -->
                     <div class="filter-field">
                         <label class="filter-label">
@@ -155,9 +172,10 @@
                             </nz-option>
                         </nz-select>
                     </div>
+                    }
 
                     <!-- Actions -->
-                    <div class="filter-actions">
+                    <div class="filter-actions mt-10">
                         <button class="btn-reset" (click)="resetAdvanced()">
                             <i class="fa-solid fa-rotate-left"></i>
                             Réinitialiser
@@ -298,7 +316,7 @@
                                         <i class="fa-solid fa-recycle mr-2"></i>
                                         <span>Ajouter dans un workflow</span>
                                     </li>
-                                    <li nz-menu-item>
+                                    <li nz-menu-item  (click)="navToDoc(doc,'rang')">
                                         <i class="fa-regular fa-folder-open mr-2"></i>
                                         <span>Classer les fichiers</span>
                                     </li>

@@ -2,6 +2,60 @@
 
 @use "../public/assets/scss/app.scss";
 
+/* ══ LOADER PLEIN ÉCRAN GLOBAL (attaché au body via Renderer2) ══ */
+@keyframes g-loader-spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes g-loader-fadein {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes g-loader-slideup {
+  from { transform: translateY(16px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+.td-fullscreen-loader {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 2147483647 !important;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: g-loader-fadein 0.18s ease;
+}
+
+.td-loader-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  background: #fff;
+  border-radius: 16px;
+  padding: 36px 48px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+  animation: g-loader-slideup 0.2s ease;
+}
+
+.td-loader-spinner {
+  width: 52px;
+  height: 52px;
+  border: 4px solid #E2E8F0;
+  border-top-color: rgba(0, 54, 110, 1);
+  border-radius: 50%;
+  animation: g-loader-spin 0.75s linear infinite;
+}
+
+.td-loader-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(0, 54, 110, 1);
+  margin: 0;
+  letter-spacing: 0.02em;
+}
+
 /* Importez une de ces polices dans votre fichier CSS principal ou dans index.html */
 
 /* 1. Quicksand - Très similaire, arrondie et élégante */

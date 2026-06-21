@@ -23,7 +23,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 12px 16px;
+  padding: 10px 12px;
   font-weight: 600;
   font-size: 13px;
   color: #374151;
@@ -31,10 +31,70 @@
   background: #f9fafb;
   flex-shrink: 0;
 
-  i {
-    color: #f59e0b;
-    font-size: 15px;
+  i { color: #f59e0b; font-size: 15px; }
+}
+
+.th-back-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  color: #475569;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 11px;
+  flex-shrink: 0;
+  transition: background 0.15s, color 0.15s;
+
+  &:hover {
+    background: #f1f5f9;
+    color: #0f172a;
   }
+}
+
+/* ─── Barre titre document (panneau droit) ─── */
+.doc-title-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 16px;
+  height: 36px;
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.doc-title-type {
+  font-size: 11px;
+  font-weight: 600;
+  color: #0054b4;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.doc-title-sep {
+  color: #cbd5e1;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.doc-title-icon {
+  font-size: 12px;
+  color: #94a3b8;
+  flex-shrink: 0;
+}
+
+.doc-title-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1e293b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* ─── Barre de recherche ─── */
@@ -143,125 +203,10 @@ nz-tree-view {
 }
 
 // ═══════════════════════════════════════
-// TRAITS VERTICAUX — BLOC UNIQUE
+// ÉTATS SÉLECTION / HOVER
 // ═══════════════════════════════════════
 ::ng-deep nz-tree-view {
 
-  // Supprime natif
-  .ant-tree-switcher-leaf-line,
-  .ant-tree-switcher-leaf-line::before,
-  .ant-tree-switcher-leaf-line::after {
-    display: none !important;
-    border: none !important;
-    background: none !important;
-  }
-
-  .ant-tree-show-line .ant-tree-switcher {
-    background: transparent !important;
-  }
-
-  // Chaque ligne
-  .ant-tree-treenode {
-    display: flex !important;
-    align-items: center !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    min-height: 28px;
-    position: relative;
-  }
-
-  .ant-tree-list-holder-inner {
-    gap: 0 !important;
-  }
-
-  .ant-tree-indent {
-    display: flex !important;
-    align-self: stretch !important;
-    overflow: visible !important;
-  }
-
-  // Reset global des unités
-  .ant-tree-indent-unit {
-    position: relative !important;
-    width: 20px !important;
-    align-self: stretch !important;
-    flex-shrink: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    overflow: visible !important;
-
-    // Reset natif
-    &::before {
-      display: none !important;
-    }
-
-    &::after {
-      display: none !important;
-    }
-  }
-
-  // ── Trait vertical via border-left ──────────────────
-  // Sur toutes les unités sauf end = trait complet
-  .ant-tree-indent-unit:not(.ant-tree-indent-unit-end) {
-    border-left: 1px solid #c8cdd5 !important;
-    margin-left: 10px !important;
-    width: 10px !important;
-
-    // Trait horizontal
-    &::after {
-      display: none !important;
-    }
-  }
-
-  // Sur end = trait jusqu'au milieu seulement
-  .ant-tree-indent-unit-end {
-    position: relative !important;
-    border-left: none !important;
-
-    &::before {
-      display: block !important;
-      content: '' !important;
-      position: absolute !important;
-      top: 0 !important;
-      bottom: 50% !important;
-      left: 10px !important;
-      width: 1px !important;
-      background: #c8cdd5 !important;
-    }
-  }
-
-  // ── Trait horizontal sur dernière unité ─────────────
-  .ant-tree-indent-unit:last-child {
-    &::after {
-      display: block !important;
-      content: '' !important;
-      position: absolute !important;
-      top: 50% !important;
-      left: 10px !important;
-      width: 10px !important;
-      height: 1px !important;
-      background: #c8cdd5 !important;
-    }
-  }
-
-  // ── Toggle ──────────────────────────────────────────
-  .ant-tree-switcher {
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    width: 18px !important;
-    flex-shrink: 0 !important;
-    color: #6b7280 !important;
-    background: transparent !important;
-    position: relative !important;
-    z-index: 1 !important;
-
-    &::before, &::after {
-      display: none !important;
-    }
-  }
-
-  // ── Sélectionné ─────────────────────────────────────
   .ant-tree-node-content-wrapper.ant-tree-node-selected {
     background: #fef3c7 !important;
     border-radius: 4px !important;
@@ -276,7 +221,6 @@ nz-tree-view {
     }
   }
 
-  // ── Hover ───────────────────────────────────────────
   .ant-tree-node-content-wrapper:hover {
     background: #f1f5f9 !important;
     border-radius: 4px !important;
@@ -561,10 +505,6 @@ nz-tree-view {
   transition: transform 0.15s ease;
 }
 
-::ng-deep .ant-tree.ant-tree-directory .ant-tree-treenode-selected::before, .ant-tree.ant-tree-directory .ant-tree-treenode-selected:hover::before {
-  background: transparent;
-  border-left-color: var(--active-shadow);
-}
 
 /* ════════════════════════════════════════
    BOUTON TOGGLE ARBRE

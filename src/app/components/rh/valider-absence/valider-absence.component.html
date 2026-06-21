@@ -18,6 +18,7 @@
                                     </p>
                                 </div>
                             </div>
+
                             <div class="table-container" [class.op-loading]="isloading">
                                 <!-- ══ TOOLBAR ══════════════════════════════════ -->
                                 <div class="op-toolbar">
@@ -28,7 +29,7 @@
                                                 <i class="far fa-clipboard"></i>
                                             </div>
                                             <div>
-                                                <span class="op-toolbar-label">LISTE DES AUTORISATIONS D'ABSENCE</span>
+                                                <span class="op-toolbar-label">VALIDATION DES ABSENCES</span>
                                                 <span class="op-toolbar-count">
                                                     {{ filteredData.length || 0 }} enregistrement(s)
                                                 </span>
@@ -36,10 +37,8 @@
                                         </div>
                                     </div>
 
-                                    <!-- Actions droite -->
+                                    <!-- Recherche -->
                                     <div class="op-toolbar-right">
-
-                                        <!-- Recherche -->
                                         <div class="op-search-wrap">
                                             <svg class="op-search-icon" viewBox="0 0 24 24" fill="none"
                                                  stroke="currentColor" stroke-width="2" stroke-linecap="round">
@@ -60,20 +59,10 @@
                                                 </svg>
                                             </button>
                                         </div>
-                                        <!-- Nouvelle dotation -->
-                                        <button class="op-btn op-btn-outline"
-                                                nz-tooltip nzTooltipTitle="Nouvelle autorisation d'absence"
-                                                (click)="openModal()">
-                                            <!--                                            <i class="far fa-edit-3"></i>-->
-                                            <i data-feather="edit-2" style="width: 15px;"></i>
-                                            <!-- Masqué sur très petit écran via CSS -->
-                                            <span class="btn-label">Nouveau</span>
-                                        </button>
                                     </div>
                                 </div>
 
                                 <!-- ══ TABLE ════════════════════════════════════ -->
-
                                 <div class="overflow-x-auto support-ticket-table custom-scrollbar">
                                     <nz-table
                                         #nzTable
@@ -88,7 +77,7 @@
                                     >
                                         <thead>
                                         <tr>
-                                            <th nzWidth="100px"
+                                            <th nzWidth="120px"
                                                 nzColumnKey="lib_agent_absence"
                                                 [nzSortFn]="sortFns.lib_agent_absence"
                                                 [nzSortDirections]="['ascend','descend',null]"
@@ -96,7 +85,7 @@
                                                 [nzFilters]="filters.lib_agent_absence">
                                                 Agent en absence
                                             </th>
-                                            <th nzWidth="100px"
+                                            <th nzWidth="120px"
                                                 nzColumnKey="lib_agent_remplacant"
                                                 [nzSortFn]="sortFns.lib_agent_remplacant"
                                                 [nzSortDirections]="['ascend','descend',null]"
@@ -104,27 +93,24 @@
                                                 [nzFilters]="filters.lib_agent_remplacant">
                                                 Agent remplaçant
                                             </th>
-                                            <th nzWidth="90px"
-                                                nzColumnKey="exo"
+                                            <th nzWidth="100px"
+                                                nzColumnKey="type_absence"
                                                 [nzSortFn]="sortFns.type_absence"
                                                 [nzSortDirections]="['ascend','descend',null]"
                                                 [nzFilterFn]="filterFns.type_absence"
                                                 [nzFilters]="filters.type_absence">
                                                 Type d'absence
                                             </th>
-                                            <th nzWidth="130px"
-                                                nzColumnKey="source_fin">
+                                            <th nzWidth="140px" nzColumnKey="motif_absence">
                                                 Motif
                                             </th>
-                                            <th nzWidth="100px"
-                                                nzColumnKey="source_fin">
+                                            <th nzWidth="110px" nzColumnKey="periode">
                                                 Période
                                             </th>
-                                            <th nzWidth="80px"
-                                                nzColumnKey="source_fin">
-                                                Nbre de jour restant
+                                            <th nzWidth="90px" nzColumnKey="nbreJourRestant" nzAlign="center">
+                                                Durée
                                             </th>
-                                            <th nzWidth="50px" nzColumnKey="action" nzAlign="center">
+                                            <th nzWidth="70px" nzColumnKey="action" nzAlign="center">
                                                 Actions
                                             </th>
                                         </tr>
@@ -156,7 +142,7 @@
 
                                             <!-- Type d'absence -->
                                             <td>
-                                                <span class="op-type-badge">{{ row.type_absence  || '—' }}</span>
+                                                <span class="op-type-badge">{{ row.type_absence || '—' }}</span>
                                             </td>
 
                                             <!-- Motif -->
@@ -173,30 +159,41 @@
                                                 </div>
                                             </td>
 
-                                            <!-- Jours restants -->
+                                            <!-- Durée -->
                                             <td nzAlign="center">
                                                 <nz-tag [nzColor]="row.color">{{ row.nbreJourRestant }}</nz-tag>
                                             </td>
 
-                                            <!-- Actions -->
+                                            <!-- Actions : Valider / Rejeter -->
                                             <td nzAlign="center">
                                                 <div class="op-actions">
                                                     <button class="btn-round-edit"
                                                             nz-tooltip
                                                             [disabled]="row.isEnable"
-                                                            [nzTooltipTitle]="'Modifier l\'absence'"
+                                                            [nzTooltipTitle]="'Valider l\'absence'"
                                                             nzTooltipPlacement="top"
-                                                            (click)="openModal(row)">
-                                                        <app-feather-icon class="icon-small" [icon]="'edit-3'"></app-feather-icon>
+                                                            (click)="valider(row)">
+                                                        <app-feather-icon *ngIf="!row._processing" class="icon-small" [icon]="'check'"></app-feather-icon>
+                                                        <span *ngIf="row._processing" class="btn-spin"></span>
+                                                    </button>
+                                                    <button class="btn-round-edit"
+                                                            nz-tooltip
+                                                            [disabled]="row._processing"
+                                                            [nzTooltipTitle]="'Rejeter l\'absence'"
+                                                            nzTooltipPlacement="top"
+                                                            (click)="rejeter(row)">
+                                                        <app-feather-icon *ngIf="!row._processing" class="icon-small" [icon]="'x'"></app-feather-icon>
+                                                        <span *ngIf="row._processing" class="btn-spin"></span>
                                                     </button>
                                                 </div>
                                             </td>
                                         </tr>
+
                                         <tr *ngIf="!isloading && filteredData?.length === 0">
-                                            <td colspan="9">
+                                            <td colspan="7">
                                                 <div class="op-empty-state">
-                                                    <app-feather-icon  class="icon-inbox" [icon]="'inbox'"></app-feather-icon>
-                                                    <span>Aucun donnée trouvé !</span>
+                                                    <app-feather-icon class="icon-inbox" [icon]="'inbox'"></app-feather-icon>
+                                                    <span>Aucune donnée trouvée !</span>
                                                     <small *ngIf="searchValue">
                                                         Aucun résultat pour « {{ searchValue }} »
                                                     </small>
@@ -206,11 +203,12 @@
                                         </tbody>
                                     </nz-table>
                                 </div>
+
                                 <ng-template #totalTemplate let-total>
                                     Total : <strong>{{ total }}</strong> enregistrement(s)
                                 </ng-template>
-
                             </div>
+
                         </div>
                     </div>
                 </div>
@@ -218,8 +216,4 @@
             </app-card>
         </div>
     </div>
-
-    @if(modalOpen) {
-    <app-add-modal [dataLigne]="dataLigne" (modalOpen)="handleModal($event)"></app-add-modal>
-    }
 </div>

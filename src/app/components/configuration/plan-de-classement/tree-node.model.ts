@@ -10,6 +10,7 @@ export interface TreeNode {
     libelle_type_docs: string;
     type_document_id?: string;
     idtype_document?: string;
+    code_categories?: string;
     code_type_docs: string;
     uid_type_docs: string;
     color?: string;
@@ -22,6 +23,7 @@ export interface FlatNode {
     name: string;
     libelle_type_docs: string;
     type_document_id?: string;
+    code_categories?: string;
     idtype_document?: string;
     code_type_docs: string;
     uid_type_docs: string;

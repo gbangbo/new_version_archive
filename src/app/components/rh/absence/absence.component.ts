@@ -17,7 +17,6 @@ import {AddModalComponent} from "./add-modal/add-modal.component";
 
 interface RowData {
     type_absence: string;
-    lib_type_absence: string;
     periode: string;
     motif_absence: string;
     libcolor: string;
@@ -63,7 +62,7 @@ export class AbsenceComponent implements OnInit {
         created_at: (a: RowData, b: RowData) =>
             (a.type_absence ?? '').localeCompare(b.type_absence ?? ''),
         source_fin: (a: RowData, b: RowData) =>
-            (a.lib_type_absence ?? '').localeCompare(b.lib_type_absence ?? ''),
+            (a.type_absence ?? '').localeCompare(b.type_absence ?? ''),
         periode: (a: RowData, b: RowData) =>
             (a.periode ?? '').localeCompare(b.periode ?? ''),
         motif_absence: (a: RowData, b: RowData) =>
@@ -72,8 +71,8 @@ export class AbsenceComponent implements OnInit {
             (a.lib_agent_absence ?? '').localeCompare(b.lib_agent_absence ?? ''),
         lib_agent_remplacant: (a: RowData, b: RowData) =>
             (a.lib_agent_remplacant ?? '').localeCompare(b.lib_agent_remplacant ?? ''),
-        lib_type_absence: (a: RowData, b: RowData) =>
-            (a.lib_type_absence ?? '').localeCompare(b.lib_type_absence ?? '')
+        type_absence: (a: RowData, b: RowData) =>
+            (a.type_absence ?? '').localeCompare(b.type_absence ?? '')
     };
 
 
@@ -85,21 +84,19 @@ export class AbsenceComponent implements OnInit {
         motif_absence: { text: string; value: string }[];
         lib_agent_absence: { text: string; value: string }[];
         lib_agent_remplacant: { text: string; value: string }[];
-        lib_type_absence: { text: string; value: string }[];
     } = {
         type_absence: [],
         periode: [],
         motif_absence: [],
         lib_agent_absence: [],
         lib_agent_remplacant: [],
-        lib_type_absence: [],
     };
 
     filterFns = {
         // Filtre sur nom_beneficiaire
-        lib_type_absence: (list: string[], item: RowData) =>
+        type_absence: (list: string[], item: RowData) =>
             list.some(val =>
-                (item.lib_type_absence ?? '').toLowerCase().includes(val.toLowerCase())
+                (item.type_absence ?? '').toLowerCase().includes(val.toLowerCase())
             ),
         periode: (list: string[], item: RowData) =>
             list.some(val =>
@@ -152,7 +149,7 @@ export class AbsenceComponent implements OnInit {
             .toPromise()
             .then((res: any) => {
                 this.isloading = false;
-                console.log("res.body directe ===", res.body);
+                console.log("save-autorisation-absence ===", res.body);
                 if (res.body.status) {
 
                     this.dataBenef = res.body.data.map((e: any) => {
@@ -162,7 +159,7 @@ export class AbsenceComponent implements OnInit {
                         const nbreJourRestant = fin.diff(debut, 'days') + 1;
                         return {
                             ...e,
-                            lib_type_absence: e?.datatype_absence?.lib_type_absence,
+                            type_absence: e?.datatype_absence?.type_absence,
                             lib_agent_absence: `${e?.data_agent_absence?.datapersonnel?.nom} ${e?.data_agent_absence?.datapersonnel?.prenom || ''}`,
                             lib_agent_remplacant: `${e?.data_remplacant_absence?.datapersonnel?.nom} ${e?.data_remplacant_absence?.datapersonnel?.prenom || ''}`,
                             date_debut: moment(e?.date_debut).format('DD-MM-YYYY'),
@@ -181,14 +178,6 @@ export class AbsenceComponent implements OnInit {
                                 text: v,
                                 value: v
                             })),
-                        lib_type_absence: [...new Set(
-                            this.dataBenef
-                                ?.filter((e: any) => e?.lib_type_absence)
-                                .map((e: any) => e.lib_type_absence)
-                        )].map((v: any) => ({
-                          text: v,
-                          value: v
-                        })) || [],
                         periode: [...new Set(
                             this.dataBenef
                                 ?.filter((e: any) => e?.periode)
@@ -233,6 +222,14 @@ export class AbsenceComponent implements OnInit {
                 this.isloading = false;
             });
 
+    }
+
+    getInitials(fullName: string): string {
+        if (!fullName?.trim()) return '?';
+        const parts = fullName.trim().split(/\s+/);
+        return parts.length >= 2
+            ? (parts[0][0] + parts[1][0]).toUpperCase()
+            : parts[0][0].toUpperCase();
     }
 
     handleAction(value: any) {

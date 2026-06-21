@@ -7,6 +7,9 @@
         <div class="tree-panel" [class.collapsed]="treeCollapsed">
 
             <div class="tree-header">
+                <button class="th-back-btn" (click)="goBack()" title="Retour">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
                 <i class="fa-regular fa-folder-open"></i>
                 <span>Plan de classement</span>
                 <button class="tree-toggle-btn"
@@ -37,13 +40,11 @@
             </div>
 
             <nz-tree-view *ngIf="!isloading"
-                          class="ant-tree-show-line"
                           [nzTreeControl]="treeControl"
-                          [nzDataSource]="dataSource"
-                          [nzDirectoryTree]="true">
+                          [nzDataSource]="dataSource">
 
                 <!-- Nœud feuille -->
-                <nz-tree-node *nzTreeNodeDef="let node" nzTreeNodeIndentLine>
+                <nz-tree-node *nzTreeNodeDef="let node" nzTreeNodePadding>
                     <nz-tree-node-toggle nzTreeNodeNoopToggle></nz-tree-node-toggle>
                     <nz-tree-node-option
                             [nzDisabled]="node.disabled"
@@ -57,15 +58,17 @@
 
                         <nz-icon *ngIf="node.extension === 'pdf'" nzType="file-pdf"
                                  nzTheme="twotone" [nzTwotoneColor]="'#ff4d4f'" class="node-icon"/>
-                        <nz-icon *ngIf="['jpg','JPG','jpeg','JPEG','png','PNG','gif','webp'].includes(node.extension)"
-                                 nzType="file-image" nzTheme="twotone" [nzTwotoneColor]="'#52c41a'" class="node-icon"/>
+                        <nz-icon *ngIf="['jpg','jpeg','png','gif','webp','svg','bmp'].includes(node.extension)"
+                                 nzType="file-image" nzTheme="twotone" [nzTwotoneColor]="'#722ed1'" class="node-icon"/>
                         <nz-icon *ngIf="['doc','docx'].includes(node.extension)"
                                  nzType="file-word" nzTheme="twotone" [nzTwotoneColor]="'#1890ff'" class="node-icon"/>
                         <nz-icon *ngIf="['xls','xlsx'].includes(node.extension)"
                                  nzType="file-excel" nzTheme="twotone" [nzTwotoneColor]="'#52c41a'" class="node-icon"/>
+                        <nz-icon *ngIf="['ppt','pptx'].includes(node.extension)"
+                                 nzType="file-ppt" nzTheme="twotone" [nzTwotoneColor]="'#fa8c16'" class="node-icon"/>
                         <nz-icon *ngIf="node.extension &&
-                                       !['pdf','jpg','JPG','jpeg','JPEG','png','PNG','gif','webp',
-                                         'doc','docx','xls','xlsx'].includes(node.extension)"
+                                       !['pdf','jpg','jpeg','png','gif','webp','svg','bmp',
+                                         'doc','docx','xls','xlsx','ppt','pptx'].includes(node.extension)"
                                  nzType="file" nzTheme="outline" class="node-icon"/>
 
                         <span class="node-label"
@@ -77,7 +80,7 @@
                 </nz-tree-node>
 
                 <!-- Nœud parent -->
-                <nz-tree-node *nzTreeNodeDef="let node; when: hasChild" nzTreeNodeIndentLine>
+                <nz-tree-node *nzTreeNodeDef="let node; when: hasChild" nzTreeNodePadding>
                     <nz-tree-node-toggle>
                         <nz-icon nzType="caret-down" nzTreeNodeToggleRotateIcon/>
                     </nz-tree-node-toggle>
@@ -103,6 +106,16 @@
     ══════════════════════════════════════════════════ -->
     <ng-template #previewTpl>
         <div class="preview-panel">
+
+            <!-- ── Titre du document ── -->
+            <div class="doc-title-bar">
+                <span class="doc-title-type" *ngIf="sessionData?.datatype_document?.[0]?.libelle_type_docs">
+                    {{ sessionData.datatype_document[0].libelle_type_docs }}
+                </span>
+                <span class="doc-title-sep" *ngIf="sessionData?.datatype_document?.[0]?.libelle_type_docs">·</span>
+                <i class="fa-regular fa-file-lines doc-title-icon"></i>
+                <span class="doc-title-name">{{ sessionData?.lib_docs || 'Document' }}</span>
+            </div>
 
             <!-- ── Barre d'outils ── -->
             <div class="preview-toolbar" *ngIf="selectedFile">

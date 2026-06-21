@@ -1,1 +1,735 @@
-<p>mes-doc works!</p>
+<div class="fm-shell">
+
+    <!-- ══ LOADING OVERLAY ══════════════════════════════════ -->
+    <div *ngIf="isloading" class="fm-overlay">
+        <div class="fm-spinner"></div>
+        <p>Chargement des données...</p>
+    </div>
+
+    <!-- ══ TOOLBAR ══════════════════════════════════════════ -->
+    <div class="fm-toolbar">
+        <div class="fm-toolbar-left">
+
+            <button class="fm-btn" (click)="openNewFolderModal()"
+                    nz-tooltip nzTooltipTitle="Créer un nouveau dossier">
+                <i class="fa-regular fa-folder"></i>
+                <span>Nouveau dossier</span>
+            </button>
+
+            <button class="fm-btn"
+                    (click)="triggerImport()"
+                    [disabled]="importingFile"
+                    nz-tooltip [nzTooltipTitle]="selectedNode ? 'Importer dans « ' + selectedNode.name_categories + ' »' : 'Importer un fichier'">
+                <i class="fa-solid fa-arrow-up-from-bracket" *ngIf="!importingFile"></i>
+                <i class="fa-solid fa-circle-notch fa-spin" *ngIf="importingFile"></i>
+                <span>{{ importingFile ? ('Envoi ' + importCurrent + '/' + importTotal + '...') : 'Importer' }}</span>
+            </button>
+
+            <input #fileInput type="file" class="fm-file-hidden" multiple
+                   accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.gif,.zip,.rar"
+                   (change)="onFileSelected($event)"/>
+
+            <div class="fm-divider"></div>
+
+            <button class="fm-btn" nz-dropdown [nzDropdownMenu]="sortMenu" nzTrigger="click">
+                <i class="fa-solid fa-arrow-down-wide-short"></i>
+                <span>Trier par</span>
+                <i class="fa-solid fa-chevron-down fm-chevron"></i>
+            </button>
+
+            <button class="fm-btn" (click)="refreshData()" nz-tooltip nzTooltipTitle="Actualiser">
+                <i class="fa-solid fa-arrows-rotate" [class.fa-spin]="isloading"></i>
+                <span>Actualiser</span>
+            </button>
+
+        </div>
+        <div class="fm-toolbar-right">
+            <button class="fm-view-btn" [class.active]="viewMode === 'grid'"
+                    (click)="viewMode = 'grid'" title="Vue grille">
+                <i class="fa-solid fa-grip"></i>
+            </button>
+            <button class="fm-view-btn" [class.active]="viewMode === 'list'"
+                    (click)="viewMode = 'list'" title="Vue liste">
+                <i class="fa-solid fa-list"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Sort menu -->
+    <nz-dropdown-menu #sortMenu="nzDropdownMenu">
+        <ul nz-menu style="min-width: 150px;">
+            <li nz-menu-item (click)="setSortBy('date')">
+                <i class="fa-regular fa-calendar mr-2"></i> Date
+                <i *ngIf="sortBy === 'date'" class="fa-solid fa-check ml-2" style="color:#2563eb"></i>
+            </li>
+            <li nz-menu-item (click)="setSortBy('name')">
+                <i class="fa-solid fa-a mr-2"></i> Nom
+                <i *ngIf="sortBy === 'name'" class="fa-solid fa-check ml-2" style="color:#2563eb"></i>
+            </li>
+            <li nz-menu-item (click)="setSortBy('type')">
+                <i class="fa-solid fa-tag mr-2"></i> Dossiers d'abord
+                <i *ngIf="sortBy === 'type'" class="fa-solid fa-check ml-2" style="color:#2563eb"></i>
+            </li>
+        </ul>
+    </nz-dropdown-menu>
+
+    <!-- ══ BODY ══════════════════════════════════════════════ -->
+    <div class="fm-body" [class.fm-body-blur]="isloading">
+
+        <!-- ── SIDEBAR ──────────────────────────────────────── -->
+        <div class="fm-sidebar">
+            <div class="fm-sidebar-inner">
+
+                <ng-container *ngIf="isloadingTree">
+                    <div class="fm-tree-skeleton" *ngFor="let i of [1,2,3]"></div>
+                </ng-container>
+
+                <ng-container *ngIf="!isloadingTree">
+
+                    <!-- Nœud racine -->
+                    <div class="fm-tree-root"
+                         [class.active]="isRootSelected"
+                         (click)="selectAllFolders()">
+                        <i class="fa-solid fa-chevron-down fm-arrow"></i>
+                        <i class="fa-regular fa-folder-open fm-folder-ico"></i>
+                        <span class="fm-root-label" [title]="rootNode?.name_categories || 'Mes Documents'">
+                            {{ rootNode?.name_categories || 'Mes Documents' }}
+                        </span>
+                        <!-- Badge total tous dossiers -->
+                        <span class="fm-file-badge" *ngIf="totalFileCount > 0">
+                            {{ totalFileCount }}
+                        </span>
+                    </div>
+
+                    <!-- Template récursif — profondeur illimitée -->
+                    <ng-template #treeNodeTpl let-node="node" let-depth="depth">
+                        <div class="fm-tree-item"
+                             [class.fm-tree-item-l2]="depth > 0"
+                             [style.padding-left.px]="10 + depth * 12"
+                             [class.active]="selectedNode?.uid === node.uid"
+                             [class.fm-drag-over]="dragOverUid === node.uid"
+                             [class.fm-ctx-target]="ctxMenu.visible && ctxMenu.node?.uid === node.uid"
+                             (click)="selectFolderNode(node)"
+                             (contextmenu)="onFolderRightClick($event, node)"
+                             (dragover)="onDragOver($event, node.uid)"
+                             (dragleave)="onDragLeave()"
+                             (drop)="onDropOnFolder($event, node)">
+                            <i *ngIf="node.children.length > 0"
+                               class="fa-solid fm-sub-arrow"
+                               [class.fa-chevron-down]="node.expanded"
+                               [class.fa-chevron-right]="!node.expanded"
+                               (click)="toggleNode(node, $event)"></i>
+                            <span *ngIf="node.children.length === 0" class="fm-sub-arrow-ph"></span>
+                            <i class="fa-regular fa-folder fm-folder-ico"></i>
+                            <span class="fm-item-label" [title]="node.name_categories">
+                                {{ node.name_categories }}
+                            </span>
+                            <span class="fm-file-badge" *ngIf="node.fileCount > 0"
+                                  [title]="node.fileCount + ' fichier(s)'">
+                                {{ node.fileCount }}
+                            </span>
+                        </div>
+
+                        <ng-container *ngIf="node.expanded && node.children.length > 0">
+                            <ng-container *ngFor="let child of node.children">
+                                <ng-container *ngTemplateOutlet="treeNodeTpl; context: { node: child, depth: depth + 1 }"></ng-container>
+                            </ng-container>
+                        </ng-container>
+                    </ng-template>
+
+                    <!-- Dossiers (tous niveaux) -->
+                    <div class="fm-tree-sub">
+                        <ng-container *ngFor="let node of sidebarFolders">
+                            <ng-container *ngTemplateOutlet="treeNodeTpl; context: { node: node, depth: 0 }"></ng-container>
+                        </ng-container>
+
+                        <div *ngIf="sidebarFolders.length === 0 && !isloadingTree" class="fm-sidebar-empty">
+                            <i class="fa-regular fa-folder-open"></i>
+                            <span>Aucun dossier</span>
+                            <small>Créez votre premier dossier</small>
+                        </div>
+                    </div>
+
+                </ng-container>
+            </div>
+        </div>
+
+        <!-- ── CONTENT ───────────────────────────────────────── -->
+        <div class="fm-content">
+
+            <!-- Breadcrumb + search -->
+            <div class="fm-content-head">
+                <div class="fm-breadcrumb">
+                    <i class="fa-solid fa-house-chimney fm-bc-home"></i>
+
+                    <!-- Racine — toujours cliquable -->
+                    <span class="fm-bc-link" (click)="selectAllFolders()">
+                        {{ rootNode?.name_categories || 'Mes Documents' }}
+                    </span>
+
+                    <!-- Étapes intermédiaires + dossier courant -->
+                    <ng-container *ngFor="let node of breadcrumbPath; let i = index; let last = last">
+                        <i class="fa-solid fa-chevron-right fm-bc-sep"></i>
+
+                        <!-- Étape intermédiaire cliquable -->
+                        <span *ngIf="!last"
+                              class="fm-bc-link"
+                              (click)="navigateToBreadcrumb(node, i)">
+                            {{ node.name_categories }}
+                        </span>
+
+                        <!-- Dossier courant (non cliquable) -->
+                        <span *ngIf="last" class="fm-bc-current">
+                            {{ node.name_categories }}
+                        </span>
+                    </ng-container>
+                </div>
+
+                <div class="fm-search-wrap">
+                    <svg class="fm-search-icon" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                        <circle cx="11" cy="11" r="8"/>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                    </svg>
+                    <input class="fm-search-input"
+                           [placeholder]="'Rechercher dans ' + breadcrumbLabel + '...'"
+                           [(ngModel)]="searchValue"
+                           (ngModelChange)="onSearch($event)"/>
+                    <button *ngIf="searchValue" class="fm-search-clear"
+                            (click)="searchValue = ''; onSearch('')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="2.5" stroke-linecap="round" width="11" height="11">
+                            <line x1="18" y1="6" x2="6" y2="18"/>
+                            <line x1="6" y1="6" x2="18" y2="18"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Count bar -->
+            <div class="fm-count-bar">
+                <span class="fm-count-text">
+                    <i class="fa-solid fa-layer-group"></i>
+                    {{ displayContent.length }} élément(s)
+                    <ng-container *ngIf="selectedNode">
+                        &mdash; <strong>{{ selectedNode.name_categories }}</strong>
+                    </ng-container>
+                    <ng-container *ngIf="searchValue">
+                        &mdash; résultats pour <strong>« {{ searchValue }} »</strong>
+                    </ng-container>
+                </span>
+            </div>
+
+            <!-- ══ VUE GRILLE ═══════════════════════════════ -->
+            <ng-container *ngIf="viewMode === 'grid'">
+                <div class="fm-grid" *ngIf="displayContent.length > 0; else emptyGrid">
+                    <div *ngFor="let item of displayContent"
+                         class="fm-grid-card"
+                         [class.fm-card-folder]="item.type === 'folder'"
+                         [class.fm-selected]="selectedRow?.uid === item.uid"
+                         [class.fm-dragging]="draggedItem?.uid === item.uid"
+                         [class.fm-drag-over]="dragOverUid === item.uid && item.type === 'folder'"
+                         [attr.draggable]="item.type === 'file' ? true : null"
+                         (click)="item.type === 'folder' ? navigateIntoFolder(item) : selectRow(item)"
+                         (dragstart)="onDragStart($event, item)"
+                         (dragend)="onDragEnd()"
+                         (contextmenu)="item.type === 'folder' ? onContentFolderRightClick($event, item) : null"
+                         (dragover)="item.type === 'folder' ? onDragOver($event, item.uid) : null"
+                         (dragleave)="item.type === 'folder' ? onDragLeave() : null"
+                         (drop)="item.type === 'folder' ? onDropOnContentFolder($event, item) : null">
+
+                        <!-- Icône dossier -->
+                        <div class="fm-card-icon" *ngIf="item.type === 'folder'">
+                            <i class="fa-solid fa-folder fm-ico-folder"></i>
+                            <!-- Badge dépôt actif -->
+                            <span *ngIf="dragOverUid === item.uid && draggedItem" class="fm-drop-badge">
+                                <i class="fa-solid fa-plus"></i>
+                            </span>
+                        </div>
+
+                        <!-- Icône fichier -->
+                        <div class="fm-card-icon" *ngIf="item.type === 'file'">
+                            <i class="far {{ getFileIconClass(item) }}"
+                               [style.color]="getFileIconColor(item)"></i>
+                        </div>
+
+                        <div class="fm-card-info">
+                            <p class="fm-card-name" [title]="item.name">{{ item.name }}</p>
+                            <p class="fm-card-code" *ngIf="item.type === 'folder'">
+                                <span *ngIf="item.childCount! > 0">{{ item.childCount }} dossier(s)</span>
+                                <span *ngIf="item.childCount! > 0 && item.pieceCount! > 0"> · </span>
+                                <span *ngIf="item.pieceCount! > 0">{{ item.pieceCount }} fichier(s)</span>
+                                <span *ngIf="item.childCount === 0 && item.pieceCount === 0">Vide</span>
+                            </p>
+                            <p class="fm-card-code" *ngIf="item.type === 'file'">{{ item.date }}</p>
+                        </div>
+
+                        <button *ngIf="item.type === 'file'"
+                                class="fm-card-action-btn"
+                                nz-dropdown
+                                [nzDropdownMenu]="actionMenu"
+                                nzTrigger="click"
+                                nzPlacement="bottomRight"
+                                (click)="$event.stopPropagation(); selectRow(item)">
+                            <i class="fa-solid fa-ellipsis-vertical"></i>
+                        </button>
+
+                    </div>
+                </div>
+
+                <ng-template #emptyGrid>
+                    <div class="fm-empty-state">
+                        <app-feather-icon class="fm-empty-icon" [icon]="'inbox'"></app-feather-icon>
+                        <span>{{ selectedNode ? 'Ce dossier est vide' : 'Aucun élément' }}</span>
+                        <small *ngIf="searchValue">Aucun résultat pour « {{ searchValue }} »</small>
+                        <small *ngIf="!searchValue && selectedNode">
+                            Importez des fichiers ou créez des sous-dossiers
+                        </small>
+                    </div>
+                </ng-template>
+            </ng-container>
+
+            <!-- ══ VUE LISTE WINDOWS ═══════════════════════ -->
+            <ng-container *ngIf="viewMode === 'list'">
+                <div class="fm-list-view">
+
+                    <!-- En-tête colonnes -->
+                    <div class="fm-list-header">
+                        <div class="fm-col-name">Nom</div>
+                        <div class="fm-col-type">Type</div>
+                        <div class="fm-col-date">Date de modification</div>
+                        <div class="fm-col-actions"></div>
+                    </div>
+
+                    <!-- Lignes -->
+                    <div class="fm-list-body">
+                        <ng-container *ngIf="displayContent.length > 0; else emptyListTpl">
+                            <div *ngFor="let item of displayContent"
+                                 class="fm-list-row"
+                                 [class.fm-list-row-folder]="item.type === 'folder'"
+                                 [class.fm-list-row-selected]="selectedRow?.uid === item.uid"
+                                 (click)="item.type === 'folder' ? navigateIntoFolder(item) : selectRow(item)"
+                                 (dblclick)="item.type === 'folder' ? navigateIntoFolder(item) : null"
+                                 (contextmenu)="item.type === 'folder' ? onContentFolderRightClick($event, item) : null">
+
+                                <!-- Colonne Nom -->
+                                <div class="fm-col-name">
+                                    <i *ngIf="item.type === 'folder'"
+                                       class="fa-solid fa-folder fm-list-ico-folder"></i>
+                                    <i *ngIf="item.type === 'file'"
+                                       class="far {{ getFileIconClass(item) }} fm-list-ico-file"
+                                       [style.color]="getFileIconColor(item)"></i>
+                                    <span class="fm-list-name" [title]="item.name">{{ item.name }}</span>
+                                    <span *ngIf="item.type === 'folder' && (item.childCount! + item.pieceCount! > 0)"
+                                          class="fm-list-sub-hint">
+                                        {{ item.childCount }}d · {{ item.pieceCount }}f
+                                    </span>
+                                </div>
+
+                                <!-- Colonne Type -->
+                                <div class="fm-col-type">
+                                    <span class="fm-list-type fm-list-type-folder" *ngIf="item.type === 'folder'">
+                                        Dossier de fichiers
+                                    </span>
+                                    <span class="fm-list-type fm-list-type-file" *ngIf="item.type === 'file'">
+                                        {{ getFileExtLabel(item) }}
+                                    </span>
+                                </div>
+
+                                <!-- Colonne Date -->
+                                <div class="fm-col-date">{{ item.date }}</div>
+
+                                <!-- Colonne Actions -->
+                                <div class="fm-col-actions">
+                                    <button *ngIf="item.type === 'file'"
+                                            class="fm-ctx-btn"
+                                            nz-dropdown
+                                            [nzDropdownMenu]="actionMenu"
+                                            nzTrigger="click"
+                                            nzPlacement="bottomRight"
+                                            (click)="$event.stopPropagation(); selectRow(item)">
+                                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                                    </button>
+                                    <i *ngIf="item.type === 'folder'"
+                                       class="fa-solid fa-chevron-right fm-list-nav-arrow"></i>
+                                </div>
+
+                            </div>
+                        </ng-container>
+
+                        <ng-template #emptyListTpl>
+                            <div class="fm-empty-state">
+                                <app-feather-icon class="fm-empty-icon" [icon]="'inbox'"></app-feather-icon>
+                                <span>{{ selectedNode ? 'Ce dossier est vide' : 'Aucun élément' }}</span>
+                                <small *ngIf="!searchValue && selectedNode">
+                                    Importez des fichiers ou créez des sous-dossiers
+                                </small>
+                            </div>
+                        </ng-template>
+                    </div>
+
+                </div>
+            </ng-container>
+
+        </div><!-- /fm-content -->
+    </div><!-- /fm-body -->
+
+    <!-- ══ MODAL NOUVEAU DOSSIER ═══════════════════════════ -->
+    <div *ngIf="showNewFolderModal" class="fm-modal-backdrop" (click)="closeNewFolderModal()">
+        <div class="fm-modal" (click)="$event.stopPropagation()">
+            <div class="fm-modal-header">
+                <div class="fm-modal-title">
+                    <i class="fa-regular fa-folder"></i>
+                    <span>Nouveau dossier</span>
+                </div>
+                <button class="fm-modal-close" (click)="closeNewFolderModal()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="fm-modal-body">
+                <label class="fm-modal-label">Nom du dossier</label>
+                <input class="fm-modal-input"
+                       [(ngModel)]="newFolderName"
+                       placeholder="Ex: Diplômes, Contrats, Attestations..."
+                       (keyup.enter)="saveNewFolder()"/>
+                <p class="fm-modal-hint" *ngIf="selectedNode">
+                    <i class="fa-regular fa-folder" style="color:#f59e0b"></i>
+                    Créé dans : <strong>{{ selectedNode.name_categories }}</strong>
+                </p>
+                <p class="fm-modal-hint" *ngIf="!selectedNode && sidebarFolders.length > 0">
+                    Dossiers existants :
+                    <span *ngFor="let n of sidebarFolders" class="fm-modal-tag">{{ n.name_categories }}</span>
+                </p>
+            </div>
+            <div class="fm-modal-footer">
+                <button class="fm-modal-btn fm-modal-btn-cancel" (click)="closeNewFolderModal()">
+                    Annuler
+                </button>
+                <button class="fm-modal-btn fm-modal-btn-confirm"
+                        [disabled]="!newFolderName.trim() || savingFolder"
+                        (click)="saveNewFolder()">
+                    <i class="fa-solid fa-circle-notch fa-spin" *ngIf="savingFolder"></i>
+                    {{ savingFolder ? 'Création...' : 'Créer' }}
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ PANNEAU PRÉVISUALISATION ════════════════════════ -->
+    <div class="fm-preview-panel" [class.fm-preview-open]="showPreview">
+
+        <!-- Header -->
+        <div class="fm-preview-header">
+            <div class="fm-preview-title">
+                <i *ngIf="previewFile" class="far {{ getFileIconClass(previewFile) }}"
+                   [style.color]="getFileIconColor(previewFile)"></i>
+                <span [title]="previewFile?.name">{{ previewFile?.name ?? 'Aperçu' }}</span>
+            </div>
+            <button class="fm-preview-close" (click)="closePreview()" title="Fermer">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <!-- Barre d'outils -->
+        <div class="fm-preview-toolbar" *ngIf="previewFile">
+
+            <!-- Zoom -->
+            <div class="fm-ptb-group">
+                <button class="fm-ptb-btn" (click)="zoomOut()" [disabled]="zoomLevel <= 0.25" title="Dézoomer">
+                    <i class="fa-solid fa-magnifying-glass-minus"></i>
+                </button>
+                <button class="fm-ptb-zoom" (click)="resetZoom()" title="Réinitialiser">{{ zoomPercent }}%</button>
+                <button class="fm-ptb-btn" (click)="zoomIn()" [disabled]="zoomLevel >= 4.0" title="Zoomer">
+                    <i class="fa-solid fa-magnifying-glass-plus"></i>
+                </button>
+            </div>
+
+            <!-- Pages PDF -->
+            <ng-container *ngIf="previewExt === 'pdf' && totalPages > 0">
+                <div class="fm-ptb-sep"></div>
+                <div class="fm-ptb-group">
+                    <button class="fm-ptb-btn" (click)="prevPage()" [disabled]="currentPage <= 1">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </button>
+                    <span class="fm-ptb-pages">
+                        <input class="fm-ptb-page-input" type="number"
+                               [value]="currentPage" [min]="1" [max]="totalPages"
+                               #pageEl
+                               (keydown.enter)="goToPage(pageEl.value); pageEl.blur()"
+                               (blur)="goToPage(pageEl.value)"/>
+                        / {{ totalPages }}
+                    </span>
+                    <button class="fm-ptb-btn" (click)="nextPage()" [disabled]="currentPage >= totalPages">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                </div>
+            </ng-container>
+
+            <!-- Rotation -->
+            <ng-container *ngIf="previewExt === 'pdf' || isPreviewImage">
+                <div class="fm-ptb-sep"></div>
+                <div class="fm-ptb-group">
+                    <button class="fm-ptb-btn" (click)="rotateLeft()" title="Pivoter gauche">
+                        <i class="fas fa-undo"></i>
+                    </button>
+                    <button class="fm-ptb-btn" (click)="rotateRight()" title="Pivoter droite">
+                        <i class="fas fa-redo"></i>
+                    </button>
+                </div>
+            </ng-container>
+
+            <!-- Actions -->
+            <div class="fm-ptb-sep"></div>
+            <div class="fm-ptb-group">
+                <button class="fm-ptb-btn" (click)="downloadPreview()" title="Télécharger">
+                    <i class="fa-solid fa-download"></i>
+                </button>
+                <button class="fm-ptb-btn" (click)="printPreview()"
+                        *ngIf="previewExt === 'pdf' || isPreviewImage"
+                        title="Imprimer">
+                    <i class="fa-solid fa-print"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Zone de contenu -->
+        <div class="fm-preview-body">
+
+            <!-- Chargement -->
+            <div class="fm-preview-loading" *ngIf="isLoadingPreview">
+                <div class="fm-spinner"></div>
+                <span>Chargement de l'aperçu...</span>
+            </div>
+
+            <!-- Placeholder vide -->
+            <div class="fm-preview-placeholder" *ngIf="!previewFile">
+                <i class="fa-regular fa-file-magnifying-glass"></i>
+                <p>Sélectionnez un fichier pour l'aperçu</p>
+            </div>
+
+            <!-- PDF -->
+            <div class="fm-preview-scroll fm-preview-center"
+                 *ngIf="previewFile && previewExt === 'pdf'">
+                <canvas id="fm-pdf-canvas"></canvas>
+            </div>
+
+            <!-- Image -->
+            <div class="fm-preview-scroll fm-preview-center"
+                 *ngIf="previewFile && isPreviewImage && !isLoadingPreview">
+                <img [src]="previewUrl"
+                     (load)="onPreviewLoaded()"
+                     alt="aperçu"
+                     draggable="false"
+                     class="fm-preview-img"
+                     [style.transform]="'scale(' + zoomLevel + ') rotate(' + rotation + 'deg)'"
+                     [style.transform-origin]="'center center'"/>
+            </div>
+
+            <!-- Office (Word, Excel, PPT) -->
+            <div class="fm-preview-iframe-wrap"
+                 *ngIf="previewFile && isPreviewOffice">
+                <iframe *ngIf="previewOfficeUrl"
+                        [src]="previewOfficeUrl"
+                        (load)="onOfficeLoaded()"
+                        frameborder="0"
+                        class="fm-preview-iframe"
+                        [style.transform]="'scale(' + zoomLevel + ')'"
+                        [style.transform-origin]="'top left'"
+                        [style.width]="(100 / zoomLevel) + '%'"
+                        [style.height]="(100 / zoomLevel) + '%'">
+                </iframe>
+            </div>
+
+            <!-- Aperçu non disponible -->
+            <div class="fm-preview-unsupported"
+                 *ngIf="previewFile && !isLoadingPreview
+                        && previewExt !== 'pdf'
+                        && !isPreviewImage
+                        && !isPreviewOffice">
+                <i class="fa-regular fa-file-circle-xmark"></i>
+                <p>Aperçu non disponible pour ce type de fichier</p>
+                <button class="fm-ptb-btn fm-ptb-download-btn" (click)="downloadPreview()">
+                    <i class="fa-solid fa-download mr-1"></i> Télécharger
+                </button>
+            </div>
+
+        </div>
+    </div>
+    <!-- /panneau prévisualisation -->
+
+    <!-- ══ MENU ACTIONS FICHIERS ════════════════════════════ -->
+    <nz-dropdown-menu #actionMenu="nzDropdownMenu">
+        <ul nz-menu class="fm-action-menu">
+            <li nz-menu-item (click)="openPreview(selectedRow)">
+                <i class="fa-regular fa-eye mr-2"></i><span>Consulter</span>
+            </li>
+<!--            <li nz-menu-item><i class="fa-regular fa-pen-to-square mr-2"></i><span>Renommer</span></li>-->
+<!--            <li nz-menu-item><i class="far fa-paper-plane mr-2"></i><span>Envoyer par mail</span></li>-->
+            <li nz-menu-item (click)="downloadFile(selectedRow)"><i class="fa-solid fa-download mr-2"></i><span>Télécharger</span></li>
+            <li nz-menu-item (click)="openMoveModal(selectedRow)">
+                <i class="fa-solid fa-right-left mr-2"></i><span>Déplacer vers...</span>
+            </li>
+            <li nz-menu-divider></li>
+            <li nz-menu-item class="fm-menu-danger" (click)="deleteFile(selectedRow)">
+                <i class="fa-regular fa-trash-can mr-2"></i><span>Supprimer</span>
+            </li>
+        </ul>
+    </nz-dropdown-menu>
+
+    <!-- ══ MODAL DÉPLACER ══════════════════════════════════ -->
+    <div *ngIf="showMoveModal" class="fm-modal-backdrop" (click)="closeMoveModal()">
+        <div class="fm-modal fm-modal-move" (click)="$event.stopPropagation()">
+
+            <div class="fm-modal-header">
+                <div class="fm-modal-title">
+                    <i class="fa-solid fa-right-left"></i>
+                    <span>Déplacer le fichier</span>
+                </div>
+                <button class="fm-modal-close" (click)="closeMoveModal()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="fm-modal-body">
+
+                <!-- Fichier source -->
+                <div class="fm-move-source">
+                    <i class="far {{ getFileIconClass(movingItem) }}"
+                       [style.color]="getFileIconColor(movingItem)"></i>
+                    <span class="fm-move-source-name" [title]="movingItem?.name">
+                        {{ movingItem?.name }}
+                    </span>
+                </div>
+
+                <div class="fm-move-arrow">
+                    <i class="fa-solid fa-arrow-down"></i>
+                    <span>Choisissez le dossier de destination</span>
+                </div>
+
+                <!-- Arbre des dossiers -->
+                <div class="fm-move-tree">
+                    <div *ngFor="let item of moveModalFolders; trackBy: trackByNodeUid"
+                         class="fm-move-folder-row"
+                         [class.fm-move-folder-selected]="moveTargetNode?.uid === item.node.uid"
+                         [class.fm-move-folder-root]="item.depth === 0"
+                         [style.padding-left.px]="12 + item.depth * 18"
+                         (click)="selectMoveTarget(item.node, $event)">
+
+                        <i class="fa-regular fm-move-folder-ico"
+                           [class.fa-folder-open]="moveTargetNode?.uid === item.node.uid"
+                           [class.fa-folder]="moveTargetNode?.uid !== item.node.uid"></i>
+
+                        <span class="fm-move-folder-name">{{ item.node.name_categories }}</span>
+
+                        <i *ngIf="moveTargetNode?.uid === item.node.uid"
+                           class="fa-solid fa-check fm-move-folder-check"></i>
+                    </div>
+
+                    <div *ngIf="moveModalFolders.length === 0" class="fm-move-empty">
+                        Aucun dossier disponible
+                    </div>
+                </div>
+
+                <!-- Destination sélectionnée -->
+                <div class="fm-move-destination" *ngIf="moveTargetNode">
+                    <i class="fa-solid fa-location-dot"></i>
+                    Destination : <strong>{{ moveTargetNode.name_categories }}</strong>
+                </div>
+
+            </div>
+
+            <div class="fm-modal-footer">
+                <button class="fm-modal-btn fm-modal-btn-cancel" (click)="closeMoveModal()">
+                    Annuler
+                </button>
+                <button class="fm-modal-btn fm-modal-btn-confirm"
+                        [disabled]="!moveTargetNode || movingInProgress"
+                        (click)="confirmMove()">
+                    <i class="fa-solid fa-circle-notch fa-spin" *ngIf="movingInProgress"></i>
+                    <i class="fa-solid fa-right-left" *ngIf="!movingInProgress"></i>
+                    {{ movingInProgress ? 'Déplacement...' : 'Déplacer ici' }}
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ══ MENU CONTEXTUEL DOSSIER (clic droit) ═══════════ -->
+    <div *ngIf="ctxMenu.visible"
+         class="fm-ctx-menu"
+         [style.top.px]="ctxMenu.y"
+         [style.left.px]="ctxMenu.x"
+         (click)="$event.stopPropagation()">
+
+        <!-- Nom du dossier ciblé -->
+        <div class="fm-ctx-header">
+            <i class="fa-regular fa-folder"></i>
+            <span>{{ ctxMenu.node?.name_categories }}</span>
+        </div>
+        <div class="fm-ctx-divider"></div>
+
+        <!-- Renommer -->
+        <div class="fm-ctx-item" (click)="openRenameModal()">
+            <i class="fa-regular fa-pen-to-square"></i>
+            <span>Renommer</span>
+        </div>
+
+        <!-- Supprimer (avec confirmation inline) -->
+        <ng-container *ngIf="!ctxDeleteConfirm">
+            <div class="fm-ctx-item fm-ctx-danger" (click)="requestDeleteFolder()">
+                <i class="fa-regular fa-trash-can"></i>
+                <span>Supprimer</span>
+            </div>
+        </ng-container>
+
+        <ng-container *ngIf="ctxDeleteConfirm">
+            <div class="fm-ctx-confirm">
+                <span>Confirmer la suppression ?</span>
+                <div class="fm-ctx-confirm-btns">
+                    <button class="fm-ctx-btn-yes" (click)="confirmDeleteFolder()">Oui, supprimer</button>
+                    <button class="fm-ctx-btn-no" (click)="ctxDeleteConfirm = false">Annuler</button>
+                </div>
+            </div>
+        </ng-container>
+
+    </div>
+
+    <!-- ══ MODAL RENOMMER DOSSIER ═══════════════════════════ -->
+    <div *ngIf="showRenameModal" class="fm-modal-backdrop" (click)="closeRenameModal()">
+        <div class="fm-modal" (click)="$event.stopPropagation()">
+
+            <div class="fm-modal-header">
+                <div class="fm-modal-title">
+                    <i class="fa-regular fa-pen-to-square"></i>
+                    <span>Renommer le dossier</span>
+                </div>
+                <button class="fm-modal-close" (click)="closeRenameModal()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="fm-modal-body">
+                <label class="fm-modal-label">Nouveau nom</label>
+                <input class="fm-modal-input"
+                       [(ngModel)]="renameValue"
+                       [placeholder]="renamingNode?.name_categories || ''"
+                       (keyup.enter)="confirmRename()"
+                       autofocus/>
+            </div>
+
+            <div class="fm-modal-footer">
+                <button class="fm-modal-btn fm-modal-btn-cancel" (click)="closeRenameModal()">
+                    Annuler
+                </button>
+                <button class="fm-modal-btn fm-modal-btn-confirm"
+                        [disabled]="!renameValue.trim() || renamingInProgress"
+                        (click)="confirmRename()">
+                    <i class="fa-solid fa-circle-notch fa-spin" *ngIf="renamingInProgress"></i>
+                    {{ renamingInProgress ? 'Renommage...' : 'Renommer' }}
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+</div><!-- /fm-shell -->

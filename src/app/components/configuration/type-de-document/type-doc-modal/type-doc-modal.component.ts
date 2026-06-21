@@ -1,4 +1,4 @@
-import {Component, EventEmitter, HostListener, Input, Output, SimpleChanges} from '@angular/core';
+import {Component, EventEmitter, HostListener, Input, OnDestroy, Output, Renderer2, SimpleChanges} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
 import {CommonModule} from "@angular/common";
 import {environment} from "../../../../../environments/environment";
@@ -27,7 +27,7 @@ import {NzTreeSelectModule} from "ng-zorro-antd/tree-select";
     templateUrl: './type-doc-modal.component.html',
     styleUrl: './type-doc-modal.component.scss',
 })
-export class TypeDocModalComponent {
+export class TypeDocModalComponent implements OnDestroy {
     @Output() modalOpen = new EventEmitter<boolean>();
     @Input() dataLigne: any;
 
@@ -123,7 +123,9 @@ export class TypeDocModalComponent {
     is: boolean = false;
     isload: boolean = false;
 
-    constructor(private autor: Authorization, private fb: FormBuilder, private httService: HttpService) {
+    private loaderEl: HTMLElement | null = null;
+
+    constructor(private autor: Authorization, private fb: FormBuilder, private httService: HttpService, private renderer: Renderer2) {
         this.users = this.autor.getInfosUsers();
         this.showCategorieClassement('', '', '');
 
@@ -149,9 +151,10 @@ export class TypeDocModalComponent {
 
     ngOnChanges(changes: SimpleChanges) {
         const data = changes['dataLigne']?.currentValue;
+        console.log("pour la modification ", data)
         if (data && Object.keys(data).length > 0) {
-            this.formDataTypeDoc.patchValue(changes['dataLigne']?.currentValue);
-            this.dataLigneFields = changes['dataLigne']?.currentValue?.dataPro?.map((d: any, index: number) => {
+
+            this.dataLigneFields = data?.dataPro?.map((d: any, index: number) => {
                 return {
                     ...d,
                     proprietes_select: d?.dataValueSelectPro,
@@ -159,13 +162,37 @@ export class TypeDocModalComponent {
                     default_proprietes_docs: d?.default_proprietes_docs.toString().toLowerCase() != 'false'
                 }
             });
-            console.log("this.dataLigneFields  :::", this.dataLigneFields)
-            console.log("Les variables du type de document  :::", changes['dataLigne']?.currentValue)
+
+            // Recharger les options PUIS patcher : garantit que select2 trouve la valeur dans dataSource
+            this.showCategorieClassement('', '', '', () => {
+                const targetCat = data?.datacats?.[0];
+
+                // Trouver le parent via le modèle nested set (lft / rght / tree_id)
+                const parentNode = targetCat
+                    ? (this.dataSource as any[])
+                        .filter((item: any) =>
+                            item.tree_id === targetCat.tree_id &&
+                            item.lft < targetCat.lft &&
+                            item.rght > targetCat.rght
+                        )
+                        .sort((a: any, b: any) => b.lft - a.lft)[0]   // parent direct = lft max
+                    : null;
+
+                const parentUid = parentNode?.uid ?? targetCat?.uid ?? '';
+
+                this.formDataTypeDoc.patchValue({
+                    ...data,
+                    idcategories: parentUid,
+                });
+                console.log("targetCat ===", targetCat);
+                console.log("parentNode ===", parentNode);
+                console.log("idcategories patchée ===", parentUid);
+            });
         }
 
     }
 
-    showCategorieClassement(idsociete: string = '', idtype_document: string = '', idcategories: string = '') {
+    showCategorieClassement(idsociete: string = '', idtype_document: string = '', idcategories: string = '', onLoaded?: () => void) {
         this.isload = true;
         this.dataSource = [];
         this.httService.getData(`${environment.api_url}api/:save-categorie-plan-classement?idsociete=${idsociete}&idtype_document=${idtype_document}&idcategories=${idcategories}`, false, this.users?.access_token || '')
@@ -174,17 +201,19 @@ export class TypeDocModalComponent {
                 this.isload = false;
                 if (res.body.status || res.body.success) {
                     console.log("Liste des series ===", res.body.data)
-                    this.dataSource = res.body.data.map((e: any) => {
+                    this.dataSource = res.body.data?.map((e: any) => {
                         return {
+                            ...e,
                             label: `${e.code_categories || ''} ${e.code_categories ? '-' : ''} ${e?.name_categories}`,
                             value: e.uid
                         }
-                        //return this.formatNode(e);
                     });
                 }
+                onLoaded?.();
             })
             .catch((err) => {
                 this.isload = false;
+                onLoaded?.();
             });
 
     }
@@ -211,12 +240,12 @@ export class TypeDocModalComponent {
                 }
             })
         }
-        this.isLoad = true;
+        this.showLoader();
         console.log("payload ======", payload)
         this.httService.postData(`${environment.api_url}api/:savetypedocuments`, payload, this.users?.access_token)
             .toPromise()
             .then((res: any) => {
-                this.isLoad = false;
+                this.hideLoader();
                 if (res.body.status) {
                     this.formDataTypeDoc.reset({});
                     this.closeModal(true);
@@ -228,22 +257,50 @@ export class TypeDocModalComponent {
                 }
             })
             .catch((err) => {
-                this.isLoad = false;
+                this.hideLoader();
                 // this.toast.error(`${err?.error?.err?.message || 'Une erreur est survenue.'} `, '',
                 //     {
                 //         positionClass: 'toast-top-right',
                 //          closeButton: true,
                 //         timeOut: 3000
                 //     })
-                setTimeout(() => {
-                    this.errorTexte = `${err?.error?.err?.message || 'Une erreur est survenue.'} `;
-                }, 3000)
+                Swal.fire({
+                    title: err?.error?.err?.message,
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                })
             });
 
     }
 
     closeModal(e?: boolean) {
         this.modalOpen.emit(e || false);
+    }
+
+    // ── Loader plein écran attaché au body ────────────────
+    private showLoader(): void {
+        if (this.loaderEl) return;
+        const box = this.renderer.createElement('div') as HTMLElement;
+        box.className = 'td-loader-box';
+        box.innerHTML = `
+            <div class="td-loader-spinner"></div>
+            <p class="td-loader-text">Enregistrement en cours...</p>
+        `;
+        this.loaderEl = this.renderer.createElement('div') as HTMLElement;
+        this.loaderEl.className = 'td-fullscreen-loader';
+        this.renderer.appendChild(this.loaderEl, box);
+        this.renderer.appendChild(document.body, this.loaderEl);
+    }
+
+    private hideLoader(): void {
+        if (this.loaderEl) {
+            this.renderer.removeChild(document.body, this.loaderEl);
+            this.loaderEl = null;
+        }
+    }
+
+    ngOnDestroy(): void {
+        this.hideLoader();
     }
 
     handleStep(value: number) {

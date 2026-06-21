@@ -2,7 +2,7 @@
 // MODAL DIALOG
 // ═══════════════════════════════════════
 .modal .modal-dialog {
-  width: 770px !important;
+  width: 550px !important;
   max-width: 95vw !important;
 }
 
@@ -145,6 +145,7 @@
 
 // Bouton Suivant/Valider — garde ton #00141e
 .newBtn {
+  justify-content: center;
   height: 38px !important;
   padding: 0 20px !important;
   border-radius: 8px !important;
@@ -262,47 +263,6 @@
   }
 }
 
-.field-index {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-  background: #F1F5F9;
-  border-radius: 50%;
-  font-size: 11px;
-  font-weight: 700;
-  color: #64748B;
-  margin-right: 6px;
-  flex-shrink: 0;
-}
-
-.resume-count {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 20px;
-  height: 18px;
-  padding: 0 6px;
-  background: rgba(0, 54, 110, 0.15);
-  color: rgba(0, 54, 110);
-  border-radius: 10px;
-  font-size: 11px;
-  font-weight: 700;
-  margin-left: 6px;
-}
-
-.resume-empty {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 20px 16px;
-  color: #94A3B8;
-  font-size: 12px;
-  font-style: italic;
-}
-
 // ═══════════════════════════════════════
 // ICON SM
 // ═══════════════════════════════════════
@@ -310,254 +270,6 @@
   width: 14px !important;
   height: 14px !important;
   stroke: #000 !important;
-}
-
-// ═══════════════════════════════════════
-// TAB 2 — CHAMPS DYNAMIQUES
-// ═══════════════════════════════════════
-
-.fields-wrapper {
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-// En-tête : titre + bouton
-.fields-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.fields-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 12px;
-  font-weight: 700;
-  color: #374151;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-
-  i { color: rgba(0, 54, 110); font-size: 14px; }
-}
-
-.fields-count {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 20px;
-  height: 18px;
-  padding: 0 6px;
-  background: rgba(0, 54, 110, 0.12);
-  color: rgba(0, 54, 110);
-  border-radius: 10px;
-  font-size: 11px;
-  font-weight: 700;
-}
-
-.btn-add-field {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  height: 34px;
-  padding: 0 14px;
-  background: rgba(0, 54, 110);
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.18s;
-  white-space: nowrap;
-
-  &:hover { background: rgba(0, 54, 110, 0.85); }
-  i { font-size: 13px; }
-}
-
-// Zone scrollable de la table
-.fields-scroll {
-  overflow-x: auto;
-  border: 1px solid #E2E8F0;
-  border-radius: 8px;
-}
-
-// Table
-.fields-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 13px;
-
-  thead tr {
-    background: #F1F5F9;
-    th {
-      padding: 9px 12px;
-      font-size: 11px;
-      font-weight: 700;
-      color: #64748B;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      border-bottom: 1px solid #E2E8F0;
-      white-space: nowrap;
-    }
-  }
-
-  tbody tr {
-    border-bottom: 1px solid #F1F5F9;
-    transition: background 0.12s;
-    &:last-child { border-bottom: none; }
-    &:hover { background: #F8FAFC; }
-    &.fields-row-locked { background: #FAFAFA; }
-
-    td {
-      padding: 8px 12px;
-      vertical-align: top;
-    }
-  }
-}
-
-// Colonnes
-.fc-unique  { width: 80px;  text-align: center; }
-.fc-label   { min-width: 160px; }
-.fc-type    { width: 160px; }
-.fc-action  { width: 44px;  text-align: center; }
-
-// Input principal d'une ligne
-.field-input-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.field-input {
-  flex: 1;
-  height: 34px;
-  padding: 0 10px;
-  border: 1.5px solid #E2E8F0;
-  border-radius: 6px;
-  font-size: 12.5px;
-  color: #1e293b;
-  background: #F8FAFC;
-  outline: none;
-  min-width: 0;
-  transition: border-color 0.15s;
-
-  &::placeholder { color: #CBD5E1; }
-  &:focus { border-color: rgba(0, 54, 110); background: #fff; }
-  &:disabled { background: #F1F5F9; color: #94A3B8; cursor: not-allowed; }
-}
-
-// Sous-champ (option select)
-.sub-field-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 6px;
-  padding-left: 18px;
-}
-
-.field-input-sub {
-  background: #FEFCE8 !important;
-  border-color: #FCD34D !important;
-  &:focus { border-color: #F59E0B !important; }
-}
-
-// Bouton + sous-champ
-.btn-add-sub {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
-  background: rgba(0, 54, 110, 0.08);
-  color: rgba(0, 54, 110);
-  font-size: 12px;
-  flex-shrink: 0;
-  transition: background 0.15s;
-  &:hover { background: rgba(0, 54, 110, 0.18); }
-}
-
-// Bouton supprimer sous-champ
-.btn-del-sub {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 26px;
-  height: 26px;
-  border-radius: 6px;
-  color: #EF4444;
-  font-size: 14px;
-  flex-shrink: 0;
-  transition: background 0.15s;
-  &:hover { background: #FEF2F2; }
-}
-
-// Bouton supprimer ligne
-.btn-del-row {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 6px;
-  color: #EF4444;
-  font-size: 15px;
-  transition: background 0.15s;
-  &:hover { background: #FEF2F2; }
-  &.disabled { color: #CBD5E1; pointer-events: none; }
-}
-
-// ── Responsive table → cards ────────────────────────────────
-@media (max-width: 540px) {
-
-  .fields-table {
-    thead { display: none; }
-
-    tbody tr {
-      display: block;
-      border: 1px solid #E2E8F0;
-      border-radius: 8px;
-      margin-bottom: 10px;
-      padding: 10px;
-      background: #fff;
-      &:last-child { border: 1px solid #E2E8F0; }
-
-      td {
-        display: flex;
-        align-items: flex-start;
-        gap: 8px;
-        padding: 6px 4px;
-        border-bottom: 1px solid #F8FAFC;
-        &:last-child { border-bottom: none; }
-
-        &::before {
-          content: attr(data-label);
-          font-size: 10px;
-          font-weight: 700;
-          color: #94A3B8;
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
-          min-width: 60px;
-          padding-top: 8px;
-          flex-shrink: 0;
-        }
-
-        &.fc-action { justify-content: flex-end; }
-        &.fc-action::before { display: none; }
-      }
-    }
-  }
-
-  .fc-unique, .fc-label, .fc-type, .fc-action {
-    width: 100% !important;
-  }
-
-  .btn-add-field span { display: inline; }
 }
 
 // ═══════════════════════════════════════
@@ -598,60 +310,88 @@
   }
 }
 
-
-
-
-// ══ nz-tree-select — style cohérent avec form-control ══
-
-::ng-deep .ant-select:not(.ant-select-customize-input) .ant-select-selector {
-  height: 40px !important;
-  border: 1.5px solid #E2E8F0 !important;
-  border-radius: 8px !important;
-  font-size: 13px !important;
-  color: #0F172A !important;
-  background: #F8FAFC !important;
-  transition: all 0.2s !important;
-  align-items: center !important;
-  padding: 0 12px !important;
+::ng-deep .card .card-body {
+  padding: 5px !important;
 }
 
-::ng-deep .ant-select:not(.ant-select-disabled):hover .ant-select-selector {
-  border-color: rgba(0, 54, 110) !important;
+
+//--------------------------LOGO
+
+
+::ng-deep app-image-upload {
+
+  .image-upload-container {
+    width: 100% !important;
+    height: 120px !important;
+    border-radius: 12px !important;
+    border: 2px dashed #C7D2FE !important;
+    background: #F5F3FF !important;
+    cursor: pointer !important;
+    overflow: hidden !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  // Cacher le nom du fichier et la taille
+  .file-name,
+  .file-size,
+  .file-info,
+  p, span {
+    display: none !important;
+  }
+
+  // Garder uniquement l'image
+  .image-preview,
+  img {
+    width: 100% !important;
+    height: 120px !important;
+    object-fit: cover !important;
+    border-radius: 12px !important;
+    display: block !important;
+  }
+
+  // Bouton supprimer visible au hover
+  .remove-btn,
+  .delete-btn {
+    display: flex !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    position: absolute !important;
+    top: -6px !important;
+    right: -6px !important;
+    width: 22px !important;
+    height: 22px !important;
+    border-radius: 50% !important;
+    background: #EF4444 !important;
+    color: white !important;
+    border: none !important;
+    font-size: 10px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: 10 !important;
+  }
 }
 
-::ng-deep .ant-select-focused:not(.ant-select-disabled).ant-select:not(.ant-select-customize-input) .ant-select-selector {
-  border-color: rgba(0, 54, 110) !important;
-  background: #fff !important;
-  box-shadow: 0 0 0 3px rgba(0, 54, 110, 0.1) !important;
+.photo-wrapper {
+  position: relative;
+  display: block;
+  width: 120px;
+  height: 120px;
+  margin-bottom: 6px;
 }
 
-::ng-deep .ant-select-selection-placeholder {
-  color: #CBD5E1 !important;
-  font-size: 13px !important;
-  line-height: 38px !important;
+.stroke-danger {
+  stroke: #fff !important;
 }
 
-::ng-deep .ant-select-selection-item {
-  line-height: 38px !important;
-  font-size: 13px !important;
-  color: #0F172A !important;
-}
+.alert-prim {
+  background-color: rgba(115, 102, 255, 0.1) !important;
 
-// ── État invalide ──────────────────────
-::ng-deep nz-tree-select.is-invalid .ant-select-selector {
-  border-color: #EF4444 !important;
-  background: #FEF2F2 !important;
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.08) !important;
-}
-
-// ── État valide ────────────────────────
-::ng-deep nz-tree-select.is-valid .ant-select-selector {
-  border-color: #10B981 !important;
-  background: #F0FDF4 !important;
-}
-
-// ── Flèche dropdown ────────────────────
-::ng-deep .ant-select-arrow {
-  color: #CBD5E1 !important;
-  font-size: 12px !important;
+  .txt-light {
+    color: #7366FF !important;
+  }
+  .stroke-danger {
+    stroke: #7366FF !important;
+  }
 }

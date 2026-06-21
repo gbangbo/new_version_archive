@@ -179,7 +179,7 @@
 }
 
 .sidebar-card {
-  border: 1.5px solid #e8edf4;
+  //border: 1.5px solid #e8edf4;
   border-radius: 10px;
   overflow: hidden;
   transition: border-color 0.2s;
@@ -248,7 +248,7 @@
 }
 
 .sidebar-card-body {
-  padding: 14px;
+  padding: 2px;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -370,10 +370,10 @@
   align-items: center;
   justify-content: center;
   gap: 6px;
-  height: 36px;
+  height: 32px;
   padding: 0 16px;
   border: none;
-  border-radius: 8px;
+  border-radius: 4px;
   font-size: 12px;
   font-weight: 700;
   cursor: pointer;

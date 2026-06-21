@@ -107,8 +107,10 @@ export class InfoPersoComponent implements OnInit {
             "nom": this.validationForm.value.nom,
             "prenom": this.validationForm.value.prenom,
             "telMobile": this.validationForm.value.telMobile,
+            "telDomicile": this.validationForm.value.telMobile,
             "sexe": this.validationForm.value.sexe,
         }
+        console.log("payload de savepersonnel", payload)
         let rPons: any = {};
         try {
             let res: any = await this.newPostData(`${environment.api_url}auth/:savepersonnel`,

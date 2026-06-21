@@ -134,16 +134,13 @@ export class AddModalComponent {
             .toPromise()
             .then((res: any) => {
                 this.isloading = false;
-                console.log("Liste des comptes ===", res.body.data)
-                if (res.body.status) {
+                console.log("Liste des comptes ===", res.body)
+                if (res.body.status || res.body.success) {
 
-                    this.dataAgentAbsent = res.body.data.map((e: any) => {
-                        return {
-                            ...e,
-                            label: `${e.datapersonnel.nom} ${e.datapersonnel.prenom}`,
-                            value: e.id,
-                        }
-                    });
+                    this.dataAgentAbsent = res.body.data.map((e: any) => ({
+                        label: `${e.datapersonnel?.nom || ''} ${e.datapersonnel?.prenom || ''}`.trim(),
+                        value: e.uid || e.id,
+                    }));
 
                     console.log("this.filteredData ===", this.dataAgentAbsent)
 

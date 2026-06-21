@@ -122,7 +122,7 @@ export class CompteComponent implements OnInit {
     ngOnInit(): void {
         window.scrollTo({top: 0, behavior: 'smooth'});
         this.users = this.autor.getInfosUsers();
-        this.viewCompte(this.users?.datasociete?.uid, '');
+        this.viewCompte(this.users?.datasociete?.uid || this.users?.uidsociete, '');
     }
 
     viewCompte(idsociete: string = '', idpersonnel: string = '') {
@@ -139,10 +139,10 @@ export class CompteComponent implements OnInit {
                     this.dataBenef = res.body.data.map((e: any) => {
                         return {
                             ...e,
-                            name: `${e?.datapersonnel?.nom} ${e?.datapersonnel?.prenom}`,
-                            photo: `${e.datapersonnel?.photo}`,
-                            emailAgent: `${e.datapersonnel?.emailAgent}`,
-                            libelle_service: `${e?.dataservice?.libelle_service}`,
+                            name: `${e?.datapersonnel?.nom || ''} ${e?.datapersonnel?.prenom || ''}`,
+                            photo: e.datapersonnel?.photo,
+                            emailAgent: e?.datapersonnel?.emailAgent,
+                            libelle_service: e?.datausers?.dataservice?.libelle || '',
                             color: !e?.is_active ? '#f50' : '#87d068',
                             libcolor: !e?.is_active ? 'Inactif' : 'Actif',
                             created_at: moment(e?.created_at).format('DD/MM/YYYY')
@@ -209,14 +209,14 @@ export class CompteComponent implements OnInit {
 
     handleModal(value: boolean) {
         if (value) {
-            this.viewCompte(this.users?.datasociete?.uid, '');
+            this.viewCompte(this.users?.datasociete?.uid || this.users?.uidsociete, '');
         }
         this.modalOpen = false;
     }
 
     handleModalCarriere(value: boolean) {
         if (value) {
-            this.viewCompte(this.users?.datasociete?.uid, '');
+            this.viewCompte(this.users?.datasociete?.uid || this.users?.uidsociete, '');
         }
         this.modalOpenCarriere = false;
     }

@@ -1,0 +1,479 @@
+<div class="classer-wrapper">
+
+    <input #fileUploadInput type="file" style="display:none" multiple (change)="onFileSelected($event)">
+
+    <!-- ══ BARRE GLOBALE ═══════════════════════════════════════════════ -->
+    <div class="classer-topbar">
+        <div class="topbar-left">
+            <button class="topbar-btn" title="Nouveau dossier" disabled>
+                <i data-feather="folder"  class="icoLen mr-2"></i>
+                <span>Nouveau dossier</span>
+            </button>
+            <button class="topbar-btn topbar-btn-primary" title="Importer des fichiers"
+                    [disabled]="isUploading" (click)="triggerUpload()">
+                <i data-feather="upload" class="icoLen"></i>
+                <span>{{ isUploading ? 'Téléversement...' : 'Importer fichiers' }}</span>
+            </button>
+        </div>
+
+        <div class="topbar-center">
+            <span class="topbar-doc-label">
+                {{ sessionData?.datatype_document?.[0]?.libelle_type_docs || 'Document' }}
+            </span>
+            <span class="topbar-doc-name">{{ sessionData?.lib_docs }}</span>
+        </div>
+
+        <div class="topbar-right">
+            <div class="saving-indicator" *ngIf="isSaving || isUploading">
+                <span class="spin-ring spin-ring-sm"></span>
+                <ng-container *ngIf="isUploading && uploadTotal > 1">
+                    Téléversement {{ uploadCurrent }} / {{ uploadTotal }}...
+                </ng-container>
+                <ng-container *ngIf="isUploading && uploadTotal <= 1">
+                    Téléversement...
+                </ng-container>
+                <ng-container *ngIf="!isUploading && isSaving">
+                    Enregistrement...
+                </ng-container>
+            </div>
+            <button class="topbar-icon-btn" nz-dropdown [nzDropdownMenu]="sortMenu" nzTrigger="click" title="Trier">
+                <i data-feather="sliders"></i>
+            </button>
+            <button class="topbar-icon-btn" (click)="refreshAll()" title="Actualiser">
+                <i data-feather="refresh-ccw"></i>
+            </button>
+        </div>
+
+        <nz-dropdown-menu #sortMenu="nzDropdownMenu">
+            <ul nz-menu style="min-width:160px">
+                <li nz-menu-item (click)="setSortBy('date')">
+                    <i class="fa-regular fa-calendar mr-2"></i> Ordre API
+                    <i *ngIf="sortBy === 'date'" class="fa-solid fa-check ml-2" style="color:#0054b4"></i>
+                </li>
+                <li nz-menu-item (click)="setSortBy('name')">
+                    <i class="fa-solid fa-a mr-2"></i> Nom (A→Z)
+                    <i *ngIf="sortBy === 'name'" class="fa-solid fa-check ml-2" style="color:#0054b4"></i>
+                </li>
+            </ul>
+        </nz-dropdown-menu>
+    </div>
+
+    <!-- ══ BANNIÈRE UPLOAD ══════════════════════════════════════════════ -->
+    <div class="upload-banner" *ngIf="isUploading">
+        <span class="spin-ring spin-ring-sm"></span>
+        <span class="upload-banner-text">
+            <ng-container *ngIf="uploadTotal > 1">
+                Téléversement du fichier <strong>{{ uploadCurrent }}</strong> sur <strong>{{ uploadTotal }}</strong>...
+            </ng-container>
+            <ng-container *ngIf="uploadTotal <= 1">
+                Téléversement en cours...
+            </ng-container>
+        </span>
+        <div class="upload-bar-track" *ngIf="uploadTotal > 1">
+            <div class="upload-bar-fill"
+                 [style.width.%]="uploadTotal ? ((uploadCurrent - 1) / uploadTotal) * 100 : 0"></div>
+        </div>
+    </div>
+
+    <!-- ══ SPLITTER ═══════════════════════════════════════════════════ -->
+    <nz-splitter class="classer-splitter">
+
+        <!-- ── GAUCHE : plan de classement ──────────────────────────── -->
+        <nz-splitter-panel nzDefaultSize="30%" nzMin="22%" nzMax="55%">
+            <div class="tree-panel">
+
+                <!-- Bandeau drag actif -->
+                <div class="drag-banner" *ngIf="draggedItemUid">
+                    <i class="fa-solid fa-arrows-up-down-left-right"></i>
+                    Déposez sur un dossier pour classer
+                </div>
+
+                <!-- Corps arbre -->
+                <div class="tree-body" [class.tree-drag-active]="!!draggedItemUid">
+
+                    <div class="tree-loading" *ngIf="isloading">
+                        <span class="spin-ring"></span>
+                        Chargement du plan de classement...
+                    </div>
+
+                    <div class="tree-empty" *ngIf="!isloading && !treeData.length">
+                        <i class="fa-regular fa-folder"></i>
+                        <p>Aucun plan de classement disponible.</p>
+                    </div>
+
+                    <ng-container *ngIf="!isloading && treeData.length">
+
+                        <!-- Zone de drop racine -->
+                        <div class="root-drop-zone" *ngIf="draggedItemUid"
+                             (dragover)="$event.preventDefault(); dropTargetKey = '__root__'"
+                             (dragleave)="dropTargetKey = null"
+                             (drop)="onRootDrop($event)"
+                             [class.drop-active]="dropTargetKey === '__root__'">
+                            <i class="ti ti-home"></i>
+                            Sans dossier (racine)
+                        </div>
+
+                        <nz-tree-view [nzTreeControl]="treeControl" [nzDataSource]="dataSource" nzNoAnimation>
+
+                            <!-- ── Nœud FICHIER ─────────────────────── -->
+                            <nz-tree-node *nzTreeNodeDef="let node" nzTreeNodePadding
+                                          class="tree-file-node"
+                                          [class.node-dragging]="draggedItemUid === (node.uid || node.key)">
+                                <nz-tree-node-toggle nzTreeNodeNoopToggle></nz-tree-node-toggle>
+                                <nz-tree-node-option [nzDisabled]="node.disabled">
+                                    <div class="file-row"
+                                         draggable="true"
+                                         (dragstart)="onTreeFileDragStart($event, node)"
+                                         (dragend)="onDragEnd()">
+                                        <span class="drag-handle" title="Glisser pour classer">
+                                            <i class="ti ti-grip-vertical"></i>
+                                        </span>
+                                        <i class="far {{ getFileIconClass(node.extension) }} file-type-icon"
+                                           [style.color]="getFileIconColor(node.extension)"></i>
+                                        <span class="node-label"
+                                              [innerHTML]="highlightMatch(node.name, searchQuery)"></span>
+                                        <span class="ext-badge" *ngIf="node.extension">
+                                            {{ node.extension.toUpperCase() }}
+                                        </span>
+                                    </div>
+                                </nz-tree-node-option>
+                            </nz-tree-node>
+
+                            <!-- ── Nœud DOSSIER ─────────────────────── -->
+                            <nz-tree-node *nzTreeNodeDef="let node; when: hasChild" nzTreeNodePadding
+                                          class="tree-folder-node"
+                                          [class.node-selected]="selectListSelection.isSelected(node)"
+                                          [class.node-drop-target]="dropTargetKey === node.key && !!draggedItemUid"
+                                          (dragover)="onTreeFolderDragOver($event, node.key)"
+                                          (dragleave)="onTreeFolderDragLeave($event)"
+                                          (drop)="onTreeFolderDrop($event, node.key)">
+                                <nz-tree-node-toggle *ngIf="node.expandable">
+                                    <i class="fa-solid fa-chevron-right tree-expand-arrow"
+                                       [class.tree-expand-arrow--open]="treeControl.isExpanded(node)"></i>
+                                </nz-tree-node-toggle>
+                                <nz-tree-node-toggle *ngIf="!node.expandable" nzTreeNodeNoopToggle>
+                                    <span class="tree-expand-ph"></span>
+                                </nz-tree-node-toggle>
+                                <nz-tree-node-option [nzDisabled]="node.disabled"
+                                                     [nzSelected]="selectListSelection.isSelected(node)"
+                                                     (nzClick)="onTreeFolderClick(node)">
+                                    <div class="folder-row">
+                                        <i [class]="'fa-solid tree-folder-ico ' + (treeControl.isExpanded(node) ? 'fa-folder-open' : 'fa-folder')"></i>
+                                        <span class="node-label"
+                                              [innerHTML]="highlightMatch(node.name, searchQuery)"></span>
+                                        <span class="tree-file-badge" *ngIf="node.fileCount > 0"
+                                              [title]="node.fileCount + ' fichier(s)'">
+                                            {{ node.fileCount }}
+                                        </span>
+                                        <span class="folder-drop-badge"
+                                              *ngIf="dropTargetKey === node.key && !!draggedItemUid">
+                                            <i class="ti ti-inbox"></i>
+                                        </span>
+                                        <button class="folder-menu-btn"
+                                                (click)="$event.stopPropagation()"
+                                                title="Options">
+                                            <i class="ti ti-dots-vertical"></i>
+                                        </button>
+                                    </div>
+                                </nz-tree-node-option>
+                            </nz-tree-node>
+
+                        </nz-tree-view>
+                    </ng-container>
+                </div>
+            </div>
+        </nz-splitter-panel>
+
+        <!-- ── DROITE : contenu du dossier sélectionné ──────────────── -->
+        <nz-splitter-panel>
+            <div class="fm-panel">
+
+                <!-- Barre breadcrumb + actions -->
+                <div class="fm-toolbar">
+                    <button class="bc-up-btn" (click)="navigateUp()"
+                            [disabled]="!currentFolderUid" title="Dossier parent">
+                        <i class="ti ti-arrow-up"></i>
+                    </button>
+                    <div class="fm-breadcrumb">
+                        <i class="fa-solid fa-folder-open bc-root-icon"></i>
+                        <button class="bc-item" (click)="navigateRoot()">Fichiers</button>
+                        <ng-container *ngFor="let crumb of breadcrumb; let i = index">
+                            <i class="fa-solid fa-chevron-right bc-sep"></i>
+                            <button class="bc-item"
+                                    (click)="navigateBreadcrumb(i)"
+                                    [class.bc-active]="i === breadcrumb.length - 1">
+                                {{ crumb.name }}
+                            </button>
+                        </ng-container>
+                    </div>
+
+                    <div class="fm-tb-spacer"></div>
+
+                    <!-- Actions sur le fichier sélectionné -->
+                    <ng-container *ngIf="selectedItem?.isFile">
+                        <button class="fm-action-btn" (click)="openPreview(selectedItem)" title="Aperçu">
+                            <i data-feather="eye"></i>
+                        </button>
+                        <button class="fm-action-btn" (click)="openInNewTab()" title="Ouvrir dans un onglet">
+                            <i data-feather="external-link"></i>
+                        </button>
+                        <button class="fm-action-btn" (click)="downloadFile()" title="Télécharger">
+                            <i data-feather="arrow-down"></i>
+                        </button>
+                        <button class="fm-action-btn fm-action-danger" (click)="deleteFile()" title="Supprimer">
+                            <i data-feather="trash-2"></i>
+                        </button>
+                        <div class="fm-sep"></div>
+                    </ng-container>
+
+                    <!-- Bascule vue -->
+                    <div class="view-toggle">
+                        <button class="vt-btn" [class.vt-active]="viewMode === 'list'"
+                                (click)="viewMode = 'list'" title="Vue liste">
+                            <i data-feather="list"></i>
+                        </button>
+                        <button class="vt-btn" [class.vt-active]="viewMode === 'grid'"
+                                (click)="viewMode = 'grid'" title="Vue grille">
+                            <i data-feather="grid"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Corps du panneau -->
+                <div class="fm-body">
+
+                    <div class="fm-loading" *ngIf="isloading">
+                        <span class="spin-ring"></span> Chargement...
+                    </div>
+
+                    <!-- Dossier vide -->
+                    <div class="fm-empty" *ngIf="isEmpty">
+                        <i class="ti ti-folder-open fm-empty-icon"></i>
+                        <p>Ce dossier est vide</p>
+                        <button class="fm-upload-hint" (click)="triggerUpload()">
+                            <i data-feather="upload"></i> Importer un fichier
+                        </button>
+                    </div>
+
+                    <!-- Rien de sélectionné -->
+                    <div class="fm-placeholder"
+                         *ngIf="!isloading && !currentFolderUid && folderContents.length === 0">
+                        <i class="fa-regular fa-hand-pointer fm-placeholder-icon"></i>
+                        <p>Cliquez sur un dossier dans le plan de classement</p>
+                    </div>
+
+                    <!-- ── Vue LISTE ────────────────────────────────── -->
+                    <div class="fm-list" *ngIf="!isloading && !isEmpty && viewMode === 'list'">
+
+                        <div class="fm-list-header">
+                            <span class="lh-name">Nom</span>
+                            <span class="lh-type">Type</span>
+                            <span class="lh-date">Date Mod.</span>
+                            <span class="lh-size">Taille</span>
+                        </div>
+
+                        <!-- Ligne ".." (remonter) -->
+                        <div class="fm-list-row fm-list-parent" *ngIf="currentFolderUid"
+                             (click)="navigateUp()">
+                            <i class="fa-regular fa-folder fm-list-icon fm-folder-color"></i>
+                            <span class="fm-list-name">..</span>
+                            <span class="fm-list-type-label"></span>
+                            <span class="fm-list-date"></span>
+                            <span class="fm-list-size"></span>
+                        </div>
+
+                        <!-- Dossiers -->
+                        <div class="fm-list-row fm-list-folder"
+                             *ngFor="let folder of panelFolders"
+                             [class.fm-row-selected]="selectedItem?.uid === folder.uid"
+                             [class.fm-row-drop]="dropTargetPanel === (folder.uid || folder.key) && !!draggedItemUid"
+                             (click)="onPanelFolderDblClick(folder)"
+                             (dragover)="onPanelFolderDragOver($event, (folder.uid || folder.key)!)"
+                             (dragleave)="onPanelFolderDragLeave($event)"
+                             (drop)="onPanelFolderDrop($event, (folder.uid || folder.key)!)">
+                            <i class="fa-regular fa-folder fm-list-icon fm-folder-color"></i>
+                            <span class="fm-list-name">{{ folder.name }}</span>
+                            <span class="fm-list-type-label">Dossier de fichiers</span>
+                            <span class="fm-list-date">{{ folder.date_modified || '' }}</span>
+                            <span class="fm-list-size"></span>
+                            <button class="fm-list-row-menu" (click)="$event.stopPropagation()" title="Options">
+                                <i data-feather="more-vertical"></i>
+                            </button>
+                        </div>
+
+                        <!-- Fichiers -->
+                        <div class="fm-list-row fm-list-file"
+                             *ngFor="let file of panelFiles"
+                             [class.fm-row-selected]="selectedItem?.uid === file.uid"
+                             [class.fm-row-dragging]="draggedItemUid === (file.uid || file.key)"
+                             (click)="onPanelItemClick(file)"
+                             draggable="true"
+                             (dragstart)="onPanelFileDragStart($event, file)"
+                             (dragend)="onDragEnd()">
+                            <i class="far {{ getFileIconClass(file.extension || '') }} fm-list-icon"
+                               [style.color]="getFileIconColor(file.extension || '')"></i>
+                            <span class="fm-list-name">
+                                {{ file.name }}<span *ngIf="file.extension" class="fm-list-ext-inline">.{{ file.extension }}</span>
+                            </span>
+                            <span class="fm-list-type-label" *ngIf="file.extension">{{ getFileExtLabel(file.extension) }}</span>
+                            <span class="fm-list-date">{{ file.date_modified || '' }}</span>
+                            <span class="fm-list-size">{{ formatFileSize(file.file_size) }}</span>
+                            <button class="fm-list-row-menu" (click)="$event.stopPropagation()" title="Options">
+                                <i data-feather="more-vertical"></i>
+                            </button>
+                        </div>
+
+                    </div>
+
+                    <!-- ── Vue GRILLE ───────────────────────────────── -->
+                    <div class="fm-grid" *ngIf="!isloading && !isEmpty && viewMode === 'grid'">
+
+                        <!-- Dossiers -->
+                        <div class="fm-folder-card"
+                             *ngFor="let folder of panelFolders"
+                             [class.fm-card-selected]="selectedItem?.uid === folder.uid"
+                             [class.fm-card-drop]="dropTargetPanel === (folder.uid || folder.key) && !!draggedItemUid"
+                             (click)="onPanelFolderDblClick(folder)"
+                             (dragover)="onPanelFolderDragOver($event, (folder.uid || folder.key)!)"
+                             (dragleave)="onPanelFolderDragLeave($event)"
+                             (drop)="onPanelFolderDrop($event, (folder.uid || folder.key)!)">
+                            <div class="fm-card-icon">
+                                <i class="fa-regular fa-folder fm-folder-icon"></i>
+                                <span class="fm-drop-badge"
+                                      *ngIf="dropTargetPanel === (folder.uid || folder.key) && !!draggedItemUid">
+                                    <i class="ti ti-inbox"></i>
+                                </span>
+                            </div>
+                            <span class="fm-card-name">{{ folder.name }}</span>
+                        </div>
+
+                        <!-- Fichiers -->
+                        <div class="fm-file-card"
+                             *ngFor="let file of panelFiles"
+                             [class.fm-card-selected]="selectedItem?.uid === file.uid"
+                             [class.fm-card-dragging]="draggedItemUid === (file.uid || file.key)"
+                             (click)="onPanelItemClick(file)"
+                             draggable="true"
+                             (dragstart)="onPanelFileDragStart($event, file)"
+                             (dragend)="onDragEnd()">
+                            <div class="fm-card-icon">
+                                <i class="far {{ getFileIconClass(file.extension || '') }} fm-file-icon"
+                                   [style.color]="getFileIconColor(file.extension || '')"></i>
+                                <span class="fm-file-drag-hint"><i class="ti ti-grip-vertical"></i></span>
+                            </div>
+                            <span class="fm-card-name">{{ file.name }}</span>
+                            <span class="fm-card-ext" *ngIf="file.extension">
+                                {{ file.extension.toUpperCase() }}
+                            </span>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </nz-splitter-panel>
+
+    </nz-splitter>
+
+    <!-- ══ PANNEAU PRÉVISUALISATION ═══════════════════════════════════ -->
+    <div class="cd-preview-panel" [class.cd-preview-open]="showPreview">
+
+        <div class="cd-preview-header">
+            <div class="cd-preview-title">
+                <i *ngIf="previewItem" class="far {{ getFileIconClass(previewItem.extension || '') }}"
+                   [style.color]="getFileIconColor(previewItem.extension || '')"></i>
+                <span [title]="previewItem?.name">{{ previewItem?.name ?? 'Aperçu' }}</span>
+                <span *ngIf="previewItem?.extension" class="cd-preview-ext">{{ (previewItem?.extension ?? '').toUpperCase() }}</span>
+            </div>
+            <button class="cd-preview-close" (click)="closePreview()" title="Fermer (Échap)">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="cd-preview-toolbar" *ngIf="previewItem">
+            <div class="cd-ptb-group">
+                <button class="cd-ptb-btn" (click)="zoomOut()" [disabled]="zoomLevel <= 0.25" title="Dézoomer">
+                    <i class="fa-solid fa-magnifying-glass-minus"></i>
+                </button>
+                <button class="cd-ptb-zoom" (click)="resetZoom()" title="Réinitialiser">{{ zoomPercent }}%</button>
+                <button class="cd-ptb-btn" (click)="zoomIn()" [disabled]="zoomLevel >= 4.0" title="Zoomer">
+                    <i class="fa-solid fa-magnifying-glass-plus"></i>
+                </button>
+            </div>
+            <ng-container *ngIf="previewExt === 'pdf' && totalPages > 0">
+                <div class="cd-ptb-sep"></div>
+                <div class="cd-ptb-group">
+                    <button class="cd-ptb-btn" (click)="prevPage()" [disabled]="currentPage <= 1">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </button>
+                    <span class="cd-ptb-pages">
+                        <input class="cd-ptb-page-input" type="number"
+                               [value]="currentPage" [min]="1" [max]="totalPages" #pageEl
+                               (keydown.enter)="goToPage(pageEl.value); pageEl.blur()"
+                               (blur)="goToPage(pageEl.value)"/> / {{ totalPages }}
+                    </span>
+                    <button class="cd-ptb-btn" (click)="nextPage()" [disabled]="currentPage >= totalPages">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                </div>
+            </ng-container>
+            <ng-container *ngIf="previewExt === 'pdf' || isPreviewImage">
+                <div class="cd-ptb-sep"></div>
+                <div class="cd-ptb-group">
+                    <button class="cd-ptb-btn" (click)="rotateLeft()" title="Pivoter gauche"><i class="fas fa-undo"></i></button>
+                    <button class="cd-ptb-btn" (click)="rotateRight()" title="Pivoter droite"><i class="fas fa-redo"></i></button>
+                </div>
+            </ng-container>
+            <div class="cd-ptb-sep"></div>
+            <div class="cd-ptb-group">
+                <button class="cd-ptb-btn" (click)="downloadPreview()" title="Télécharger">
+                    <i class="fa-solid fa-download"></i>
+                </button>
+                <button class="cd-ptb-btn" (click)="printPreview()"
+                        *ngIf="previewExt === 'pdf' || isPreviewImage" title="Imprimer">
+                    <i class="fa-solid fa-print"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="cd-preview-body">
+            <div class="cd-preview-loading" *ngIf="isLoadingPreview">
+                <span class="spin-ring"></span>
+                <span>Chargement de l'aperçu...</span>
+            </div>
+            <div class="cd-preview-placeholder" *ngIf="!previewItem">
+                <i class="fa-regular fa-file-magnifying-glass"></i>
+                <p>Sélectionnez un fichier pour l'aperçu</p>
+            </div>
+            <div class="cd-preview-scroll cd-preview-center" *ngIf="previewItem && previewExt === 'pdf'">
+                <canvas id="cd-pdf-canvas"></canvas>
+            </div>
+            <div class="cd-preview-scroll cd-preview-center"
+                 *ngIf="previewItem && isPreviewImage && !isLoadingPreview">
+                <img [src]="previewUrl" (load)="onPreviewLoaded()" alt="aperçu" draggable="false"
+                     class="cd-preview-img"
+                     [style.transform]="'scale(' + zoomLevel + ') rotate(' + rotation + 'deg)'"
+                     [style.transform-origin]="'center center'"/>
+            </div>
+            <div class="cd-preview-iframe-wrap" *ngIf="previewItem && isPreviewOffice">
+                <iframe *ngIf="previewOfficeUrl" [src]="previewOfficeUrl"
+                        (load)="onOfficeLoaded()" frameborder="0" class="cd-preview-iframe"
+                        [style.transform]="'scale(' + zoomLevel + ')'"
+                        [style.transform-origin]="'top left'"
+                        [style.width]="(100 / zoomLevel) + '%'"
+                        [style.height]="(100 / zoomLevel) + '%'">
+                </iframe>
+            </div>
+            <div class="cd-preview-unsupported"
+                 *ngIf="previewItem && !isLoadingPreview && previewExt !== 'pdf' && !isPreviewImage && !isPreviewOffice">
+                <i class="fa-regular fa-file-circle-xmark"></i>
+                <p>Aperçu non disponible pour ce type de fichier</p>
+                <button class="cd-ptb-btn cd-ptb-download-btn" (click)="downloadPreview()">
+                    <i class="fa-solid fa-download mr-1"></i> Télécharger
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+</div>

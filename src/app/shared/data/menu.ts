@@ -18,7 +18,7 @@ export const menuItems: Menu[] =
             badge_color: 'primary',
             children: [
                 {path: '/dashboard/nft', title: 'Accueil', type: 'link'},
-                {path: '/dashboard/default', title: 'dashboards', type: 'link'},
+                {path: '/dashboard/default', title: 'Dashboards', type: 'link'},
                 {path: '/dashboard/crm', title: 'Statistiques', type: 'link'}
             ],
         },
@@ -72,6 +72,26 @@ export const menuItems: Menu[] =
                 //     type: 'link',
                 //     id: 'chart-widgets'
                 // },
+            ],
+        },
+        {
+            title: 'Importer',
+            id: 'import',
+            icon: 'download-files',
+            type: 'sub',
+            active: false,
+            level: 1,
+            children: [
+                {
+                    path: '/importer/recuperer-pdf',
+                    title: 'Excel : récupérer PDF',
+                    type: 'link'
+                },
+                {
+                    path: '/importer/pdf-depuis-dossier',
+                    title: 'Excel : PDFs depuis dossiers',
+                    type: 'link'
+                }
             ],
         },
         {
@@ -217,12 +237,7 @@ export const menuItems: Menu[] =
             active: false,
             level: 1,
             children: [
-                {
-                    path: '/rh/absence',
-                    title: 'Absence',
-                    type: 'link',
-                    id: 'general-widgets'
-                },
+
                 // {
                 //     path: '/rh/interim',
                 //     title: 'Intérim',
@@ -234,47 +249,22 @@ export const menuItems: Menu[] =
                     title: `Type d'absence`,
                     type: 'link',
                     id: 'chart-widgets'
+                },
+                {
+                    path: '/rh/absence',
+                    title: 'Absence',
+                    type: 'link',
+                    id: 'general-widgets'
+                },
+                {
+                    path: '/rh/valider-absence',
+                    title: 'Valider',
+                    type: 'link',
+                    id: 'general-widgets'
                 }
             ],
         },
-        // {
-        //     title: 'Importer',
-        //     id: 'import',
-        //     icon: 'import',
-        //     type: 'sub',
-        //     active: false,
-        //     level: 1,
-        //     children: [
-        //         // {
-        //         //     path: '/project/project-details',
-        //         //     title: 'Import PDF',
-        //         //     type: 'link',
-        //         //     badge: false,
-        //         //     badge_value: 'New',
-        //         //     badge_color: 'success'
-        //         // },
-        //         {
-        //             path: '/project/project-list',
-        //             title: 'Import EXCEL PDF',
-        //             type: 'link'
-        //         },
-        //         {
-        //             path: '/project/create-project',
-        //             title: 'Import EXCEL PDF dossier',
-        //             type: 'link'
-        //         },
-        //         // {
-        //         //     path: '/project/create-project',
-        //         //     title: 'Import EXCEL village',
-        //         //     type: 'link'
-        //         // },
-        //         // {
-        //         //     path: '/project/create-project',
-        //         //     title: 'Import EXCEL',
-        //         //     type: 'link'
-        //         // }
-        //     ],
-        // },
+
         // {
         //     title: 'Trouver un document',
         //     id: 'search',

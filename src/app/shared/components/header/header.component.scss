@@ -264,6 +264,15 @@
   }
 }
 
+// ── Correctif mobile : masque le logo-wrapper pour éviter le double hamburger
+// _responsive.scss l'impose via une règle 4-classes qui bat Tailwind `.hidden`.
+// !important nécessaire pour reprendre la main.
+@media (max-width: 1023px) {
+  .header-logo-wrapper {
+    display: none !important;
+  }
+}
+
 .header-wrapper {
   min-height: 50px !important;
   height: 50px !important;

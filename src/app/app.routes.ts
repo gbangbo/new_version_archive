@@ -10,6 +10,7 @@ import {ForgotPasswordComponent} from "./auth/forgot-password/forgot-password.co
 import {ConfirmeAuthOtpComponent} from "./auth/confirme-auth-otp/confirme-auth-otp.component";
 import {ExpireComponent} from "./auth/expire/expire.component";
 import {ResetPasswordComponent} from "./auth/reset-password/reset-password.component";
+import {ConsultFileComponent} from "./auth/consult-file/consult-file.component";
 
 export const routes: Routes = [
     {
@@ -50,6 +51,13 @@ export const routes: Routes = [
         component: ExpireComponent,
         data: {
             title: 'Votre session a expiré'
+        }
+    },
+    {
+        path: 'documents/recu/:id',
+        component: ConsultFileComponent,
+        data: {
+            title: 'Consultation des fichiers reçu'
         }
     },
     {

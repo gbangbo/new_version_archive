@@ -8,7 +8,7 @@
         <app-header-logo [icon]="'align-center'" [type]="'header'" [logoIn]="logoIn1" [logoDark]="logoDark1"></app-header-logo>
     </div>
 
-    <div class="left-header col-span-5 xxl:col-span-6 xl:col-span-5 lg:col-span-4 md:col-span-3" style="display: flex; align-items: center; gap: 30px;">
+    <div class="left-header col-span-2 xxl:col-span-6 xl:col-span-5 lg:col-span-4 md:col-span-3" style="display: flex; align-items: center; gap: 16px;">
 
         <div (click)="toggleSidebar()" style="cursor: pointer;">
             <app-feather-icon *ngIf="isIcon === 'menu'"
@@ -21,13 +21,15 @@
             </app-feather-icon>
         </div>
 
-        <app-header-notice></app-header-notice>
+        <div class="block lg:hidden">
+            <app-header-notice></app-header-notice>
+        </div>
 
         <ng-content select="[icon]"></ng-content>
 
     </div>
 
-    <div class="nav-right col-span-7 xxl:col-span-6 xl:col-span-7 md:col-span-11 float-right right-header p-0 ms-auto">
+    <div class="nav-right col-span-10 xxl:col-span-6 xl:col-span-7 lg:col-span-8 md:col-span-9 float-right right-header p-0 ms-auto">
         <ul class="nav-menus">
             
 <!--            <li class="language-nav" (click)="toggleLanguage()" (clickOutside)="clickOutside()">-->

@@ -1,5 +1,5 @@
 import {Component, OnInit, ChangeDetectorRef, HostListener} from '@angular/core';
-import {CommonModule} from '@angular/common';
+import {CommonModule, Location} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {NzSplitterModule} from "ng-zorro-antd/splitter";
 import {NzIconModule} from "ng-zorro-antd/icon";
@@ -116,12 +116,14 @@ export class PreViewDocComponent implements OnInit {
 
     dataSource = new NzTreeFlatDataSource(this.treeControl, this.treeFlattener);
     treeData: PreviewNode[] = [];
+    pieceFiles: any[] = [];
 
     constructor(
         private autor: Authorization,
         private httService: HttpService,
         private sanitizer: DomSanitizer,
-        private cdr: ChangeDetectorRef
+        private cdr: ChangeDetectorRef,
+        private location: Location
     ) {
     }
 
@@ -130,6 +132,7 @@ export class PreViewDocComponent implements OnInit {
         this.users = this.autor.getInfosUsers();
         this.sessionData = this.autor.getInfosPreview();
         const uidTypeDoc = this.sessionData?.datatype_document?.[0]?.uid || '';
+        this.showPieces(this.users.uid, this.sessionData.uid);
         this.showCatOrder('', uidTypeDoc, '');
         console.log('sessionData ====', this.sessionData);
     }
@@ -169,6 +172,32 @@ export class PreViewDocComponent implements OnInit {
     }
 
     /* ────────────────────────────────────────
+   Chargement des fichiers a consulter
+    ──────────────────────────────────────── */
+    showPieces(iduser: string = '', iddocuments: string = '') {
+        this.httService
+            .getData(
+                `${environment.api_url}api/:consultation-pieces-documents?iduser=${iduser}&iddocuments=${iddocuments}`,
+                false,
+                this.users?.access_token || ''
+            )
+            .toPromise()
+            .then((res: any) => {
+                if (res.body.status || res.body.success) {
+                    this.pieceFiles = res.body.data || [];
+                    console.log("this.pieceFiles ===", this.pieceFiles)
+                    if (this.treeData?.length) {
+                        this.injectFilesIntoTree();
+                        this.dataSource.setData([...this.treeData]);
+                        setTimeout(() => this.treeControl.expandAll(), 300);
+                    }
+                }
+            })
+            .catch(() => {
+            });
+    }
+
+    /* ────────────────────────────────────────
        RECHERCHE dans l'arbre
     ──────────────────────────────────────── */
     onSearchChange(): void {
@@ -186,6 +215,10 @@ export class PreViewDocComponent implements OnInit {
                 }
             });
         }, 50);
+    }
+
+    goBack(): void {
+        this.location.back();
     }
 
     toggleTree(): void {
@@ -254,7 +287,7 @@ export class PreViewDocComponent implements OnInit {
     }
 
     private injectFilesIntoTree(): void {
-        const files: any[] = this.sessionData?.datasPiece || [];
+        const files: any[] = this.pieceFiles;
         if (!this.treeData?.length || !files.length) return;
 
         for (const d of files) {
@@ -264,10 +297,10 @@ export class PreViewDocComponent implements OnInit {
             if (catUid) {
                 const inserted = this.insertIntoCategory(this.treeData, catUid, fileNode);
                 if (!inserted) {
-                    this.appendToLastNode(fileNode);
+                    this.appendToRootNode(fileNode);
                 }
             } else {
-                this.appendToLastNode(fileNode);
+                this.appendToRootNode(fileNode);
             }
         }
     }
@@ -286,11 +319,11 @@ export class PreViewDocComponent implements OnInit {
         return false;
     }
 
-    private appendToLastNode(file: PreviewNode): void {
+    private appendToRootNode(file: PreviewNode): void {
         if (!this.treeData?.length) return;
-        const last = this.treeData[this.treeData.length - 1];
-        if (!last.children) last.children = [];
-        last.children.push(file);
+        const root = this.treeData[0];
+        if (!root.children) root.children = [];
+        root.children.push(file);
     }
 
     /* ────────────────────────────────────────
@@ -600,11 +633,13 @@ export class PreViewDocComponent implements OnInit {
     }
 
     getFileExtension(url: string): string {
-        return url ? (url.split('.').pop() || '') : '';
+        if (!url) return '';
+        const clean = url.split('?')[0].split('#')[0];
+        return (clean.split('.').pop() || '').toLowerCase();
     }
 
     isImage(extension: string): boolean {
-        return ['jpg', 'jpeg', 'png', 'gif', 'webp', 'JPG', 'JPEG', 'PNG'].includes(extension);
+        return ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp'].includes((extension || '').toLowerCase());
     }
 
     isOffice(extension: string): boolean {

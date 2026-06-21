@@ -2,6 +2,7 @@ import {Routes} from "@angular/router";
 import {configuration} from "../../components/configuration/configuration.routes";
 import {voirdocuments} from "../../components/voir-document/voir-documents.routes";
 import {AdminGuard} from "../guard/admin.guard";
+import {importerRoutes} from "../../components/importer/importer.routes";
 
 export const content: Routes = [
     {
@@ -349,6 +350,14 @@ export const content: Routes = [
         loadChildren: () => import('../../components/menu/menu.routes').then(r => r.menuRoutes),
         data: {
             breadcrumb: "Menu"
+        }
+    },
+    {
+        path: 'importer',
+        canActivate:[AdminGuard],
+        loadChildren: () => import('../../components/importer/importer.routes').then(r => r.importerRoutes),
+        data: {
+            breadcrumb: "Importation"
         }
     },
 ]

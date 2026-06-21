@@ -1531,7 +1531,6 @@ $col-actions: 70px;
 }
 
 
-
 //---------------------------SWAL
 
 
@@ -1539,7 +1538,7 @@ $col-actions: 70px;
 .swal-custom-popup {
   border-radius: 16px !important;
   padding: 32px 28px 24px !important;
-  box-shadow: 0 24px 64px rgba(0,0,0,0.12) !important;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.12) !important;
   font-family: inherit !important;
 }
 
@@ -1580,3 +1579,8 @@ $col-actions: 70px;
 }
 
 
+.btn-close {
+  width: 8px;
+  height: 8px;
+  background-size: 8px;
+}

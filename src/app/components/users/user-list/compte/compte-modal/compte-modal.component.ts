@@ -46,8 +46,8 @@ export class CompteModalComponent implements OnChanges {
 
     constructor(private autor: Authorization, private httService: HttpService) {
         this.users = this.autor.getInfosUsers();
-        this.showStatutPersonnel(this.users?.datasociete?.uid, '', '', '', '', '')
-        this.saveroles(this.users?.datasociete?.uid, '')
+        this.showStatutPersonnel(this.users?.datasociete?.uid || this.users?.uidsociete, '', '', '', '', '')
+        this.saveroles(this.users?.datasociete?.uid || this.users?.uidsociete, '')
     }
 
     ngOnChanges(changes: SimpleChanges) {
@@ -118,7 +118,7 @@ export class CompteModalComponent implements OnChanges {
         this.isloading = true;
         let payload = {
             "action": this.validationForm.value.uid ? 2 : 1,
-            "idsociete": this.users?.datasociete?.uid,
+            "idsociete": this.users?.datasociete?.uid || this.users?.uidsociete,
             "idstatutpersonnel": this.validationForm.value.idstatutpersonnel || '',
             "idroles": this.validationForm.value.idroles,
             "password": this.validationForm.value.password,

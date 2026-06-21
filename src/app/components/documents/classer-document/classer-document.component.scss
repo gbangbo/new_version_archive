@@ -1,0 +1,1300 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+// ══ WRAPPER ══════════════════════════════════════════════════════
+.classer-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 700px !important;
+  height: 100%;
+  background: #f3f3f3;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+  border-radius: 7px;
+  overflow: hidden;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+// ══ BARRE GLOBALE ════════════════════════════════════════════════
+.classer-topbar {
+  display: flex;
+  align-items: center;
+  padding: 5px 14px;
+  background: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
+  flex-shrink: 0;
+  min-height: 44px;
+  gap: 8px;
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.topbar-center {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  justify-content: center;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.topbar-doc-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #555;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.topbar-doc-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a1a1a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.topbar-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  color: #1a1a1a;
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.1s, border-color 0.1s;
+
+  i {
+    font-size: 16px;
+  }
+
+  &:hover:not(:disabled) {
+    background: #f0f0f0;
+    border-color: #d0d0d0;
+  }
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  &.topbar-btn-primary {
+    color: #0054b4;
+    font-weight: 500;
+
+    &:hover:not(:disabled) {
+      background: #dbe9ff;
+      border-color: #b3d0f5;
+    }
+  }
+}
+
+.topbar-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  color: #555;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.1s, border-color 0.1s;
+
+  svg {
+    width: 17px;
+    height: 17px;
+    stroke: currentColor;
+  }
+
+  &:hover {
+    background: #f0f0f0;
+    border-color: #d0d0d0;
+    color: #1a1a1a;
+  }
+
+  &.topbar-icon-active {
+    color: #0054b4;
+    background: #dbe9ff;
+    border-color: #b3d0f5;
+  }
+}
+
+// ══ SPLITTER ════════════════════════════════════════════════════
+.classer-splitter {
+  flex: 1;
+  min-height: 0;
+}
+
+// ══ PANNEAU GAUCHE – SIDEBAR ════════════════════════════════════
+.tree-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #ffffff;
+  border-right: 1px solid #e0e0e0;
+}
+
+// ── Bandeau drag actif ─────────────────────────────────────────
+.drag-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: #0054b4;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  flex-shrink: 0;
+  animation: pulse-banner 1.5s ease-in-out infinite;
+
+  i {
+    font-size: 14px;
+  }
+}
+
+@keyframes pulse-banner {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+// ── Corps arbre ────────────────────────────────────────────────
+.tree-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 2px 0;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #c8c8c8;
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #a0a0a0;
+  }
+}
+
+.tree-loading,
+.tree-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 40px 16px;
+  color: #8a8a8a;
+  font-size: 13px;
+  text-align: center;
+
+  i {
+    font-size: 32px;
+    color: #c0c0c0;
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+// Zone drop racine
+.root-drop-zone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 4px 8px 6px;
+  padding: 6px 12px;
+  border: 2px dashed #b8b8b8;
+  border-radius: 4px;
+  color: #555;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  background: #f9f9f9;
+
+  &.drop-active {
+    border-color: #0054b4;
+    background: #dbe9ff;
+    color: #0054b4;
+  }
+}
+
+// ── Contenu des noeuds ─────────────────────────────────────────
+.folder-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  width: 100%;
+  min-height: 26px;
+  padding-right: 2px;
+}
+
+.file-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  width: 100%;
+  min-height: 26px;
+  cursor: grab;
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+// ── Flèche expand/collapse ─────────────────────────────────────
+.tree-expand-arrow {
+  font-size: 9px;
+  color: #bbb;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  transition: transform 0.18s ease, color 0.15s;
+
+  &.tree-expand-arrow--open {
+    transform: rotate(90deg);
+    color: #888;
+  }
+}
+
+.tree-expand-ph {
+  display: inline-block;
+  width: 14px;
+  flex-shrink: 0;
+}
+
+// ── Icône dossier ──────────────────────────────────────────────
+.tree-folder-ico {
+  font-size: 15px;
+  color: #f5a623;
+  flex-shrink: 0;
+  transition: color 0.15s;
+
+  &.fa-folder-open {
+    color: #d4860a;
+  }
+}
+
+.file-type-icon {
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.drag-handle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 13px;
+  color: #c8c8c8;
+  font-size: 12px;
+  flex-shrink: 0;
+  cursor: grab;
+  transition: color 0.1s;
+  opacity: 0;
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.file-row:hover .drag-handle {
+  opacity: 1;
+  color: #999;
+}
+
+.node-label {
+  font-size: 13px;
+  color: #1a1a1a;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  ::ng-deep mark.hl {
+    background: #fff2a8;
+    color: #5a3c00;
+    padding: 0 2px;
+    border-radius: 2px;
+  }
+}
+
+.ext-badge {
+  font-size: 8px;
+  padding: 0 3px;
+  line-height: 14px;
+  background: #ebebeb;
+  border-radius: 2px;
+  color: #999;
+  letter-spacing: 0.02em;
+  flex-shrink: 0;
+  border: 1px solid #d8d8d8;
+}
+
+// Badge "déposer ici"
+.folder-drop-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 1px 7px;
+  background: #107c10;
+  border-radius: 3px;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 600;
+  flex-shrink: 0;
+  animation: pop-in 0.15s ease-out;
+}
+
+@keyframes pop-in {
+  from {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+// Bouton ⋮ dans les dossiers de l'arbre
+.folder-menu-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  color: #666;
+  font-size: 13px;
+  cursor: pointer;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity 0.1s, background 0.1s;
+  padding: 0;
+
+  &:hover {
+    background: #d0d0d0;
+    border-color: #c0c0c0;
+  }
+}
+
+// ── Overrides ng-zorro (approche minimaliste, préserve le rendu natif) ──
+::ng-deep {
+
+  // Seul ajustement sur la structure interne : supprimer le gap bas entre lignes
+  nz-tree-view .ant-tree-treenode {
+    padding-bottom: 0 !important;
+  }
+
+  // Hauteur de la zone de contenu légèrement réduite
+  nz-tree-view .ant-tree-node-content-wrapper {
+    min-height: 26px !important;
+    padding: 0 4px !important;
+  }
+
+  // ── Dossier : hover, sélection, drop ──────────────────────
+
+  .tree-folder-node {
+
+    > nz-tree-node-option {
+      border-radius: 4px !important;
+      transition: background 0.1s;
+
+      &:hover {
+        background: #eaf4ff !important;
+      }
+    }
+
+    // Afficher ⋮ au survol ou sélection
+    &:hover .folder-menu-btn,
+    &.node-selected .folder-menu-btn {
+      opacity: 1;
+    }
+
+    &.node-selected > nz-tree-node-option {
+      background: #cce4ff !important;
+    }
+
+    &.node-drop-target > nz-tree-node-option {
+      background: #d4edda !important;
+      outline: 2px solid #107c10 !important;
+      outline-offset: -2px;
+    }
+  }
+
+  // ── Fichier ───────────────────────────────────────────────
+
+  .tree-file-node {
+
+    > nz-tree-node-option {
+      border-radius: 3px !important;
+
+      &:hover {
+        background: #f0f0f0 !important;
+      }
+    }
+
+    &.node-dragging {
+      opacity: 0.3 !important;
+    }
+  }
+
+  // ── Drag actif : tous les dossiers indiquent qu'ils sont droppables ──
+
+  .tree-drag-active {
+    .tree-folder-node:not(.node-drop-target) > nz-tree-node-option {
+      background: rgba(245, 166, 35, 0.06) !important;
+      outline: 1px dashed #f5a623 !important;
+      outline-offset: -1px;
+    }
+  }
+}
+
+// ══ PANNEAU DROIT – FILE MANAGER ════════════════════════════════
+.fm-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #ffffff;
+}
+
+// ── Barre breadcrumb ──────────────────────────────────────────
+.fm-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 12px;
+  background: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
+  flex-shrink: 0;
+  min-height: 42px;
+  overflow: hidden;
+}
+
+// Bouton flèche haut (remonter)
+.bc-up-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  color: #444;
+  font-size: 16px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.1s, border-color 0.1s;
+
+  &:hover:not(:disabled) {
+    background: #f0f0f0;
+    border-color: #d0d0d0;
+    color: #1a1a1a;
+  }
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+}
+
+.fm-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  overflow: hidden;
+  min-width: 0;
+  flex-shrink: 1;
+}
+
+.bc-root-icon {
+  font-size: 13px;
+  color: #f5a623;
+  flex-shrink: 0;
+  margin-right: 2px;
+}
+
+.bc-sep {
+  color: #c0c0c0;
+  font-size: 9px;
+  flex-shrink: 0;
+  margin: 0 2px;
+}
+
+.bc-item {
+  display: inline-block;
+  max-width: 150px;
+  padding: 2px 6px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  font-size: 13px;
+  font-family: inherit;
+  color: #0054b4;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: background 0.1s;
+  font-weight: 500;
+
+  &:hover {
+    background: #dbe9ff;
+    border-color: #b3d0f5;
+    color: #003d8f;
+  }
+
+  &.bc-active {
+    color: #1a1a1a;
+    font-weight: 700;
+    cursor: default;
+    background: #f0f0f0;
+    border-color: #d8d8d8;
+
+    &:hover {
+      background: #f0f0f0;
+      border-color: #d8d8d8;
+    }
+  }
+}
+
+.fm-tb-spacer {
+  flex: 1;
+  min-width: 4px;
+}
+
+.fm-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  color: #444;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background 0.1s, border-color 0.1s;
+  flex-shrink: 0;
+
+  svg {
+    width: 15px;
+    height: 15px;
+    stroke: currentColor;
+  }
+
+  &:hover {
+    background: #f0f0f0;
+    border-color: #d0d0d0;
+    color: #1a1a1a;
+  }
+
+  &.fm-action-danger {
+    color: #c42b1c;
+
+    &:hover {
+      background: #fde7e7;
+      border-color: #f3bfbf;
+    }
+  }
+}
+
+.fm-sep {
+  width: 1px;
+  height: 16px;
+  background: #d8d8d8;
+  margin: 0 3px;
+  flex-shrink: 0;
+}
+
+// Bascule liste/grille
+.view-toggle {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  flex-shrink: 0;
+  padding: 2px;
+  border: 1px solid #d0d0d0;
+  border-radius: 4px;
+  background: #f5f5f5;
+}
+
+.vt-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  color: #666;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background 0.1s, border-color 0.1s;
+
+  svg {
+    width: 15px;
+    height: 15px;
+    stroke: currentColor;
+  }
+
+  &.vt-active {
+    background: #ffffff;
+    border-color: #c8c8c8;
+    color: #1a1a1a;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+
+  &:hover:not(.vt-active) {
+    background: #ebebeb;
+    color: #333;
+  }
+}
+
+// ══ CORPS PANNEAU DROIT ═════════════════════════════════════════
+.fm-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #c8c8c8;
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #a0a0a0;
+  }
+}
+
+.fm-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 100%;
+  color: #8a8a8a;
+  font-size: 13px;
+}
+
+.fm-empty,
+.fm-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 10px;
+  color: #8a8a8a;
+  font-size: 13px;
+  text-align: center;
+
+  p {
+    margin: 0;
+  }
+}
+
+.fm-empty-icon,
+.fm-placeholder-icon {
+  font-size: 48px;
+  color: #d0d0d0;
+}
+
+.fm-upload-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 14px;
+  background: transparent;
+  border: 1px dashed #b8b8b8;
+  border-radius: 4px;
+  color: #555;
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.15s;
+  margin-top: 4px;
+
+  &:hover {
+    border-color: #0054b4;
+    color: #0054b4;
+    background: #dbe9ff;
+  }
+}
+
+// ══ VUE LISTE ═══════════════════════════════════════════════════
+.fm-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.fm-list-header {
+  display: flex;
+  align-items: center;
+  padding: 5px 14px 5px 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #555;
+  background: #f3f3f3;
+  border-bottom: 1px solid #e0e0e0;
+  border-top: 1px solid #e0e0e0;
+  user-select: none;
+  gap: 0;
+  flex-shrink: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+
+  .lh-name {
+    flex: 1;
+    min-width: 0;
+    padding-left: 36px;
+  }
+
+  .lh-type {
+    width: 130px;
+    flex-shrink: 0;
+  }
+
+  .lh-date {
+    width: 110px;
+    flex-shrink: 0;
+  }
+
+  .lh-size {
+    width: 80px;
+    text-align: right;
+    flex-shrink: 0;
+    padding-right: 36px;
+  }
+}
+
+// Ligne générique
+.fm-list-row {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  min-height: 38px;
+  padding-right: 4px;
+  border-bottom: 1px solid transparent;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.08s;
+
+  &:hover {
+    background: #e8f4ff;
+    border-bottom-color: #c8dff8;
+  }
+
+  &.fm-row-selected {
+    background: #cce4ff;
+    border-bottom-color: #99caff;
+  }
+
+  &.fm-row-drop {
+    background: #d4edda;
+    outline: 2px dashed #107c10;
+    outline-offset: -2px;
+  }
+
+  &.fm-row-dragging {
+    opacity: 0.35;
+  }
+
+  &.fm-list-parent {
+    color: #555;
+
+    &:hover {
+      background: #f0f0f0;
+    }
+  }
+}
+
+.fm-list-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+  width: 28px;
+  text-align: center;
+  margin-right: 6px;
+}
+
+.fm-folder-color {
+  color: #f5a623;
+}
+
+.fm-list-name {
+  font-size: 13px;
+  color: #1a1a1a;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  padding-right: 8px;
+}
+
+.fm-list-ext-inline {
+  color: #888;
+}
+
+.fm-list-date {
+  font-size: 12.5px;
+  color: #555;
+  width: 120px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.fm-list-size {
+  font-size: 12.5px;
+  color: #555;
+  width: 90px;
+  text-align: right;
+  flex-shrink: 0;
+  white-space: nowrap;
+  padding-right: 8px;
+}
+
+// Bouton ⋮ sur les lignes
+.fm-list-row-menu {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  color: #666;
+  font-size: 15px;
+  cursor: pointer;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity 0.1s, background 0.1s;
+  padding: 0;
+
+  &:hover {
+    background: #d0d0d0;
+    border-color: #c0c0c0;
+  }
+}
+
+.fm-list-row:hover .fm-list-row-menu,
+.fm-list-row.fm-row-selected .fm-list-row-menu {
+  opacity: 1;
+}
+
+// ══ VUE GRILLE ══════════════════════════════════════════════════
+.fm-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  align-content: flex-start;
+  padding: 8px;
+}
+
+.fm-folder-card,
+.fm-file-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 90px;
+  padding: 10px 6px 8px;
+  background: transparent;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.1s, border-color 0.1s;
+
+  &:hover {
+    background: #e8f4ff;
+    border-color: #99caff;
+  }
+}
+
+.fm-folder-card {
+  &.fm-card-selected {
+    background: #cce4ff;
+    border-color: #0054b4;
+  }
+
+  &.fm-card-drop {
+    background: #d4edda;
+    border-color: #107c10;
+    border-style: dashed;
+  }
+}
+
+.fm-file-card {
+  &.fm-card-selected {
+    background: #cce4ff;
+    border-color: #0054b4;
+  }
+
+  &.fm-card-dragging {
+    opacity: 0.35;
+    border-style: dashed;
+  }
+}
+
+.fm-card-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+}
+
+.fm-folder-icon {
+  font-size: 40px;
+  color: #f5a623;
+}
+
+.fm-file-icon {
+  font-size: 34px;
+}
+
+.fm-file-drag-hint {
+  position: absolute;
+  bottom: -2px;
+  right: -4px;
+  font-size: 12px;
+  color: #8a8a8a;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.fm-file-card:hover .fm-file-drag-hint {
+  opacity: 1;
+}
+
+.fm-drop-badge {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  background: #107c10;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 10px;
+}
+
+.fm-card-name {
+  font-size: 11.5px;
+  color: #1a1a1a;
+  text-align: center;
+  word-break: break-word;
+  line-height: 1.35;
+  max-height: 2.7em;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.fm-card-ext {
+  font-size: 9px;
+  padding: 1px 5px;
+  background: #ebebeb;
+  border-radius: 3px;
+  color: #555;
+  border: 1px solid #d8d8d8;
+}
+
+// ══ SPINNER ══════════════════════════════════════════════════════
+.spin-ring {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #e0e0e0;
+  border-top-color: #0054b4;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+
+  &.spin-ring-sm {
+    width: 13px;
+    height: 13px;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// ══ INDICATEUR DE SAUVEGARDE ════════════════════════════════════
+.saving-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #0054b4;
+  margin-right: 4px;
+  white-space: nowrap;
+}
+
+// ══ BANNIÈRE D'UPLOAD ════════════════════════════════════════════
+.upload-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px;
+  background: #e8f0fe;
+  border-bottom: 1px solid #c5d8fb;
+  flex-shrink: 0;
+  min-height: 38px;
+
+  .upload-banner-text {
+    font-size: 12.5px;
+    color: #0054b4;
+    white-space: nowrap;
+  }
+
+  .upload-bar-track {
+    flex: 1;
+    height: 5px;
+    background: #c5d8fb;
+    border-radius: 4px;
+    overflow: hidden;
+    min-width: 80px;
+
+    .upload-bar-fill {
+      height: 100%;
+      background: #0054b4;
+      border-radius: 4px;
+      transition: width 0.3s ease;
+    }
+  }
+}
+
+.icoLen {
+  width: 12px !important;
+  height: 12px !important;
+}
+
+// Badge nombre de fichiers dans l'arbre gauche
+.tree-file-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 16px;
+  padding: 0 5px;
+  background: #e8f4ff;
+  color: #0054b4;
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 700;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+// Label type fichier dans la vue liste
+.fm-list-type-label {
+  font-size: 11.5px;
+  color: #888;
+  white-space: nowrap;
+  flex-shrink: 0;
+  width: 130px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// ══ PANNEAU PRÉVISUALISATION ════════════════════════════════════
+.cd-preview-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 58%;
+  height: 100%;
+  background: #ffffff;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid #e2e8f0;
+  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.14);
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+  &.cd-preview-open { transform: translateX(0); }
+}
+
+.cd-preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-bottom: 1px solid #f0f2f5;
+  background: #f8fafc;
+  flex-shrink: 0;
+  gap: 8px;
+}
+
+.cd-preview-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1e293b;
+  min-width: 0;
+
+  i { font-size: 16px; flex-shrink: 0; }
+  span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+}
+
+.cd-preview-ext {
+  font-size: 10px;
+  padding: 1px 6px;
+  background: #e8f4ff;
+  color: #0054b4;
+  border-radius: 3px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.cd-preview-close {
+  width: 28px; height: 28px;
+  border: none; background: transparent; border-radius: 6px;
+  color: #94a3b8; cursor: pointer; display: flex; align-items: center;
+  justify-content: center; font-size: 14px; flex-shrink: 0; transition: all 0.15s;
+  &:hover { background: #f1f5f9; color: #374151; }
+}
+
+.cd-preview-toolbar {
+  display: flex; align-items: center; padding: 6px 10px;
+  border-bottom: 1px solid #f0f2f5; background: #fafbfc;
+  flex-shrink: 0; gap: 4px; flex-wrap: wrap;
+}
+
+.cd-ptb-group { display: flex; align-items: center; gap: 2px; }
+
+.cd-ptb-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px; border: none; background: transparent;
+  border-radius: 5px; font-size: 13px; color: #4b5563; cursor: pointer; transition: background 0.12s;
+  &:hover:not(:disabled) { background: #e5e7eb; }
+  &:disabled { opacity: 0.35; cursor: not-allowed; }
+}
+
+.cd-ptb-zoom {
+  min-width: 44px; height: 28px; padding: 0 6px; border: none;
+  background: #f1f5f9; border-radius: 5px; font-size: 12px; font-weight: 600;
+  color: #374151; cursor: pointer; text-align: center;
+  &:hover { background: #e5e7eb; }
+}
+
+.cd-ptb-sep { width: 1px; height: 20px; background: #e2e8f0; margin: 0 3px; flex-shrink: 0; }
+
+.cd-ptb-pages {
+  display: flex; align-items: center; gap: 4px; font-size: 12px; color: #374151;
+}
+
+.cd-ptb-page-input {
+  width: 36px; height: 26px; border: 1px solid #e2e8f0; border-radius: 4px;
+  text-align: center; font-size: 12px; color: #374151; outline: none;
+  &:focus { border-color: #0054b4; box-shadow: 0 0 0 2px rgba(0, 84, 180, 0.1); }
+}
+
+.cd-ptb-download-btn {
+  width: auto !important; padding: 0 12px; font-size: 13px; height: 32px;
+  border: 1.5px solid #e2e8f0; background: #fff !important; border-radius: 6px;
+  color: #374151 !important; margin-top: 8px;
+}
+
+.cd-preview-body {
+  flex: 1; overflow: hidden; position: relative; display: flex; flex-direction: column;
+}
+
+.cd-preview-loading {
+  position: absolute; inset: 0; z-index: 5;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  background: rgba(255, 255, 255, 0.9); gap: 12px;
+  span { font-size: 13px; color: #64748b; }
+}
+
+.cd-preview-scroll {
+  flex: 1; overflow: auto; padding: 16px;
+  scrollbar-width: thin; scrollbar-color: #e2e8f0 transparent;
+  &::-webkit-scrollbar { width: 5px; height: 5px; }
+  &::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 4px; }
+  &.cd-preview-center { display: flex; align-items: flex-start; justify-content: center; }
+}
+
+.cd-preview-img {
+  max-width: 100%; border-radius: 4px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12); transition: transform 0.2s;
+}
+
+.cd-preview-iframe-wrap { flex: 1; overflow: hidden; position: relative; }
+.cd-preview-iframe { width: 100%; height: 100%; border: none; display: block; }
+
+.cd-preview-placeholder,
+.cd-preview-unsupported {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 12px; color: #94a3b8;
+  i { font-size: 48px; opacity: 0.4; }
+  p { font-size: 14px; font-weight: 500; color: #64748b; }
+}

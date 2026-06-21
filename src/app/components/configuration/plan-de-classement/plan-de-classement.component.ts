@@ -75,6 +75,7 @@ export class PlanDeClassementComponent implements OnInit {
     private transformer = (node: TreeNode, level: number): FlatNode => ({
         expandable: !!node.children && node.children.length > 0,
         name: node.name,
+        code_categories: node.code_categories,
         libelle_type_docs: node.libelle_type_docs,
         code_type_docs: node.code_type_docs,
         uid_type_docs: node.uid_type_docs,
@@ -350,6 +351,7 @@ export class PlanDeClassementComponent implements OnInit {
 
     mapApiToTree(data: any[]): TreeNode[] {
         return data.map(item => ({
+            code_categories: item?.code_categories,   // ← nom affiché dans le tree
             name: item?.name_categories,   // ← nom affiché dans le tree
             key: item?.uid,                // ← identifiant unique
             id: item?.id,
@@ -359,8 +361,8 @@ export class PlanDeClassementComponent implements OnInit {
             apiLevel: item?.level,
             auth: `${item?.actif ? 'Actif' : 'Inactif'}`,
             color: item?.actif ? '#87d068' : '#9a0218',
-            code_type_docs: item?.code_type_docs,
-            libelle_type_docs: item?.libelle_type_docs,
+            code_type_docs: item?.datastype_document?.code_type_docs,
+            libelle_type_docs: item?.datastype_document?.libelle_type_docs,
             idtype_document: item?.idtype_document,
             uid_type_docs: item?.uid_type_docs,
             disabled: false,

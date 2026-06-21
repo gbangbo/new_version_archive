@@ -99,22 +99,22 @@
                 <span class="field-label">Code société :</span>
                 <span class="field-value">{{ userData?.datasociete?.code_societe || '—' }}</span>
             </div>
-            <div class="field-row">
-                <span class="field-label">N° Badge :</span>
-                <span class="field-value red">{{ userData?.datastatut_personnel?.numero_badge || '—' }}</span>
-            </div>
-            <div class="field-row">
-                <span class="field-label">Localisation :</span>
-                <span class="field-value">{{ userData?.datasociete?.localisation || '—' }}</span>
-            </div>
+<!--            <div class="field-row">-->
+<!--                <span class="field-label">N° Badge :</span>-->
+<!--                <span class="field-value red">{{ userData?.datastatut_personnel?.numero_badge || '—' }}</span>-->
+<!--            </div>-->
+<!--            <div class="field-row">-->
+<!--                <span class="field-label">Localisation :</span>-->
+<!--                <span class="field-value">{{ userData?.datasociete?.localisation || '—' }}</span>-->
+<!--            </div>-->
             <div class="field-row">
                 <span class="field-label">Service :</span>
-                <span class="field-value">{{ userData?.dataservice?.libelle_service || '—' }}</span>
+                <span class="field-value">{{ userData?.dataservice?.libelle || '—' }}</span>
             </div>
-            <div class="field-row">
-                <span class="field-label">Poste :</span>
-                <span class="field-value">{{ userData?.dataposte?.libelle_poste || '—' }}</span>
-            </div>
+<!--            <div class="field-row">-->
+<!--                <span class="field-label">Poste :</span>-->
+<!--                <span class="field-value">{{ userData?.dataposte?.libelle_poste || '—' }}</span>-->
+<!--            </div>-->
             <div class="field-row">
                 <span class="field-label">Fonction :</span>
                 <span class="field-value">{{ userData?.datafonction?.libelle_fonction || '—' }}</span>
@@ -138,17 +138,17 @@
     <div class="section">
         <div class="section-header">Compte &amp; Accès</div>
         <div class="section-body">
-            <div class="field-row">
-                <span class="field-label">ID utilisateur :</span>
-                <span class="field-value">{{ userData?.id }}</span>
-            </div>
+<!--            <div class="field-row">-->
+<!--                <span class="field-label">ID utilisateur :</span>-->
+<!--                <span class="field-value">{{ userData?.id }}</span>-->
+<!--            </div>-->
             <div class="field-row">
                 <span class="field-label">Email compte :</span>
                 <span class="field-value">{{ userData?.email || '—' }}</span>
             </div>
             <div class="field-row">
                 <span class="field-label">Rôle :</span>
-                <span class="field-value">{{ getRoleLabel() }}</span>
+                <span class="field-value">{{ userData?.dataroles?.libelle_role }}</span>
             </div>
             <div class="field-row">
                 <span class="field-label">Double authentification :</span>

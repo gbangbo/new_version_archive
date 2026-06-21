@@ -68,6 +68,33 @@ export class TrouverUnDoucmentComponent implements OnInit, OnDestroy {
     dataTypeDocument: any[] = [];
     dataService: any[] = [];
     dataPriorite: any[] = [];
+    dataCritere = [
+        {
+            index: 1,
+            libelle: 'Selon numéro du document',
+        },
+        {
+            index: 2,
+            libelle: 'Selon le type du document et service',
+        },
+        {
+            index: 3,
+            libelle: 'Selon la date du document',
+        },
+        {
+            index: 5,
+            libelle: 'Selon type sur une période',
+        },
+        {
+            index: 7,
+            libelle: 'Selon les dates d\'enregistrement',
+        },
+        {
+            index: 8,
+            libelle: 'Selon les rayons, boîtes d\'archives',
+        }
+    ];
+    idCritere: number = 1;
 
     constructor(private autor: Authorization, private httService: HttpService, private router: Router) {
     }
@@ -305,9 +332,18 @@ export class TrouverUnDoucmentComponent implements OnInit, OnDestroy {
     }
 
     navToview(doc: any) {
-        console.log(doc)
         const mapSessionTemp = cryptSession(JSON.stringify(doc), decode64(environment.CONFIG.APP_PASS));
         localStorage.setItem(`_eye_`, mapSessionTemp);
         this.router.navigate(['/recherche/previsualisation'])
+    }
+
+    navToDoc(doc: any, nav: string) {
+        switch (nav) {
+            case 'rang':
+                const mapSessionTemp = cryptSession(JSON.stringify(doc), decode64(environment.CONFIG.APP_PASS));
+                localStorage.setItem(`_eye_`, mapSessionTemp);
+                this.router.navigate(['/documents/classer-document'])
+                break
+        }
     }
 }

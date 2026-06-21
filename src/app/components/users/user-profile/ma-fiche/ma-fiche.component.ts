@@ -254,7 +254,7 @@ export class MaFicheComponent implements OnInit {
             setF(9, 'normal');
             doc.setTextColor(...rgb('#2e7d32'));
             doc.text(
-                `Badge N° ${s?.numero_badge || ''} — ${soc?.raison_sociale || ''}`.toUpperCase(),
+                `${soc?.raison_sociale || ''}`.toUpperCase(),
                 W / 2, y, {align: 'center'}
             );
             y += 8;
@@ -283,10 +283,10 @@ export class MaFicheComponent implements OnInit {
             y += 4;
             const emploiRows: [string, string][][] = [
                 [['Société', soc?.raison_sociale], ['Code société', soc?.code_societe]],
-                [['N° Badge', s?.numero_badge], ['Localisation', soc?.localisation]],
-                [['Service', String(serv?.libelle_service)], ['Poste', String(pos?.libelle_poste)]],
-                [['Fonction', String(fonc?.libelle_fonction)], ['Statut', this.getStatutLabel()]],
+                // [['N° Badge', s?.numero_badge], ['Localisation', soc?.localisation]],
+                [['Service', String(serv?.libelle)], ['Fonction', String(fonc?.libelle_fonction)]],
                 [['Date début contrat', s?.date_debut_contrat], ['Date fin contrat', s?.date_fin_contrat]],
+                [['Statut', this.getStatutLabel()], ['', '']],
             ];
             emploiRows.forEach(row => {
                 fieldRow(row[0][0], row[0][1], colLeft, colRight, y, 'left');
@@ -299,7 +299,7 @@ export class MaFicheComponent implements OnInit {
             y = sectionHeader('Compte & Accès', y);
             y += 4;
             const compteRows: [string, string][][] = [
-                [['Utilisateur',`${p?.nom || ''} ${p?.prenom || ''}`.toUpperCase()], ['Email compte', this.userData?.email]],
+                [['Utilisateur', `${p?.nom || ''} ${p?.prenom || ''}`.toUpperCase()], ['Email compte', this.userData?.email]],
                 [['Rôle', `${role.libelle_role}`], ['Double auth', soc?.double_auth ? 'Activée' : 'Non activée']],
             ];
             compteRows.forEach(row => {

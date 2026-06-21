@@ -1,0 +1,12 @@
+.logo-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  img {
+    width: 46px;
+    height: auto;
+    object-fit: contain;
+  }
+}
