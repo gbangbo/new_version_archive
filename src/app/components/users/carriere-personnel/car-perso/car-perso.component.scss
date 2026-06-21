@@ -647,6 +647,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  width: 100%;
   padding: 48px 24px;
   gap: 10px;
 
@@ -970,4 +971,10 @@
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
+}
+
+// Annule le flex sur la cellule de la ligne vide
+:host ::ng-deep .ant-table-tbody > tr.op-empty-row > td {
+  display: table-cell !important;
+  text-align: center;
 }

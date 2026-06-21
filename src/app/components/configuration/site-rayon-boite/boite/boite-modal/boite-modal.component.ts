@@ -39,7 +39,7 @@ export class BoiteModalComponent implements OnChanges {
 
     constructor(private autor: Authorization, private httService: HttpService) {
         this.users = this.autor.getInfosUsers();
-        this.saverayons(this.users?.datasociete?.uid)
+        this.saverayons(this.users?.datasociete?.uid  || this.users?.uidsociete)
     }
 
     ngOnChanges(changes: SimpleChanges) {
@@ -90,7 +90,7 @@ export class BoiteModalComponent implements OnChanges {
         this.isloading = true;
         let payload = {
             "action": this.validationForm.value.uid ? 2 : 1,
-            "idsociete": this.users?.datasociete?.uid,
+            "idsociete": this.users?.datasociete?.uid  || this.users?.uidsociete,
             "idboites": this.validationForm.value.uid || '',
             "idrayon": this.validationForm.value.idrayon,
             "code_boites": this.validationForm.value.code_boites,

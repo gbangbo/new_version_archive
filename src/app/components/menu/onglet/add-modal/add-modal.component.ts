@@ -48,12 +48,8 @@ export class AddModalComponent {
     }
 
     ngOnChanges(changes: SimpleChanges) {
-        if (changes['dataLigne'] && changes['dataLigne']?.currentValue) {
-            console.log("Update user ", changes['dataLigne']?.currentValue)
-            this.validationForm.patchValue({
-                ...changes['dataLigne']?.currentValue,
-                idfonction: changes['dataLigne']?.currentValue.uid
-            });
+        if (changes['dataLigne']?.currentValue) {
+            this.validationForm.patchValue(changes['dataLigne'].currentValue);
         }
     }
 
@@ -71,9 +67,9 @@ export class AddModalComponent {
             "idmenu": this.validationForm.value.idmenu || '',
             "position": this.validationForm.value.position || 0,
             "identity": this.validationForm.value.identity || 0,
-            "iTrue": this.validationForm.value.iTrue || 1,
+            "itrue": this.validationForm.value.iTrue || 1,
             "rupture": this.validationForm.value.rupture || 0,
-            "idsociete": this.users?.datasociete?.uid,
+            "idsociete": this.users?.datasociete?.uid || this.users?.uidsociete,
         }
 
         console.log("payload ===", payload)
@@ -81,7 +77,7 @@ export class AddModalComponent {
             .toPromise()
             .then((res: any) => {
                 this.isloading = false;
-                if (res.body.status) {
+                if (res.body.status || res.body.success) {
                     this.closeModal(true);
                     Swal.fire({
                         title: res?.body?.message,

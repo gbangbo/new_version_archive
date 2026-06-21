@@ -24,12 +24,13 @@ export class LoginComponent implements OnInit, OnDestroy {
 
 
     constructor(public router: Router, private toast: ToastrService, private httService: HttpService) {
-
-        const userDetails = localStorage.getItem('user');
-        if (userDetails?.length != null) {
-            router.navigate(['/dashboard/default'])
-        }
-
+        localStorage.removeItem('user');
+        sessionStorage.removeItem('_temp_');
+        sessionStorage.removeItem(environment.CONFIG.APP_TOKEN_NAME);
+        // const userDetails = localStorage.getItem('user');
+        // if (userDetails?.length != null) {
+        //     router.navigate(['/dashboard/default'])
+        // }
         this.loginForm = new FormGroup({
             email: new FormControl("", [Validators.required, Validators.email]),
             password: new FormControl("", Validators.required)

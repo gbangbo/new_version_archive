@@ -953,3 +953,283 @@
     width: auto !important;
   }
 }
+
+// ══════════════════════════════════════════════════════════
+// TREE TABLE — MENUS
+// ══════════════════════════════════════════════════════════
+
+$col-path: 160px;
+$col-icon: 120px;
+$col-rang: 70px;
+$col-auth: 120px;
+$col-actions: 70px;
+
+.tree-table-wrap {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  border-top: 1px solid #E2E8F0;
+}
+
+.tree-table-header {
+  display: flex;
+  align-items: center;
+  padding: 0;
+  background: #F1F5F9;
+  border-bottom: 1px solid #E2E8F0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #374151;
+  min-height: 38px;
+  user-select: none;
+
+  > div {
+    padding: 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    height: 38px;
+    border-right: 1px solid #E2E8F0;
+    &:last-child { border-right: none; }
+  }
+}
+
+.tree-table-body {
+  overflow-y: auto;
+  max-height: calc(100vh - 280px);
+
+  ::ng-deep .ant-tree { padding: 0 !important; }
+  ::ng-deep nz-tree-node {
+    display: block !important;
+    height: auto !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  ::ng-deep .ant-tree-indent,
+  ::ng-deep .ant-tree-indent-unit { display: none !important; }
+  ::ng-deep nz-tree-node-option {
+    display: block !important;
+    width: 100% !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border-radius: 0 !important;
+  }
+  ::ng-deep .ant-tree-node-content-wrapper {
+    padding: 0 !important;
+    width: 100% !important;
+    border-radius: 0 !important;
+    &:hover { background: transparent !important; }
+  }
+  ::ng-deep nz-tree-node-toggle {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-shrink: 0 !important;
+  }
+}
+
+.tt-row {
+  display: flex;
+  align-items: center;
+  min-height: 38px;
+  border-bottom: 1px solid #F1F5F9;
+  cursor: pointer;
+  transition: background 0.12s;
+  width: 100%;
+  line-height: 1;
+
+  &:hover {
+    background: #EFF6FF;
+    .tt-action-btn { opacity: 1; }
+  }
+
+  &.tt-row-selected {
+    background: #DBEAFE;
+    &:hover { background: #BFDBFE; }
+  }
+
+  > div {
+    padding: 6px 12px;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+}
+
+// Colonnes
+.ttc-name {
+  flex: 1;
+  min-width: 0;
+  gap: 8px;
+  border-right: 1px solid #F1F5F9;
+
+  ::ng-deep nz-tree-node-toggle {
+    flex-shrink: 0 !important;
+    width: 16px !important;
+  }
+
+  i.fa-regular {
+    vertical-align: middle;
+    line-height: 1;
+  }
+}
+
+.ttc-path {
+  width: $col-path;
+  min-width: $col-path;
+  font-size: 12px;
+  color: #64748B;
+  border-right: 1px solid #F1F5F9;
+}
+
+.ttc-icon {
+  width: $col-icon;
+  min-width: $col-icon;
+  font-size: 12px;
+  color: #64748B;
+  border-right: 1px solid #F1F5F9;
+}
+
+.ttc-rang {
+  width: $col-rang;
+  min-width: $col-rang;
+  font-size: 12px;
+  color: #64748B;
+  justify-content: center;
+  border-right: 1px solid #F1F5F9;
+}
+
+.ttc-auth {
+  width: $col-auth;
+  min-width: $col-auth;
+  border-right: 1px solid #F1F5F9;
+  justify-content: center;
+
+  ::ng-deep .ant-tag {
+    margin: 0 !important;
+    width: 100% !important;
+    text-align: center !important;
+    border-radius: 51px;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  }
+}
+
+.ttc-actions {
+  width: $col-actions;
+  min-width: $col-actions;
+  justify-content: center;
+}
+
+// Textes
+.tt-name-text {
+  font-size: 12px;
+  color: #374151;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tt-parent {
+  font-weight: 600;
+  color: #0F172A;
+}
+
+.tt-path-text {
+  font-size: 11px;
+  color: #64748B;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: 'Courier New', monospace;
+}
+
+.tt-icon-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  background: #F0F9FF;
+  color: #0369A1;
+  border: 1px solid #BAE6FD;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.tt-folder-icon {
+  font-size: 15px !important;
+  flex-shrink: 0;
+  color: #F19106;
+}
+
+.tt-file-icon {
+  font-size: 13px !important;
+  flex-shrink: 0;
+  color: #94A3B8;
+}
+
+.tt-sort-icons {
+  display: inline-flex;
+  flex-direction: column;
+  font-size: 9px;
+  color: #CBD5E1;
+  line-height: 1;
+  gap: 1px;
+  margin-left: 2px;
+}
+
+.tt-action-btn {
+  opacity: 1;
+  transition: opacity 0.15s;
+  width: 28px !important;
+  height: 28px !important;
+}
+
+.tree-table-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 8px 16px;
+  border-top: 1px solid #E2E8F0;
+  background: #F8FAFC;
+  font-size: 12px;
+  color: #64748B;
+  min-height: 40px;
+
+  strong {
+    color: #0F172A;
+    font-weight: 700;
+  }
+}
+
+:host ::ng-deep nz-tree-node-toggle {
+  display: inline-flex !important;
+  align-items: center !important;
+  vertical-align: middle !important;
+}
+
+:host ::ng-deep .ant-tree-switcher {
+  line-height: 1 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  vertical-align: middle !important;
+}
+
+.tt-menu-icon {
+  font-size: 13px !important;
+  flex-shrink: 0;
+  color: #1565C0;
+}
+
+.btn-danger-ghost {
+  &:hover {
+    background: #FEF2F2 !important;
+    border-color: #EF4444 !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12) !important;
+
+    ::ng-deep svg {
+      color: #EF4444 !important;
+    }
+  }
+}

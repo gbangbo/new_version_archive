@@ -118,7 +118,7 @@ export class BoiteComponent implements OnInit {
     ngOnInit(): void {
         window.scrollTo({top: 0, behavior: 'smooth'});
         this.users = this.autor.getInfosUsers();
-        this.showBoites(this.users?.dataSociete?.uid, '');
+        this.showBoites(this.users?.dataSociete?.uid  || this.users?.uidsociete, '');
     }
 
     // ── Recherche globale ─────────────────────────────────────

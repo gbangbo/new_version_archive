@@ -1,0 +1,483 @@
+// ── Layout splitter ──────────────────────────────────────────────
+nz-splitter {
+  height: calc(110vh - 195px);
+  min-height: 460px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
+}
+
+.box {
+  height: 100%;
+  overflow-y: auto;
+  display: flex;
+  justify-content: center;
+}
+
+// ── Panneau formulaire ────────────────────────────────────────────
+.form-panel {
+  width: 100%;
+  max-width: 540px;
+  //padding: 24px 20px 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.form-section {
+  //border: 1px solid #e2e8f0;
+  //border-radius: 10px;
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+
+.form-section-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #475569;
+  background: #F1F5F9;
+  //border-bottom: 1px solid #e2e8f0;
+  text-transform: uppercase;
+}
+
+.form-section-body {
+  padding: 16px;
+}
+
+// ── Select loader ─────────────────────────────────────────────────
+.cascade-hint {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 5px;
+  font-size: 11.5px;
+  color: #94a3b8;
+  font-style: italic;
+}
+
+.select-loader {
+  position: absolute;
+  right: 38px;
+  top: 38px;
+  color: #7366ff;
+  font-size: 12px;
+}
+
+// ── Switch ────────────────────────────────────────────────────────
+.switch-group {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.switch-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+}
+
+.switch-mail-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #475569;
+}
+
+.switch-label {
+  font-size: 13px;
+  color: #475569;
+  font-weight: 500;
+}
+
+// ── Footer barre ──────────────────────────────────────────────────
+.form-footer-bar {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  //background: #fff;
+  //border-top: 1px solid #e2e8f0;
+  margin-top: auto;
+  z-index: 10;
+}
+
+.form-footer-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+// ── Upload panel ──────────────────────────────────────────────────
+.upload-panel {
+  width: 100%;
+  //padding: 24px 20px;
+}
+
+.upload-section {
+  //border: 1px solid #e2e8f0;
+  //border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.upload-section-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #475569;
+  background: #F1F5F9;
+  border-bottom: 1px solid #e2e8f0;
+  text-transform: uppercase;
+}
+
+.upload-section-body {
+  padding: 16px;
+}
+
+// ── Excel Dropzone ────────────────────────────────────────────────
+.excel-dropzone {
+  border: 2px dashed #cbd5e1;
+  //border-radius: 12px;
+  background: #fafafa;
+  transition: border-color 0.2s, background 0.2s;
+  cursor: pointer;
+  min-height: 230px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &.dz-over {
+    border-color: #7366ff;
+    background: rgba(115, 102, 255, 0.04);
+  }
+
+  &.dz-has-file {
+    border-color: #22c55e;
+    background: rgba(34, 197, 94, 0.03);
+    cursor: default;
+  }
+}
+
+.dz-message {
+  text-align: center;
+  padding: 32px 24px;
+
+  .dz-icon {
+    font-size: 52px;
+    color: #22c55e;
+    margin-bottom: 14px;
+    line-height: 1;
+  }
+
+  h6 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 6px;
+  }
+
+  .note {
+    font-size: 12px;
+    color: #94a3b8;
+    display: block;
+    margin-bottom: 20px;
+  }
+}
+
+
+.dz-file-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 24px 28px;
+  width: 100%;
+
+  .dz-file-icon {
+    font-size: 40px;
+    color: #22c55e;
+    flex-shrink: 0;
+  }
+
+  .dz-file-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    overflow: hidden;
+  }
+
+  .dz-filename {
+    font-size: 14px;
+    font-weight: 600;
+    color: #334155;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .dz-filesize,
+  .dz-sheets {
+    font-size: 12px;
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+}
+
+.dz-remove-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid #fca5a5;
+  background: #fef2f2;
+  color: #ef4444;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s;
+
+  &:hover {
+    background: #fee2e2;
+  }
+}
+
+// ── Spinner lecture ───────────────────────────────────────────────
+.excel-reading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  font-size: 12px;
+  color: #7366ff;
+}
+
+.excel-read-spin {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(115, 102, 255, 0.25);
+  border-top-color: #7366ff;
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// ── Aperçu Excel ──────────────────────────────────────────────────
+.excel-preview-wrap {
+
+  //border: 1px solid #e2e8f0;
+  overflow: hidden;
+  //background: #fff;
+  margin: 16px 15px 0;
+}
+
+.excel-preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 10px 16px;
+  //background: rgba(34, 197, 94, 0.05);
+  //border-bottom: 1px solid #e2e8f0;
+}
+
+.excel-preview-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #16a34a;
+  text-transform: uppercase;
+}
+
+.excel-sheets-tabs {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.sheet-tab {
+  padding: 4px 12px;
+  font-size: 12px;
+  border-radius: 16px;
+  border: 1px solid #bbf7d0;
+  background: transparent;
+  color: #475569;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.15s;
+
+  &.active,
+  &:hover {
+    background: #22c55e;
+    color: #fff;
+    border-color: #22c55e;
+  }
+}
+
+// ── Table Excel ────────────────────────────────────────────────────
+.excel-preview-body {
+  overflow-x: auto;
+  max-height: 380px;
+  overflow-y: auto;
+}
+
+.excel-table-wrap {
+  padding-bottom: 0;
+}
+
+.excel-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+
+  thead tr {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+  }
+
+  th {
+    padding: 8px 14px;
+    font-weight: 600;
+    color: #334155;
+    border-bottom: 2px solid #e2e8f0;
+    border-right: 1px solid #e2e8f0;
+    white-space: nowrap;
+    text-align: left;
+    background: #f1f5f9;
+
+    &.row-num {
+      width: 42px;
+      text-align: center;
+      background: #e8edf2;
+      color: #94a3b8;
+    }
+  }
+
+  td {
+    padding: 6px 14px;
+    border-bottom: 1px solid #f1f5f9;
+    border-right: 1px solid #f1f5f9;
+    color: #475569;
+    white-space: nowrap;
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    &.row-num {
+      text-align: center;
+      color: #cbd5e1;
+      font-size: 11px;
+      background: #fafafa;
+    }
+  }
+
+  tbody tr:hover td {
+    background: #f8fafc;
+  }
+}
+
+.excel-row-count {
+  padding: 8px 16px;
+  font-size: 11.5px;
+  color: #94a3b8;
+  border-top: 1px solid #f1f5f9;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #fafafa;
+}
+
+.excel-loading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 24px 16px;
+  font-size: 12px;
+  color: #7366ff;
+}
+
+.excel-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  color: #94a3b8;
+
+  nz-icon {
+    font-size: 34px;
+  }
+
+  p {
+    margin-top: 10px;
+    font-size: 13px;
+  }
+}
+
+// ── Container global ──────────────────────────────────────────────
+.container.job-apply-wrapper {
+  padding: 16px;
+}
+
+
+::ng-deep .ant-tag-has-color {
+  color: #787575;
+}
+
+// Bouton Suivant/Valider — garde ton #00141e
+.newBtn {
+  justify-content: center;
+  height: 38px !important;
+  padding: 0 20px !important;
+  border-radius: 8px !important;
+  background-color: #00141e !important;
+  color: #fff !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 7px !important;
+  border: none !important;
+  box-shadow: 0 2px 8px rgba(0, 20, 30, 0.3) !important;
+  transition: all 0.2s !important;
+
+  &:hover:not(:disabled) {
+    background-color: #002a3d !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(0, 20, 30, 0.4) !important;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+}

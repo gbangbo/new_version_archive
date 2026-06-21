@@ -18,10 +18,11 @@
                                     </p>
                                 </div>
                             </div>
+
                             <div class="table-container" [class.op-loading]="isloading">
+
                                 <!-- ══ TOOLBAR ══════════════════════════════════ -->
                                 <div class="op-toolbar">
-                                    <!-- Titre + compteur -->
                                     <div class="op-toolbar-left">
                                         <div class="op-toolbar-title">
                                             <div class="op-toolbar-icon">
@@ -30,16 +31,13 @@
                                             <div>
                                                 <span class="op-toolbar-label">LISTE DES MENUS</span>
                                                 <span class="op-toolbar-count">
-                                                    {{ filteredData.length || 0 }} enregistrement(s)
+                                                    {{ treeControl.dataNodes?.length || 0 }} enregistrement(s)
                                                 </span>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <!-- Actions droite -->
                                     <div class="op-toolbar-right">
-
-                                        <!-- Recherche -->
                                         <div class="op-search-wrap">
                                             <svg class="op-search-icon" viewBox="0 0 24 24" fill="none"
                                                  stroke="currentColor" stroke-width="2" stroke-linecap="round">
@@ -61,131 +59,166 @@
                                             </button>
                                         </div>
 
-                                        <!--                                        <button class="op-btn op-btn-outline"-->
-                                        <!--                                                nz-tooltip nzTooltipTitle="Exporter en Excel"-->
-                                        <!--                                                (click)="exportToExcel(filteredData)">-->
-                                        <!--                                            <i class="fa-regular fa-file-excel"></i>-->
-                                        <!--                                            Excel-->
-                                        <!--                                        </button>-->
-
                                         <button class="op-btn op-btn-outline"
-                                                nz-tooltip nzTooltipTitle="Nouveau personnel"
+                                                nz-tooltip nzTooltipTitle="Nouveau menu"
                                                 (click)="openModal()">
-                                            <!--                                            <i class="far fa-edit-3"></i>-->
                                             <i data-feather="edit-2" style="width: 15px;"></i>
-                                            <!-- Masqué sur très petit écran via CSS -->
                                             <span class="btn-label">Nouveau</span>
                                         </button>
                                     </div>
                                 </div>
 
-                                <!-- ══ TABLE ════════════════════════════════════ -->
+                                <!-- ══ TREE TABLE ════════════════════════════════ -->
+                                <div class="tree-table-wrap">
 
-                                <div class="overflow-x-auto support-ticket-table custom-scrollbar">
-                                    <nz-table
-                                        #nzTable
-                                        [nzData]="filteredData"
-                                        [nzPageSize]="10"
-                                        [nzShowPagination]="true"
-                                        [nzShowTotal]="totalTemplate"
-                                        nzShowSizeChanger
-                                        nzBordered
-                                        nzSize="small"
-                                        [nzScroll]="filteredData.length > 0 ? { x: '1200px' } : {}"
-                                    >
-                                        <thead>
-                                        <tr>
-                                            <th nzWidth="160px"
-                                                nzColumnKey="name"
-                                                [nzSortFn]="sortFns.name"
-                                                [nzSortDirections]="['ascend','descend',null]"
-                                                [nzFilterFn]="filterFns.name"
-                                                [nzFilters]="filters.name">
-                                                Titre
-                                            </th>
-                                            <th nzWidth="90px"
-                                                nzColumnKey="libelle_site"
-                                                [nzSortFn]="sortFns.libelle_site"
-                                                [nzSortDirections]="['ascend','descend',null]"
-                                                [nzFilterFn]="filterFns.libelle_site"
-                                                [nzFilters]="filters.libelle_site">
-                                                Path
-                                            </th>
-                                            <th nzWidth="90px"
-                                                nzColumnKey="libelle_service"
-                                                [nzSortFn]="sortFns.libelle_service"
-                                                [nzSortDirections]="['ascend','descend',null]"
-                                                [nzFilterFn]="filterFns.libelle_service"
-                                                [nzFilters]="filters.libelle_service">
-                                                Icon
-                                            </th>
-                                            <th nzWidth="90px"
-                                                nzColumnKey="libelle_fonction"
-                                                [nzSortFn]="sortFns.libelle_fonction"
-                                                [nzSortDirections]="['ascend','descend',null]"
-                                                [nzFilterFn]="filterFns.libelle_fonction"
-                                                [nzFilters]="filters.libelle_fonction">
-                                               Rang
-                                            </th>
+                                    <div class="alert txt-primary alert-bg-primary alert-dismissible fade show common-alert"
+                                         role="alert"
+                                         *ngIf="treeControl.dataNodes?.length">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                             stroke-linecap="round" stroke-linejoin="round" class="feather feather-info">
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                            <line x1="12" y1="16" x2="12" y2="12"></line>
+                                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                                        </svg>
+                                        <p>
+                                            <strong>Menus :</strong> déroulez à l'aide de la flèche pour voir les sous-menus.
+                                        </p>
+                                        <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
 
-                                            <th nzWidth="130px">
-                                                Statut
-                                            </th>
-                                            <th nzWidth="50px" nzColumnKey="action" nzAlign="center">
-                                                Actions
-                                            </th>
-                                        </tr>
-                                        </thead>
+                                    <!-- Entête colonnes -->
+                                    <div class="tree-table-header">
+                                        <div class="ttc-name">
+                                            Titre
+                                            <span class="tt-sort-icons">
+                                                <span class="tt-sort-up">↑</span>
+                                                <span class="tt-sort-down">↓</span>
+                                            </span>
+                                        </div>
+                                        <div class="ttc-path">Path</div>
+                                        <div class="ttc-icon">Icône</div>
+                                        <div class="ttc-rang">Rang</div>
+                                        <div class="ttc-auth">Statut</div>
+                                        <div class="ttc-actions">Actions</div>
+                                    </div>
 
-                                        <tbody>
-                                        <tr *ngFor="let row of nzTable.data; let i = index"
-                                            class="op-table-row">
-                                            <td>
-                                                <span class="cell-text">{{ row.title }}</span>
-                                            </td>
-                                            <td>
-                                                <span class="cell-text">{{ row.path }}</span>
-                                            </td>
-                                            <td>
-                                                <span class="cell-text">{{ row.icon }}</span>
-                                            </td>
-                                            <td>
-                                                <span class="cell-text">{{ row.rang }}</span>
-                                            </td>
-                                            <td>
-                                                <nz-tag [nzColor]="row.color">{{ row.actif}}</nz-tag>
-                                            </td>
-                                            <td nzAlign="center">
-                                                <div class="op-actions">
-                                                    <button class="btn-round-edit"
-                                                            nz-tooltip
-                                                            [nzTooltipTitle]="'Modifier le personnel'"
-                                                            nzTooltipPlacement="top"
-                                                            (click)="openModal(row)">
-                                                        <app-feather-icon class="icon-small"
-                                                                          [icon]="'edit-3'"></app-feather-icon>
-                                                    </button>
+                                    <!-- Tree view -->
+                                    <div class="tree-table-body">
+                                        <nz-tree-view
+                                                [nzTreeControl]="treeControl"
+                                                [nzDataSource]="dataSource"
+                                                nzBlockNode>
+
+                                            <!-- Nœud feuille (sous-menu, sans enfants) -->
+                                            <nz-tree-node *nzTreeNodeDef="let node" nzTreeNodePadding>
+                                                <div class="tt-row"
+                                                     [class.tt-row-selected]="selectListSelection.isSelected(node)"
+                                                     (click)="onNodeSelect(node)">
+
+                                                    <div class="ttc-name" [style.padding-left.px]="node.level * 20 + 12">
+                                                        <nz-tree-node-toggle nzTreeNodeNoopToggle
+                                                            style="display:inline-flex; align-items:center; width:16px; flex-shrink:0;">
+                                                        </nz-tree-node-toggle>
+                                                        <i class="fa-regular fa-circle tt-file-icon"></i>
+                                                        <span class="tt-name-text"
+                                                              [innerHTML]="highlightMatch(node.title, searchValue)">
+                                                        </span>
+                                                    </div>
+
+                                                    <div class="ttc-path">
+                                                        <span class="tt-path-text">{{ node.path || '—' }}</span>
+                                                    </div>
+                                                    <div class="ttc-icon">
+                                                        <span class="tt-icon-badge">{{ node.icon || '—' }}</span>
+                                                    </div>
+                                                    <div class="ttc-rang">{{ node.rang ?? '—' }}</div>
+                                                    <div class="ttc-auth">
+                                                        <nz-tag [nzColor]="node.color">{{ node.auth }}</nz-tag>
+                                                    </div>
+                                                    <div class="ttc-actions">
+                                                        <button class="btn-round-edit tt-action-btn mr-2"
+                                                                nz-tooltip nzTooltipTitle="Modifier le sous-menu"
+                                                                nzTooltipPlacement="top"
+                                                                (click)="openModal(node, 'm'); $event.stopPropagation()">
+                                                            <app-feather-icon class="icon-small" [icon]="'edit-3'"></app-feather-icon>
+                                                        </button>
+                                                        <button class="btn-round-edit tt-action-btn btn-danger-ghost"
+                                                                nz-tooltip nzTooltipTitle="Supprimer le sous-menu"
+                                                                nzTooltipPlacement="top"
+                                                                (click)="deleteMenu(node); $event.stopPropagation()">
+                                                            <app-feather-icon class="icon-small" [icon]="'trash-2'"></app-feather-icon>
+                                                        </button>
+                                                    </div>
                                                 </div>
-                                            </td>
-                                        </tr>
-                                        <tr *ngIf="!isloading && filteredData?.length === 0">
-                                            <td colspan="9">
-                                                <div class="op-empty-state">
-                                                    <app-feather-icon class="icon-inbox"
-                                                                      [icon]="'inbox'"></app-feather-icon>
-                                                    <span>Aucun donnée trouvé !</span>
-                                                    <small *ngIf="searchValue">
-                                                        Aucun résultat pour « {{ searchValue }} »
-                                                    </small>
+                                            </nz-tree-node>
+
+                                            <!-- Nœud parent (menu principal, avec enfants) -->
+                                            <nz-tree-node *nzTreeNodeDef="let node; when: hasChild" nzTreeNodePadding>
+                                                <div class="tt-row"
+                                                     [class.tt-row-selected]="selectListSelection.isSelected(node)"
+                                                     (click)="onNodeSelect(node)">
+
+                                                    <div class="ttc-name" [style.padding-left.px]="node.level * 20 + 12"
+                                                         (click)="$event.stopPropagation()">
+                                                        <nz-tree-node-toggle (click)="onNodeSelect(node)">
+                                                            <nz-icon nzType="caret-down" nzTreeNodeToggleRotateIcon/>
+                                                        </nz-tree-node-toggle>
+                                                        <i class="fa-solid fa-bars tt-menu-icon"></i>
+                                                        <span class="tt-name-text tt-parent"
+                                                              (click)="onNodeSelect(node); $event.stopPropagation()"
+                                                              [innerHTML]="highlightMatch(node.title, searchValue)">
+                                                        </span>
+                                                    </div>
+
+                                                    <div class="ttc-path">
+                                                        <span class="tt-path-text">{{ node.path || '—' }}</span>
+                                                    </div>
+                                                    <div class="ttc-icon">
+                                                        <span class="tt-icon-badge">{{ node.icon || '—' }}</span>
+                                                    </div>
+                                                    <div class="ttc-rang">{{ node.rang ?? '—' }}</div>
+                                                    <div class="ttc-auth">
+                                                        <nz-tag [nzColor]="node.color">{{ node.auth }}</nz-tag>
+                                                    </div>
+                                                    <div class="ttc-actions">
+                                                        <button class="btn-round-edit tt-action-btn mr-2"
+                                                                nz-tooltip nzTooltipTitle="Ajouter un sous-menu"
+                                                                nzTooltipPlacement="top"
+                                                                (click)="openModal(node, 'a'); $event.stopPropagation()">
+                                                            <app-feather-icon class="icon-small" [icon]="'plus'"></app-feather-icon>
+                                                        </button>
+                                                        <button class="btn-round-edit tt-action-btn"
+                                                                nz-tooltip nzTooltipTitle="Modifier le menu"
+                                                                nzTooltipPlacement="top"
+                                                                (click)="openModal(node, 'm'); $event.stopPropagation()">
+                                                            <app-feather-icon class="icon-small" [icon]="'edit-3'"></app-feather-icon>
+                                                        </button>
+                                                    </div>
                                                 </div>
-                                            </td>
-                                        </tr>
-                                        </tbody>
-                                    </nz-table>
+                                            </nz-tree-node>
+
+                                        </nz-tree-view>
+
+                                        <!-- Empty state -->
+                                        <div *ngIf="!isloading && (!treeControl.dataNodes || treeControl.dataNodes.length === 0)"
+                                             class="op-empty-state">
+                                            <app-feather-icon class="icon-inbox" [icon]="'inbox'"></app-feather-icon>
+                                            <span>Aucune donnée trouvée !</span>
+                                            <small *ngIf="searchValue">
+                                                Aucun résultat pour « {{ searchValue }} »
+                                            </small>
+                                        </div>
+                                    </div>
+
+                                    <!-- Footer -->
+                                    <div class="tree-table-footer">
+                                        <span class="tt-total">
+                                            Total : <strong>{{ treeControl.dataNodes?.length || 0 }}</strong> enregistrement(s)
+                                        </span>
+                                    </div>
+
                                 </div>
-                                <ng-template #totalTemplate let-total>
-                                    Total : <strong>{{ total }}</strong> enregistrement(s)
-                                </ng-template>
 
                             </div>
                         </div>
@@ -195,7 +228,8 @@
             </app-card>
         </div>
     </div>
-    @if(modalOpen){
-    <app-add-modal [dataLigne]="dataOneLigne" (modalOpen)="handleModal($event)"></app-add-modal>
+
+    @if(modalOpen) {
+        <app-add-modal [dataLigne]="dataOneLigne" (modalOpen)="handleModal($event)"></app-add-modal>
     }
 </div>

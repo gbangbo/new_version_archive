@@ -179,9 +179,9 @@ export class AddModalComponent {
     constructor(private toast: ToastrService, private autor: Authorization, private httService: HttpService, private http: HttpClient) {
         this.users = this.autor.getInfosUsers();
 
-        this.showFonction(this.users?.datasociete?.uid, '');
-        this.showDirection(this.users?.datasociete?.uid, '');
-        this.showSite(this.users?.datasociete?.uid, '');
+        this.showFonction(this.users?.datasociete?.uid || this.users?.uidsociete, '');
+        this.showDirection(this.users?.datasociete?.uid || this.users?.uidsociete, '');
+        this.showSite(this.users?.datasociete?.uid || this.users?.uidsociete, '');
         this.showSociete(this.users?.datasociete?.code_societe)
     }
 
@@ -366,40 +366,42 @@ export class AddModalComponent {
     ngOnChanges(changes: SimpleChanges) {
         if (changes['dataLigne'] && changes['dataLigne']?.currentValue) {
             let up = changes['dataLigne']?.currentValue;
-            console.log("Update user ", up);
+            // this.departement(this.users?.datasociete?.uid, up.datadirection.uid, '');
+            //  this.showService(this.users?.datasociete?.uid, '', up.datadepartement.uid);
+
+
+            console.log("Mise a jour user=========== ", up);
+
             if (Object.keys(up).length > 0) {
                 this.isDirection = true;
-                this.viewDoc = up?.data_fichiers ? up?.data_fichiers[0].piece_jointe : '';
-                this.departement(this.users?.datasociete?.uid, up.datadirection.uid, '');
-                this.showService(this.users?.datasociete?.uid, '', up.datadepartement.uid);
-
+                this.viewDoc = up?.data_fichiers.length ? up?.data_fichiers[0].piece_jointe : '';
 
                 setTimeout(() => {
 
-
                     this.validationForm.patchValue({
-                        nom: up.datapersonnel.nom,
-                        prenom: up.datapersonnel.prenom,
-                        emailAgent: up.datapersonnel.emailAgent,
-                        sexe: up.datapersonnel.sexe,
-                        telMobile: up.datapersonnel.telMobile,
-                        idpersonnel: up.datapersonnel.uid,
-                        uid: up.datapersonnel.uid,
-                        uid_filepersonnel: up?.data_fichiers ? up?.data_fichiers[0].uid_filepersonnel : '',
+                        nom: up?.datapersonnel?.nom,
+                        prenom: up?.datapersonnel?.prenom,
+                        emailAgent: up?.datapersonnel?.emailAgent,
+                        sexe: up?.datapersonnel?.sexe,
+                        telMobile: up?.datapersonnel?.telMobile,
+                        idpersonnel: up?.datapersonnel?.uid,
+                        uid: up?.datapersonnel?.uid,
+                        uid_filepersonnel: up?.data_fichiers.length ? up?.data_fichiers[0].uid_filepersonnel : '',
                     });
 
                     this.statutForm.patchValue({
                         // idposte: up.dataposte.uid,
-                        idservice: up.dataservice.uid,
-                        idfonction: up.datafonction.uid,
-                        iddirection: up.datadirection.uid,
-                        iddepartement: up.datadepartement.uid,
-                        numero_badge: up.numero_badge,
-                        date_debut_contrat: moment(up.date_debut_contrat, 'DD-MM-YYYY').toDate(),
-                        date_fin_contrat: moment(up.date_fin_contrat, 'DD-MM-YYYY').toDate(),
-                        idsites: up.datasite ? up.datasite[0]?.uid : '',
-                        idstatutpersonnel: up.uid,
-                        idsitepersonnel: up.datasite ? up.datasite[0]?.uid : '',
+                        idfonction: up?.datafonction?.uid,
+                        idservice: up?.dataservice?.uid,
+                        idsociete: this.users?.datasociete?.uid || this.users?.uidsociete,
+                        // iddirection: up.datadirection.uid,
+                        // iddepartement: up.datadepartement.uid,
+                        // numero_badge: up.numero_badge,
+                        date_debut_contrat: moment(up?.date_debut_contrat, 'DD-MM-YYYY').toDate(),
+                        date_fin_contrat: moment(up?.date_fin_contrat, 'DD-MM-YYYY').toDate(),
+                        idsites: up.datasitespersonnel ? up.datasitespersonnel[0]?.uidsite : '',
+                        idstatutpersonnel: up?.uid,
+                        idsitepersonnel: up?.datasitespersonnel ? up.datasitespersonnel[0]?.uid : '',
                     });
                     console.log("this.statutForm ====", this.statutForm.value)
                     setTimeout(() => {
@@ -423,7 +425,7 @@ export class AddModalComponent {
             ...this.validationForm.value,
             "action": this.validationForm.value.idpersonnel ? 2 : 1,
             "idpersonnel": this.validationForm.value.idpersonnel || '',
-            "idsociete": this.users?.datasociete?.uid
+            "idsociete": this.users?.datasociete?.uid || this.users?.uidsociete
         }
         let rPons: any = {};
         try {
@@ -468,7 +470,7 @@ export class AddModalComponent {
             "idsitepersonnel": this.statutForm.value.idsitepersonnel,
             "idsites": this.statutForm.value.idsites,
             "idpersonnel": rPons?.data?.uid || this.validationForm.value.idpersonnel,
-            "idsociete": this.users?.datasociete?.uid,
+            "idsociete": this.users?.datasociete?.uid || this.users?.uidsociete,
             "date_mouvement": moment(this.statutForm.value.date_debut_contrat).format('YYYY-MM-DD'),
         }
         let rPonsSite: any = {};
@@ -505,7 +507,8 @@ export class AddModalComponent {
         try {
             if (this.selectedDoc) {
                 const formData = new FormData();
-                formData.append('action ', this.validationForm.value.uid_filepersonnel ? '2' : '2');
+                formData.append('action ', '1');
+                // formData.append('action ', this.validationForm.value.uid_filepersonnel ? '2' : '2');
                 formData.append('uid_filepersonnel ', '');
                 formData.append('personnel_uid ', (rPons?.data?.uid || this.validationForm.value.idpersonnel) ?? '');
                 formData.append('nom_fichiers', this.selectedDoc.name ?? '');
@@ -529,7 +532,7 @@ export class AddModalComponent {
             "date_debut_contrat": moment(this.statutForm.value.date_debut_contrat).format('YYYY-MM-DD'),
             "date_fin_contrat": moment(this.statutForm.value.date_fin_contrat).format('YYYY-MM-DD'),
             "idpersonnel": rPons?.data?.uid || this.validationForm.value.idpersonnel || '',
-            "idsociete": this.users?.datasociete?.uid,
+            "idsociete": this.users?.datasociete?.uid || this.users?.uidsociete,
         }
         console.log("payloadStatut ===", payloadStatut)
         this.httService.postData(`${environment.api_url}auth/:save-statut-personnel`, payloadStatut, this.users?.access_token || '')
@@ -593,9 +596,15 @@ export class AddModalComponent {
         if (!e) return '-';
         let res: string = '-'
         switch (i) {
-            case 's':
-                res = this.dataService?.find((d: any) => d.value == e)?.label;
+            case 's': {
+                let path: string[] | null = null;
+                for (const root of this.dataOrganigramme) {
+                    path = this.findPathByKey(root, e);
+                    if (path) break;
+                }
+                res = path?.join(' > ') || '';
                 break;
+            }
             case 'f':
                 res = this.dataTypePoste?.find((d: any) => d.value == e)?.label;
                 break;
@@ -615,6 +624,37 @@ export class AddModalComponent {
                 res = '-'
         }
         return res;
+    }
+
+    findPathByKey(
+        node: any,
+        targetKey: string,
+        path: string[] = []
+    ): string[] | null {
+
+        if (!node) {
+            return null;
+        }
+
+        const title = node.sigle ? node.sigle.trim() : '';
+
+        const currentPath = [...path, title];
+
+        if (node.key === targetKey) {
+            return currentPath;
+        }
+
+        if (Array.isArray(node.children)) {
+            for (const child of node.children) {
+                const result = this.findPathByKey(child, targetKey, currentPath);
+
+                if (result) {
+                    return result;
+                }
+            }
+        }
+
+        return null;
     }
 
     newPostData(url: string, payload: any, token: any) {
@@ -640,38 +680,22 @@ export class AddModalComponent {
         return d.toLocaleDateString('fr-FR');
     }
 
-    choixDirection(event: any) {
-        if (this.isDirection) return;
-        this.dataService = [];
-        this.statutForm.get('idservice')?.setValue('');
-        this.statutForm.get('iddepartement')?.setValue('');
-        this.departement(this.users?.datasociete?.uid, event.value, '');
-    }
-
-    choixDep(event: any) {
-        if (this.isDirection) return;
-        this.statutForm.get('idservice')?.setValue('');
-        this.showService(this.users?.datasociete?.uid, '', event.value);
-    }
-
     onDocSelected(file: File): void {
         this.selectedDoc = file;
-        console.log('Document sélectionné :', file.name);
     }
 
     onDocRemoved(): void {
         this.selectedDoc = null;
-        console.log('Document supprimé');
     }
 
     onChange($event: string): void {
         this.showOrganigramme($event, '');
-        console.log($event);
     }
 
     formatNode(node: any): any {
         return {
             title: node.raison_sociale || node.libelle,
+            sigle: node.sigle,
             key: node.uid,
             isLeaf: !node.children || node.children.length === 0,
             children: node.children?.map((child: any) => {

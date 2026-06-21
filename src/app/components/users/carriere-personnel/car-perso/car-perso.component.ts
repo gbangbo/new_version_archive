@@ -159,7 +159,7 @@ export class CarPersoComponent implements OnInit {
     ngOnInit(): void {
         window.scrollTo({top: 0, behavior: 'smooth'});
         this.users = this.autor.getInfosUsers();
-        this.showStatutPersonnel(this.users?.datasociete?.uid, '', '');
+        this.showStatutPersonnel(this.users?.datasociete?.uid || this.users?.uidsociete, '', '');
     }
 
     // ── Recherche globale ─────────────────────────────────────
@@ -189,7 +189,7 @@ export class CarPersoComponent implements OnInit {
                         return {
                             ...e,
                             name: `${e?.datapersonnel?.nom} ${e.datapersonnel?.prenom}`,
-                            libelle_site: `${e?.datasite[0]?.libelle_sites || ''}`,
+                            libelle_site: `${e?.datasitespersonnel ? e?.datasitespersonnel[0]?.libelle_sites : ''}`,
                             libelle_fonction: `${e?.datafonction?.libelle_fonction}`,
                             libelle_service: e?.dataservice?.libelle || '',
                             created_at: moment(e?.created_at).format('DD/MM/YYYY'),
@@ -261,7 +261,7 @@ export class CarPersoComponent implements OnInit {
 
     handleModal(value: boolean) {
         if (value) {
-            this.showStatutPersonnel(this.users?.datasociete?.uid, '', '');
+            this.showStatutPersonnel(this.users?.datasociete?.uid || this.users?.uidsociete, '', '');
         }
         this.modalOpen = false;
     }

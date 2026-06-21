@@ -100,7 +100,7 @@ export class QualificationComponent implements OnInit {
     ngOnInit(): void {
         window.scrollTo({top: 0, behavior: 'smooth'});
         this.users = this.autor.getInfosUsers();
-        this.showPostes(this.users?.datasociete?.uid);
+        this.showPostes(this.users?.datasociete?.uid  || this.users?.uidsociete);
     }
 
 

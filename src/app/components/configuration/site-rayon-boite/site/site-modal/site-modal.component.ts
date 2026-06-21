@@ -51,7 +51,7 @@ export class SiteModalComponent implements OnChanges {
         this.isloading = true;
         let payload = {
             "action": this.validationForm.value.uid ? 2 : 1,
-            "idsociete": this.users?.datasociete?.uid,
+            "idsociete": this.users?.datasociete?.uid  || this.users?.uidsociete,
             "idsite": this.validationForm.value.uid || '',
             "libelle_sites": this.validationForm.value.libelle_sites
         }

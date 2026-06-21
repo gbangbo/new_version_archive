@@ -60,7 +60,7 @@ export class AddModalComponent {
             ...this.validationForm.value,
             "action": this.validationForm.value.idfonction ? 2 : 1,
             "idfonction": this.validationForm.value.idfonction || '',
-            "idsociete": this.users?.datasociete?.uid,
+            "idsociete": this.users?.datasociete?.uid || this.users?.uidsociete,
         }
 
         console.log("payload ===", payload)

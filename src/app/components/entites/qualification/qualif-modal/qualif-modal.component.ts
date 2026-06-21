@@ -54,7 +54,7 @@ export class QualifModalComponent {
         let payload = {
             "action": this.validationForm.value.uid ? 2 : 1,
             "idposte": this.validationForm.value.uid || '',
-            "idsociete": this.users?.datasociete?.uid,
+            "idsociete": this.users?.datasociete?.uid || this.users?.uidsociete,
             ...this.validationForm.value
         }
         console.log("payload ===", payload)

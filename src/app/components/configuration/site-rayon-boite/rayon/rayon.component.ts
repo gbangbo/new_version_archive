@@ -100,7 +100,7 @@ export class RayonComponent implements OnInit {
     ngOnInit(): void {
         window.scrollTo({top: 0, behavior: 'smooth'});
         this.users = this.autor.getInfosUsers();
-        this.showRayons(this.users?.dataSociete?.uid, '');
+        this.showRayons(this.users?.dataSociete?.uid || this.users?.uidsociete, '');
     }
 
     // ── Recherche globale ─────────────────────────────────────

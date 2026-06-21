@@ -39,8 +39,8 @@ export class RayonModalComponent implements OnChanges {
 
     constructor(private autor: Authorization, private httService: HttpService) {
         this.users = this.autor.getInfosUsers();
-        this.savesites(this.users?.datasociete?.uid)
-        this.saveservice(this.users?.datasociete?.uid)
+        this.savesites(this.users?.datasociete?.uid || this.users?.uidsociete)
+        this.saveservice(this.users?.datasociete?.uid || this.users?.uidsociete)
     }
 
     ngOnChanges(changes: SimpleChanges) {
@@ -109,7 +109,7 @@ export class RayonModalComponent implements OnChanges {
         this.isloading = true;
         let payload = {
             "action": this.validationForm.value.uid ? 2 : 1,
-            "idsociete": this.users?.datasociete?.uid,
+            "idsociete": this.users?.datasociete?.uid || this.users?.uidsociete,
             "idrayon": this.validationForm.value.uid || '',
             "idsite": this.validationForm.value.idsite,
             "libelle_rayon": this.validationForm.value.libelle_rayon,

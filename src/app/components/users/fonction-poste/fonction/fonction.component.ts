@@ -101,7 +101,7 @@ export class FonctionComponent implements OnInit {
   ngOnInit(): void {
     window.scrollTo({top: 0, behavior: 'smooth'});
     this.users = this.autor.getInfosUsers();
-    this.showFonction(this.users?.datasociete?.uid, '');
+    this.showFonction(this.users?.datasociete?.uid  || this.users?.uidsociete, '');
   }
 
   // ── Recherche globale ─────────────────────────────────────
@@ -160,7 +160,7 @@ export class FonctionComponent implements OnInit {
 
   handleModal(value: boolean) {
     if (value) {
-      this.showFonction(this.users?.datasociete?.uid, '');
+      this.showFonction(this.users?.datasociete?.uid  || this.users?.uidsociete, '');
     }
     this.modalOpen = false;
   }
