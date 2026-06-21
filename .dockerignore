@@ -1,0 +1,27 @@
+# Dépendances (seront réinstallées dans le container)
+node_modules/
+
+# Builds précédents
+dist/
+
+# Git
+.git/
+.gitignore
+
+# Docker
+Dockerfile
+.dockerignore
+docker-compose*.yml
+
+# Fichiers de développement
+.claude/
+*.txt
+*.md
+.editorconfig
+.eslintrc*
+karma.conf.js
+
+# Variables d'environnement locales
+.env
+.env.*
+!.env.example

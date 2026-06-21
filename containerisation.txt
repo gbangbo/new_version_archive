@@ -1,0 +1,488 @@
+================================================================================
+   GUIDE DE CONTAINERISATION — Angular 20 avec Docker + GitHub Actions
+================================================================================
+Projet  : Logiciel Plus (new_version_archive)
+GitHub  : https://github.com/gbangbo/new_version_archive
+Serveur : Windows Server
+Auteur  : GBANGBO KOFFI
+Date    : 2026-06-21
+--------------------------------------------------------------------------------
+
+QU'EST-CE QUE LA CONTAINERISATION ?
+─────────────────────────────────────────────────────────────────────────────
+  Un container Docker est une "boîte" autonome qui contient ton application
+  ET tout ce dont elle a besoin pour fonctionner (Nginx, fichiers compilés...).
+
+  Avantages :
+  → Fonctionne exactement pareil sur tous les serveurs (dev, test, prod)
+  → Déploiement en une seule commande : docker run ...
+  → Rollback facile : revenir à une version précédente en changeant le tag
+  → Isolation : le container ne perturbe pas le reste du serveur
+  → Pas besoin d'installer Node.js ou Angular CLI sur le serveur de production
+
+PRINCIPE DU FLUX DE DÉPLOIEMENT AVEC DOCKER
+─────────────────────────────────────────────────────────────────────────────
+  git push main
+     → GitHub Actions (sur serveur GitHub) :
+          1. Compile Angular dans un container temporaire (node:20)
+          2. Copie les fichiers compilés dans un container Nginx léger
+          3. Publie l'image sur GitHub Container Registry (ghcr.io)
+     → GitHub Actions (sur TON serveur via self-hosted runner) :
+          4. Télécharge la nouvelle image depuis ghcr.io
+          5. Arrête l'ancien container
+          6. Démarre le nouveau container avec la nouvelle image
+          7. Le site est à jour, sans interruption de service
+
+  L'image créée est un fichier compressé (~25 Mo) qui contient :
+  → Les fichiers Angular compilés (HTML, CSS, JS)
+  → Un serveur Nginx configuré
+  → Rien de plus (pas de Node.js, pas de npm, ultra léger)
+
+
+================================================================================
+   FICHIERS DOCKER CRÉÉS DANS LE PROJET
+================================================================================
+
+  Les fichiers suivants ont été ajoutés à la racine du projet :
+
+  ┌─────────────────────────────────────────────────────────────────────────┐
+  │  Dockerfile                  ← Instructions pour construire l'image    │
+  │  nginx.docker.conf           ← Configuration Nginx dans le container   │
+  │  .dockerignore               ← Fichiers à exclure du build Docker      │
+  │  docker-compose.yml          ← Pour lancer le container facilement     │
+  │  .github/workflows/          ← Workflow CI/CD                          │
+  │    docker-deploy.yml         ← Build + push image + déploiement auto   │
+  └─────────────────────────────────────────────────────────────────────────┘
+
+  EXPLICATION DU DOCKERFILE (build en 2 étapes)
+  ──────────────────────────────────────────────
+  Étape 1 — "builder" (image node:20-alpine) :
+    → Installe les dépendances npm
+    → Compile Angular en mode production (ng build --configuration production)
+    → Résultat : dossier dist/cuba-tailwind-angular/browser/
+
+  Étape 2 — image finale (nginx:1.27-alpine) :
+    → Copie UNIQUEMENT le dossier dist/ depuis l'étape 1
+    → Copie la configuration Nginx (nginx.docker.conf)
+    → Image finale très légère (~25 Mo contre ~800 Mo si on gardait Node.js)
+    → Expose le port 80
+
+  L'astuce du "multi-stage build" permet d'avoir une image de production
+  légère sans Node.js ni npm (inutiles une fois le build terminé).
+
+
+================================================================================
+   ÉTAPE 1 — INSTALLER DOCKER SUR LE SERVEUR WINDOWS
+================================================================================
+
+  Docker est le moteur qui va faire tourner les containers sur ton serveur.
+
+  1.1  Vérifier que la virtualisation est activée
+       Dans PowerShell (administrateur) :
+
+         systeminfo | findstr "Hyper-V"
+
+       Tu dois voir "Hyper-V Requirements: A hypervisor has been detected"
+       Si ce n'est pas le cas, activer Hyper-V dans le BIOS ou les fonctionnalités
+       Windows (Panneau de config → Programmes → Activer fonctionnalités Windows
+       → cocher "Hyper-V").
+
+  1.2  Télécharger Docker Desktop pour Windows
+       Aller sur : https://www.docker.com/products/docker-desktop/
+       Cliquer "Download for Windows"
+
+       OU installer Docker Engine sans interface graphique (recommandé pour un
+       serveur de production) via Winget dans PowerShell (administrateur) :
+
+         winget install Docker.DockerDesktop
+
+  1.3  Lancer l'installeur Docker Desktop
+       → Accepter les conditions
+       → Cocher "Use WSL 2 instead of Hyper-V" si proposé (recommandé)
+       → Cliquer "Ok" et attendre la fin de l'installation
+       → Redémarrer le serveur quand demandé
+
+  1.4  Après le redémarrage, démarrer Docker Desktop
+       Une icône de baleine apparaît dans la barre des tâches.
+       Attendre que Docker soit "Running" (la baleine arrête d'être animée).
+
+  1.5  Vérifier l'installation dans PowerShell :
+
+         docker --version
+         docker compose version
+
+       Tu dois voir quelque chose comme :
+         Docker version 27.x.x
+         Docker Compose version v2.x.x
+
+  1.6  Tester que Docker fonctionne :
+
+         docker run hello-world
+
+       Tu dois voir "Hello from Docker!" dans le terminal.
+       Si c'est le cas, Docker est prêt.
+
+  NOTE POUR WINDOWS SERVER (sans interface graphique)
+  ────────────────────────────────────────────────────
+  Si tu utilises Windows Server Core (sans interface), installe Docker Engine
+  directement avec PowerShell (administrateur) :
+
+    Install-Module -Name DockerMsftProvider -Repository PSGallery -Force
+    Install-Package -Name docker -ProviderName DockerMsftProvider -Force
+    Restart-Computer -Force
+
+  Après redémarrage :
+
+    Start-Service Docker
+    docker --version
+
+
+================================================================================
+   ÉTAPE 2 — CONFIGURER L'ACCÈS AU GITHUB CONTAINER REGISTRY
+================================================================================
+
+  Le GitHub Container Registry (ghcr.io) est un registre d'images Docker
+  hébergé par GitHub. L'image compilée y sera stockée et le serveur viendra
+  la télécharger depuis là.
+
+  2.1  Créer un Personal Access Token GitHub
+       → Aller sur : https://github.com/settings/tokens
+       → Cliquer "Generate new token (classic)"
+       → Note (nom) : docker-server-pull
+       → Expiration : No expiration (ou 1 an)
+       → Cocher les permissions :
+            ✓ read:packages   (lire les images Docker)
+            ✓ write:packages  (publier des images Docker)
+            ✓ delete:packages (supprimer si besoin)
+       → Cliquer "Generate token"
+       → COPIER le token affiché (commence par ghp_...)
+         ATTENTION : il ne sera affiché qu'une seule fois
+
+  2.2  Se connecter au registre sur le serveur
+       Dans PowerShell sur le serveur, remplacer TON_TOKEN et TON_USERNAME :
+
+         echo "TON_TOKEN" | docker login ghcr.io -u TON_USERNAME --password-stdin
+
+       Exemple :
+         echo "ghp_abc123..." | docker login ghcr.io -u gbangbo --password-stdin
+
+       Tu dois voir : "Login Succeeded"
+
+       Cette connexion est mémorisée. Tu n'as pas à la refaire à chaque fois.
+
+  2.3  Rendre l'image publique (facultatif mais plus simple)
+       Par défaut les images ghcr.io sont privées.
+       Pour éviter les problèmes d'authentification sur le serveur :
+       → Aller sur : https://github.com/gbangbo?tab=packages
+       → Cliquer sur le package "new_version_archive"
+       → Package Settings → Change visibility → Public
+       → Confirmer
+
+       Si tu gardes l'image privée, le token configuré à l'étape 2.2 suffit.
+
+
+================================================================================
+   ÉTAPE 3 — INSTALLER LE SELF-HOSTED RUNNER (SI PAS ENCORE FAIT)
+================================================================================
+
+  Le runner est nécessaire pour que GitHub puisse déclencher le déploiement
+  sur TON serveur. Si tu l'as déjà installé (voir deploiement-auto.txt),
+  tu peux passer à l'étape 4.
+
+  3.1  Aller sur GitHub :
+       https://github.com/gbangbo/new_version_archive/settings/actions/runners
+       → Cliquer "New self-hosted runner"
+       → Sélectionner Windows x64
+
+  3.2  Suivre les commandes affichées par GitHub dans PowerShell (administrateur)
+       (créer dossier, télécharger, configurer avec le token fourni)
+
+  3.3  Installer comme service Windows :
+
+         cd C:\actions-runner
+         .\svc.cmd install
+         .\svc.cmd start
+
+  3.4  Vérifier sur GitHub que le runner est "Idle" (vert)
+
+  IMPORTANT : Le runner doit avoir Docker accessible.
+  Vérifier que l'utilisateur du service runner peut utiliser Docker :
+
+    Dans PowerShell (administrateur) :
+    Add-LocalGroupMember -Group "docker-users" -Member "NETWORK SERVICE"
+
+  Puis redémarrer le service runner :
+
+    Restart-Service -Name "actions.runner.*"
+
+
+================================================================================
+   ÉTAPE 4 — ACTIVER LE WORKFLOW DOCKER SUR GITHUB
+================================================================================
+
+  Le fichier .github/workflows/docker-deploy.yml est déjà dans le projet.
+  Il fonctionne automatiquement dès qu'il est pushé sur GitHub.
+
+  COMMENT IL FONCTIONNE
+  ──────────────────────
+  Il y a 2 jobs dans le workflow :
+
+  JOB 1 : "build-and-push" (tourne sur les serveurs GitHub, gratuit)
+    → Checkout du code
+    → Connexion à ghcr.io avec le token GitHub automatique
+    → Build de l'image Docker (ng build inclus)
+    → Push de l'image avec 2 tags :
+        - ghcr.io/gbangbo/new_version_archive:latest  (toujours la dernière version)
+        - ghcr.io/gbangbo/new_version_archive:sha-abc123  (version traçable par commit)
+
+  JOB 2 : "deploy" (tourne sur TON serveur via le runner)
+    → Se connecte à ghcr.io
+    → Télécharge la nouvelle image (docker pull)
+    → Arrête et supprime l'ancien container
+    → Lance le nouveau container sur le port 80
+    → Nettoie les anciennes images inutilisées
+
+  4.1  Pusher le workflow sur GitHub pour l'activer (si pas encore fait) :
+
+         git add .github/workflows/docker-deploy.yml Dockerfile nginx.docker.conf
+                 .dockerignore docker-compose.yml
+         git commit -m "feat: containerisation Docker avec déploiement automatique"
+         git push origin main
+
+  4.2  Aller sur : https://github.com/gbangbo/new_version_archive/actions
+       Tu verras le workflow "Docker Build & Deploy" se lancer.
+       Le premier build prend environ 5 à 10 minutes (téléchargement des images
+       de base node:20 et nginx:alpine).
+       Les builds suivants seront plus rapides grâce au cache Docker.
+
+
+================================================================================
+   ÉTAPE 5 — TESTER LE DÉPLOIEMENT
+================================================================================
+
+  5.1  Après que le workflow GitHub Actions se termine avec succès (coche verte),
+       vérifier que le container tourne sur le serveur :
+
+         docker ps
+
+       Tu dois voir une ligne comme :
+         CONTAINER ID   IMAGE                                          STATUS
+         abc123def456   ghcr.io/gbangbo/new_version_archive:latest    Up 2 minutes
+
+  5.2  Vérifier les logs du container :
+
+         docker logs logiciel-plus
+
+       Tu dois voir les logs Nginx (démarrage, requêtes HTTP...)
+
+  5.3  Ouvrir le site dans un navigateur :
+       http://ton-domaine.com  ou  http://IP-du-serveur
+
+  5.4  Tester le routing Angular (très important)
+       Naviguer jusqu'à une sous-page du site (ex: http://IP/documents)
+       Rafraîchir la page avec F5
+       → La page doit se recharger correctement (pas d'erreur 404)
+       Si tu vois une erreur 404, vérifier que nginx.docker.conf contient bien
+       la ligne "try_files $uri $uri/ /index.html;"
+
+
+================================================================================
+   ÉTAPE 6 — UTILISATION QUOTIDIENNE
+================================================================================
+
+  DÉPLOYER UNE NOUVELLE VERSION
+  ───────────────────────────────
+  Rien de spécial à faire ! Il suffit de :
+
+    git add .
+    git commit -m "feat: ma nouvelle fonctionnalité"
+    git push origin main
+
+  GitHub Actions s'occupe de tout automatiquement.
+  En 5 à 10 minutes, la nouvelle version est en ligne.
+
+  COMMANDES UTILES SUR LE SERVEUR
+  ─────────────────────────────────
+  Voir les containers qui tournent :
+    docker ps
+
+  Voir tous les containers (même arrêtés) :
+    docker ps -a
+
+  Voir les logs en temps réel :
+    docker logs -f logiciel-plus
+
+  Redémarrer le container manuellement :
+    docker restart logiciel-plus
+
+  Arrêter le container :
+    docker stop logiciel-plus
+
+  Démarrer le container :
+    docker start logiciel-plus
+
+  Voir les images téléchargées :
+    docker images
+
+  Voir l'espace disque utilisé par Docker :
+    docker system df
+
+
+================================================================================
+   ÉTAPE 7 — REVENIR À UNE VERSION PRÉCÉDENTE (ROLLBACK)
+================================================================================
+
+  C'est l'un des grands avantages des containers.
+  Chaque push crée une image avec un tag unique basé sur le commit SHA.
+
+  7.1  Voir les images disponibles sur le serveur :
+
+         docker images | findstr "new_version_archive"
+
+       Tu vois quelque chose comme :
+         ghcr.io/gbangbo/new_version_archive   latest     abc123...   2 hours ago
+         ghcr.io/gbangbo/new_version_archive   sha-def4   def456...   1 day ago
+         ghcr.io/gbangbo/new_version_archive   sha-ghi7   ghi789...   3 days ago
+
+  7.2  Pour revenir à une version précédente, arrêter le container actuel
+       et en lancer un avec l'ancienne image :
+
+         docker stop logiciel-plus
+         docker rm logiciel-plus
+         docker run -d --name logiciel-plus --restart unless-stopped -p 80:80 `
+           ghcr.io/gbangbo/new_version_archive:sha-def456...
+
+  7.3  Voir les tags disponibles sur GitHub :
+       https://github.com/gbangbo/new_version_archive/pkgs/container/new_version_archive
+
+       Chaque tag correspond à un commit Git. Tu peux retrouver le commit
+       correspondant sur : https://github.com/gbangbo/new_version_archive/commits/main
+
+
+================================================================================
+   ÉTAPE 8 — MAINTENANCE ET DÉPANNAGE
+================================================================================
+
+  NETTOYER L'ESPACE DISQUE
+  ──────────────────────────
+  Avec le temps, les anciennes images s'accumulent. Pour nettoyer :
+
+    # Supprimer les images non utilisées
+    docker image prune -f
+
+    # Supprimer TOUT ce qui n'est pas utilisé (images, volumes, réseaux)
+    docker system prune -f
+
+    # Voir l'espace récupéré
+    docker system df
+
+
+  CAS D'ERREUR FRÉQUENTS
+  ───────────────────────
+
+  ① Le workflow GitHub Actions échoue au build Angular
+    → Voir les logs dans GitHub → Actions → cliquer sur le run échoué
+    → Souvent une erreur TypeScript ou une dépendance manquante
+    → Corriger le code, commit, push
+
+  ② Erreur "permission denied" lors du docker pull sur le serveur
+    → Re-authentifier : echo "TOKEN" | docker login ghcr.io -u gbangbo --password-stdin
+    → Ou rendre l'image publique (voir Étape 2.3)
+
+  ③ Le container s'arrête tout seul
+    → Voir les logs : docker logs logiciel-plus
+    → Vérifier que le port 80 n'est pas utilisé par autre chose :
+      netstat -ano | findstr ":80"
+
+  ④ Le site affiche une erreur 404 sur les sous-pages
+    → Vérifier nginx.docker.conf contient "try_files $uri $uri/ /index.html;"
+    → Reconstruire l'image : faire un nouveau push, ou rebuild manuel (voir ci-dessous)
+
+  ⑤ Je veux tester l'image localement avant de déployer
+    → Sur ta machine de développement (avec Docker installé) :
+      docker build -t logiciel-plus-test .
+      docker run -p 4200:80 logiciel-plus-test
+      Ouvrir http://localhost:4200
+
+
+  REBUILD MANUEL SUR LE SERVEUR (sans passer par GitHub Actions)
+  ───────────────────────────────────────────────────────────────
+  Si tu veux reconstruire manuellement sur le serveur :
+
+    cd C:\actions-runner\_work\new_version_archive\new_version_archive
+    docker build -t ghcr.io/gbangbo/new_version_archive:latest .
+    docker stop logiciel-plus
+    docker rm logiciel-plus
+    docker run -d --name logiciel-plus --restart unless-stopped -p 80:80 `
+      ghcr.io/gbangbo/new_version_archive:latest
+
+
+  METTRE À JOUR DOCKER
+  ─────────────────────
+  Docker Desktop se met à jour automatiquement.
+  Pour une mise à jour manuelle :
+    winget upgrade Docker.DockerDesktop
+
+
+================================================================================
+   COMPARAISON AVEC LE DÉPLOIEMENT SANS DOCKER
+================================================================================
+
+  ┌──────────────────────────┬────────────────────────┬──────────────────────┐
+  │                          │  Sans Docker (Nginx)   │  Avec Docker         │
+  ├──────────────────────────┼────────────────────────┼──────────────────────┤
+  │ Node.js sur le serveur   │  Requis                │  Non requis          │
+  │ Angular CLI sur serveur  │  Requis                │  Non requis          │
+  │ npm install sur serveur  │  Oui (lent)            │  Non (dans container)│
+  │ Rollback                 │  Difficile             │  Facile (changer tag)│
+  │ Isolation                │  Non                   │  Oui                 │
+  │ Portabilité              │  Dépend du serveur     │  Fonctionne partout  │
+  │ Espace disque            │  ~500 Mo (dist/)       │  ~25 Mo (image Nginx)│
+  │ Temps de déploiement     │  3-5 min               │  5-10 min (1er)      │
+  │                          │                        │  2-3 min (suivants)  │
+  │ Complexité de setup      │  Simple                │  Modérée             │
+  └──────────────────────────┴────────────────────────┴──────────────────────┘
+
+
+================================================================================
+   RÉCAPITULATIF DES ACTIONS À FAIRE
+================================================================================
+
+  SUR LE SERVEUR WINDOWS (une seule fois) :
+  ─────────────────────────────────────────
+  [ ] 1. Installer Docker Desktop              → https://docker.com/products/docker-desktop
+  [ ] 2. Vérifier Docker                       → docker --version && docker run hello-world
+  [ ] 3. Créer un token GitHub (read:packages) → https://github.com/settings/tokens
+  [ ] 4. Se connecter à ghcr.io               → docker login ghcr.io -u gbangbo --password-stdin
+  [ ] 5. Vérifier le runner GitHub (auto)      → Get-Service -Name "actions.runner.*"
+  [ ] 6. Ajouter runner au groupe docker-users → Add-LocalGroupMember -Group "docker-users" ...
+
+  SUR GITHUB (vérification) :
+  ───────────────────────────
+  [ ] 7. Pusher les fichiers Docker            → git push origin main
+  [ ] 8. Suivre le premier build               → GitHub → Actions
+  [ ] 9. Vérifier le container sur le serveur → docker ps
+
+  APRÈS CONFIGURATION :
+  ─────────────────────
+  → Chaque "git push main" rebuild et redéploie automatiquement.
+  → Le rollback se fait en changeant le tag de l'image Docker.
+
+
+================================================================================
+   INFORMATIONS UTILES
+================================================================================
+
+  Fichier Dockerfile                : Dockerfile
+  Config Nginx du container         : nginx.docker.conf
+  Fichier exclusion Docker          : .dockerignore
+  Docker Compose (lancement manuel) : docker-compose.yml
+  Workflow GitHub Actions Docker    : .github/workflows/docker-deploy.yml
+  Registre d'images                 : https://github.com/gbangbo/new_version_archive/pkgs/container
+  Suivi des déploiements            : https://github.com/gbangbo/new_version_archive/actions
+  Gestion des runners               : https://github.com/gbangbo/new_version_archive/settings/actions/runners
+  Nom du container sur le serveur   : logiciel-plus
+  Port exposé                       : 80
+  Dossier build dans l'image        : /usr/share/nginx/html
+
+================================================================================

@@ -1,0 +1,12 @@
+services:
+  logiciel-plus:
+    image: ghcr.io/gbangbo/new_version_archive:latest
+    container_name: logiciel-plus
+    ports:
+      - "80:80"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
