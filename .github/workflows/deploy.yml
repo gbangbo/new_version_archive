@@ -1,0 +1,41 @@
+name: Build & Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: self-hosted   # ton runner Windows
+
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+
+      - name: Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Installer les dépendances
+        run: npm ci
+
+      - name: Build Angular (production)
+        run: npx ng build --configuration production
+
+      - name: Déployer vers Nginx
+        shell: powershell
+        run: |
+          $dest = "C:\sites\logiciel-plus"
+          # Vider l'ancien build
+          if (Test-Path $dest) {
+            Remove-Item -Recurse -Force "$dest\*"
+          } else {
+            New-Item -ItemType Directory -Force -Path $dest
+          }
+          # Copier le nouveau build
+          $src = Join-Path $env:GITHUB_WORKSPACE "dist\cuba-tailwind-angular\browser"
+          Copy-Item -Recurse -Force "$src\*" $dest
+          Write-Host "Déploiement terminé vers $dest"
