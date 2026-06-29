@@ -949,7 +949,8 @@ export class ClasserDocumentComponent implements OnInit {
     private renderPdf(url: string): void {
         this.currentPage = 1;
         this.currentPdfDoc = null;
-        pdfjsLib.getDocument({url}).promise.then((pdf: any) => {
+        const password = this.previewItem?.password_file || undefined;
+        pdfjsLib.getDocument({url, password}).promise.then((pdf: any) => {
             this.currentPdfDoc = pdf;
             this.totalPages = pdf.numPages;
             this.renderPage(1);

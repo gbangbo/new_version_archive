@@ -365,6 +365,7 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
         sendmail: new FormControl('',),
         idcategories: new FormControl('',),
     })
+    isSaving: boolean = false;
     loadingType: boolean = false;
     loadingService: boolean = false;
     isGeneratingCode: boolean = false;
@@ -1338,10 +1339,12 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
             "sendmail": this.validationForm.value.sendmail || false
         }
         this.isloading = true;
+        this.isSaving = true;
         this.httService.postData(`${environment.api_url}api/:savedocuments`, payload, this.users?.access_token || '')
             .toPromise()
             .then((res: any) => {
                 this.isloading = false;
+                this.isSaving = false;
                 if (res.body.status || res.body.success) {
                     this.resetAfterSave();
                     Swal.fire({
@@ -1359,6 +1362,7 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
             })
             .catch((err: any) => {
                 this.isloading = false;
+                this.isSaving = false;
                 Swal.fire({
                     title: err?.error?.err?.message || 'Une erreur est survenue !',
                     icon: 'error',

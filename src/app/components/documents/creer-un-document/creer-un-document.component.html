@@ -2,6 +2,15 @@
 
 <div class="container job-apply-wrapper">
 
+    <!-- Overlay bloquant pendant l'enregistrement -->
+    <div class="save-overlay" *ngIf="isSaving">
+        <div class="save-overlay-card">
+            <div class="save-spinner"></div>
+            <p class="save-overlay-msg">Enregistrement en cours...</p>
+            <p class="save-overlay-sub">Veuillez patienter, ne fermez pas cette page.</p>
+        </div>
+    </div>
+
 
     <nz-splitter>
         <nz-splitter-panel nzDefaultSize="45%" nzMin="20%" nzMax="70%">
