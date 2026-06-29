@@ -295,8 +295,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   background: #ffffff;
   border: 1px solid #e2e8f0;
@@ -410,7 +410,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--ico-title);
+  color:var(--ico-title);
   flex-shrink: 0;
 
   svg {
@@ -669,45 +669,11 @@
   display: none;
 }
 
-
-// ── Table layout fixe pour respecter les largeurs ──
-:host ::ng-deep .ant-table table {
-  table-layout: auto !important;
-  width: 100% !important;
-}
-
-// ── Scroll vertical : hauteur fixe sur le body ──
-:host ::ng-deep .ant-table-body {
-  max-height: calc(100vh - 320px) !important;
-  overflow-y: auto !important;
-  overflow-x: hidden !important; // ← supprime le scroll horizontal
-}
-
-// ── Colonne logo ──
-:host ::ng-deep .ant-table-thead > tr > th:nth-child(1),
-:host ::ng-deep .ant-table-tbody > tr > td:nth-child(1) {
-  width: 50px !important;
-  min-width: 50px !important;
-  max-width: 50px !important;
-  padding: 4px 8px !important;
-  text-align: center;
-}
-
-// ── Colonne 2FA ──
-:host ::ng-deep .ant-table-thead > tr > th:nth-child(5),
-:host ::ng-deep .ant-table-tbody > tr > td:nth-child(5) {
-  width: 160px !important;
-  min-width: 160px !important;
-  padding: 4px 8px !important;
-}
-
-// ── Colonne actions ──
-:host ::ng-deep .ant-table-thead > tr > th:nth-child(6),
-:host ::ng-deep .ant-table-tbody > tr > td:nth-child(6) {
-  width: 60px !important;
-  min-width: 60px !important;
-  padding: 4px 0 !important;
-  text-align: center;
+::ng-deep .ant-table-thead th:nth-child(1),
+::ng-deep .ant-table-tbody td:nth-child(1) {
+  max-width: 45px !important;
+  min-width: 45px !important;
+  width: 45px !important;
 }
 
 
@@ -717,10 +683,30 @@
   opacity: 0.5;
 }
 
-::ng-deep .ant-tag {
-  width: 100% !important;
-  text-align: center;
+
+:host ::ng-deep .ant-table-tbody > tr > td, .ant-table tfoot > tr > td {
+  //:host  ::ng-deep .ant-table-thead > tr > th, .ant-table-tbody > tr > td, .ant-table tfoot > tr > th, .ant-table tfoot > tr > td{
+  padding: 3px 4px !important;
 }
+
+:host ::ng-deep .ant-table-thead > tr > th, .ant-table tfoot > tr > th {
+  padding: 7px 4px !important;
+}
+
+::ng-deep .ant-tag {
+  display: block !important;
+  width: 100% !important;
+  text-align: center !important;
+  box-sizing: border-box !important;
+  white-space: normal !important;
+  overflow: visible !important;
+  line-height: 1.4 !important;
+  padding: 3px 6px !important;
+}
+
+
+
+
 
 
 //-----------------LOOK TABLE
@@ -824,7 +810,7 @@
     padding: 8px 10px !important;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    border-right: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-right: 1px solid rgba(255,255,255,0.15) !important;
     border-bottom: none !important;
   }
 
@@ -868,7 +854,7 @@
     padding: 7px 10px !important;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    border-right: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-right: 1px solid rgba(255,255,255,0.15) !important;
     border-bottom: none !important;
   }
 
@@ -895,18 +881,11 @@
   scrollbar-width: thin;
   scrollbar-color: #E2E8F0 transparent;
 
-  &::-webkit-scrollbar {
-    height: 5px;
-    width: 5px;
-  }
-
+  &::-webkit-scrollbar { height: 5px; width: 5px; }
   &::-webkit-scrollbar-thumb {
     background: #CBD5E1;
     border-radius: 4px;
-
-    &:hover {
-      background: #94A3B8;
-    }
+    &:hover { background: #94A3B8; }
   }
 }
 
@@ -923,16 +902,10 @@
 ::ng-deep .ant-pagination-total-text {
   font-size: 12px;
   color: #64748B;
-
-  strong {
-    color: #0F172A;
-    font-weight: 700;
-  }
+  strong { color: #0F172A; font-weight: 700; }
 }
 
-::ng-deep .ant-empty-normal {
-  display: none;
-}
+::ng-deep .ant-empty-normal { display: none; }
 
 // ═══════════════════════════════════════
 // RESPONSIVE
@@ -982,689 +955,5 @@
   ::ng-deep .support-ticket-table tbody tr td:first-child {
     min-width: unset !important;
     width: auto !important;
-  }
-}
-
-
-::ng-deep .ant-table-wrapper {
-  padding-left: 7px !important;
-}
-
-:host ::ng-deep .ant-table-wrapper {
-  margin-top: 0 !important;
-}
-
-:host ::ng-deep .ant-spin-container {
-  margin-top: 0 !important;
-}
-
-
-$col-toggle: 36px;
-$col-phone: 140px;
-$col-email: 200px;
-$col-auth: 140px;
-$col-actions: 100px;
-
-.tree-table-wrap {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  border-top: 1px solid #E2E8F0;
-}
-
-// ── Header ────────────────────────────────
-.tree-table-header {
-  display: flex;
-  align-items: center;
-  padding: 0;
-  background: #F1F5F9;
-  border-bottom: 1px solid #E2E8F0;
-  font-size: 12px;
-  font-weight: 600;
-  color: #374151;
-  min-height: 38px;
-  user-select: none;
-
-  > div {
-    padding: 0 12px;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    height: 38px;
-    border-right: 1px solid #E2E8F0;
-
-    &:last-child {
-      border-right: none;
-    }
-  }
-}
-
-// ── Body ──────────────────────────────────
-.tree-table-body {
-  overflow-y: auto;
-  max-height: calc(100vh - 280px);
-
-  // Masquer les styles natifs nz-tree
-  ::ng-deep .ant-tree {
-    padding: 0 !important;
-  }
-
-  ::ng-deep nz-tree-node {
-    display: block !important;
-    height: auto !important;
-    padding: 0 !important;
-    margin: 0 !important;
-  }
-
-  ::ng-deep .ant-tree-indent,
-  ::ng-deep .ant-tree-indent-unit {
-    display: none !important; // on gère l'indentation manuellement
-  }
-
-  ::ng-deep nz-tree-node-option {
-    display: block !important;
-    width: 100% !important;
-    padding: 0 !important;
-    background: transparent !important;
-    border-radius: 0 !important;
-  }
-
-  ::ng-deep .ant-tree-node-content-wrapper {
-    padding: 0 !important;
-    width: 100% !important;
-    border-radius: 0 !important;
-
-    &:hover {
-      background: transparent !important;
-    }
-  }
-
-  ::ng-deep nz-tree-node-toggle {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    width: 100% !important;
-    height: 100% !important;
-    flex-shrink: 0 !important;
-  }
-}
-
-// ── Ligne ─────────────────────────────────
-.tt-row {
-  display: flex;
-  align-items: stretch;
-  min-height: 38px;
-  border-bottom: 1px solid #F1F5F9;
-  cursor: pointer;
-  transition: background 0.12s;
-  width: 100%;
-  line-height: 1;
-
-  &:hover {
-    background: #EFF6FF;
-
-    .tt-action-btn {
-      opacity: 1;
-    }
-  }
-
-  &.tt-row-selected {
-    background: #DBEAFE;
-
-    &:hover {
-      background: #BFDBFE;
-    }
-  }
-
-  > div {
-    padding: 6px 12px;
-    display: flex;
-    align-items: center;
-    flex-shrink: 0;
-    overflow: hidden;
-  }
-
-  > .ttc-name {
-    overflow: visible;
-    align-items: flex-start;
-    padding-top: 8px;
-    padding-bottom: 8px;
-  }
-}
-
-// ── Colonnes ──────────────────────────────
-.ttc-toggle {
-  width: $col-toggle;
-  min-width: $col-toggle;
-  padding: 0 !important;
-  justify-content: center;
-  border-right: 1px solid #F1F5F9;
-}
-
-.ttc-name {
-  flex: 1;
-  min-width: 160px;
-  gap: 8px;
-  border-right: 1px solid #F1F5F9;
-  overflow: visible;
-}
-
-.ttc-phone {
-  width: $col-phone;
-  min-width: $col-phone;
-  font-size: 12px;
-  color: #64748B;
-  border-right: 1px solid #F1F5F9;
-}
-
-.ttc-email {
-  width: $col-email;
-  min-width: $col-email;
-  font-size: 12px;
-  color: #64748B;
-  border-right: 1px solid #F1F5F9;
-}
-
-.ttc-auth {
-  width: $col-auth;
-  min-width: $col-auth;
-  border-right: 1px solid #F1F5F9;
-  justify-content: center;
-
-  ::ng-deep .ant-tag {
-    margin: 0 !important;
-    width: 100% !important;
-  }
-}
-
-.ttc-actions {
-  width: 120px !important;
-  min-width: 120px !important;
-  justify-content: center;
-}
-
-// ── Contenu cellule Nom ───────────────────
-.tt-avatar {
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  object-fit: cover;
-  flex-shrink: 0;
-  border: 1px solid #E2E8F0;
-}
-
-.tt-name-text {
-  font-size: 12px;
-  color: #374151;
-  white-space: normal;
-  overflow: visible;
-  text-overflow: unset;
-  word-break: break-word;
-  line-height: 1.4;
-}
-
-.tt-parent {
-  font-weight: 600;
-  color: #0F172A;
-}
-
-// ── Icônes tri header ─────────────────────
-.tt-sort-icons {
-  display: inline-flex;
-  flex-direction: column;
-  font-size: 9px;
-  color: #CBD5E1;
-  line-height: 1;
-  gap: 1px;
-  margin-left: 2px;
-}
-
-// ── Bouton action (visible au hover) ──────
-.tt-action-btn {
-  opacity: 7;
-  transition: opacity 0.15s;
-  width: 28px !important;
-  height: 28px !important;
-}
-
-// ── Footer ────────────────────────────────
-.tree-table-footer {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  padding: 8px 16px;
-  border-top: 1px solid #E2E8F0;
-  background: #F8FAFC;
-  font-size: 12px;
-  color: #64748B;
-  min-height: 40px;
-
-  strong {
-    color: #0F172A;
-    font-weight: 700;
-  }
-}
-
-
-//**********************Tree
-
-// ══════════════════════════════════════════
-// TREE TABLE — layout tableau
-// ══════════════════════════════════════════
-
-$col-toggle: 36px;
-$col-phone: 140px;
-$col-email: 200px;
-$col-auth: 140px;
-$col-actions: 70px;
-
-.tree-table-wrap {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  border-top: 1px solid #E2E8F0;
-}
-
-// ── Header ────────────────────────────────
-.tree-table-header {
-  display: flex;
-  align-items: center;
-  padding: 0;
-  background: #F1F5F9;
-  border-bottom: 1px solid #E2E8F0;
-  font-size: 12px;
-  font-weight: 600;
-  color: #374151;
-  min-height: 38px;
-  user-select: none;
-
-  > div {
-    padding: 0 12px;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    height: 38px;
-    border-right: 1px solid #E2E8F0;
-
-    &:last-child {
-      border-right: none;
-    }
-  }
-}
-
-// ── Body ──────────────────────────────────
-.tree-table-body {
-  overflow-y: auto;
-  max-height: calc(100vh - 280px);
-
-  // Masquer les styles natifs nz-tree
-  ::ng-deep .ant-tree {
-    padding: 0 !important;
-  }
-
-  ::ng-deep nz-tree-node {
-    display: block !important;
-    height: auto !important;
-    padding: 0 !important;
-    margin: 0 !important;
-  }
-
-  ::ng-deep .ant-tree-indent,
-  ::ng-deep .ant-tree-indent-unit {
-    display: none !important; // on gère l'indentation manuellement
-  }
-
-  ::ng-deep nz-tree-node-option {
-    display: block !important;
-    width: 100% !important;
-    padding: 0 !important;
-    background: transparent !important;
-    border-radius: 0 !important;
-  }
-
-  ::ng-deep .ant-tree-node-content-wrapper {
-    padding: 0 !important;
-    width: 100% !important;
-    border-radius: 0 !important;
-
-    &:hover {
-      background: transparent !important;
-    }
-  }
-
-  ::ng-deep nz-tree-node-toggle {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    width: 100% !important;
-    height: 100% !important;
-    flex-shrink: 0 !important;
-  }
-}
-
-// ── Ligne ─────────────────────────────────
-.tt-row {
-  display: flex;
-  align-items: stretch;
-  min-height: 38px;
-  border-bottom: 1px solid #F1F5F9;
-  cursor: pointer;
-  transition: background 0.12s;
-  width: 100%;
-
-  &:hover {
-    background: #EFF6FF;
-
-    .tt-action-btn {
-      opacity: 1;
-    }
-  }
-
-  &.tt-row-selected {
-    background: #DBEAFE;
-
-    &:hover {
-      background: #BFDBFE;
-    }
-  }
-
-  > div {
-    padding: 6px 12px;
-    display: flex;
-    align-items: center;
-    flex-shrink: 0;
-    overflow: hidden;
-  }
-
-  > .ttc-name {
-    overflow: visible;
-    align-items: flex-start;
-    padding-top: 8px;
-    padding-bottom: 8px;
-  }
-}
-
-// ── Colonnes ──────────────────────────────
-//.ttc-toggle {
-//  width: $col-toggle;
-//  min-width: $col-toggle;
-//  padding: 0 !important;
-//  justify-content: center;
-//  border-right: 1px solid #F1F5F9;
-//}
-
-.ttc-name {
-  flex: 1;
-  min-width: 160px;
-  gap: 8px;
-  border-right: 1px solid #F1F5F9;
-  overflow: visible;
-}
-
-.ttc-name {
-  ::ng-deep nz-tree-node-toggle {
-    flex-shrink: 0 !important;
-    margin-right: 0px !important;
-    width: 16px !important;
-  }
-}
-
-.ttc-phone {
-  width: $col-phone;
-  min-width: $col-phone;
-  font-size: 12px;
-  color: #64748B;
-  border-right: 1px solid #F1F5F9;
-}
-
-.ttc-email {
-  width: $col-email;
-  min-width: $col-email;
-  font-size: 12px;
-  color: #64748B;
-  border-right: 1px solid #F1F5F9;
-}
-
-.ttc-auth {
-  width: $col-auth;
-  min-width: $col-auth;
-  border-right: 1px solid #F1F5F9;
-  justify-content: center;
-
-  ::ng-deep .ant-tag {
-    margin: 0 !important;
-    width: 100% !important;
-    border-radius: 51px;
-    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
-  }
-}
-
-.ttc-actions {
-  width: $col-actions;
-  min-width: $col-actions;
-  justify-content: center;
-}
-
-// ── Contenu cellule Nom ───────────────────
-.tt-avatar {
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  object-fit: cover;
-  flex-shrink: 0;
-  border: 1px solid #E2E8F0;
-}
-
-.tt-name-text {
-  font-size: 12px;
-  color: #374151;
-  white-space: normal;
-  overflow: visible;
-  text-overflow: unset;
-  word-break: break-word;
-  line-height: 1.4;
-}
-
-.tt-parent {
-  font-weight: 600;
-  color: #0F172A;
-}
-
-// ── Icônes tri header ─────────────────────
-.tt-sort-icons {
-  display: inline-flex;
-  flex-direction: column;
-  font-size: 9px;
-  color: #CBD5E1;
-  line-height: 1;
-  gap: 1px;
-  margin-left: 2px;
-}
-
-// ── Bouton action (visible au hover) ──────
-.tt-action-btn {
-  opacity: 7 !important;
-  transition: opacity 0.15s;
-  width: 28px !important;
-  height: 28px !important;
-}
-
-// ── Footer ────────────────────────────────
-.tree-table-footer {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  padding: 8px 16px;
-  border-top: 1px solid #E2E8F0;
-  background: #F8FAFC;
-  font-size: 12px;
-  color: #64748B;
-  min-height: 40px;
-
-  strong {
-    color: #0F172A;
-    font-weight: 700;
-  }
-}
-
-.tt-folder-icon {
-  font-size: 16px !important;
-  flex-shrink: 0;
-}
-
-.tt-file-icon {
-  font-size: 14px !important;
-  flex-shrink: 0;
-  color: #94A3B8;
-}
-
-
-:host ::ng-deep nz-tree-node-toggle {
-  display: inline-flex !important;
-  align-items: center !important;
-  vertical-align: middle !important;
-}
-
-:host ::ng-deep .ant-tree-switcher {
-  line-height: 1 !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  vertical-align: middle !important;
-}
-
-.ttc-name {
-  i.fa-regular {
-    vertical-align: middle;
-    line-height: 1;
-  }
-}
-
-::ng-deep .ant-tag {
-  width: 100% !important;
-  text-align: center !important;
-}
-
-
-//---------------------------SWAL
-
-
-// ── Popup ──────────────────────────────
-.swal-custom-popup {
-  border-radius: 16px !important;
-  padding: 32px 28px 24px !important;
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.12) !important;
-  font-family: inherit !important;
-}
-
-// ── Icône sans bordure colorée par défaut ──
-.swal-custom-icon {
-  border: none !important;
-  margin-bottom: 8px !important;
-}
-
-// ── Boutons ────────────────────────────
-.swal-custom-confirm,
-.swal-custom-cancel {
-  height: 40px !important;
-  padding: 0 24px !important;
-  border-radius: 8px !important;
-  font-size: 13px !important;
-  font-weight: 600 !important;
-  letter-spacing: 0.02em !important;
-  box-shadow: none !important;
-  transition: all 0.2s !important;
-
-  &:hover {
-    opacity: 0.88 !important;
-    transform: translateY(-1px) !important;
-  }
-}
-
-// ── Fix taille icône question SweetAlert2 ──
-.swal2-icon.swal2-question {
-  width: 64px !important;
-  height: 64px !important;
-  border-width: 2px !important;
-
-  .swal2-icon-content {
-    font-size: 36px !important;
-    line-height: 1 !important;
-  }
-}
-
-
-.btn-close {
-  width: 8px;
-  height: 8px;
-  background-size: 8px;
-}
-
-
-// ── Responsive ────────────────────────────────────────────────
-
-// Desktop/tablette large : scroll horizontal si nécessaire
-.tree-scroll-container {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin;
-  scrollbar-color: #E2E8F0 transparent;
-
-  &::-webkit-scrollbar { height: 4px; }
-  &::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
-}
-
-.tree-table-header,
-.tt-row {
-  min-width: 660px;
-}
-
-// Mobile (≤ 767px) : colonnes secondaires cachées, recherche pleine largeur
-@media (max-width: 767px) {
-  .tree-scroll-container {
-    overflow-x: visible;
-  }
-
-  .tree-table-header,
-  .tt-row {
-    min-width: unset;
-  }
-
-  // Colonnes secondaires cachées sur mobile
-  .ttc-email,
-  .ttc-phone,
-  .ttc-auth {
-    display: none !important;
-  }
-
-  // Boutons actions centrés et légèrement réduits sur mobile
-  .ttc-actions {
-    width: 100px !important;
-    min-width: 100px !important;
-  }
-
-  .tt-action-btn {
-    width: 26px !important;
-    height: 26px !important;
-  }
-
-  // Toolbar : passe en colonne, recherche pleine largeur
-  .op-toolbar {
-    flex-direction: column;
-    align-items: stretch;
-    padding: 10px 12px;
-    gap: 10px;
-  }
-
-  .op-toolbar-right {
-    width: 100%;
-  }
-
-  .op-search-wrap {
-    width: 100%;
-  }
-
-  .op-search-input {
-    width: 100% !important;
-    &:focus { width: 100% !important; }
   }
 }

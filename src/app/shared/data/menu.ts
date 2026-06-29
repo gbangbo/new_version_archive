@@ -17,9 +17,9 @@ export const menuItems: Menu[] =
             badge_value: "13",
             badge_color: 'primary',
             children: [
-                {path: '/dashboard/nft', title: 'Accueil', type: 'link'},
-                {path: '/dashboard/default', title: 'Dashboards', type: 'link'},
-                {path: '/dashboard/crm', title: 'Statistiques', type: 'link'}
+                {path: '/dashboard/accueil', title: 'Accueil', type: 'link'},
+                {path: '/dashboard/tableau-de-bord', title: 'Dashboards', type: 'link'},
+                {path: '/dashboard/statistique', title: 'Statistiques', type: 'link'}
             ],
         },
         {
@@ -90,6 +90,11 @@ export const menuItems: Menu[] =
                 {
                     path: '/importer/pdf-depuis-dossier',
                     title: 'Excel : PDFs depuis dossiers',
+                    type: 'link'
+                },
+                {
+                    path: '/importer/repertoire',
+                    title: 'Repertoire',
                     type: 'link'
                 }
             ],

@@ -5,7 +5,13 @@
       "Bash(npm install *)",
       "Bash(git add *)",
       "Bash(git commit -m ' *)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Bash(findstr /i \"xlsx sheetjs\" package.json)",
+      "Bash(npx ng *)",
+      "Bash(dir \"E:\\\\Logiciel_plus\\\\new_version_archive\\\\src\\\\assets\")",
+      "Bash(xargs grep -l \"ti-grip\\\\|ti-folder\\\\|content.*e[0-9a-f]\")",
+      "Bash(xargs grep -l \"ti-grip\\\\|ti-folder\")",
+      "Bash(xargs grep -l \"ti ti-folder\\\\|ti ti-grip\")"
     ]
   }
 }

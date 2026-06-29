@@ -26,7 +26,7 @@ export class ForgotPasswordComponent {
 
         const userDetails = localStorage.getItem('user');
         if (userDetails?.length != null) {
-            // router.navigate(['/dashboard/default'])
+            // router.navigate(['/dashboard/accueil'])
         }
 
         this.loginForm = new FormGroup({

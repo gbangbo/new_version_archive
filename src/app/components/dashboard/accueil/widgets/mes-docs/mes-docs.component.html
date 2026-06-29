@@ -1,0 +1,242 @@
+<app-card [cardClass]="'mes-docs-wrapper'" [padding]="false"
+          [headerTitle]="titreSection" [cardBodyClass]="'pt-0'">
+
+    <div class="relative">
+
+        <!-- Overlay chargement -->
+        <div *ngIf="isloading"
+             class="absolute inset-0 flex justify-center items-center z-10 rounded-lg"
+             style="background: rgba(248,250,252,0.85); backdrop-filter: blur(2px);">
+            <div class="text-center">
+                <div class="op-spinner"></div>
+                <p class="mt-3" style="color:#64748b; font-size:13px; font-weight:600;">
+                    Chargement des données...
+                </p>
+            </div>
+        </div>
+
+        <div [class.op-loading]="isloading">
+
+    <!-- ══ TOOLBAR ══════════════════════════════════════════════ -->
+    <div class="docs-toolbar">
+
+        <!-- Filtre mois -->
+        <div class="docs-mois-wrap">
+            <nz-select
+                [(ngModel)]="moisActif"
+                (ngModelChange)="onMoisChange($event)"
+                nzShowSearch
+                nzPlaceHolder="Sélectionner un mois"
+                [nzFilterOption]="filterMois"
+                class="docs-mois-select">
+                <nz-option *ngFor="let opt of moisOptions"
+                           [nzLabel]="opt.label"
+                           [nzValue]="opt.value">
+                </nz-option>
+            </nz-select>
+        </div>
+
+        <!-- Intervalle de dates -->
+        <div class="docs-interval-wrap">
+            <input type="date" class="docs-date-input"
+                   [(ngModel)]="dateDebut"
+                   [max]="dateFin"
+                   title="Date début"/>
+            <span class="docs-interval-sep">→</span>
+            <input type="date" class="docs-date-input"
+                   [(ngModel)]="dateFin"
+                   [min]="dateDebut"
+                   title="Date fin"/>
+            <button class="docs-interval-btn" (click)="appliquerIntervalle()"
+                    title="Appliquer l'intervalle">
+                <app-feather-icon [icon]="'search'" class="icon-xs"></app-feather-icon>
+            </button>
+            <button class="docs-interval-reset" *ngIf="modeIntervalle"
+                    (click)="reinitialiserIntervalle()" title="Réinitialiser">
+                <app-feather-icon [icon]="'x'" class="icon-xs"></app-feather-icon>
+            </button>
+        </div>
+
+        <!-- Recherche -->
+        <div class="docs-search-wrap">
+            <span class="docs-search-icon">
+                <app-feather-icon [icon]="'search'" class="icon-xs"></app-feather-icon>
+            </span>
+            <input class="docs-search-input"
+                   placeholder="Rechercher un document..."
+                   [ngModel]="searchValue"
+                   (ngModelChange)="onSearch($event)"/>
+            <button *ngIf="searchValue" class="docs-search-clear" (click)="onSearch('')">
+                <app-feather-icon [icon]="'x'" class="icon-xs"></app-feather-icon>
+            </button>
+        </div>
+    </div>
+
+    <!-- ══ COMPTEUR ══════════════════════════════════════════════ -->
+    <div class="docs-count-bar">
+        <strong>{{ docsFiltered.length }}</strong>&nbsp;document{{ docsFiltered.length > 1 ? 's' : '' }}
+        <span *ngIf="searchValue" class="search-chip">
+            <app-feather-icon [icon]="'search'" class="icon-xs"></app-feather-icon>
+            « {{ searchValue }} »
+        </span>
+    </div>
+
+    <!-- ══ LISTE DOCUMENTS ═══════════════════════════════════════ -->
+    <div class="docs-list" *ngIf="docsPage.length > 0; else emptyState">
+        <div class="doc-card" *ngFor="let doc of docsPage">
+
+            <!-- Avatar catégorie -->
+<!--            <div class="doc-avatar"-->
+<!--                 [style.background]="doc.categorie_color + '22'"-->
+<!--                 [style.color]="doc.categorie_color">-->
+<!--                {{ getInitiale(doc.categorie) }}-->
+<!--            </div>-->
+            <div class="doc-icon-wrap">
+            <nz-icon
+                    [nzType]="'extension'"
+                    nzTheme="twotone"
+                    [nzTwotoneColor]="'.pdf'">
+            </nz-icon>
+            </div>
+            <!-- Corps -->
+            <div class="doc-body">
+                <div class="doc-numero">N° : {{ doc.numero }}</div>
+                <div class="doc-titre">{{ doc.lib_document }}</div>
+                <div class="doc-meta">
+                    <nz-tag [nzColor]="'rgba(115, 102, 255, 0.1)'" class="doc-cat-tag">
+                        {{ doc.categorie }}
+                    </nz-tag>
+                    <span class="doc-meta-item">
+                        <app-feather-icon [icon]="'calendar'" class="icon-xs"></app-feather-icon>
+                        {{ doc.date_document }}
+                    </span>
+                    <span class="doc-meta-item">
+                        <app-feather-icon [icon]="'briefcase'" class="icon-xs"></app-feather-icon>
+                        {{ doc.service }}
+                    </span>
+                    <span class="doc-meta-item">
+                        <app-feather-icon [icon]="'user'" class="icon-xs"></app-feather-icon>
+                        {{ doc.auteur }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Menu 3 points -->
+            <div class="doc-menu">
+                <button class="doc-menu-btn"
+                        nz-dropdown
+                        [nzDropdownMenu]="menuDoc"
+                        nzTrigger="click"
+                        nzPlacement="bottomRight">
+                    <app-feather-icon [icon]="'more-vertical'" class="icon-sm"></app-feather-icon>
+                </button>
+                <nz-dropdown-menu #menuDoc="nzDropdownMenu">
+                    <ul nz-menu class="doc-action-menu">
+                        <li nz-menu-item>
+                            <i class="fa-regular fa-eye mr-2"></i>
+                            <span>Consulter</span>
+                        </li>
+                        <li nz-menu-item>
+                            <i class="far fa-file-alt mr-2"></i>
+                            <span>Voir le détail</span>
+                        </li>
+                        <li nz-menu-item>
+                            <i class="fa-regular fa-pen-to-square mr-2"></i>
+                            <span>Modifier le document</span>
+                        </li>
+                        <li nz-menu-item>
+                            <i class="far fa-paper-plane mr-2"></i>
+                            <span>Envoyer par mail</span>
+                        </li>
+                        <li nz-menu-item>
+                            <i class="fa-solid fa-recycle mr-2"></i>
+                            <span>Ajouter dans un workflow</span>
+                        </li>
+                        <li nz-menu-item  (click)="navToDoc(doc,'rang')">
+                            <i class="fa-regular fa-folder-open mr-2"></i>
+                            <span>Classer les fichiers</span>
+                        </li>
+                        <li nz-menu-item>
+                            <i class="fa-solid fa-print mr-2"></i>
+                            <span>Imprimer le document</span>
+                        </li>
+                        <li nz-menu-item>
+                            <i class="fa-solid fa-exchange mr-2"></i>
+                            <span>Prêter le document</span>
+                        </li>
+                        <li nz-menu-item>
+                            <i class="fa-solid fa-tasks mr-2"></i>
+                            <span>Imputer</span>
+                        </li>
+                        <li nz-menu-item>
+                            <i class="fas fa-file-text mr-2"></i>
+                            <span>Voir la situation</span>
+                        </li>
+                        <li nz-menu-item>
+                            <i class="fas fa-trash-alt mr-2"></i>
+                            <span>Demande de suppression</span>
+                        </li>
+                        <li nz-menu-divider></li>
+                        <li nz-menu-item class="menu-item-danger">
+                            <i class="fa-regular fa-trash-can mr-2"></i>
+                            <span>Supprimer</span>
+                        </li>
+                    </ul>
+                </nz-dropdown-menu>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ EMPTY ═════════════════════════════════════════════════ -->
+    <ng-template #emptyState>
+        <div class="docs-empty">
+            <app-feather-icon [icon]="'folder'" class="icon-empty"></app-feather-icon>
+            <span>Aucun document pour {{ moisLabels[moisActif] }}</span>
+            <small *ngIf="searchValue">correspondant à « {{ searchValue }} »</small>
+        </div>
+    </ng-template>
+
+    <!-- ══ PAGINATION ════════════════════════════════════════════ -->
+    <div class="docs-pagination" *ngIf="docsFiltered.length > 0">
+
+        <!-- Lignes par page -->
+        <div class="pag-rows-wrap">
+            <span class="pag-rows-label">lignes/page</span>
+            <select class="pag-rows-select"
+                    [ngModel]="pageSize"
+                    (ngModelChange)="onPageSizeChange($event)">
+                <option *ngFor="let s of pageSizeOptions" [value]="s">{{ s }}</option>
+            </select>
+        </div>
+
+        <!-- Navigation -->
+        <div class="pag-nav">
+            <button class="pag-nav-btn" [disabled]="pageActuelle === 1"
+                    (click)="goToPage(1)" title="Première page">
+                <app-feather-icon [icon]="'chevrons-left'" class="icon-xs"></app-feather-icon>
+            </button>
+            <button class="pag-nav-btn" [disabled]="pageActuelle === 1"
+                    (click)="goToPage(pageActuelle - 1)" title="Précédent">
+                <app-feather-icon [icon]="'chevron-left'" class="icon-xs"></app-feather-icon>
+            </button>
+
+            <span class="pag-current">{{ pageActuelle }}</span>
+            <span class="pag-total">/{{ totalPages }}</span>
+
+            <button class="pag-nav-btn" [disabled]="pageActuelle === totalPages"
+                    (click)="goToPage(pageActuelle + 1)" title="Suivant">
+                <app-feather-icon [icon]="'chevron-right'" class="icon-xs"></app-feather-icon>
+            </button>
+            <button class="pag-nav-btn" [disabled]="pageActuelle === totalPages"
+                    (click)="goToPage(totalPages)" title="Dernière page">
+                <app-feather-icon [icon]="'chevrons-right'" class="icon-xs"></app-feather-icon>
+            </button>
+        </div>
+
+    </div><!-- /.docs-pagination -->
+
+        </div><!-- /.op-loading -->
+
+    </div><!-- /.relative -->
+
+</app-card>

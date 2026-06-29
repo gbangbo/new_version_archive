@@ -1398,6 +1398,12 @@
       .page-body-wrapper {
         div.sidebar-wrapper {
           top: 0;
+          height: 100vh;
+          overflow-y: auto;
+          overflow-x: hidden;
+          -webkit-overflow-scrolling: touch;
+          touch-action: pan-y;
+          overscroll-behavior: contain;
 
           &.close_icon {
             &:hover {
@@ -1425,7 +1431,8 @@
 
           .sidebar-main {
             .sidebar-links {
-              height: calc(100vh - 95px);
+              height: auto;
+              overflow: visible;
             }
           }
 

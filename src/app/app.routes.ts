@@ -15,7 +15,7 @@ import {ConsultFileComponent} from "./auth/consult-file/consult-file.component";
 export const routes: Routes = [
     {
         path: '',
-        redirectTo: '/dashboard/default',
+        redirectTo: '/dashboard/accueil',
         pathMatch: 'full'
     },
     {
@@ -48,6 +48,12 @@ export const routes: Routes = [
     },
     {
         path: 'auth/expire',
+        component: ExpireComponent,
+        data: {
+            title: 'Votre session a expiré'
+        }
+    }, {
+        path: 'auth/error',
         component: ExpireComponent,
         data: {
             title: 'Votre session a expiré'

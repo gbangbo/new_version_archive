@@ -1,0 +1,170 @@
+// ═══════════════════════════════════════
+// MODAL DIALOG
+// ═══════════════════════════════════════
+.modal .modal-dialog {
+  max-width: 95vw !important;
+}
+
+// ═══════════════════════════════════════
+// MODAL CONTENT
+// ═══════════════════════════════════════
+.modal-content.category-popup {
+  border-radius: 4px !important;
+  border: none !important;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.18), 0 4px 16px rgba(0, 0, 0, 0.08) !important;
+  overflow: hidden;
+}
+
+// ═══════════════════════════════════════
+// MODAL HEADER
+// ═══════════════════════════════════════
+.modal .modal-dialog .modal-content .modal-header {
+  padding: 10px 20px;
+  background-color: rgba(0, 54, 110) !important;
+  color: #fff !important;
+  border-top-right-radius: 0px;
+  border-top-left-radius: 0px;
+  border-bottom: 3px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0 !important;
+}
+
+.modal-header > h5 {
+  color: #fff !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.modal-header .btn-close {
+  filter: var(--tw-btn-close-white-filter);
+  opacity: 0.8;
+  transition: opacity 0.2s, transform 0.2s;
+
+  &:hover {
+    opacity: 1;
+    transform: rotate(90deg);
+  }
+}
+
+// ═══════════════════════════════════════
+// MODAL BODY
+// ═══════════════════════════════════════
+.modal-body {
+  padding: 0 !important;
+  background: #fff;
+}
+
+// ═══════════════════════════════════════
+// FORM LABELS
+// ═══════════════════════════════════════
+.form-label {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  color: #475569 !important;
+  letter-spacing: 0.05em;
+  margin-bottom: 5px !important;
+}
+
+// ═══════════════════════════════════════
+// FORM CONTROLS
+// ═══════════════════════════════════════
+.form-control {
+  height: 40px !important;
+  border: 1.5px solid #E2E8F0 !important;
+  border-radius: 8px !important;
+  font-size: 13px !important;
+  color: #0F172A !important;
+  background: #F8FAFC !important;
+  transition: all 0.2s !important;
+
+  &::placeholder { color: #CBD5E1 !important; }
+
+  &:focus {
+    border-color: rgba(0, 54, 110) !important;
+    background: #fff !important;
+    box-shadow: 0 0 0 3px rgba(0, 54, 110, 0.1) !important;
+    outline: none !important;
+  }
+
+  &.is-invalid {
+    border-color: #EF4444 !important;
+    background: #FEF2F2 !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.08) !important;
+  }
+
+  &.is-valid {
+    border-color: #10B981 !important;
+    background: #F0FDF4 !important;
+  }
+}
+
+// ═══════════════════════════════════════
+// BOUTON VALIDER
+// ═══════════════════════════════════════
+.newBtn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 38px !important;
+  padding: 0 20px !important;
+  border-radius: 8px !important;
+  background-color: #00141e !important;
+  color: #fff !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  gap: 7px !important;
+  border: none !important;
+  box-shadow: 0 2px 8px rgba(0, 20, 30, 0.3) !important;
+  transition: all 0.2s !important;
+
+  &:hover:not(:disabled) {
+    background-color: #002a3d !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(0, 20, 30, 0.4) !important;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+}
+
+// ═══════════════════════════════════════
+// FEEDBACK MESSAGES
+// ═══════════════════════════════════════
+.invalid-feedback,
+.valid-feedback {
+  display: none;
+  margin-top: 8px;
+  font-size: 13px;
+
+  &.d-block {
+    display: flex !important;
+    align-items: center;
+    gap: 6px;
+  }
+}
+
+.invalid-feedback { color: #ef4444; }
+.valid-feedback   { color: #10b981; }
+
+// ═══════════════════════════════════════
+// RESPONSIVE
+// ═══════════════════════════════════════
+@media (max-width: 768px) {
+  .modal .modal-dialog {
+    width: 95vw !important;
+    margin: 10px auto !important;
+  }
+
+  .modal-header > h5 { font-size: 12px !important; }
+
+  .newBtn {
+    height: 36px !important;
+    font-size: 12px !important;
+    padding: 0 14px !important;
+  }
+}

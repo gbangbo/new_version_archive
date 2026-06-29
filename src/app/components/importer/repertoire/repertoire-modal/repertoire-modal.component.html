@@ -1,0 +1,99 @@
+<div class="modal fade show modal-backdrop">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content category-popup">
+
+            <!-- ══ HEADER ═══════════════════════════════════════════ -->
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    {{ isEdit ? 'MODIFIER UN RÉPERTOIRE' : 'AJOUTER UN RÉPERTOIRE' }}
+                </h5>
+                <button class="btn-close" type="button" (click)="closeModal()"></button>
+            </div>
+
+            <!-- ══ BODY ══════════════════════════════════════════════ -->
+            <div class="modal-body p-0 custom-input">
+                <div class="text-start">
+                    <div class="p-20">
+
+                        <!-- Alerte erreur -->
+                        <div class="alert alert-danger flex items-center gap-3" role="alert"
+                             style="animation: slideDown 0.3s ease;" *ngIf="errorTexte">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                 class="feather feather-alert-circle stroke-danger">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg>
+                            <span class="txt-light">{{ errorTexte }}</span>
+                        </div>
+
+                        <form class="grid grid-cols-12 gap-4 needs-validation"
+                              novalidate
+                              [formGroup]="validationForm"
+                              (ngSubmit)="submitForm()">
+
+                            <!-- Type de fichier -->
+                            <div class="col-span-12">
+                                <label class="form-label" for="type_file">
+                                    Type de répertoire <span class="txt-danger">*</span>
+                                </label>
+                                <nz-select
+                                    id="type_file"
+                                    formControlName="type_file"
+                                    nzPlaceHolder="Sélectionnez le type"
+                                    style="width: 100%;"
+                                    [class.is-invalid]="validationForm.controls['type_file'].touched && validationForm.controls['type_file'].errors?.['required']">
+                                    <nz-option *ngFor="let opt of typeFileOptions"
+                                               [nzLabel]="opt.label"
+                                               [nzValue]="opt.value"
+                                               nzCustomContent>
+                                        {{ opt.label }}
+                                    </nz-option>
+                                </nz-select>
+                                @if (validationForm.controls['type_file'].touched && validationForm.controls['type_file'].errors?.['required']) {
+                                    <div class="invalid-feedback d-block">
+                                        Veuillez sélectionner le type de répertoire.
+                                    </div>
+                                }
+                            </div>
+
+                            <!-- Chemin du répertoire -->
+                            <div class="col-span-12">
+                                <label class="form-label" for="path_repertoire">
+                                    Chemin du répertoire <span class="txt-danger">*</span>
+                                </label>
+                                <input class="form-control"
+                                       id="path_repertoire"
+                                       type="text"
+                                       placeholder="Ex : C:/nginx/html/medias/documents"
+                                       formControlName="path_repertoire"
+                                       [ngClass]="{
+                                           'is-invalid': validationForm.controls['path_repertoire'].touched && validationForm.controls['path_repertoire'].errors?.['required'],
+                                           'is-valid':   validationForm.controls['path_repertoire'].valid
+                                       }">
+                                @if (validationForm.controls['path_repertoire'].touched && validationForm.controls['path_repertoire'].errors?.['required']) {
+                                    <div class="invalid-feedback">
+                                        Veuillez saisir le chemin du répertoire.
+                                    </div>
+                                }
+                            </div>
+
+                            <!-- Bouton -->
+                            <div class="col-span-12 flex justify-end">
+                                <button class="btn btn-primary text-white w-full mt-4 newBtn"
+                                        type="submit"
+                                        [disabled]="isloading">
+                                    <i *ngIf="isloading" class="fas fa-spin fa-circle-notch me-1"></i>
+                                    {{ isEdit ? 'Modifier' : 'Créer +' }}
+                                </button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

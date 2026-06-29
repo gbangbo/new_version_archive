@@ -1,0 +1,174 @@
+<div class="container main-setting">
+    <div class="grid grid-cols-12 card-gap">
+        <div class="col-span-12">
+            <app-card [border]="true" [padding]="false">
+
+                <div class="grid grid-cols-12 gap-4 tabs">
+                    <div class="col-span-12">
+                        <div class="relative">
+
+                            <!-- ══ OVERLAY SPINNER ══════════════════════════════ -->
+                            <div *ngIf="isloading"
+                                 class="absolute inset-0 flex justify-center items-center z-10 rounded-lg"
+                                 style="background: rgba(248,250,252,0.85); backdrop-filter: blur(2px);">
+                                <div class="text-center">
+                                    <div class="op-spinner"></div>
+                                    <p class="mt-3" style="color:#64748b; font-size:13px; font-weight:600;">
+                                        Chargement des données...
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="table-container" [class.op-loading]="isloading">
+
+                                <!-- ══ TOOLBAR ══════════════════════════════════ -->
+                                <div class="op-toolbar">
+                                    <div class="op-toolbar-left">
+                                        <div class="op-toolbar-title">
+                                            <div class="op-toolbar-icon">
+                                                <i class="far fa-folder-open"></i>
+                                            </div>
+                                            <div>
+                                                <span class="op-toolbar-label">RÉPERTOIRES D'IMPORTATION</span>
+                                                <span class="op-toolbar-count">
+                                                    {{ filteredData.length || 0 }} enregistrement(s)
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="op-toolbar-right">
+                                        <!-- Recherche -->
+                                        <div class="op-search-wrap">
+                                            <svg class="op-search-icon" viewBox="0 0 24 24" fill="none"
+                                                 stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                                                <circle cx="11" cy="11" r="8"/>
+                                                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                                            </svg>
+                                            <input class="op-search-input"
+                                                   placeholder="Rechercher..."
+                                                   [(ngModel)]="searchValue"
+                                                   (ngModelChange)="onSearch($event)"/>
+                                            <button *ngIf="searchValue"
+                                                    class="op-search-clear"
+                                                    (click)="searchValue=''; onSearch('')">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                     stroke-width="2.5" stroke-linecap="round" width="12" height="12">
+                                                    <line x1="18" y1="6" x2="6" y2="18"/>
+                                                    <line x1="6" y1="6" x2="18" y2="18"/>
+                                                </svg>
+                                            </button>
+                                        </div>
+
+                                        <button class="op-btn op-btn-outline"
+                                                nz-tooltip nzTooltipTitle="Nouveau répertoire"
+                                                (click)="openModal()">
+                                            <i data-feather="edit-2" style="width: 15px;"></i>
+                                            <span class="btn-label">Nouveau</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- ══ TABLE ════════════════════════════════════ -->
+                                <div class="overflow-x-auto support-ticket-table custom-scrollbar">
+                                    <nz-table
+                                        #nzTable
+                                        [nzData]="filteredData"
+                                        [nzPageSize]="10"
+                                        [nzShowPagination]="true"
+                                        [nzShowTotal]="totalTemplate"
+                                        nzShowSizeChanger
+                                        nzBordered
+                                        nzSize="small"
+                                        [nzScroll]="filteredData.length > 0 ? { x: '900px' } : {}">
+
+                                        <thead>
+                                        <tr>
+                                            <th nzWidth="60px">#</th>
+                                            <th nzWidth="180px"
+                                                nzColumnKey="type_file"
+                                                [nzSortFn]="sortFns.type_file">
+                                                Type
+                                            </th>
+                                            <th nzColumnKey="path_repertoire"
+                                                [nzSortFn]="sortFns.path_repertoire">
+                                                Chemin du répertoire
+                                            </th>
+                                            <th nzWidth="160px"
+                                                nzColumnKey="created_at"
+                                                [nzSortFn]="sortFns.created_at">
+                                                Créé le
+                                            </th>
+                                            <th nzWidth="80px" nzAlign="center">Actions</th>
+                                        </tr>
+                                        </thead>
+
+                                        <tbody>
+                                        <tr *ngFor="let row of nzTable.data; let i = index"
+                                            class="op-table-row">
+                                            <td>
+                                                <span class="cell-text text-muted">{{ i + 1 }}</span>
+                                            </td>
+                                            <td>
+                                                <nz-tag [nzColor]="typeFileLabels[row.type_file]?.color || '#64748b'">
+                                                    {{ typeFileLabels[row.type_file]?.label || ('Type ' + row.type_file) }}
+                                                </nz-tag>
+                                            </td>
+                                            <td>
+                                                <span class="cell-path">
+                                                    <i class="far fa-folder mr-1" style="color:#f8c01c;"></i>
+                                                    {{ row.path_repertoire }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="cell-text">{{ row.created_at }}</span>
+                                            </td>
+                                            <td nzAlign="center">
+                                                <div class="op-actions">
+                                                    <button class="btn-round-edit"
+                                                            nz-tooltip
+                                                            nzTooltipTitle="Modifier"
+                                                            nzTooltipPlacement="top"
+                                                            (click)="openModal(row)">
+                                                        <app-feather-icon class="icon-small"
+                                                                          [icon]="'edit-3'"></app-feather-icon>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        <tr *ngIf="!isloading && filteredData?.length === 0">
+                                            <td colspan="5">
+                                                <div class="op-empty-state">
+                                                    <app-feather-icon class="icon-inbox"
+                                                                      [icon]="'inbox'"></app-feather-icon>
+                                                    <span>Aucun répertoire configuré !</span>
+                                                    <small *ngIf="searchValue">
+                                                        Aucun résultat pour « {{ searchValue }} »
+                                                    </small>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </nz-table>
+                                </div>
+
+                                <ng-template #totalTemplate let-total>
+                                    Total : <strong>{{ total }}</strong> enregistrement(s)
+                                </ng-template>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </app-card>
+        </div>
+    </div>
+
+    @if (modalOpen) {
+        <app-repertoire-modal [dataLigne]="dataLigne"
+                              (modalOpen)="handleModal($event)">
+        </app-repertoire-modal>
+    }
+</div>

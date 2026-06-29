@@ -58,6 +58,9 @@ export interface LiveAuction {
     total_currency: number;
     auction_date: string;
     remaining_time?: string;
+    description?: string;
+    date_debut?: string;
+    date_fin?: string;
 }
 
 export interface Creator {

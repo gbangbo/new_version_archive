@@ -5,7 +5,7 @@ export const environment = {
     key: cryptojs.enc.Utf8.parse('1234567890123456'),
     iv: cryptojs.enc.Utf8.parse('1234567890123456'),
     // api_url: 'http://localhost:3500/parseur-awp/:',
-    api_url: 'http://62.171.169.100:3500/parseur-awp/:',
+    api_url: 'http://archivepro.ci:3500/parseur-awp/:',
     URL_API: 'http://api-ged.archivepro.ci/',
     //api_url: 'https://gateway.drhsante.net:3010/endpoint-archivepro/:',
     CONFIG: {

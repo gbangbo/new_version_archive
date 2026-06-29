@@ -159,7 +159,7 @@ export class ResetPasswordComponent {
                         if (!localStorage.getItem(environment.CONFIG.layout_name)) {
                             localStorage.setItem(environment.CONFIG.layout_name, 'dark-sidebar');
                         }
-                        this.router.navigate(["/dashboard/default"]);
+                        this.router.navigate(["/dashboard/accueil"]);
                     }
                 })
                 .catch((err) => {

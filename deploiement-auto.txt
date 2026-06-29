@@ -1,0 +1,397 @@
+================================================================================
+   GUIDE DE DÉPLOIEMENT AUTOMATIQUE — Angular 20 + GitHub Actions + Nginx Windows
+================================================================================
+Projet  : Logiciel Plus (new_version_archive)
+GitHub  : https://github.com/gbangbo/new_version_archive
+Serveur : Windows Server + Nginx
+Auteur  : GBANGBO KOFFI
+Date    : 2026-06-21
+--------------------------------------------------------------------------------
+
+PRINCIPE DE FONCTIONNEMENT
+─────────────────────────────────────────────────────────────────────────────
+  Chaque fois que tu fais un "git push" sur la branche "main" :
+
+  1. GitHub détecte le push
+  2. GitHub Actions déclenche le workflow (.github/workflows/deploy.yml)
+  3. Le self-hosted runner (installé sur ton serveur Windows) reçoit la tâche
+  4. Le runner : récupère le code → installe les dépendances → compile Angular
+  5. Le dossier compilé est copié dans le répertoire racine de Nginx
+  6. Le site est automatiquement mis à jour, sans aucune intervention manuelle
+
+─────────────────────────────────────────────────────────────────────────────
+  PRÉREQUIS SUR LE SERVEUR WINDOWS
+─────────────────────────────────────────────────────────────────────────────
+  - Windows Server 2016 / 2019 / 2022 (ou Windows 10/11 Pro)
+  - Accès administrateur sur le serveur
+  - Nginx for Windows installé
+  - Connexion internet sur le serveur (pour télécharger les dépendances npm)
+  - Un compte GitHub avec accès au repository
+
+
+================================================================================
+   ÉTAPE 1 — INSTALLER NODE.JS SUR LE SERVEUR WINDOWS
+================================================================================
+
+  Node.js est nécessaire pour compiler le projet Angular sur le serveur.
+
+  1.1  Ouvrir un navigateur sur le serveur Windows
+       Aller sur : https://nodejs.org/en/download
+       Télécharger la version "LTS" (Long Term Support) pour Windows x64
+
+  1.2  Lancer l'installeur (.msi) et suivre les étapes
+       → Accepter la licence
+       → Laisser le chemin d'installation par défaut (C:\Program Files\nodejs\)
+       → Cocher "Automatically install the necessary tools" si proposé
+       → Cliquer "Install" puis "Finish"
+
+  1.3  Vérifier l'installation
+       Ouvrir PowerShell (touche Windows + X → "Windows PowerShell")
+       Taper les commandes suivantes :
+
+         node -v
+         npm -v
+
+       Tu dois voir des numéros de version (ex: v20.x.x et 10.x.x)
+       Si une erreur apparaît, redémarre PowerShell et réessaie.
+
+  1.4  Installer Angular CLI globalement
+       Dans PowerShell, taper :
+
+         npm install -g @angular/cli
+
+       Vérifier :
+
+         ng version
+
+       Tu dois voir "Angular CLI: 20.x.x" dans la liste affichée.
+
+
+================================================================================
+   ÉTAPE 2 — INSTALLER GIT SUR LE SERVEUR WINDOWS
+================================================================================
+
+  Git est nécessaire pour que le runner puisse récupérer le code source.
+
+  2.1  Aller sur : https://git-scm.com/download/win
+       Télécharger "64-bit Git for Windows Setup"
+
+  2.2  Lancer l'installeur et suivre les étapes
+       → Laisser toutes les options par défaut
+       → Sur l'écran "Choosing the default editor" : choisir Notepad si tu veux
+       → Sur "Adjusting your PATH" : choisir "Git from the command line and also
+         from 3rd-party software" (option recommandée, généralement déjà sélectionnée)
+       → Cliquer "Next" jusqu'à "Install" puis "Finish"
+
+  2.3  Vérifier l'installation
+       Fermer et rouvrir PowerShell, puis taper :
+
+         git --version
+
+       Tu dois voir : git version 2.x.x.windows.x
+
+
+================================================================================
+   ÉTAPE 3 — CONFIGURER NGINX POUR ANGULAR
+================================================================================
+
+  Angular est une application SPA (Single Page Application). Nginx doit être
+  configuré pour rediriger toutes les URLs vers index.html (sinon le rafraîchissement
+  de page donne une erreur 404).
+
+  3.1  Créer le dossier qui contiendra le site compilé
+       Dans PowerShell (en administrateur), taper :
+
+         New-Item -ItemType Directory -Force -Path "C:\sites\logiciel-plus"
+
+       Ce dossier sera mis à jour automatiquement à chaque déploiement.
+
+  3.2  Trouver le fichier de configuration Nginx
+       Généralement situé ici :
+         C:\nginx\conf\nginx.conf
+       ou
+         C:\Program Files\nginx\conf\nginx.conf
+
+  3.3  Ouvrir nginx.conf avec le Bloc-notes (clic droit → Ouvrir avec → Bloc-notes)
+       Trouver le bloc "server { ... }" et le remplacer (ou en ajouter un) par :
+
+       ┌─────────────────────────────────────────────────────────────────────┐
+       │  server {                                                           │
+       │      listen 80;                                                     │
+       │      server_name ton-domaine.com;   # ou l'adresse IP du serveur   │
+       │      root C:/sites/logiciel-plus;                                  │
+       │      index index.html;                                              │
+       │                                                                     │
+       │      location / {                                                   │
+       │          try_files $uri $uri/ /index.html;                         │
+       │      }                                                              │
+       │                                                                     │
+       │      gzip on;                                                       │
+       │      gzip_types text/plain text/css application/json               │
+       │                 application/javascript text/xml;                   │
+       │  }                                                                  │
+       └─────────────────────────────────────────────────────────────────────┘
+
+       IMPORTANT : La ligne "try_files $uri $uri/ /index.html;" est obligatoire
+       pour que le routing Angular fonctionne correctement.
+
+  3.4  Sauvegarder le fichier nginx.conf
+
+  3.5  Recharger Nginx pour appliquer la configuration
+       Ouvrir PowerShell dans le dossier Nginx (ex: C:\nginx) et taper :
+
+         .\nginx.exe -s reload
+
+       Si Nginx n'est pas encore démarré, taper :
+
+         .\nginx.exe
+
+  3.6  Vérifier que Nginx fonctionne
+       Ouvrir un navigateur et aller sur http://localhost
+       Tu dois voir une page (même vide pour l'instant, c'est normal).
+
+
+================================================================================
+   ÉTAPE 4 — INSTALLER LE SELF-HOSTED RUNNER GITHUB ACTIONS
+================================================================================
+
+  Le "runner" est un petit programme qui tourne sur ton serveur Windows et qui
+  écoute les instructions de GitHub. Quand tu fais un push, GitHub envoie une
+  tâche au runner, qui exécute alors le build et le déploiement sur place.
+
+  4.1  Aller sur GitHub dans les paramètres du repository
+       Lien direct : https://github.com/gbangbo/new_version_archive/settings/actions/runners
+
+       Ou manuellement :
+       → Ouvrir le repository sur GitHub
+       → Cliquer "Settings" (onglet en haut)
+       → Dans le menu gauche, cliquer "Actions" puis "Runners"
+       → Cliquer le bouton vert "New self-hosted runner"
+
+  4.2  Sur la page qui s'ouvre, sélectionner :
+       → Operating System : Windows
+       → Architecture : x64
+
+  4.3  GitHub affiche des commandes à copier-coller.
+       Ouvrir PowerShell EN TANT QU'ADMINISTRATEUR sur le serveur
+       (clic droit sur PowerShell → "Exécuter en tant qu'administrateur")
+
+  4.4  Copier-coller les commandes affichées par GitHub. Elles ressemblent à :
+
+       # Créer le dossier du runner
+       mkdir C:\actions-runner; cd C:\actions-runner
+
+       # Télécharger le runner (GitHub fournit l'URL exacte avec la version)
+       Invoke-WebRequest -Uri https://github.com/actions/runner/releases/download/...
+                         -OutFile actions-runner-win-x64.zip
+
+       # Décompresser
+       Add-Type -AssemblyName System.IO.Compression.FileSystem
+       [System.IO.Compression.ZipFile]::ExtractToDirectory(
+           "$PWD\actions-runner-win-x64.zip", "$PWD")
+
+       # Configurer le runner (GitHub fournit le token automatiquement)
+       .\config.cmd --url https://github.com/gbangbo/new_version_archive
+                    --token ABCDEFGHIJK...
+
+       IMPORTANT : Le token affiché par GitHub n'est valable que 1 heure.
+       Si tu dépasses ce délai, retourne sur la page GitHub pour en générer un nouveau.
+
+  4.5  Pendant la configuration, le runner pose des questions :
+       → "Enter the name of the runner group" : appuyer sur ENTRÉE (valeur par défaut)
+       → "Enter the name for this runner" : tape un nom ex: serveur-windows
+         ou appuie sur ENTRÉE pour le nom par défaut
+       → "Enter any additional labels" : appuie sur ENTRÉE
+       → "Enter name of work folder" : appuie sur ENTRÉE
+
+       À la fin tu vois : "Runner successfully added"
+
+  4.6  Installer le runner comme SERVICE WINDOWS (démarrage automatique)
+       Toujours dans PowerShell administrateur, dans le dossier C:\actions-runner :
+
+         .\svc.cmd install
+         .\svc.cmd start
+
+       Cela installe le runner comme un service Windows qui démarre automatiquement
+       même après un redémarrage du serveur.
+
+  4.7  Vérifier que le service tourne
+       Dans PowerShell :
+
+         Get-Service -Name "actions.runner.*"
+
+       Tu dois voir "Status : Running"
+
+       OU aller dans :
+       Panneau de configuration → Outils d'administration → Services
+       Chercher "GitHub Actions Runner" → doit être "En cours d'exécution"
+
+  4.8  Vérifier sur GitHub que le runner est bien connecté
+       Aller sur : https://github.com/gbangbo/new_version_archive/settings/actions/runners
+       Tu dois voir ton runner avec le statut "Idle" (en vert)
+       Cela signifie qu'il est connecté et prêt à recevoir des tâches.
+
+
+================================================================================
+   ÉTAPE 5 — LE FICHIER WORKFLOW (DÉJÀ CRÉÉ ET PUSHÉ)
+================================================================================
+
+  Le fichier .github/workflows/deploy.yml est déjà présent dans le projet.
+  Il est automatiquement détecté par GitHub Actions.
+
+  Voici ce qu'il fait à chaque push sur main :
+
+  ┌─────────────────────────────────────────────────────────────────────────┐
+  │  name: Build & Deploy                                                   │
+  │                                                                         │
+  │  on:                                                                    │
+  │    push:                                                                │
+  │      branches: [main]          ← se déclenche sur push vers main       │
+  │                                                                         │
+  │  jobs:                                                                  │
+  │    deploy:                                                              │
+  │      runs-on: self-hosted      ← utilise TON runner Windows            │
+  │                                                                         │
+  │      steps:                                                             │
+  │        1. Checkout du code (git pull automatique)                      │
+  │        2. Installation de Node.js 20                                   │
+  │        3. npm ci  (installe toutes les dépendances)                    │
+  │        4. ng build --configuration production  (compile Angular)       │
+  │        5. Copie dist/cuba-tailwind-angular/browser/ → C:\sites\...    │
+  └─────────────────────────────────────────────────────────────────────────┘
+
+  Ce fichier n'a pas besoin d'être modifié sauf si tu changes :
+  → Le chemin de déploiement (C:\sites\logiciel-plus)
+  → La branche de déclenchement (main)
+
+
+================================================================================
+   ÉTAPE 6 — TESTER LE DÉPLOIEMENT AUTOMATIQUE
+================================================================================
+
+  6.1  Sur ta machine de développement, faire une petite modification dans le code
+       Par exemple, changer un texte dans un composant.
+
+  6.2  Committer et pusher vers main :
+
+         git add .
+         git commit -m "test: vérification du déploiement automatique"
+         git push origin main
+
+  6.3  Aller sur GitHub pour suivre l'avancement :
+       https://github.com/gbangbo/new_version_archive/actions
+
+       Tu verras un workflow en cours d'exécution avec les étapes :
+       ✓ Récupérer le code
+       ✓ Installer Node.js
+       ✓ Installer les dépendances
+       ✓ Build Angular (production)
+       ✓ Déployer vers Nginx
+
+       Chaque étape affiche les logs en temps réel.
+       La durée totale est environ 3 à 5 minutes (selon la vitesse du serveur).
+
+  6.4  Une fois le workflow terminé (coche verte), ouvrir le site dans un navigateur
+       http://ton-domaine.com  ou  http://IP-du-serveur
+       Les modifications doivent être visibles.
+
+
+================================================================================
+   ÉTAPE 7 — MAINTENANCE ET DÉPANNAGE
+================================================================================
+
+  VÉRIFIER L'ÉTAT DU RUNNER
+  ─────────────────────────
+  Sur le serveur, dans PowerShell :
+
+    Get-Service -Name "actions.runner.*" | Select Name, Status
+
+  Pour redémarrer le runner si besoin :
+
+    cd C:\actions-runner
+    .\svc.cmd stop
+    .\svc.cmd start
+
+
+  VOIR LES LOGS DU RUNNER
+  ────────────────────────
+  Les logs sont dans : C:\actions-runner\_diag\
+  Ouvrir les fichiers .log avec le Bloc-notes pour diagnostiquer un problème.
+
+
+  CAS D'ERREUR FRÉQUENTS
+  ───────────────────────
+
+  ① Erreur "npm ci" échoue
+    → Vérifier que Node.js est bien installé sur le serveur : node -v
+    → Vérifier que package-lock.json est bien présent dans le repository
+
+  ② Erreur "ng build" échoue
+    → Voir les logs du workflow sur GitHub (onglet Actions)
+    → Tester manuellement sur le serveur : cd C:\actions-runner\_work\... && ng build
+
+  ③ Le runner est "Offline" sur GitHub
+    → Aller dans les Services Windows et redémarrer "GitHub Actions Runner"
+    → Ou dans PowerShell : Restart-Service -Name "actions.runner.*"
+
+  ④ Le site affiche une erreur 404 sur les sous-pages
+    → Vérifier que "try_files $uri $uri/ /index.html;" est dans nginx.conf
+    → Recharger Nginx : .\nginx.exe -s reload
+
+  ⑤ Les modifications ne s'affichent pas dans le navigateur
+    → Vider le cache du navigateur (Ctrl+Shift+R)
+    → Vérifier que le workflow s'est bien terminé avec succès (coche verte sur GitHub)
+
+
+  METTRE À JOUR LE RUNNER
+  ────────────────────────
+  De temps en temps GitHub demande de mettre à jour le runner.
+  Une notification apparaît dans Settings → Actions → Runners.
+  Pour mettre à jour :
+
+    cd C:\actions-runner
+    .\svc.cmd stop
+    # Télécharger la nouvelle version et décompresser (voir GitHub pour les liens)
+    .\config.cmd remove
+    # Re-configurer avec le nouveau token GitHub
+    .\svc.cmd install
+    .\svc.cmd start
+
+
+================================================================================
+   RÉCAPITULATIF DES ACTIONS À FAIRE
+================================================================================
+
+  SUR LE SERVEUR WINDOWS (une seule fois) :
+  ─────────────────────────────────────────
+  [ ] 1. Installer Node.js LTS             → https://nodejs.org
+  [ ] 2. Installer Git for Windows         → https://git-scm.com/download/win
+  [ ] 3. Installer Angular CLI             → npm install -g @angular/cli
+  [ ] 4. Créer C:\sites\logiciel-plus      → New-Item -ItemType Directory ...
+  [ ] 5. Configurer nginx.conf             → ajouter try_files $uri /index.html
+  [ ] 6. Recharger Nginx                   → .\nginx.exe -s reload
+  [ ] 7. Installer le runner GitHub        → Suivre étape 4 (Settings → Runners)
+  [ ] 8. Démarrer le runner comme service  → .\svc.cmd install && .\svc.cmd start
+
+  SUR GITHUB (vérification) :
+  ───────────────────────────
+  [ ] 9. Vérifier que le runner est "Idle" → Settings → Actions → Runners
+  [ ] 10. Tester avec un push de test      → git push origin main
+
+  APRÈS CONFIGURATION :
+  ─────────────────────
+  → Plus rien à faire ! Chaque "git push main" déploie automatiquement.
+
+
+================================================================================
+   INFORMATIONS UTILES
+================================================================================
+
+  Dossier du site sur le serveur   : C:\sites\logiciel-plus\
+  Dossier du runner                 : C:\actions-runner\
+  Fichier workflow                  : .github\workflows\deploy.yml
+  URL de suivi des déploiements     : https://github.com/gbangbo/new_version_archive/actions
+  URL de gestion des runners        : https://github.com/gbangbo/new_version_archive/settings/actions/runners
+  Dossier build Angular             : dist\cuba-tailwind-angular\browser\
+
+================================================================================

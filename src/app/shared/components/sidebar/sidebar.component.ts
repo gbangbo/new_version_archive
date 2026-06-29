@@ -29,39 +29,36 @@ export class SidebarComponent {
     public users: any = [];
 
     constructor(private autor: Authorization, private router: Router, public layoutService: LayoutService) {
+        this.users = this.autor.getInfosUsers();
+
         this.items.subscribe(menuItems => {
             this.menuItems = menuItems;
-            this.router.events.subscribe((event) => {
-                if (event instanceof NavigationEnd) {
-                    const urlTree = this.router.parseUrl(event.url);
-                    const cleanPath = '/' + urlTree.root.children['primary']?.segments.map(segment => segment.path).join('/');
+        });
 
-                    menuItems.filter(items => {
-                        if (items.path === cleanPath) {
-                            this.setNavActive(items);
+        this.router.events.subscribe((event) => {
+            if (event instanceof NavigationEnd) {
+                const urlTree = this.router.parseUrl(event.url);
+                const cleanPath = '/' + urlTree.root.children['primary']?.segments.map(s => s.path).join('/');
+
+                this.menuItems.forEach(item => {
+                    if (item.path === cleanPath) {
+                        this.setNavActive(item);
+                        return;
+                    }
+                    if (!item.children) return;
+                    item.children.forEach(sub => {
+                        if (sub.path === cleanPath) {
+                            this.setNavActive(sub);
+                            return;
                         }
-                        if (!items.children) {
-                            return false;
-                        }
-                        items.children.filter(subItems => {
-                            if (subItems.path === cleanPath) {
-                                this.setNavActive(subItems);
-                            }
-                            if (!subItems.children) {
-                                return false;
-                            }
-                            subItems.children.filter(subSubItems => {
-                                if (subSubItems.path === cleanPath) {
-                                    this.setNavActive(subSubItems);
-                                }
-                            });
+                        if (!sub.children) return;
+                        sub.children.forEach(subSub => {
+                            if (subSub.path === cleanPath) this.setNavActive(subSub);
                         });
                     });
-                }
-            });
+                });
+            }
         });
-        this.users = this.autor.getInfosUsers();
-        console.log("users ====", this.users)
     }
 
     setNavActive(items: Menu) {
@@ -98,31 +95,29 @@ export class SidebarComponent {
     }
 
     toggleMenu(item: Menu) {
-        if (!item.active) {
-            this.menuItems.forEach((menu) => {
-                if (this.menuItems.includes(item)) {
-                    menu.active = false
-                }
-                if (!menu.children) {
-                    return false;
-                }
+        if (item.active) return;
 
-                menu.children.forEach((subMenu) => {
-                    if (menu.children?.includes(item)) {
-                        subMenu.active = false
-                    }
+        this.menuItems.forEach((menu) => {
+            if (this.menuItems.includes(item)) {
+                menu.active = false;
+            }
+            if (!menu.children) return;
 
-                    if (subMenu.children) {
-                        subMenu.children.forEach((details) => {
-                            if (subMenu.children?.includes(item)) {
-                                details.active = false;
-                            }
-                        })
-                    }
-                })
-            })
-        }
-        item.active = !item.active;
+            menu.children.forEach((subMenu) => {
+                if (menu.children?.includes(item)) {
+                    subMenu.active = false;
+                }
+                if (subMenu.children) {
+                    subMenu.children.forEach((detail) => {
+                        if (subMenu.children?.includes(item)) {
+                            detail.active = false;
+                        }
+                    });
+                }
+            });
+        });
+
+        item.active = true;
     }
 
     scrollLeft() {

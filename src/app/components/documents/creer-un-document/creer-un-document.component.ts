@@ -32,6 +32,7 @@ import {NzTreeSelectModule} from "ng-zorro-antd/tree-select";
 import {SvgIconComponent} from "../../../shared/components/ui/svg-icon/svg-icon.component";
 import Swal from 'sweetalert2';
 import moment from "moment";
+import {decryptData} from "../../../config/config";
 // Désactiver l'auto-découverte AU NIVEAU MODULE (en dehors de la classe)
 Dropzone.autoDiscover = false;
 
@@ -142,7 +143,9 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
         uploadMultiple: false
     };
     config2: DropzoneConfigInterface = {
-        url: '/api/saveuploadfile-temps',
+        url: `${environment.api_url}api/:saveuploadfile-temps`,
+        // url: `${environment.api_url}api/saveuploadfile-temps`,
+        // url: `${environment.api_url}/api/saveuploadfile-temps`,
         maxFilesize: 50,
         acceptedFiles: '.pdf,.PDF,.jpg,.jpeg,.JPG,.png,.PNG,.doc,.docx',
         addRemoveLinks: true,
@@ -330,6 +333,7 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
     archiveStatus: string = 'courante';
     documentStatus: string = 'privee';
     applyOCR: boolean = false;
+    dateInputDisplay: string = '';
     notifyBeneficiary: boolean = false;
     dataTypeDocument: any = [];
     ligneTypeOfDoc: any = [];
@@ -342,7 +346,7 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
         idboites: new FormControl('',),
         code_docs: new FormControl('', Validators.required),
         lib_docs: new FormControl('', Validators.required),
-        date_docs: new FormControl('', Validators.required),
+        date_docs: new FormControl<Date | null>(null, Validators.required),
         publishe: new FormControl('', Validators.required),
         typeArchivage: new FormControl('courante', Validators.required),
         idrayon: new FormControl('',),
@@ -391,7 +395,7 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
         this.editor2 = new Editor();
         window.scrollTo({top: 0, behavior: 'smooth'});
         this.users = this.autor.getInfosUsers();
-        this.loadFileTemps(this.users?.dataSociete?.uid, this.users?.uid);
+        this.loadFileTemps(this.users?.datasociete?.uid, this.users?.uid);
         //  this.showTypeDoc(this.users?.datasociete?.uid, '');
         this.showOrganigramme(this.users?.datasociete?.uid, '');
         this.showSites(this.users?.datasociete?.uid, '');
@@ -415,7 +419,7 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
             return;
         }
 
-        console.log("Élément trouvé, initialisation de Dropzone");
+     //   console.log("Élément trouvé, initialisation de Dropzone");
 
         // Détruire l'instance existante si elle existe
         if ((element as any).dropzone) {
@@ -426,16 +430,15 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
 
         // Événement 'addedfile' - quand un fichier est ajouté
         this.dropzoneInstance.on("addedfile", (file: any) => {
-            console.log("Fichier ajouté:", file.name);
+           // console.log("Fichier ajouté:", file.name);
         });
 
         // Événement 'sending'
         this.dropzoneInstance.on("sending", (file: any, xhr: any, formData: any) => {
-            console.log("Envoi du fichier:", file.name);
 
-            if (this.users && this.users.dataSociete && this.users.uid) {
+            if (this.users && this.users.datasociete && this.users.uid) {
                 formData.append("action", 1);
-                formData.append("idsociete", this.users.dataSociete.uid);
+                formData.append("idsociete", this.users.datasociete.uid);
                 formData.append("idcategorie ", this.idcategorie);
                 formData.append("token", `Bearer ${this.users?.access_token}`);
                 formData.append("iduser_file_temp", this.users.uid);
@@ -444,25 +447,25 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
                 formData.append("lib_file_temp", "Fichier de Build__1");
                 formData.append("date", new Date().toISOString());
             } else {
-                console.error("Les données utilisateur ne sont pas disponibles !");
+               // console.error("Les données utilisateur ne sont pas disponibles !");
             }
         });
 
         // Événement 'success'
         this.dropzoneInstance.on("success", (file: any, response: any) => {
-            console.log("Upload réussi:", file.name, response);
+           // console.log("Upload réussi:", file.name, response);
             // NE PAS ouvrir l'explorateur ici !
         });
 
         // Événement 'complete' - après l'upload (succès ou échec)
         this.dropzoneInstance.on("complete", (file: any) => {
-            console.log("Upload terminé:", file.name);
+           // console.log("Upload terminé:", file.name);
             // NE PAS ouvrir l'explorateur ici !
         });
 
         // Événement 'queuecomplete' - quand tous les uploads sont terminés
         this.dropzoneInstance.on("queuecomplete", () => {
-            console.log("Tous les uploads sont terminés");
+          //  console.log("Tous les uploads sont terminés");
             // NE PAS ouvrir l'explorateur ici !
         });
 
@@ -553,7 +556,7 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
             key: d.uid,
             uid: d.uid,
             url_file: d.url_file,
-            extension: this.getFileExtension(d?.url_file),
+            extension: this.getFileExtension(d?.lib_file_temp),
             desc_ocr_text: d.desc_ocr_text,
             nombre_page: d.nombre_page,
             password_file: d.password_file,
@@ -583,8 +586,6 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
         event.preventDefault();
         event.dataTransfer!.dropEffect = 'move';
         this.dropTargetKey = folderKey;
-
-        console.log("folderKey ", folderKey)
     }
 
     onFolderDragLeave(event: DragEvent) {
@@ -602,9 +603,6 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
 
         // Capture synchrone : dragend se déclenche avant la réponse API et met draggedFileNode à null
         const draggedUid = this.draggedFileNode.uid;
-        console.log('📁 Dossier cible :', folderKey);
-        console.log('📄 Fichier déplacé :', draggedUid);
-
         this.draggedFileNode = null;
         this.dropTargetKey = null;
 
@@ -753,27 +751,22 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
         // Vérifier si les données utilisateur sont disponibles
         if (this.users && this.users.datasociete && this.users.uid) {
 
-            // Ajouter des données supplémentaires au formData
-            formData.append("action", 1);
+            formData.append("action", '1');
             formData.append("idsociete", this.users.datasociete.uid);
             formData.append("idfile_temp", "");
             formData.append("idcategorie", this.idcategorie);
             formData.append("iduser_file_temp", this.users.uid);
-            formData.append("statut_ocr", this.applyOCR ? 1 : 0);
+            formData.append("statut_ocr", this.applyOCR ? '1' : '0');
             formData.append("lib_file_temp", file);
 
-            // Ajouter un en-tête Authorization à la requête XHR
             xhr.setRequestHeader("Authorization", `Bearer ${this.users?.access_token}`);
-            // xhr.setRequestHeader("Content-Type", "multipart/form-data");
         }
     }
 
     onUploadProgress(event: any) {
         const [file, progress] = event;
-
         // Mettre à jour la barre de progression
         this.uploadProgress = Math.round(progress);
-        console.log(`Progress: ${this.uploadProgress}% - ${file.name}`);
     }
 
     onSuccess(event: any) {
@@ -783,14 +776,23 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
         this.uploadProgress = 0;
         this.currentFileName = '';
 
-        // Vérifier le statut retourné par l'API (HTTP 200 ne garantit pas le succès métier)
-        const isSuccess = response?.status === true || response?.success === true;
+        // La réponse est chiffrée (AES-CBC) : déchiffrer avant de lire status/success
+        let decrypted: any;
+        try {
+            decrypted = decryptData(response?.data);
+        } catch (e) {
+            this.toast.error('Erreur lors du déchiffrement de la réponse serveur.', 'Erreur', {timeOut: 5000});
+            if (this.dropzoneInstance) {
+                setTimeout(() => this.dropzoneInstance?.removeFile(file), 3000);
+            }
+            return;
+        }
+
+        const isSuccess = decrypted?.status === true || decrypted?.success === true;
 
         if (!isSuccess) {
-            const msg = response?.message || 'Échec de l\'enregistrement du fichier.';
+            const msg = decrypted?.message || 'Échec de l\'enregistrement du fichier.';
             this.toast.error(msg, 'Erreur', {timeOut: 5000});
-
-            // Marquer le fichier en erreur dans le dropzone puis le retirer après 3 s
             if (this.dropzoneInstance) {
                 this.dropzoneInstance.emit('error', file, msg);
                 setTimeout(() => this.dropzoneInstance?.removeFile(file), 3000);
@@ -800,7 +802,7 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
 
         this.uploadedFiles++;
         this.toast.success('Fichier enregistré avec succès.', 'Succès');
-        this.loadFileTemps(this.users?.dataSociete?.uid, this.users?.uid);
+        this.loadFileTemps(this.users?.datasociete?.uid, this.users?.uid);
     }
 
     onError(event: any) {
@@ -832,6 +834,7 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
         if (!filename) return 'other';
 
         const extension = filename.toLowerCase().split('.').pop();
+        // const extension = filename.toLowerCase().split('.').pop();
 
         switch (extension) {
             case 'pdf':
@@ -866,7 +869,6 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
     // Pour gérer la sélection
     onNodeClick(node: any) {
         if (!node.children) {
-            console.log("node ====", node)
             this.selectListSelection.toggle(node);
             this.selectedFile = node;
             this.officeZoom = 1.0;
@@ -888,8 +890,6 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
             this.imageRotation = 0;
             this.isLoadingPreview = false;
         }
-
-        console.log("desc_ocr_text  ===", node)
     }
 
     onPreviewLoaded(): void {
@@ -919,16 +919,17 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
 
     // Sécuriser l'URL pour l'iframe (pour PDF et images locales)
     getSafeUrl(data: any) {
-        const proxyUrl = environment.production
-            ? data.url_file
-            : data.url_file.replace('http://api-ged.archivepro.ci', '');
+        const proxyUrl = environment.production ? data.url_file : data.url_file.replace('http://api-ged.archivepro.ci', '');
 
-        const extension = proxyUrl.split('.').pop()?.toLowerCase();
+        //const extension = data?.lib_file_temp?.split('.')?.pop()?.toLowerCase();
+        // const extension = proxyUrl.split('.').pop()?.toLowerCase();
 
-        if (extension === 'pdf') {
+        if (data.extension === 'pdf') {
+        // if (extension === 'pdf') {
             this.officePreviewUrl = null;
-            this.renderPdf(proxyUrl, data.password_file);
-        } else if (this.OFFICE_EXTENSIONS.includes(extension || '')) {
+            this.renderPdf(data.url_file, data.password_file);
+            // this.renderPdf(proxyUrl, data.password_file);
+        } else if (this.OFFICE_EXTENSIONS.includes(data.extension || '')) {
             // 1. Détruire l'iframe (null → *ngIf retire le DOM)
             this.officePreviewUrl = null;
             // 2. Après un tick Angular, recréer l'iframe avec la nouvelle URL
@@ -1225,7 +1226,6 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
                             value: d.datastype_document.uid
                         }
                     });
-                    console.log(" this.dataTypeDocumen====", this.dataTypeDocument)
                 }
             })
             .catch((err) => {
@@ -1236,7 +1236,6 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
 
     changeType(event: any) {
         this.ligneTypeOfDoc = [];
-        console.log("event===", event.value)
 
         if (!event.value) return;
         this.showCatOrder('', event.value, '');
@@ -1257,8 +1256,6 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
         this.ligneTypeOfDoc.dataPro = this.ligneTypeOfDoc.dataPro.filter(
             (item: any) => !elementsARetirer.includes(item.lib_proprietes_docs)
         );
-
-        console.log("pour les meta donnees ", this.ligneTypeOfDoc.dataPro)
     }
 
     capitalize(str: string | null | undefined): string {
@@ -1280,6 +1277,7 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
         this.archiveStatus = 'courante';
         this.documentStatus = 'privee';
         this.applyOCR = false;
+        this.dateInputDisplay = '';
         this.notifyBeneficiary = false;
         this.dataRayon = [];
         this.dataBoites = [];
@@ -1305,9 +1303,6 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
         } else {
             this.validationForm.get('idboites')?.setValue('');
         }
-
-        console.log("ligneTypeOfDoc?.dataPro =====", this.ligneTypeOfDoc?.dataPro);
-
         const payload = {
             "action": 1,
             "iddocuments": "",
@@ -1342,13 +1337,11 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
             "idproprietaire": 0,
             "sendmail": this.validationForm.value.sendmail || false
         }
-        console.log("payload =====", payload);
         this.isloading = true;
         this.httService.postData(`${environment.api_url}api/:savedocuments`, payload, this.users?.access_token || '')
             .toPromise()
             .then((res: any) => {
                 this.isloading = false;
-                console.log("res.body ===", res.body)
                 if (res.body.status || res.body.success) {
                     this.resetAfterSave();
                     Swal.fire({
@@ -1366,7 +1359,6 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
             })
             .catch((err: any) => {
                 this.isloading = false;
-                console.log("err", err)
                 Swal.fire({
                     title: err?.error?.err?.message || 'Une erreur est survenue !',
                     icon: 'error',
@@ -1415,7 +1407,6 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
         this.httService.getData(url, false, this.users?.access_token || '')
             .toPromise()
             .then((res: any) => {
-                console.log("Plan de classement ====", res.body)
                 if (res.body.status || res.body.success) {
                     const mapped = this.mapApiToTree(res.body.data);
                     if (!mapped?.length) {
@@ -1426,7 +1417,6 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
                     this.cleanTreeData = JSON.parse(JSON.stringify(mapped));
                     this.treeData = mapped;
                     this.rebuildTreeWithFiles();
-                    console.log("dataSource ===", this.dataSource)
                 } else {
                     this.resetTree();
                 }
@@ -1445,7 +1435,6 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
             .then((res: any) => {
                 this.isload = false;
                 if (res.body.status || res.body.success) {
-                    console.log('service===', res.body.data)
                     this.dataOrg = res.body.data.map((e: any, index: number) => {
                         return this.formatNode(e, index === 0);
                     });
@@ -1478,7 +1467,7 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
     }
 
     onChange($event: string[]): void {
-        console.log($event);
+
     }
 
     formatNode(node: any, isFirstNode: boolean = false): any {
@@ -1501,6 +1490,30 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
     disableFutureDates = (date: Date): boolean => {
         return date > new Date();
     };
+
+    parseDateInput(value: string): void {
+        if (!value || !value.trim()) {
+            this.validationForm.get('date_docs')?.setValue(null);
+            this.validationForm.get('date_docs')?.markAsTouched();
+            this.dateInputDisplay = '';
+            return;
+        }
+        const parsed = moment(value.trim(), ['DD/MM/YYYY', 'DD-MM-YYYY'], true);
+        if (parsed.isValid()) {
+            this.validationForm.get('date_docs')?.setValue(parsed.toDate());
+            this.dateInputDisplay = parsed.format('DD/MM/YYYY');
+        } else {
+            this.validationForm.get('date_docs')?.setValue(null);
+            this.validationForm.get('date_docs')?.markAsTouched();
+            this.dateInputDisplay = '';
+        }
+    }
+
+    onDateSelected(date: Date | null): void {
+        if (date) {
+            this.dateInputDisplay = moment(date).format('DD/MM/YYYY');
+        }
+    }
 
     generateDocumentNumber(): void {
         if (this.isGeneratingCode) return;
@@ -1624,7 +1637,6 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
     }
 
     selectSerie(e: any) {
-        console.log(e)
         if (!e.value) return;
         this.showTypeDoc('', '', e.value)
     }

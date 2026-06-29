@@ -193,8 +193,14 @@ export class ClasserDocumentComponent implements OnInit {
             )
             .toPromise()
             .then((res: any) => {
+                console.log("pieces ======", res.body.data)
                 if (res.body.status || res.body.success) {
-                    this.pieceFiles = res.body.data || [];
+                    this.pieceFiles = res.body.data.map((d: any) => {
+                        return {
+                            ...d,
+                            extension: d?.extension_file_docs.replace('.', '')
+                        }
+                    }) || [];
                     this.fileAssignments.clear();
                     if (this.cleanTreeData.length) this.rebuildTree();
                 }
@@ -724,11 +730,12 @@ export class ClasserDocumentComponent implements OnInit {
     }
 
     private mapFileToNode(d: any): ClassifyNode {
+
         return {
-            name: d.name_piece_docs || d.name_file_docs || d.name || '',
+            name: d.name_piece_docs || d.name_file_docs || d.name || d.name_piece_docs || '',
             key: d.uid, uid: d.uid,
             url_file: d.url_file || '',
-            extension: this.getFileExtension(d.url_file || ''),
+            extension: d.extension, //this.getFileExtension(d.url_file || ''),
             password_file: d.password_file || '',
             isFile: true, disabled: false, children: undefined,
             date_modified: d.date_modified || d.updated_at || d.created_at || '',
@@ -741,6 +748,7 @@ export class ClasserDocumentComponent implements OnInit {
     }
 
     getFileIconClass(ext: string): string {
+
         const e = (ext || '').toLowerCase();
         if (e === 'pdf') return 'fa-file-pdf';
         if (['doc', 'docx'].includes(e)) return 'fa-file-word';
@@ -819,6 +827,7 @@ export class ClasserDocumentComponent implements OnInit {
     // ── Prévisualisation ──────────────────────────────────────────
 
     openPreview(item: ClassifyNode | null): void {
+
         if (!item?.isFile) return;
         this.previewItem = item;
         this.showPreview = true;
@@ -829,7 +838,7 @@ export class ClasserDocumentComponent implements OnInit {
         this.totalPages = 0;
         this.currentPdfDoc = null;
         this.previewOfficeUrl = null;
-        const url = this.getProxyUrl(item.url_file || '');
+        const url:any = item.url_file ;//this.getProxyUrl(item.url_file || '');
         this.previewUrl = url;
         this.previewExt = item.extension || '';
         if (this.previewExt === 'pdf') {

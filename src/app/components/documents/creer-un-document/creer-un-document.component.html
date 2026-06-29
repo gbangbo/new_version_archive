@@ -329,21 +329,38 @@
                                 }
                             </div>
                             <div class="col-span-12">
-                                <label class="form-label" for="date_docs">Date du document
+                                <label class="form-label" for="date_docs_text">Date du document
                                     <span class="txt-danger">*</span>
                                 </label>
-                                <nz-date-picker
-                                        id="date_docs"
-                                        formControlName="date_docs"
-                                        [nzPlaceHolder]="'Sélectionner la date du document'"
-                                        [nzDisabledDate]="disableFutureDates"
-                                        style="width: 100%;">
-                                </nz-date-picker>
+                                <div class="date-combo-wrap">
+                                    <input
+                                        #dateInput
+                                        class="form-control date-text-input"
+                                        id="date_docs_text"
+                                        type="text"
+                                        autocomplete="off"
+                                        placeholder="jj/mm/aaaa ou jj-mm-aaaa"
+                                        [value]="dateInputDisplay"
+                                        (blur)="parseDateInput(dateInput.value)"
+                                        [ngClass]="{
+                                            'is-invalid': validationForm.controls['date_docs'].touched && validationForm.controls['date_docs'].errors?.['required'],
+                                            'is-valid': validationForm.controls['date_docs'].valid
+                                        }">
+                                    <div class="date-cal-trigger-wrap">
+                                        <i class="fa-regular fa-calendar"></i>
+                                        <nz-date-picker
+                                            class="date-picker-ghost"
+                                            formControlName="date_docs"
+                                            [nzDisabledDate]="disableFutureDates"
+                                            [nzFormat]="'dd/MM/yyyy'"
+                                            (ngModelChange)="onDateSelected($event)">
+                                        </nz-date-picker>
+                                    </div>
+                                </div>
                                 @if(validationForm.controls['date_docs'].valid) {
-                                <!--<div class="valid-feedback">Looks's Good!</div>-->
                                 } @else if(validationForm.controls['date_docs'].touched &&
                                 validationForm.controls['date_docs'].errors?.['required']) {
-                                <div class="invalid-feedback"> Veuillez saisir selectionner la date du document svp.</div>
+                                <div class="invalid-feedback"> Veuillez saisir ou sélectionner la date du document svp.</div>
                                 }
                             </div>
 

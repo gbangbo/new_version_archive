@@ -551,57 +551,75 @@ export const activityPanel: ActivityPanel[] = [
 export const liveAuction: LiveAuction[] = [
   {
     id: 1,
-    name: 'Digital Landscape',
+    name: 'Maintenance programmée des serveurs',
     owner_profile: 'assets/images/dashboard-6/author/11.png',
     banner: 'assets/images/dashboard-6/action/1.png',
     high_bid: 8.01,
     total_currency: 12,
-    auction_date: 'Sep 11, 2025 02:12:02'
+    auction_date: 'Sep 11, 2025 02:12:02',
+    description: 'Une maintenance technique est prévue le samedi 28 juin 2026 de 22h00 à 06h00. Pendant cette période, les services d\'archivage et de consultation de documents seront temporairement indisponibles. Merci de planifier vos activités en conséquence et de télécharger les documents nécessaires avant la coupure.',
+    date_debut: '28/06/2026',
+    date_fin: '29/06/2026',
   },
   {
     id: 2,
-    name: 'Cityscape',
+    name: 'Nouvelle fonctionnalité : signature électronique',
     owner_profile: 'assets/images/dashboard-6/author/12.png',
     banner: 'assets/images/dashboard-6/action/4.png',
     high_bid: 6.12,
     total_currency: 34,
-    auction_date: 'Nov 02, 2025 02:10:04'
+    auction_date: 'Nov 02, 2025 02:10:04',
+    description: 'Nous avons le plaisir de vous annoncer le déploiement de la signature électronique certifiée sur la plateforme. Tous les documents officiels pourront désormais être signés numériquement sans impression. Une formation en ligne sera disponible dès lundi dans la section Aide.',
+    date_debut: '01/07/2026',
+    date_fin: '31/07/2026',
   },
   {
     id: 3,
-    name: 'Digital Sunset',
+    name: 'ALERTE : Documents en attente de validation',
     owner_profile: 'assets/images/dashboard-6/author/13.png',
     banner: 'assets/images/dashboard-6/action/5.png',
     high_bid: 1.04,
     total_currency: 10,
-    auction_date: 'Jun 23, 2025 04:17:01'
+    auction_date: 'Jun 23, 2025 04:17:01',
+    description: 'Attention, 47 documents sont en attente de validation depuis plus de 15 jours. Conformément à la procédure interne, tout document non validé dans un délai de 30 jours sera automatiquement archivé en statut "en suspens". Veuillez procéder à leur traitement dans les meilleurs délais.',
+    date_debut: '27/06/2026',
+    date_fin: '10/07/2026',
   },
   {
     id: 4,
-    name: 'Abstract Waves',
+    name: 'Journée portes ouvertes archives nationales',
     owner_profile: 'assets/images/dashboard-6/author/14.png',
     banner: 'assets/images/dashboard-6/action/6.png',
     high_bid: 7.12,
     total_currency: 12,
-    auction_date: 'Dec 16, 2025 06:25:01'
+    auction_date: 'Dec 16, 2025 06:25:01',
+    description: 'Dans le cadre de la semaine nationale de l\'archivage, une journée portes ouvertes est organisée au siège des Archives Nationales. Venez découvrir les nouvelles pratiques de gestion documentaire et partager vos expériences avec des experts du domaine.',
+    date_debut: '05/07/2026',
+    date_fin: '05/07/2026',
   },
   {
     id: 5,
-    name: 'Nature\'s Reflection',
+    name: 'Mise à jour des droits d\'accès utilisateurs',
     owner_profile: 'assets/images/dashboard-6/author/15.png',
     banner: 'assets/images/dashboard-6/action/7.png',
     high_bid: 9.45,
     total_currency: 16,
-    auction_date: 'Dec 22, 2026 08:12:02'
+    auction_date: 'Dec 22, 2026 08:12:02',
+    description: 'Suite à la révision annuelle des droits d\'accès, certains comptes ont été mis à jour. Si vous constatez une anomalie dans vos permissions ou l\'impossibilité d\'accéder à certains dossiers habituellement disponibles, veuillez contacter l\'administrateur système immédiatement.',
+    date_debut: '27/06/2026',
+    date_fin: '03/07/2026',
   },
   {
     id: 6,
-    name: 'Digital Landscape',
+    name: 'Rappel : archivage obligatoire fin de trimestre',
     owner_profile: 'assets/images/dashboard-6/author/11.png',
     banner: 'assets/images/dashboard-6/action/1.png',
     high_bid: 4.8,
     total_currency: 14,
-    auction_date: 'Dec 21, 2025 04:15:01'
+    auction_date: 'Dec 21, 2025 04:15:01',
+    description: 'Rappel : tous les services sont tenus de finaliser l\'archivage de leurs documents du trimestre avant le 30 juin 2026. Passé ce délai, les documents non archivés seront signalés au service de contrôle interne.',
+    date_debut: '27/06/2026',
+    date_fin: '30/06/2026',
   }
 ]
 

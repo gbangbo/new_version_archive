@@ -20,7 +20,7 @@ const SEARCH_STORAGE_KEY = 'trouver_document_last_search';
     imports: [CommonModule, RouterModule,
         FormsModule, NzSelectModule,
         NzDatePickerModule, NzTagModule,
-        NzIconModule, NzDropDownModule,],
+        NzIconModule, NzDropDownModule],
     templateUrl: './trouver-un-doucment.component.html',
     styleUrl: './trouver-un-doucment.component.scss',
 })
