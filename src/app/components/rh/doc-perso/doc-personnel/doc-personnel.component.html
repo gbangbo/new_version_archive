@@ -1,0 +1,261 @@
+<div class="container main-setting">
+
+    <!-- Overlay bloquant pendant l'enregistrement -->
+    <div class="save-overlay" *ngIf="isSaving">
+        <div class="save-overlay-card">
+            <div class="save-spinner"></div>
+            <p class="save-overlay-msg">Enregistrement en cours...</p>
+            <p class="save-overlay-sub">{{ doneUploads }} / {{ totalUploads }} fichier(s) traité(s)</p>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-12 card-gap">
+        <div class="col-span-12">
+            <app-card [headerTitle]="'AJOUTER DES DOCUMENTS DU PERSONNEL'" [border]="true">
+
+                <form class="custom-input" [formGroup]="validationForm"
+                      (ngSubmit)="submitForm()" novalidate>
+
+                    <!-- Message d'erreur -->
+                    <div class="mb-4" *ngIf="errorTexte">
+                        <div class="alert alert-danger flex items-center gap-3" role="alert">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"
+                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                 stroke-linejoin="round" class="feather feather-alert-circle stroke-danger">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg>
+                            <span class="txt-light" style="white-space: pre-line;">{{ errorTexte }}</span>
+                        </div>
+                    </div>
+
+                    <div class="dp-layout">
+
+                        <!-- ── COLONNE GAUCHE : destinataires ── -->
+                        <div class="dp-col-left">
+                            <div class="dp-section-title">
+                                Destinataires
+                            </div>
+
+                            <div class="position-relative dp-field">
+                                <label class="form-label" for="societe_uid">
+                                    Société <span class="txt-danger">*</span>
+                                </label>
+                                <nz-select id="societe_uid"
+                                           class="w-full"
+                                           nzShowSearch
+                                           nzAllowClear
+                                           nzPlaceHolder="Sélectionnez une société"
+                                           [nzLoading]="loadingSocietes"
+                                           [nzDropdownStyle]="{ 'max-height': '300px', 'overflow': 'auto' }"
+                                           formControlName="societe_uid"
+                                           (ngModelChange)="onSocieteChange($event)"
+                                           [nzStatus]="validationForm.controls['societe_uid'].touched && validationForm.controls['societe_uid'].errors?.['required'] ? 'error' : ''">
+                                    <nz-option *ngFor="let s of dataSocietes"
+                                               [nzLabel]="s.label"
+                                               [nzValue]="s.value"></nz-option>
+                                </nz-select>
+                                <div class="invalid-feedback d-block"
+                                     *ngIf="validationForm.controls['societe_uid'].touched && validationForm.controls['societe_uid'].errors?.['required']">
+                                    Veuillez sélectionner une société.
+                                </div>
+                            </div>
+
+                            <div class="position-relative dp-field mt-7">
+                                <label class="form-label" for="personnel_uids">
+                                    Personnel(s) <span class="txt-danger">*</span>
+                                </label>
+                                <nz-select id="personnel_uids"
+                                           class="w-full"
+                                           nzMode="multiple"
+                                           nzShowSearch
+                                           nzAllowClear
+                                           [nzMaxTagCount]="3"
+                                           nzPlaceHolder="Sélectionnez un ou plusieurs personnels"
+                                           [nzLoading]="loadingPersonnel"
+                                           [nzDisabled]="!validationForm.value.societe_uid"
+                                           [nzDropdownStyle]="{ 'max-height': '300px', 'overflow': 'auto' }"
+                                           formControlName="personnel_uids"
+                                           [nzStatus]="validationForm.controls['personnel_uids'].touched && validationForm.controls['personnel_uids'].errors?.['required'] ? 'error' : ''">
+                                    <nz-option *ngFor="let p of dataPersonnel"
+                                               [nzLabel]="p.label"
+                                               [nzValue]="p.value"></nz-option>
+                                </nz-select>
+                                <div class="dp-field-hint" *ngIf="!validationForm.value.societe_uid">
+                                    <i class="fa-regular fa-circle-question"></i>
+                                    Choisissez d'abord une société.
+                                </div>
+                                <div class="invalid-feedback d-block"
+                                     *ngIf="validationForm.controls['personnel_uids'].touched && validationForm.controls['personnel_uids'].errors?.['required']">
+                                    Veuillez sélectionner au moins un personnel.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ── COLONNE DROITE : dépôt + fichiers ── -->
+                        <div class="dp-col-right">
+                            <div class="dp-section-title">
+                                <i class="fa-solid fa-paperclip"></i> Pièces jointes
+                                <span class="txt-danger">*</span>
+                            </div>
+
+                            <!-- Zone de dépôt -->
+                            <label class="dp-dropzone"
+                                   [class.dp-dragging]="isDragging"
+                                   (dragover)="onDragOver($event)"
+                                   (dragleave)="onDragLeave($event)"
+                                   (drop)="onDrop($event)">
+                                <input type="file" class="dp-dropzone-input" multiple
+                                       (change)="onFilesSelected($event)"
+                                       accept=".pdf,.PDF,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx,.ppt,.pptx"/>
+                                <i class="fa-solid fa-cloud-arrow-up dp-dropzone-icon"></i>
+                                <span class="dp-dropzone-text">Déposez vos fichiers ici</span>
+                                <span class="dp-dropzone-hint">ou cliquez pour parcourir — PDF, images, Office</span>
+                            </label>
+
+                            <!-- Liste des fichiers -->
+                            <div class="dp-filelist" *ngIf="selectedFiles.length; else emptyFiles">
+                                <div class="dp-filelist-head">
+                                    <i class="fa-regular fa-rectangle-list"></i>
+                                    {{ selectedFiles.length }} fichier(s) à envoyer
+                                </div>
+
+                                <div class="dp-file-row" *ngFor="let pf of selectedFiles; let i = index"
+                                     (click)="openPreview(pf)" title="Prévisualiser">
+                                    <span class="dp-file-thumb">
+                                        <img *ngIf="pf.isImage && pf.previewUrl" [src]="pf.previewUrl" [alt]="pf.name"/>
+                                        <i *ngIf="!pf.isImage" class="fa-regular" [ngClass]="iconFor(pf.extension)"
+                                           [style.color]="colorFor(pf.extension)"></i>
+                                    </span>
+
+                                    <div class="dp-file-info">
+                                        <span class="dp-file-name" [title]="pf.name">{{ pf.name }}</span>
+                                        <span class="dp-file-meta">
+                                            <span class="dp-file-badge">{{ pf.extension || '—' }}</span>
+                                            <span *ngIf="pf.sizeLabel">{{ pf.sizeLabel }}</span>
+                                        </span>
+                                    </div>
+
+                                    <button type="button" class="dp-file-btn dp-file-eye"
+                                            (click)="$event.stopPropagation(); openPreview(pf)" title="Prévisualiser">
+                                        <i class="fa-regular fa-eye"></i>
+                                    </button>
+                                    <button type="button" class="dp-file-btn dp-file-remove"
+                                            (click)="$event.stopPropagation(); removeFileAt(i)" title="Retirer">
+                                        <i class="fa-solid fa-xmark"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <ng-template #emptyFiles>
+                                <div class="dp-filelist-empty">
+                                    <i class="fa-regular fa-folder-open"></i>
+                                    Aucun fichier ajouté
+                                </div>
+                            </ng-template>
+                        </div>
+
+                    </div>
+
+                    <!-- Pied : récap + validation -->
+                    <div class="dp-footer">
+                        <div class="dp-recap">
+                            <i class="fa-solid fa-circle-info"></i>
+                            <span>
+                                <strong>{{ validationForm.value.personnel_uids?.length || 0 }}</strong> personnel(s)
+                                · <strong>{{ selectedFiles.length }}</strong> fichier(s)
+                            </span>
+                        </div>
+                        <button class="dp-submit" type="submit"
+                                [disabled]="isSaving || !selectedFiles.length">
+                            <i class="fa-solid" [ngClass]="isSaving ? 'fa-circle-notch fa-spin' : 'fa-paper-plane'"></i>
+                            <span>{{ isSaving ? 'Envoi en cours…' : 'Enregistrer les documents' }}</span>
+                        </button>
+                    </div>
+                </form>
+
+            </app-card>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ MODAL : Aperçu d'un fichier ═══════════════════════════════ -->
+<div class="fv-backdrop" *ngIf="previewPf" (click)="closePreview()">
+    <div class="fv-panel" (click)="$event.stopPropagation()">
+        <div class="fv-header">
+            <div class="fv-header-titles">
+                <span class="fv-title"><i class="fa-regular fa-eye"></i> Aperçu</span>
+                <span class="fv-subtitle">{{ previewPf.name }}</span>
+            </div>
+            <button class="fv-close" type="button" (click)="closePreview()" title="Fermer">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="fv-body">
+            <!-- Image -->
+            <div class="fv-image-wrap" *ngIf="previewPf.isImage">
+                <img [src]="previewPf.previewUrl" [alt]="previewPf.name"/>
+            </div>
+
+            <!-- PDF -->
+            <iframe *ngIf="previewPf.isPdf" class="fv-frame" [src]="previewSafeUrl"
+                    title="Aperçu PDF"></iframe>
+
+            <!-- Autres types (non prévisualisables localement) -->
+            <div class="fv-nopreview" *ngIf="!previewPf.isImage && !previewPf.isPdf">
+                <i class="fa-regular" [ngClass]="iconFor(previewPf.extension)"></i>
+                <p>Aperçu non disponible avant l'envoi pour ce type de fichier.</p>
+                <span>{{ previewPf.name }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ POPUP : Rapport d'enregistrement ══════════════════════════ -->
+<div class="fv-backdrop" *ngIf="showReport" (click)="closeReport()">
+    <div class="rp-panel" (click)="$event.stopPropagation()">
+
+        <div class="rp-header" [class.rp-header-ok]="reportFail === 0" [class.rp-header-warn]="reportFail > 0">
+            <i class="fa-solid rp-header-ico"
+               [ngClass]="reportFail === 0 ? 'fa-circle-check' : 'fa-triangle-exclamation'"></i>
+            <div class="rp-header-txt">
+                <span class="rp-title">Rapport d'enregistrement</span>
+                <span class="rp-sub">
+                    {{ reportOk }} enregistrement(s) réussi(s)<ng-container *ngIf="reportFail"> · {{ reportFail }} échec(s)</ng-container>
+                </span>
+            </div>
+            <button class="rp-close" (click)="closeReport()" title="Fermer">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="rp-body custom-scrollbar">
+            <div class="rp-row" *ngFor="let r of reportRows">
+                <span class="rp-avatar">{{ initials(r.personnel) }}</span>
+                <div class="rp-ident">
+                    <span class="rp-name">{{ r.personnel }}</span>
+                    <div class="rp-fails" *ngIf="r.failures.length">
+                        <div class="rp-fail-line" *ngFor="let f of r.failures">
+                            <i class="fa-solid fa-xmark"></i>
+                            {{ f.fichier }} — {{ f.raison }}
+                        </div>
+                    </div>
+                </div>
+                <span class="rp-count"
+                      [class.rp-count-ok]="r.ok === r.total"
+                      [class.rp-count-partial]="r.ok > 0 && r.ok < r.total"
+                      [class.rp-count-ko]="r.ok === 0">
+                    <i class="fa-regular fa-file"></i> {{ r.ok }} / {{ r.total }}
+                </span>
+            </div>
+        </div>
+
+        <div class="rp-footer">
+            <button class="dp-submit" type="button" (click)="closeReport()">
+                <i class="fa-solid fa-check"></i> Fermer
+            </button>
+        </div>
+    </div>
+</div>

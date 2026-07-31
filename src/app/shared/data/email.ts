@@ -3,31 +3,31 @@ import { EmailSidebar, Emails } from "../interface/email"
 export const emailSidebar: EmailSidebar[] = [
   {
     id: 1,
-    title: 'Inbox',
+    title: 'Reçues',
     value: 'inbox',
     icon: 'inbox',
   },
   {
     id: 2,
-    title: 'Sent',
+    title: 'Envoyées',
     value: 'sent',
     icon: 'sent',
   },
   {
     id: 3,
-    title: 'Starred',
+    title: 'Favoris',
     value: 'starred',
     icon: 'star',
   },
   {
     id: 4,
-    title: 'Draft',
+    title: 'Brouillons',
     value: 'draft',
     icon: 'draft',
   },
   {
     id: 5,
-    title: 'Trash',
+    title: 'Corbeille',
     value: 'trash',
     icon: 'trash',
   }

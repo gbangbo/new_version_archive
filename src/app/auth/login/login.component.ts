@@ -73,7 +73,7 @@ export class LoginComponent implements OnInit, OnDestroy {
             }, '')
                 .toPromise()
                 .then((res: any) => {
-                    this.loading = false;
+
 
                     if (res.body.status) {
 
@@ -107,6 +107,17 @@ export class LoginComponent implements OnInit, OnDestroy {
                             localStorage.setItem(environment.CONFIG.layout_name, 'dark-sidebar');
                         }
                         this.router.navigate(["/dashboard/accueil"]);
+                    } else {
+                        this.loading = false;
+                        this.toast.error(`${res?.body?.message || 'Une erreur est survenue.'} `, '',
+                            {
+                                positionClass: 'toast-top-right',
+                                closeButton: true,
+                                timeOut: 3000
+                            })
+                        setTimeout(() => {
+                            this.errorTexte = res?.body?.message || 'Une erreur est survenue.';
+                        }, 3000)
                     }
 
 

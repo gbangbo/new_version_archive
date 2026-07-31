@@ -11,6 +11,15 @@
         </div>
     </div>
 
+    <!-- Overlay bloquant pendant la suppression d'un fichier -->
+    <div class="save-overlay" *ngIf="isDeleting">
+        <div class="save-overlay-card">
+            <div class="save-spinner"></div>
+            <p class="save-overlay-msg">Suppression en cours...</p>
+            <p class="save-overlay-sub">Veuillez patienter, ne fermez pas cette page.</p>
+        </div>
+    </div>
+
 
     <nz-splitter>
         <nz-splitter-panel nzDefaultSize="45%" nzMin="20%" nzMax="70%">
@@ -39,7 +48,7 @@
                                                 <input class="form-check-input switch-primary check-size"
                                                        type="checkbox" role="switch"
                                                        [checked]="validationForm.get('typeArchivage')?.value === 'courante'"
-                                                       (change)="setArchive('courante')">
+                                                       (change)="setArchive('courante', $event)">
                                             </div>
                                         </div>
                                         <span class="switch-label">Courante</span>
@@ -51,7 +60,7 @@
                                                 <input class="form-check-input switch-primary check-size"
                                                        type="checkbox" role="switch"
                                                        [checked]="validationForm.get('typeArchivage')?.value === 'definitive'"
-                                                       (change)="setArchive('definitive')">
+                                                       (change)="setArchive('definitive', $event)">
                                             </div>
                                         </div>
                                         <span class="switch-label">Définitive</span>
@@ -72,7 +81,7 @@
                                                 <input class="form-check-input switch-primary check-size"
                                                        type="checkbox" role="switch"
                                                        [checked]="documentStatus === 'privee'"
-                                                       (change)="documentStatus = 'privee'"
+                                                       (change)="setStatut('privee', $event)"
                                                 >
                                             </div>
                                         </div>
@@ -84,7 +93,7 @@
                                                 <input class="form-check-input switch-primary check-size"
                                                        type="checkbox" role="switch"
                                                        [checked]="documentStatus === 'public'"
-                                                       (change)="documentStatus = 'public'">
+                                                       (change)="setStatut('public', $event)">
                                             </div>
                                         </div>
                                         <span class="switch-label">Public</span>
@@ -226,6 +235,72 @@
                                             <span class="switch-label">Informer les services bénéficiaires par mail</span>
                                         </div>
                                     </div>
+                                </div>
+                            </div>
+
+                            <!-- Propriétaires du document -->
+                            <div class="col-span-12 mt-2">
+                                <div class="switch-group">
+                                    <div class="switch-item">
+                                        <div class="common-f-start gap-2">
+                                            <div class="form-check form-switch form-check-inline mb-0">
+                                                <input class="form-check-input switch-primary check-size"
+                                                       type="checkbox" role="switch"
+                                                       [checked]="assignProprietaires"
+                                                       (change)="toggleProprietaires($event)">
+                                            </div>
+                                        </div>
+                                        <div class="switch-mail-label">
+                                            <i class="ti ti-users"></i>
+                                            <span class="switch-label">Attribuer le document à des utilisateurs</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-span-12 position-relative" *ngIf="assignProprietaires">
+                                <label class="form-label" for="datasociete">
+                                    Société
+                                </label>
+                                <nz-select id="datasociete"
+                                           style="width: 100%"
+                                           nzShowSearch
+                                           nzAllowClear
+                                           nzPlaceHolder="Sélectionnez une société"
+                                           [nzLoading]="loadingSocietes"
+                                           [nzDropdownStyle]="{ 'max-height': '300px', 'overflow': 'auto' }"
+                                           [ngModel]="selectedSociete"
+                                           (ngModelChange)="onSocieteChange($event)"
+                                           [ngModelOptions]="{standalone: true}">
+                                    <nz-option *ngFor="let societe of dataSocietes"
+                                               [nzLabel]="societe.label"
+                                               [nzValue]="societe.value"></nz-option>
+                                </nz-select>
+                                <div class="select-loader" *ngIf="loadingSocietes">
+                                    <i class="fas fa-spin fa-circle-notch"></i>
+                                </div>
+                            </div>
+
+                            <div class="col-span-12 position-relative" *ngIf="assignProprietaires && selectedSociete">
+                                <label class="form-label" for="dataproprietaire">
+                                    Utilisateurs propriétaires
+                                </label>
+                                <nz-select id="dataproprietaire"
+                                           style="width: 100%"
+                                           nzMode="multiple"
+                                           nzShowSearch
+                                           [nzMaxTagCount]="2"
+                                           nzPlaceHolder="Sélectionnez les utilisateurs"
+                                           [nzLoading]="loadingComptes"
+                                           [nzDropdownStyle]="{ 'max-height': '300px', 'overflow': 'auto' }"
+                                           [(ngModel)]="selectedProprietaires"
+                                           [ngModelOptions]="{standalone: true}">
+                                    <nz-option *ngFor="let compte of dataComptes"
+                                               [nzLabel]="compte.label"
+                                               [nzValue]="compte.value"></nz-option>
+                                </nz-select>
+                                <div class="select-loader" *ngIf="loadingComptes">
+                                    <i class="fas fa-spin fa-circle-notch"></i>
                                 </div>
                             </div>
 
@@ -459,7 +534,7 @@
                             </button>
                             <button class="btn newBtn" type="button" (click)="submitForm()">
                                 <i class="fa-solid fa-check-circle mr-1"></i>
-                                Enregistrer
+                                {{ isEdit ? 'Modifier' : 'Enregistrer' }}
                             </button>
                         </div>
                     </div>
@@ -541,14 +616,15 @@
                                               (dragover)="onFolderDragOver($event, node.key)"
                                               (dragleave)="onFolderDragLeave($event)"
                                               (drop)="onFolderDrop($event, node.key)"
-                                              [class.folder-drop-active]="dropTargetKey === node.key">
+                                              [class.folder-drop-active]="dropTargetKey === node.key"
+                                              [class.folder-selected-target]="node.key === idcategorie">
                                     <nz-tree-node-toggle>
                                         <nz-icon nzType="caret-down" nzTreeNodeToggleRotateIcon/>
                                     </nz-tree-node-toggle>
                                     <nz-tree-node-option
                                             [nzDisabled]="node.disabled"
-                                            [nzSelected]="selectListSelection.isSelected(node)"
-                                            (nzClick)="selectListSelection.toggle(node)">
+                                            [nzSelected]="selectListSelection.isSelected(node) || node.key === idcategorie"
+                                            (nzClick)="onFolderClick(node)">
                                         <i [class]="(treeControl.isExpanded(node) || dropTargetKey === node.key)
                                                     ? 'fa-regular fa-folder-open' : 'fa-regular fa-folder'"></i>
                                         {{ node.name }}
@@ -593,12 +669,13 @@
                                               (dragover)="onFolderDragOver($event, node.key)"
                                               (dragleave)="onFolderDragLeave($event)"
                                               (drop)="onFolderDrop($event, node.key)"
-                                              [class.folder-drop-active]="dropTargetKey === node.key">
+                                              [class.folder-drop-active]="dropTargetKey === node.key"
+                                              [class.folder-selected-target]="node.key === idcategorie">
                                     <nz-tree-node-toggle nzTreeNodeNoopToggle></nz-tree-node-toggle>
                                     <nz-tree-node-option
                                             [nzDisabled]="node.disabled"
-                                            [nzSelected]="selectListSelection.isSelected(node)"
-                                            (nzClick)="selectListSelection.toggle(node)">
+                                            [nzSelected]="selectListSelection.isSelected(node) || node.key === idcategorie"
+                                            (nzClick)="onFolderClick(node)">
                                         <i [class]="dropTargetKey === node.key
                                                     ? 'fa-regular fa-folder-open folder-icon-empty'
                                                     : 'fa-regular fa-folder folder-icon-empty'"></i>

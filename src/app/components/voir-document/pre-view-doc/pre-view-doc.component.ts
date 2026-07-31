@@ -3,6 +3,7 @@ import {CommonModule, Location} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {NzSplitterModule} from "ng-zorro-antd/splitter";
 import {NzIconModule} from "ng-zorro-antd/icon";
+import {NzDatePickerModule} from "ng-zorro-antd/date-picker";
 import {NzTreeFlatDataSource, NzTreeFlattener, NzTreeViewModule} from 'ng-zorro-antd/tree-view';
 import {Authorization} from "../../../protect/authorization.service";
 import {environment} from "../../../../environments/environment";
@@ -10,6 +11,8 @@ import {HttpService} from "../../../core/http.service";
 import {SelectionModel} from "@angular/cdk/collections";
 import {FlatTreeControl} from "@angular/cdk/tree";
 import {DomSanitizer, SafeHtml, SafeResourceUrl} from '@angular/platform-browser';
+import {ToastrService} from 'ngx-toastr';
+import {HistoLogService} from '../../../shared/services/histo-log.service';
 import * as pdfjsLib from 'pdfjs-dist';
 
 interface PreviewNode {
@@ -44,7 +47,7 @@ interface ExampleFlatNode {
 
 @Component({
     selector: 'app-pre-view-doc',
-    imports: [CommonModule, FormsModule, NzSplitterModule, NzTreeViewModule, NzIconModule],
+    imports: [CommonModule, FormsModule, NzSplitterModule, NzTreeViewModule, NzIconModule, NzDatePickerModule],
     templateUrl: './pre-view-doc.component.html',
     styleUrl: './pre-view-doc.component.scss',
 })
@@ -53,6 +56,7 @@ export class PreViewDocComponent implements OnInit {
     sessionData: any = null;
     users: any = [];
     isloading: boolean = false;
+    pageLoading: boolean = true;
     selectedFile: ExampleFlatNode | null = null;
     isLoadingPreview: boolean = false;
     searchQuery: string = '';
@@ -118,12 +122,42 @@ export class PreViewDocComponent implements OnInit {
     treeData: PreviewNode[] = [];
     pieceFiles: any[] = [];
 
+    /* ── Demande d'autorisation (403) ── */
+    accessForbidden: boolean = false;
+    showAuthModal: boolean = false;
+    authSaving: boolean = false;
+    authRequested: boolean = false;
+    authError: string = '';
+    authData: {
+        motif_auth: string;
+        deadlineRange: Date[];
+    } = {
+        motif_auth: '',
+        deadlineRange: [],
+    };
+
+    // Les dates déjà passées ne sont pas sélectionnables
+    disabledPastDate = (current: Date): boolean => {
+        if (!current) return false;
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        return current < today;
+    };
+
+    authActions: { key: string; label: string; icon: string; checked: boolean }[] = [
+        {key: 'consultation', label: 'Consultation', icon: 'fa-regular fa-eye', checked: true},
+        {key: 'telechargement', label: 'Téléchargement', icon: 'fa-solid fa-download', checked: false},
+        {key: 'impression', label: 'Impression', icon: 'fa-solid fa-print', checked: false},
+    ];
+
     constructor(
         private autor: Authorization,
         private httService: HttpService,
         private sanitizer: DomSanitizer,
         private cdr: ChangeDetectorRef,
-        private location: Location
+        private location: Location,
+        private toast: ToastrService,
+        private histoLog: HistoLogService,
     ) {
     }
 
@@ -131,10 +165,18 @@ export class PreViewDocComponent implements OnInit {
         pdfjsLib.GlobalWorkerOptions.workerSrc = '/assets/pdfjs/pdf.worker.mjs';
         this.users = this.autor.getInfosUsers();
         this.sessionData = this.autor.getInfosPreview();
+        // Log : consultation du dossier
+        this.histoLog.log(`A consulter le dossier (${this.sessionData?.code_docs || ''})`);
         const uidTypeDoc = this.sessionData?.datatype_document?.[0]?.uid || '';
-        this.showPieces(this.users.uid, this.sessionData.uid);
-        this.showCatOrder('', uidTypeDoc, '');
-        console.log('sessionData ====', this.sessionData);
+
+        // Spinner de page tant que toutes les requêtes ne sont pas terminées
+        this.pageLoading = true;
+        Promise.all([
+            this.showPieces(this.users.uid, this.sessionData.uid),
+            this.showCatOrder('', uidTypeDoc, ''),
+        ]).finally(() => {
+            this.pageLoading = false;
+        });
     }
 
     hasChild = (_: number, node: ExampleFlatNode): boolean => node.expandable;
@@ -144,7 +186,7 @@ export class PreViewDocComponent implements OnInit {
     ──────────────────────────────────────── */
     showCatOrder(idsociete: string = '', idtype_document: string = '', idcategories: string = '') {
         this.isloading = true;
-        this.httService
+        return this.httService
             .getData(
                 `${environment.api_url}api/:save-categorie-plan-classement?idsociete=${idsociete}&idtype_document=${idtype_document}&idcategories=${idcategories}`,
                 false,
@@ -175,7 +217,7 @@ export class PreViewDocComponent implements OnInit {
    Chargement des fichiers a consulter
     ──────────────────────────────────────── */
     showPieces(iduser: string = '', iddocuments: string = '') {
-        this.httService
+        return this.httService
             .getData(
                 `${environment.api_url}api/:consultation-pieces-documents?iduser=${iduser}&iddocuments=${iddocuments}`,
                 false,
@@ -183,9 +225,9 @@ export class PreViewDocComponent implements OnInit {
             )
             .toPromise()
             .then((res: any) => {
+                this.accessForbidden = false;
                 if (res.body.status || res.body.success) {
                     this.pieceFiles = res.body.data || [];
-                    console.log("this.pieceFiles ===", this.pieceFiles)
                     if (this.treeData?.length) {
                         this.injectFilesIntoTree();
                         this.dataSource.setData([...this.treeData]);
@@ -193,7 +235,83 @@ export class PreViewDocComponent implements OnInit {
                     }
                 }
             })
-            .catch(() => {
+            .catch((err: any) => {
+                // 403 : l'utilisateur n'a pas le droit de consulter → demande d'autorisation
+                if (err?.status === 403) {
+                    this.accessForbidden = true;
+                    this.pieceFiles = [];
+                    //  this.openAuthModal();
+                }
+            });
+    }
+
+    /* ────────────────────────────────────────
+       Demande d'autorisation de consultation (403)
+    ──────────────────────────────────────── */
+    openAuthModal(): void {
+        this.authError = '';
+        this.showAuthModal = true;
+    }
+
+    closeAuthModal(): void {
+        this.showAuthModal = false;
+    }
+
+    submitAuthRequest(): void {
+        this.authError = '';
+        const selectedActions = this.authActions.filter(a => a.checked).map(a => a.key);
+        if (!selectedActions.length) {
+            this.authError = 'Veuillez sélectionner au moins une action.';
+            return;
+        }
+        if (!this.authData.motif_auth.trim()) {
+            this.authError = 'Veuillez saisir le motif de la demande.';
+            return;
+        }
+
+        const doc = this.sessionData || {};
+        const payload: any = {
+            action: 1,
+            idauth: '',
+            idsociete: this.users?.datasociete?.uid || doc?.datasociete?.uid || '',
+            iduser_save: this.users?.uid || '',
+            iduser_auth: doc?.datauser?.uid || doc?.iduser_save || '',
+            idpiece_docs: '',
+            idpieces_docs: (this.pieceFiles || []).map((p: any) => p?.uid).filter(Boolean),
+            iddocuments: doc?.uid || '',
+            motif_auth: this.authData.motif_auth.trim(),
+            action_auth: selectedActions.join(','),
+            active_auth: true,
+            idtype_authorisation: '',
+        };
+        console.log("this.users ===", this.users)
+        // Plage envoyée uniquement si renseignée (format YYYY-MM-DD ; le backend rejette une date vide)
+        const fmt = (d: Date | null | undefined): string => d
+            ? `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+            : '';
+        const range = this.authData.deadlineRange || [];
+        const start = fmt(range[0]);
+        const end = fmt(range[1]);
+        if (start) payload.deadline_start_auth = start;
+        if (end) payload.deadline_end_auth = end;
+        console.log("payload ===", payload)
+        this.authSaving = true;
+        this.httService
+            .postData(`${environment.api_url}api/:save-demande-authorisation`, payload, this.users?.access_token || '')
+            .toPromise()
+            .then((res: any) => {
+                this.authSaving = false;
+                if (res.body.status || res.body.success) {
+                    this.showAuthModal = false;
+                    this.authRequested = true;
+                    this.toast.success(res.body.message || 'Votre demande d\'autorisation a été envoyée.', 'Demande envoyée');
+                } else {
+                    this.authError = res.body.message || 'Échec de l\'envoi de la demande.';
+                }
+            })
+            .catch((err: any) => {
+                this.authSaving = false;
+                this.authError = err?.error?.err?.message || err?.error?.message || 'Une erreur est survenue lors de l\'envoi.';
             });
     }
 
@@ -343,6 +461,13 @@ export class PreViewDocComponent implements OnInit {
         this.currentPdfDoc = null;
         this.officePreviewUrl = null;
         this.isLoadingPreview = true;
+
+        // Log : prévisualisation d'un fichier
+        const fileLabel = `${node.name || ''}${node.extension ? '.' + node.extension : ''}`;
+        this.histoLog.log(
+            `A prévisualisé le fichier (${fileLabel}) du dossier (${this.sessionData?.code_docs || ''})`,
+            {idpiece_docs: node.uid}
+        );
 
         const ext = (node.extension || '').toLowerCase();
 

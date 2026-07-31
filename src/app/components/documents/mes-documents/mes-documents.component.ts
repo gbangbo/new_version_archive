@@ -15,8 +15,8 @@ import {TableComponent} from "../../../shared/components/ui/table/table.componen
 import {FeatherIconComponent} from "../../../shared/components/ui/feather-icon/feather-icon.component";
 import moment from "moment";
 import {NzTagModule} from "ng-zorro-antd/tag";
-import {NzDropDownModule} from "ng-zorro-antd/dropdown";
 import {Router} from "@angular/router";
+import {DocActionMenuComponent} from "../../../shared/components/ui/doc-action-menu/doc-action-menu.component";
 
 interface RowData {
     libelle_type_docs: string;
@@ -38,7 +38,7 @@ interface RowData {
         NzTabsModule,
         NzIconModule,
         NzTagModule,
-        NzTableModule, NzDropDownModule, TableComponent, FeatherIconComponent],
+        NzTableModule, TableComponent, FeatherIconComponent, DocActionMenuComponent],
     providers: [],
     templateUrl: './mes-documents.component.html',
     styleUrl: './mes-documents.component.scss',
@@ -115,6 +115,11 @@ export class MesDocumentsComponent implements OnInit {
                 Object.values(row).some(v => String(v).toLowerCase().includes(val))
             )
             : [...this.dataBenef];
+    }
+
+    // ── Rechargement après suppression d'un document ──────────
+    onDocDeleted(): void {
+        this.showDocument(this.users?.datasociete?.uid, this.users?.uid);
     }
 
     showDocument(idsociete: string = '', iduser_save: string = '') {

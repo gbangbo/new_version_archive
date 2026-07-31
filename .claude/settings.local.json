@@ -11,7 +11,8 @@
       "Bash(dir \"E:\\\\Logiciel_plus\\\\new_version_archive\\\\src\\\\assets\")",
       "Bash(xargs grep -l \"ti-grip\\\\|ti-folder\\\\|content.*e[0-9a-f]\")",
       "Bash(xargs grep -l \"ti-grip\\\\|ti-folder\")",
-      "Bash(xargs grep -l \"ti ti-folder\\\\|ti ti-grip\")"
+      "Bash(xargs grep -l \"ti ti-folder\\\\|ti ti-grip\")",
+      "Bash(python ~/.claude/skills/ui-ux-pro-max/scripts/search.py \"enterprise document management SaaS modal premium clean\" --design-system -p \"Archivage\")"
     ]
   }
 }

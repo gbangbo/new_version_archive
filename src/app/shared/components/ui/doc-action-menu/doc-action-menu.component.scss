@@ -1,0 +1,80 @@
+// ── Bouton déclencheur ────────────────────────────────────
+.btn-context-menu {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1.5px solid #E2E8F0;
+  background: #fff;
+  color: #64748B;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 14px;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+
+  &:hover {
+    border-color: #94A3B8;
+    background: #F8FAFC;
+    color: #334155;
+  }
+
+  &:focus {
+    outline: none;
+  }
+}
+
+// ── Menu déroulant (rendu dans l'overlay cdk → ::ng-deep) ──
+::ng-deep .doc-action-menu {
+  min-width: 180px;
+  padding: 4px 0;
+
+  .ant-dropdown-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 14px;
+    font-size: 13px;
+    color: #374151;
+    transition: background 0.15s;
+
+    i {
+      font-size: 14px;
+      width: 16px;
+      text-align: center;
+      color: #64748B;
+    }
+
+    &:hover {
+      background: #F1F5F9;
+      color: #0F172A;
+
+      i {
+        color: #334155;
+      }
+    }
+  }
+
+  .ant-dropdown-menu-item-divider {
+    margin: 4px 0;
+    background: #F1F5F9;
+  }
+}
+
+::ng-deep .menu-item-danger.ant-dropdown-menu-item {
+  color: #EF4444 !important;
+
+  i {
+    color: #EF4444 !important;
+  }
+
+  &:hover {
+    background: #FEF2F2 !important;
+    color: #DC2626 !important;
+
+    i {
+      color: #DC2626 !important;
+    }
+  }
+}

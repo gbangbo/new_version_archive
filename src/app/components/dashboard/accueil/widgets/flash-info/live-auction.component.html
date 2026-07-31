@@ -1,5 +1,15 @@
 <app-card [cardClass]="'live-auction-wrapper'" [padding]="false" [headerTitle]="'Flash Info'" [cardBodyClass]="'pt-0'">
 
+    <!-- ══ NAVIGATION (dans l'en-tête, à droite) ══════════════ -->
+    <div header5 class="fi-nav" *ngIf="liveAuction.length > 0">
+        <button class="fi-nav-btn" (click)="owlCar.prev()" [disabled]="atStart" title="Précédent">
+            <i class="fa-solid fa-chevron-left"></i>
+        </button>
+        <button class="fi-nav-btn" (click)="owlCar.next()" [disabled]="atEnd" title="Suivant">
+            <i class="fa-solid fa-chevron-right"></i>
+        </button>
+    </div>
+
     <div class="relative">
 
         <!-- Overlay chargement -->
@@ -15,8 +25,18 @@
         </div>
 
         <div [class.op-loading]="isloading">
-    <div class="slider-wrapper arrow-round">
-        <owl-carousel-o [options]="options" class="swiper live-auction-slider">
+
+        <!-- État vide -->
+        <div class="fi-widget-empty" *ngIf="!isloading && liveAuction.length === 0">
+            <i class="fa-solid fa-bolt"></i>
+            <span>Aucun flash info</span>
+        </div>
+
+    <div class="slider-wrapper arrow-round" [hidden]="liveAuction.length === 0">
+        <owl-carousel-o #owlCar [options]="options" class="swiper live-auction-slider"
+                        (initialized)="onSlideChange($event)"
+                        (translated)="onSlideChange($event)"
+                        (changed)="onSlideChange($event)">
             @for(auction of liveAuction; track auction) {
                 <ng-template carouselSlide>
                     <div class="product-card">

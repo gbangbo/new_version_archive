@@ -3,6 +3,8 @@ import {CreerUnDocumentComponent} from "./creer-un-document/creer-un-document.co
 import {ScannerComponent} from "./scanner/scanner.component";
 import {MesDocumentsComponent} from "./mes-documents/mes-documents.component";
 import {ClasserDocumentComponent} from "./classer-document/classer-document.component";
+import {DocumentsEnvoyesComponent} from "./documents-envoyes/documents-envoyes.component";
+import {DemandesAutorisationComponent} from "./demandes-autorisation/demandes-autorisation.component";
 
 
 export const documents: Routes = [
@@ -36,6 +38,22 @@ export const documents: Routes = [
         data: {
             title: 'Organisation des fichiers',
             breadcrumb: 'Organisation des fichiers'
+        }
+    },
+    {
+        path: 'documents-envoyes',
+        component: DocumentsEnvoyesComponent,
+        data: {
+            title: 'Documents envoyés par mail',
+            breadcrumb: 'Documents envoyés par mail'
+        }
+    },
+    {
+        path: 'demandes-autorisation',
+        component: DemandesAutorisationComponent,
+        data: {
+            title: 'Demandes d\'autorisation',
+            breadcrumb: 'Demandes d\'autorisation'
         }
     }
 ]

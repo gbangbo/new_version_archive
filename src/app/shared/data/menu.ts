@@ -47,6 +47,17 @@ export const menuItems: Menu[] =
                     title: 'Mes documents',
                     type: 'link',
                     id: 'chart-widgets'
+                }, {
+                    path: '/documents/documents-envoyes',
+                    title: 'Documents envoyés',
+                    type: 'link',
+                    id: 'chart-widgets'
+                },
+                {
+                    path: '/documents/demandes-autorisation',
+                    title: 'Demandes d\'autorisation',
+                    type: 'link',
+                    id: 'chart-widgets'
                 },
                 // {
                 //     path: '/widgets/charts',
@@ -113,15 +124,32 @@ export const menuItems: Menu[] =
             id: 'mail-box',
             icon: 'editors',
             type: 'link',
-            path: '/mail-box',
+            path: '/imputation',
             bookmark: true,
+            level: 1,
+        },
+        {
+            title: 'Journal des opérations',
+            id: 'journal',
+            icon: 'journal',
+            type: 'link',
+            path: '/journal',
+            level: 1,
+        },
+        {
+            title: 'Changer de société',
+            id: 'mail-box',
+            icon: 'change',
+            type: 'link',
+            path: '/mail-box',
+            badge: false,
+            badge_color: 'danger',
+            badge_value: "0",
             level: 1,
         },
         {
             main_title: "RH"
         },
-
-
         {
             title: 'Entité',
             id: 'building',
@@ -195,7 +223,7 @@ export const menuItems: Menu[] =
                     badge: false,
                     badge_value: 'New',
                     badge_color: 'success'
-                },{
+                }, {
                     path: '/user/nomination',
                     title: 'Nomination',
                     type: 'link',
@@ -264,6 +292,28 @@ export const menuItems: Menu[] =
                 {
                     path: '/rh/valider-absence',
                     title: 'Valider',
+                    type: 'link',
+                    id: 'general-widgets'
+                }
+            ],
+        },
+        {
+            title: 'Document du personnel',
+            id: 'Doc-perso',
+            icon: 'folder',
+            type: 'sub',
+            active: false,
+            level: 1,
+            children: [
+                {
+                    path: '/rh/doc-personnel',
+                    title: `Ajouter un doc`,
+                    type: 'link',
+                    id: 'chart-widgets'
+                },
+                {
+                    path: '/rh/doc-perso-liste',
+                    title: 'Liste des docs',
                     type: 'link',
                     id: 'general-widgets'
                 }
@@ -340,29 +390,20 @@ export const menuItems: Menu[] =
         //     level: 1,
         // },
 
-        // {
-        //     title: 'Flash Info',
-        //     id: 'faq',
-        //     icon: 'faq',
-        //     type: 'link',
-        //     path: '/mail-box',
-        //     badge: false,
-        //     badge_color: 'danger',
-        //     badge_value: "0",
-        //     level: 1,
-        // },
-        // {
-        //     title: 'Changer de société',
-        //     id: 'mail-box',
-        //     icon: 'change',
-        //     type: 'link',
-        //     path: '/mail-box',
-        //     badge: false,
-        //     badge_color: 'danger',
-        //     badge_value: "0",
-        //     level: 1,
-        // },
-
+        {
+            main_title: "Actualité"
+        },
+        {
+            title: 'Flash Info',
+            id: 'faq',
+            icon: 'faq',
+            type: 'link',
+            path: '/flash-infos',
+            badge: false,
+            badge_color: 'danger',
+            badge_value: "0",
+            level: 1,
+        },
         {
             main_title: "Paramétrages"
         },
@@ -397,7 +438,7 @@ export const menuItems: Menu[] =
                     path: '/records-management/procedure-versement',
                     title: 'Procédure de versement',
                     type: 'link'
-                },{
+                }, {
                     path: '/records-management/procedure-elimination',
                     title: 'Procédure d\'élimination',
                     type: 'link'
@@ -436,37 +477,35 @@ export const menuItems: Menu[] =
             badge_color: "success",
             children: [
                 {
-                    path: '/menu/onglet',
-                    title: 'Onglet',
+                    path: '/interoperabilite/domaine',
+                    title: 'Domaine',
                     type: 'link'
-                }
-            ],
-        },{
-            title: 'Menu',
-            id: 'sample-page',
-            icon: 'sample-page',
-            type: 'sub',
-            active: false,
-            level: 1,
-            badge: false,
-            badge_value: "New",
-            badge_color: "success",
-            children: [
+                },
                 {
-                    path: '/menu/onglet',
-                    title: 'Onglet',
+                    path: '/interoperabilite/cle-api',
+                    title: 'Clé API',
                     type: 'link'
                 }
             ],
-        },
-        // {
-        //     title: 'Journal des opérations',
-        //     id: 'journal',
-        //     icon: 'journal',
-        //     type: 'link',
-        //     path: '/bookmark',
-        //     level: 1,
-        // },
+        }, {
+        title: 'Menu',
+        id: 'sample-page',
+        icon: 'sample-page',
+        type: 'sub',
+        active: false,
+        level: 1,
+        badge: false,
+        badge_value: "New",
+        badge_color: "success",
+        children: [
+            {
+                path: '/menu/onglet',
+                title: 'Onglet',
+                type: 'link'
+            }
+        ],
+    },
+
         // {
         //     title: 'GeD',
         //     id: 'ged',

@@ -230,7 +230,7 @@
                          [class.fm-dragging]="draggedItem?.uid === item.uid"
                          [class.fm-drag-over]="dragOverUid === item.uid && item.type === 'folder'"
                          [attr.draggable]="item.type === 'file' ? true : null"
-                         (click)="item.type === 'folder' ? navigateIntoFolder(item) : selectRow(item)"
+                         (click)="item.type === 'folder' ? navigateIntoFolder(item) : openPreview(item)"
                          (dragstart)="onDragStart($event, item)"
                          (dragend)="onDragEnd()"
                          (contextmenu)="item.type === 'folder' ? onContentFolderRightClick($event, item) : null"
@@ -308,7 +308,7 @@
                                  class="fm-list-row"
                                  [class.fm-list-row-folder]="item.type === 'folder'"
                                  [class.fm-list-row-selected]="selectedRow?.uid === item.uid"
-                                 (click)="item.type === 'folder' ? navigateIntoFolder(item) : selectRow(item)"
+                                 (click)="item.type === 'folder' ? navigateIntoFolder(item) : openPreview(item)"
                                  (dblclick)="item.type === 'folder' ? navigateIntoFolder(item) : null"
                                  (contextmenu)="item.type === 'folder' ? onContentFolderRightClick($event, item) : null">
 

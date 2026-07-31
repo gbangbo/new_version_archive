@@ -15,17 +15,13 @@ import {HttpService} from "../../../../core/http.service";
 import Swal from "sweetalert2";
 import {NzSwitchModule} from "ng-zorro-antd/switch";
 import {Select2Module} from "ng-select2-component";
-import {OWL_DATE_TIME_LOCALE, OwlDateTimeModule, OwlNativeDateTimeModule} from "@danielmoncada/angular-datetime-picker";
+import {NzDatePickerModule} from "ng-zorro-antd/date-picker";
 import moment from "moment";
 
 @Component({
     selector: 'app-add-modal',
     imports: [CommonModule, FormsModule, ReactiveFormsModule, NzSwitchModule,
-        Select2Module, OwlDateTimeModule,
-        OwlNativeDateTimeModule],
-    providers: [
-        {provide: OWL_DATE_TIME_LOCALE, useValue: 'fr'}
-    ],
+        Select2Module, NzDatePickerModule],
     templateUrl: './add-modal.component.html',
     styleUrl: './add-modal.component.scss',
 })
@@ -46,6 +42,27 @@ export class AddModalComponent {
     dataAgentAbsent: any = [];
     dataRemplace: any = [];
     dataTypeAbsence: any = [];
+    private agentAbsentId: any = '';
+
+    // Date minimale sélectionnable : aujourd'hui (pas de dates antérieures)
+    minDate: Date = moment().startOf('day').toDate();
+
+    // La date de fin ne peut être antérieure ni à aujourd'hui ni à la date de début
+    get minDateFin(): Date {
+        const debut = this.validationForm.value.date_debut;
+        const d = debut ? new Date(debut) : this.minDate;
+        return d > this.minDate ? d : this.minDate;
+    }
+
+    // Désactive toutes les dates antérieures à aujourd'hui (date de début)
+    disabledDateDebut = (current: Date): boolean => {
+        return !!current && current < this.minDate;
+    };
+
+    // Désactive les dates antérieures à aujourd'hui ou à la date de début (date de fin)
+    disabledDateFin = (current: Date): boolean => {
+        return !!current && current < this.minDateFin;
+    };
 
     @HostListener('document:keydown.escape', ['$event'])
     handleEscKey() {
@@ -65,12 +82,47 @@ export class AddModalComponent {
 
     ngOnChanges(changes: SimpleChanges) {
         if (changes['dataLigne'] && changes['dataLigne']?.currentValue) {
-            console.log("Update user ", changes['dataLigne']?.currentValue)
-            this.validationForm.patchValue({
-                ...changes['dataLigne']?.currentValue,
-                idfonction: changes['dataLigne']?.currentValue.uid
-            });
+            const row = changes['dataLigne'].currentValue;
+            console.log("Update user ", row)
+
+            // Les valeurs de la liste sont des libellés / dates formatées : on remappe
+            // vers les identifiants (uid) attendus par les select2 et les dates parsables.
+            const agentAbsentId = row?.idagent_en_absence
+                || row?.data_agent_absence?.uid || row?.data_agent_absence?.id || '';
+            const remplacantId = row?.idagent_remplacant || row?.idremplacant_absence
+                || row?.data_remplacant_absence?.uid || row?.data_remplacant_absence?.id || '';
+            const typeId = row?.idtype_absence
+                || row?.datatype_absence?.uid || row?.datatype_absence?.id || '';
+
+            this.agentAbsentId = agentAbsentId;
+            setTimeout(()=>{
+                this.validationForm.patchValue({
+                    agent_en_absence: agentAbsentId,
+                    remplacant_absence: remplacantId,
+                    type_absence: typeId,
+                    motif_absence: row?.motif_absence || '',
+                    date_debut: this.toDate(row?.date_debut),
+                    date_fin: this.toDate(row?.date_fin),
+                    idautorisation_absence: row?.idautorisation_absence || row?.uid || row?.id || '',
+                });
+
+            },1000)
+
+            // Le select remplaçant doit contenir des options (agent absent exclu)
+            this.buildRemplacants();
         }
+    }
+
+    private toDate(value: any): any {
+        if (!value) return '';
+        // La liste reformate les dates en 'DD-MM-YYYY' ; on gère aussi l'ISO par sécurité.
+        let m = moment(value, 'DD-MM-YYYY', true);
+        if (!m.isValid()) m = moment(value);
+        return m.isValid() ? m.toDate() : '';
+    }
+
+    private buildRemplacants() {
+        this.dataRemplace = this.dataAgentAbsent.filter((d: any) => d.value != this.agentAbsentId);
     }
 
     submitForm() {
@@ -142,6 +194,10 @@ export class AddModalComponent {
                         value: e.uid || e.id,
                     }));
 
+                    // En édition, les comptes arrivent après ngOnChanges : on (re)construit
+                    // la liste des remplaçants une fois les options disponibles.
+                    this.buildRemplacants();
+
                     console.log("this.filteredData ===", this.dataAgentAbsent)
 
                 }
@@ -180,8 +236,14 @@ export class AddModalComponent {
     }
 
     selectInterim(event: any) {
+        // Sélection initiale (hydratation en édition) : ne pas vider le remplaçant.
+        if (event?.value && event.value === this.agentAbsentId) {
+            this.buildRemplacants();
+            return;
+        }
+        this.agentAbsentId = event?.value || '';
         this.validationForm.get('remplacant_absence')?.setValue('');
         this.validationForm.get('remplacant_absence')?.markAsUntouched();
-        this.dataRemplace = this.dataAgentAbsent.filter((d: any) => d.value != event.value);
+        this.buildRemplacants();
     }
 }

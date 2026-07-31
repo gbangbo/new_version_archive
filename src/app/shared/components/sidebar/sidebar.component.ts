@@ -1,5 +1,6 @@
 import {CommonModule} from '@angular/common';
 import {Component} from '@angular/core';
+import {animate, state, style, transition, trigger} from '@angular/animations';
 import {NavigationEnd, Router, RouterModule} from '@angular/router';
 import {TranslatePipe} from '@ngx-translate/core';
 
@@ -16,7 +17,17 @@ import {Authorization} from "../../../protect/authorization.service";
     imports: [CommonModule, RouterModule, TranslatePipe,
         LogoComponent, FeatherIconComponent, SvgIconComponent],
     templateUrl: './sidebar.component.html',
-    styleUrl: './sidebar.component.scss'
+    styleUrl: './sidebar.component.scss',
+    animations: [
+        trigger('collapse', [
+            state('closed', style({height: '0', opacity: 0, paddingTop: 0, paddingBottom: 0})),
+            state('open', style({height: '*', opacity: 1, paddingTop: '*', paddingBottom: '*'})),
+            transition('open <=> closed', [
+                style({overflow: 'hidden'}),
+                animate('280ms cubic-bezier(0.4, 0, 0.2, 1)')
+            ])
+        ])
+    ]
 })
 
 export class SidebarComponent {
@@ -61,6 +72,12 @@ export class SidebarComponent {
         });
     }
 
+    // En layout horizontal les sous-menus s'ouvrent au survol via CSS :
+    // on laisse le display faire le travail et on desactive l'animation de hauteur.
+    get isHorizontal(): boolean {
+        return this.layoutService.config.settings.sidebar_type.includes('horizontal');
+    }
+
     setNavActive(items: Menu) {
         this.menuItems.filter(menuItem => {
             if (menuItem !== items) {
@@ -95,6 +112,12 @@ export class SidebarComponent {
     }
 
     toggleMenu(item: Menu) {
+        // Un menu dépliant déjà ouvert se referme au second clic
+        if (item.active && item.children?.length) {
+            item.active = false;
+            return;
+        }
+
         if (item.active) return;
 
         this.menuItems.forEach((menu) => {

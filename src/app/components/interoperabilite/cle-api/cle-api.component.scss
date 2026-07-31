@@ -1,0 +1,485 @@
+// ── Table : style repris de /mes-documents ────────────────────
+::ng-deep .ant-table-thead > tr > th {
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  color: #374151 !important;
+  background: #F1F5F9 !important;
+  padding: 8px 12px !important;
+  border-bottom: 1px solid #E2E8F0 !important;
+  border-right: 1px solid #E2E8F0 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+::ng-deep .ant-table-column-sorters { display: flex !important; align-items: center !important; gap: 4px; min-width: 0 !important; }
+::ng-deep .ant-table-column-title { flex: 1 1 auto !important; min-width: 0 !important; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+:host ::ng-deep .ant-table-tbody > tr > td {
+  font-size: 12px !important;
+  color: #374151 !important;
+  padding: 2px 12px !important;
+  vertical-align: middle !important;
+  border-bottom: 1px solid #EDF0F3 !important;
+  border-right: 1px solid #EDF0F3 !important;
+  transition: background 0.12s;
+}
+
+::ng-deep .ant-table-tbody > tr:nth-child(even) > td { background: #FAFBFC !important; }
+.op-table-row:hover td,
+::ng-deep .ant-table-tbody > tr:hover > td { background: #EFF6FF !important; }
+
+::ng-deep .ant-table-thead span::after { content: none !important; }
+::ng-deep table thead tr th span::before { content: none !important; }
+
+.cell-text { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cell-wrap { white-space: normal !important; word-break: break-word; overflow: visible !important; text-overflow: unset !important; line-height: 1.4; }
+
+::ng-deep .ant-table-pagination {
+  padding: 10px 20px !important;
+  margin: 0 !important;
+  border-top: 1px solid #E8EDF2;
+  background: #F8FAFC;
+}
+
+::ng-deep .ant-pagination-total-text { font-size: 12px; color: #64748B; strong { color: #0F172A; font-weight: 700; } }
+
+::ng-deep .ant-table-body {
+  scrollbar-width: thin;
+  scrollbar-color: #E2E8F0 transparent;
+  &::-webkit-scrollbar { height: 5px; width: 5px; }
+  &::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; &:hover { background: #94A3B8; } }
+}
+
+::ng-deep .ant-empty-normal { display: none; }
+
+.op-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  gap: 10px;
+  width: 100%;
+  text-align: center;
+  span { font-size: 14px; font-weight: 600; color: #94A3B8; }
+  small { font-size: 12px; color: #CBD5E1; }
+}
+::ng-deep .icon-inbox > svg { width: 40px !important; height: 40px !important; opacity: 0.5; color: #CBD5E1; }
+
+// ── Spinner / overlay ─────────────────────────────────────────
+.fi-spinner {
+  width: 38px;
+  height: 38px;
+  border: 4px solid #E2E8F0;
+  border-top-color: rgba(0, 54, 110);
+  border-radius: 50%;
+  animation: fi-spin 0.8s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes fi-spin { to { transform: rotate(360deg); } }
+
+.fi-loading { pointer-events: none; opacity: 0.45; filter: blur(1px); min-height: 200px; }
+
+// ── Toolbar ───────────────────────────────────────────────────
+.fi-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 14px 16px;
+  border-bottom: 1px solid #F1F5F9;
+}
+
+.fi-toolbar-title { display: flex; align-items: center; gap: 12px; }
+
+.fi-toolbar-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(0, 54, 110, 0.08);
+  color: rgba(0, 54, 110);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.fi-toolbar-label { display: block; font-size: 13px; font-weight: 700; letter-spacing: 0.04em; color: #1e293b; }
+.fi-toolbar-count { display: block; font-size: 12px; color: #94a3b8; }
+
+.fi-toolbar-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+// ── Search ────────────────────────────────────────────────────
+.fi-search-wrap { position: relative; display: flex; align-items: center; width: 260px; max-width: 100%; }
+
+.fi-search-icon {
+  position: absolute;
+  left: 11px;
+  width: 15px;
+  height: 15px;
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+.fi-search-input {
+  width: 100%;
+  height: 38px;
+  padding: 0 32px 0 34px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #334155;
+  outline: none;
+
+  &::placeholder { color: #cbd5e1; }
+  &:focus { border-color: rgba(0, 54, 110, 0.5); box-shadow: 0 0 0 3px rgba(0, 54, 110, 0.08); }
+}
+
+.fi-search-clear {
+  position: absolute;
+  right: 8px;
+  width: 22px;
+  height: 22px;
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+  border-radius: 50%;
+  cursor: pointer;
+  &:hover { color: #475569; }
+}
+
+.fi-btn-new {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 38px;
+  padding: 0 16px;
+  border: none;
+  border-radius: 8px;
+  background: rgba(0, 54, 110);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 54, 110, 0.25);
+  &:hover { background: #003a75; }
+}
+
+// ── Cellules ──────────────────────────────────────────────────
+.fi-name { font-size: 13px; font-weight: 600; color: #1e293b; }
+.fi-header-name {
+  font-size: 12px;
+  font-family: 'Courier New', monospace;
+  color: #475569;
+  background: #f1f5f9;
+  padding: 2px 8px;
+  border-radius: 5px;
+}
+.fi-desc { font-size: 13px; color: #475569; }
+.fi-date { font-size: 12px; color: #64748b; }
+
+// Clé (masquée / révélée)
+.fi-key-cell { display: flex; align-items: center; gap: 6px; }
+
+.fi-key {
+  flex: 1;
+  min-width: 0;
+  font-size: 12px;
+  font-family: 'Courier New', monospace;
+  color: #0f172a;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 4px 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fi-key-btn {
+  width: 28px;
+  height: 28px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  background: #fff;
+  color: #64748b;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.15s;
+
+  &:hover:not(:disabled) { background: #f0f7ff; border-color: rgba(0, 54, 110, 0.4); color: rgba(0, 54, 110); }
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+}
+
+// Domaines (tags)
+.fi-domains { display: flex; flex-wrap: wrap; gap: 4px; }
+
+// ── Actions (boutons ronds repris de carrière-personnel) ──────
+.op-actions { display: flex; align-items: center; justify-content: center; gap: 4px; }
+
+.btn-round-edit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  flex-shrink: 0;
+
+  svg { width: 14px; height: 14px; color: #334155; transition: all 0.2s ease; }
+  i { font-size: 12px; color: #334155; }
+
+  &:active { transform: scale(0.92); }
+  &:focus { outline: none; }
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+}
+
+.icon-small { ::ng-deep svg { width: 14px !important; height: 14px !important; } }
+
+.btn-round-nav {
+  svg { color: rgba(0, 54, 110, 0.85); }
+  &:hover {
+    background: #f0f7ff;
+    border-color: rgba(0, 54, 110);
+    box-shadow: 0 0 0 3px rgba(0, 54, 110, 0.14);
+    svg { color: rgba(0, 54, 110); transform: scale(1.1); }
+  }
+}
+
+.btn-round-on {
+  svg { color: #16a34a; }
+  &:hover { background: #f0fdf4; border-color: #16a34a; box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.14); }
+}
+.btn-round-off {
+  svg { color: #94a3b8; }
+  &:hover { background: #f8fafc; border-color: #cbd5e1; box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.14); }
+}
+
+.btn-round-del {
+  svg { color: #dc2626; }
+  &:hover {
+    background: #fef2f2;
+    border-color: #dc2626;
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.14);
+    svg { color: #b91c1c; transform: scale(1.1); }
+  }
+}
+
+// ── Empty ─────────────────────────────────────────────────────
+.fi-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 40px 16px;
+  color: #94a3b8;
+
+  i { font-size: 38px; color: #cbd5e1; }
+  span { font-size: 14px; font-weight: 600; color: #64748b; }
+  small { font-size: 12px; }
+}
+
+// ═══════════════════════════════════════
+// MODAL (charte navy)
+// ═══════════════════════════════════════
+.fi-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.fi-panel {
+  width: 560px;
+  max-width: 94vw;
+  max-height: 92vh;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.25);
+}
+
+.fi-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 18px;
+  background-color: rgba(0, 54, 110);
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.fi-title { font-size: 14px; font-weight: 700; i { margin-right: 6px; } }
+
+.fi-close {
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+  cursor: pointer;
+  &:hover { background: rgba(255, 255, 255, 0.3); }
+}
+
+.fi-body { padding: 18px; overflow-y: auto; }
+
+.fi-alert {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  margin-bottom: 14px;
+  border-radius: 8px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  font-size: 12.5px;
+}
+
+.fi-field { margin-bottom: 14px; }
+
+.fi-grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.fi-hint { font-size: 11px; font-weight: 400; color: #94a3b8; margin-left: 4px; }
+
+.w-full { width: 100%; }
+nz-select.w-full { width: 100%; }
+
+.fi-input,
+.fi-textarea {
+  width: 100%;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 9px 11px;
+  font-size: 13px;
+  color: #1e293b;
+  background: #f8fafc;
+  outline: none;
+  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+
+  &::placeholder { color: #c0cad6; }
+  &:focus { border-color: rgba(0, 54, 110, 0.7); background: #fff; box-shadow: 0 0 0 3px rgba(0, 54, 110, 0.1); }
+}
+
+.fi-textarea { resize: vertical; min-height: 60px; }
+
+// Clé + bouton générer
+.fi-key-input {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+
+  .fi-input { flex: 1; }
+}
+
+.fi-gen-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 14px;
+  border: 1.5px solid rgba(0, 54, 110, 0.3);
+  border-radius: 8px;
+  background: rgba(0, 54, 110, 0.06);
+  color: rgba(0, 54, 110);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+  &:hover { background: rgba(0, 54, 110, 0.12); }
+}
+
+// ── Switch actif/inactif ──────────────────────────────────────
+.fi-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+
+  input { display: none; }
+
+  .fi-switch-track {
+    position: relative;
+    width: 42px;
+    height: 24px;
+    border-radius: 12px;
+    background: #cbd5e1;
+    transition: background 0.2s;
+    flex-shrink: 0;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #fff;
+      transition: transform 0.2s;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+  }
+
+  input:checked + .fi-switch-track {
+    background: #16a34a;
+    &::after { transform: translateX(18px); }
+  }
+
+  .fi-switch-txt { font-size: 13px; font-weight: 600; color: #475569; }
+}
+
+.fi-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 14px 18px;
+  border-top: 1px solid #eef2f7;
+  flex-shrink: 0;
+}
+
+.fi-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, opacity 0.15s;
+  &:disabled { opacity: 0.55; cursor: not-allowed; }
+}
+
+.fi-btn-cancel { background: #f1f5f9; color: #475569; &:hover { background: #e2e8f0; } }
+.fi-btn-confirm {
+  background: rgba(0, 54, 110);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 54, 110, 0.25);
+  &:hover:not(:disabled) { background: #003a75; }
+}

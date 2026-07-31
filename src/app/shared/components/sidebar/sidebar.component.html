@@ -77,14 +77,16 @@
 
                                         @if(menu.children) {
                                             <div class="according-menu">
-                                                <i class="fa-solid" [ngClass]="menu.active ? 'fa-angle-down' : 'fa-angle-right'"></i>
+                                                <i class="fa-solid fa-angle-right" [class.is-open]="menu.active"></i>
                                             </div>
                                         }
                                     </a>
                                 }
 
                                 @if(menu.children && menu.children.length) {
-                                    <ul class="sidebar-submenu" [ngStyle]="{'display' : menu.active ? 'block' : 'none'}">
+                                    <ul class="sidebar-submenu"
+                                        [ngStyle]="isHorizontal ? {'display' : menu.active ? 'block' : 'none'} : {}"
+                                        [@collapse]="isHorizontal ? 'open' : (menu.active ? 'open' : 'closed')">
                                         @for(child of menu.children; track child) {
                                             <div *ngTemplateOutlet="recursiveMenu; context: { $implicit: child }"></div>
                                         }

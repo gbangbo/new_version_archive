@@ -1,0 +1,301 @@
+<div class="container main-setting">
+    <div class="grid grid-cols-12 card-gap">
+        <div class="col-span-12">
+            <app-card [border]="true" [padding]="false">
+
+                <div class="grid grid-cols-12 gap-4 tabs">
+                    <div class="col-span-12">
+                        <div class="relative">
+
+                            <!-- ══ OVERLAY SPINNER ══════════════════════════════ -->
+                            <div *ngIf="isloading"
+                                 class="absolute inset-0 flex justify-center items-center z-10 rounded-lg"
+                                 style="background: rgba(248,250,252,0.85); backdrop-filter: blur(2px);">
+                                <div class="text-center">
+                                    <div class="op-spinner"></div>
+                                    <p class="mt-3" style="color:#64748b; font-size:13px; font-weight:600;">
+                                        Chargement des données...
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="table-container" [class.op-loading]="isloading">
+                                <!-- ══ TOOLBAR ══════════════════════════════════ -->
+                                <div class="op-toolbar">
+                                    <div class="op-toolbar-left">
+                                        <div class="op-toolbar-title">
+                                            <div class="op-toolbar-icon">
+                                                <i class="far fa-paper-plane"></i>
+                                            </div>
+                                            <div>
+                                                <span class="op-toolbar-label">DOCUMENTS ENVOYÉS PAR MAIL</span>
+                                                <span class="op-toolbar-count">
+                                                    {{ filteredData.length || 0 }} enregistrement(s)
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="op-toolbar-right">
+                                        <!-- Recherche -->
+                                        <div class="op-search-wrap">
+                                            <svg class="op-search-icon" viewBox="0 0 24 24" fill="none"
+                                                 stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                                                <circle cx="11" cy="11" r="8"/>
+                                                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                                            </svg>
+                                            <input class="op-search-input"
+                                                   placeholder="Rechercher..."
+                                                   [(ngModel)]="searchValue"
+                                                   (ngModelChange)="onSearch($event)"/>
+                                            <button *ngIf="searchValue"
+                                                    class="op-search-clear"
+                                                    (click)="searchValue=''; onSearch('')">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                     stroke-width="2.5" stroke-linecap="round" width="12" height="12">
+                                                    <line x1="18" y1="6" x2="6" y2="18"/>
+                                                    <line x1="6" y1="6" x2="18" y2="18"/>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                        <!-- Export -->
+                                        <button class="op-btn op-btn-outline"
+                                                nz-tooltip nzTooltipTitle="Exporter en Excel"
+                                                [disabled]="!filteredData.length"
+                                                (click)="exportToExcel()">
+                                            <i data-feather="download" style="width: 15px;"></i>
+                                            <span class="btn-label">Exporter</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- ══ TABLE ════════════════════════════════════ -->
+                                <div class="overflow-x-auto support-ticket-table custom-scrollbar">
+                                    <nz-table
+                                        #nzTable
+                                        [nzData]="filteredData"
+                                        [nzPageSize]="10"
+                                        [nzShowPagination]="true"
+                                        [nzShowTotal]="totalTemplate"
+                                        nzShowSizeChanger
+                                        nzBordered
+                                        nzSize="small"
+                                        [nzScroll]="filteredData.length > 0 ? { x: '1250px' } : {}"
+                                    >
+                                        <thead>
+                                        <tr>
+                                            <th nzWidth="220px"
+                                                nzColumnKey="lib_document"
+                                                [nzSortFn]="sortFns.lib_document"
+                                                [nzSortDirections]="['ascend','descend',null]"
+                                                [nzFilterFn]="filterFns.lib_document"
+                                                [nzFilters]="filters.lib_document">
+                                                Document
+                                            </th>
+                                            <th nzWidth="220px"
+                                                nzColumnKey="email_received"
+                                                [nzSortFn]="sortFns.email_received"
+                                                [nzSortDirections]="['ascend','descend',null]"
+                                                [nzFilterFn]="filterFns.email_received"
+                                                [nzFilters]="filters.email_received">
+                                                Destinataire(s)
+                                            </th>
+                                            <th nzWidth="80px" nzAlign="center">
+                                                Fichiers
+                                            </th>
+                                            <th nzWidth="150px" nzAlign="center">
+                                                Mot de passe
+                                            </th>
+                                            <th nzWidth="200px">
+                                                Message
+                                            </th>
+                                            <th nzWidth="140px"
+                                                nzColumnKey="date_envoi"
+                                                [nzSortFn]="sortFns.date_envoi"
+                                                [nzSortDirections]="['ascend','descend',null]">
+                                                Date d'envoi
+                                            </th>
+                                            <th nzWidth="80px" nzAlign="center">
+                                                Consulter
+                                            </th>
+                                        </tr>
+                                        </thead>
+
+                                        <tbody>
+                                        <tr *ngFor="let row of nzTable.data" class="op-table-row">
+                                            <!-- Document -->
+                                            <td>
+                                                <div class="op-doc-cell">
+                                                    <span class="op-type-badge">{{ row.lib_document || '—' }}</span>
+                                                    <span class="op-doc-code" *ngIf="row.code_document">
+                                                        N° {{ row.code_document }}
+                                                    </span>
+                                                </div>
+                                            </td>
+
+                                            <!-- Destinataires -->
+                                            <td>
+                                                <div class="flex flex-wrap gap-1">
+                                                    <nz-tag *ngFor="let mail of row.destinataires" nzColor="blue">
+                                                        {{ mail }}
+                                                    </nz-tag>
+                                                    <span *ngIf="!row.destinataires?.length">—</span>
+                                                </div>
+                                            </td>
+
+                                            <!-- Nb fichiers -->
+                                            <td nzAlign="center">
+                                                <nz-tag nzColor="geekblue">
+                                                    <i class="fa-solid fa-paperclip"></i> {{ row.nb_fichiers }}
+                                                </nz-tag>
+                                            </td>
+
+                                            <!-- Mot de passe -->
+                                            <td nzAlign="center">
+                                                <div class="op-pwd-cell" *ngIf="row.file_password; else noPwd">
+                                                    <span class="op-pwd-value">
+                                                        {{ row.showPassword ? row.file_password : '••••••••' }}
+                                                    </span>
+                                                    <button class="op-pwd-toggle"
+                                                            type="button"
+                                                            [attr.title]="row.showPassword ? 'Masquer' : 'Afficher'"
+                                                            (click)="togglePassword(row)">
+                                                        <i class="fa-regular" [ngClass]="row.showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                                                    </button>
+                                                </div>
+                                                <ng-template #noPwd><span class="cell-text">—</span></ng-template>
+                                            </td>
+
+                                            <!-- Message -->
+                                            <td>
+                                                <span class="cell-text" [title]="row.message_send">
+                                                    {{ row.message_send || '—' }}
+                                                </span>
+                                            </td>
+
+                                            <!-- Date d'envoi -->
+                                            <td>
+                                                <span class="cell-text">{{ row.date_envoi || '—' }}</span>
+                                            </td>
+
+                                            <!-- Consulter les fichiers -->
+                                            <td nzAlign="center">
+                                                <button class="op-files-btn"
+                                                        nz-tooltip nzTooltipTitle="Consulter les fichiers envoyés"
+                                                        [disabled]="!row.nb_fichiers"
+                                                        (click)="openFiles(row)">
+                                                    <i class="fa-regular fa-folder-open"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+
+                                        <tr *ngIf="!isloading && filteredData?.length === 0">
+                                            <td colspan="7">
+                                                <div class="op-empty-state">
+                                                    <app-feather-icon class="icon-inbox" [icon]="'inbox'"></app-feather-icon>
+                                                    <span>Aucun document envoyé !</span>
+                                                    <small *ngIf="searchValue">
+                                                        Aucun résultat pour « {{ searchValue }} »
+                                                    </small>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </nz-table>
+                                </div>
+                                <ng-template #totalTemplate let-total>
+                                    Total : <strong>{{ total }}</strong> enregistrement(s)
+                                </ng-template>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </app-card>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ MODAL : Consultation des fichiers envoyés ═══════════════ -->
+<div class="fv-backdrop" *ngIf="filesOpen" (click)="closeFiles()">
+    <div class="fv-panel" (click)="$event.stopPropagation()">
+
+        <div class="fv-header">
+            <div class="fv-header-titles">
+                <span class="fv-title"><i class="fa-regular fa-folder-open"></i> Fichiers envoyés</span>
+                <span class="fv-subtitle">{{ filesTitle }}</span>
+            </div>
+            <button class="fv-close" (click)="closeFiles()" title="Fermer">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="fv-body">
+            <!-- Liste des fichiers -->
+            <div class="fv-files">
+                <div class="fv-file-row"
+                     *ngFor="let f of filesList"
+                     [class.active]="previewFileItem?.uid === f.uid"
+                     (click)="previewFile(f)">
+                    <nz-icon [nzType]="fileIcon(f.extension)"
+                             [nzTheme]="fileIcon(f.extension) === 'file' ? 'outline' : 'twotone'"
+                             class="fv-file-icon"/>
+                    <span class="fv-file-name">{{ f.name }}<ng-container *ngIf="f.extension">.{{ f.extension }}</ng-container></span>
+                    <button class="fv-eye"
+                            type="button"
+                            [disabled]="previewingUid === f.uid"
+                            (click)="$event.stopPropagation(); previewFile(f)">
+                        <i [class]="previewingUid === f.uid ? 'fa-solid fa-circle-notch fa-spin' : 'fa-regular fa-eye'"></i>
+                    </button>
+                </div>
+                <div class="fv-empty" *ngIf="!filesList.length">
+                    <i class="fa-regular fa-folder-open"></i>
+                    <span>Aucun fichier</span>
+                </div>
+            </div>
+
+            <!-- Aperçu -->
+            <div class="fv-preview">
+                <div class="fv-preview-placeholder" *ngIf="!previewOpen">
+                    <i class="fa-regular fa-eye"></i>
+                    <span>Sélectionnez un fichier pour l'aperçu</span>
+                </div>
+
+                <ng-container *ngIf="previewOpen">
+                    <div class="fv-preview-body custom-scrollbar"
+                         (contextmenu)="$event.preventDefault()"
+                         (dragstart)="$event.preventDefault()">
+                        <div class="fv-loading" *ngIf="previewLoading">
+                            <div class="fv-spinner"></div>
+                            <span>Préparation de l'aperçu…</span>
+                        </div>
+                        <div class="fv-error" *ngIf="!previewLoading && previewError">
+                            <i class="fa-regular fa-file-lines"></i>
+                            <span>{{ previewError }}</span>
+                        </div>
+                        <img *ngIf="!previewLoading && !previewError && previewIsImage"
+                             [src]="previewImageUrl" class="fv-img" alt="aperçu"
+                             [style.width.%]="previewZoom * 100"/>
+                        <img *ngIf="!previewLoading && !previewError && !previewIsImage && previewImages.length"
+                             [src]="previewImages[currentPreviewPage - 1]" class="fv-img" alt="page"
+                             [style.width.%]="previewZoom * 100"/>
+                    </div>
+
+                    <div class="fv-toolbar" *ngIf="!previewLoading && !previewError && (previewImages.length || previewIsImage)">
+                        <div class="fv-pager" *ngIf="!previewIsImage && previewImages.length > 1">
+                            <button type="button" (click)="prevPage()" [disabled]="currentPreviewPage <= 1"><i class="fa-solid fa-chevron-left"></i></button>
+                            <span>{{ currentPreviewPage }} / {{ previewImages.length }}</span>
+                            <button type="button" (click)="nextPage()" [disabled]="currentPreviewPage >= previewImages.length"><i class="fa-solid fa-chevron-right"></i></button>
+                        </div>
+                        <div class="fv-zoomer">
+                            <button type="button" (click)="zoomOut()" [disabled]="previewZoom <= minZoom"><i class="fa-solid fa-magnifying-glass-minus"></i></button>
+                            <span (click)="resetZoom()">{{ previewZoom * 100 | number:'1.0-0' }}%</span>
+                            <button type="button" (click)="zoomIn()" [disabled]="previewZoom >= maxZoom"><i class="fa-solid fa-magnifying-glass-plus"></i></button>
+                        </div>
+                    </div>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+</div>

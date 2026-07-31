@@ -162,9 +162,10 @@
 
 .cell-text {
   display: block;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  word-break: break-word;
 }
 
 .cell-placeholder {
@@ -578,6 +579,11 @@
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+// La période (dates) ne doit pas se couper au milieu
+.op-periode-cell .cell-text {
+  white-space: nowrap;
 }
 
 .op-benef-avatar {

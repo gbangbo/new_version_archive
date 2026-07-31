@@ -1,0 +1,153 @@
+<div class="container main-setting">
+    <div class="grid grid-cols-12 card-gap">
+        <div class="col-span-12">
+            <app-card [border]="true" [padding]="false">
+
+                <div class="relative">
+
+                    <!-- Overlay chargement -->
+                    <div *ngIf="isloading"
+                         class="absolute inset-0 flex justify-center items-center z-10 rounded-lg"
+                         style="background: rgba(248,250,252,0.85); backdrop-filter: blur(2px);">
+                        <div class="text-center">
+                            <div class="dpl-spinner"></div>
+                            <p class="mt-3" style="color:#64748b; font-size:13px; font-weight:600;">
+                                Chargement des documents...
+                            </p>
+                        </div>
+                    </div>
+
+                    <div [class.dpl-loading]="isloading">
+
+                        <!-- ══ TOOLBAR ══════════════════════════════ -->
+                        <div class="dpl-toolbar">
+                            <div class="dpl-toolbar-title">
+                                <div class="dpl-toolbar-icon">
+                                    <i class="fa-regular fa-folder-open"></i>
+                                </div>
+                                <div>
+                                    <span class="dpl-toolbar-label">DOCUMENTS DES UTILISATEURS</span>
+                                    <span class="dpl-toolbar-count">
+                                        {{ groups.length }} personnel(s) · {{ totalFiles }} document(s)
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="dpl-search-wrap">
+                                <svg class="dpl-search-icon" viewBox="0 0 24 24" fill="none"
+                                     stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                                    <circle cx="11" cy="11" r="8"/>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                                </svg>
+                                <input class="dpl-search-input"
+                                       placeholder="Rechercher (personnel, dossier, fichier)..."
+                                       [ngModel]="searchValue"
+                                       (ngModelChange)="onSearch($event)"/>
+                                <button *ngIf="searchValue" class="dpl-search-clear" (click)="onSearch('')">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- ══ GROUPES PAR PERSONNEL ════════════════ -->
+                        <div class="dpl-groups">
+
+                            <div class="dpl-group" *ngFor="let g of groups">
+
+                                <!-- En-tête personnel -->
+                                <div class="dpl-group-head" (click)="toggleGroup(g.key)">
+                                    <span class="dpl-avatar">{{ initials(g.personnel) }}</span>
+                                    <div class="dpl-group-ident">
+                                        <span class="dpl-group-name">{{ g.personnel || '—' }}</span>
+                                        <span class="dpl-group-mail" *ngIf="g.email">{{ g.email }}</span>
+                                    </div>
+                                    <span class="dpl-group-count">{{ g.files.length }} fichier(s)</span>
+                                    <i class="fa-solid dpl-group-arrow"
+                                       [class.fa-chevron-down]="!collapsed[g.key]"
+                                       [class.fa-chevron-right]="collapsed[g.key]"></i>
+                                </div>
+
+                                <!-- Grille de fichiers -->
+                                <div class="dpl-files" *ngIf="!collapsed[g.key]">
+                                    <div class="dpl-file-card" *ngFor="let f of g.files"
+                                         (click)="openPreview(f)" title="Consulter">
+
+                                        <div class="dpl-file-thumb">
+                                            <i class="fa-regular {{ getFileIconClass(f.extension) }}"
+                                               [style.color]="getFileIconColor(f.extension)"></i>
+                                            <span class="dpl-file-ext">{{ f.extension || '—' }}</span>
+                                        </div>
+
+                                        <div class="dpl-file-body">
+                                            <span class="dpl-file-name" [title]="f.nom_fichiers">{{ f.nom_fichiers }}</span>
+                                            <div class="dpl-file-meta">
+                                                <nz-tag [nzColor]="'geekblue'" class="dpl-file-tag">
+                                                    <i class="fa-regular fa-folder"></i> {{ f.dossier || '—' }}
+                                                </nz-tag>
+                                                <span class="dpl-file-date" *ngIf="f.date">{{ f.date }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <!-- Empty -->
+                            <div class="dpl-empty" *ngIf="!isloading && groups.length === 0">
+                                <i class="fa-regular fa-folder-open"></i>
+                                <span>Aucun document transmis</span>
+                                <small *ngIf="searchValue">Aucun résultat pour « {{ searchValue }} »</small>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+            </app-card>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ MODAL : Aperçu du document ════════════════════════════════ -->
+<div class="fv-backdrop" *ngIf="previewRow" (click)="closePreview()">
+    <div class="fv-panel" (click)="$event.stopPropagation()">
+        <div class="fv-header">
+            <div class="fv-header-titles">
+                <span class="fv-title">
+                    <i class="fa-regular {{ getFileIconClass(previewRow.extension) }}"></i> Aperçu
+                </span>
+                <span class="fv-subtitle">{{ previewRow.nom_fichiers }} — {{ previewRow.personnel }}</span>
+            </div>
+            <div class="fv-header-actions">
+                <button class="fv-close" type="button" (click)="download(previewRow)" title="Ouvrir dans un onglet">
+                    <i class="fa-solid fa-up-right-from-square"></i>
+                </button>
+                <button class="fv-close" type="button" (click)="closePreview()" title="Fermer">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="fv-body">
+            <!-- Image -->
+            <div class="fv-image-wrap" *ngIf="isImage(previewRow.extension)">
+                <img [src]="previewRow.url" [alt]="previewRow.nom_fichiers"/>
+            </div>
+
+            <!-- PDF / Office -->
+            <iframe *ngIf="(isPdf(previewRow.extension) || isOffice(previewRow.extension)) && previewSafeUrl"
+                    class="fv-frame" [src]="previewSafeUrl" title="Aperçu du document"></iframe>
+
+            <!-- Types non prévisualisables -->
+            <div class="fv-nopreview"
+                 *ngIf="!isImage(previewRow.extension) && !isPdf(previewRow.extension) && !isOffice(previewRow.extension)">
+                <i class="fa-regular {{ getFileIconClass(previewRow.extension) }}"></i>
+                <p>Aperçu non disponible pour ce type de fichier.</p>
+                <button class="dpl-file-dl dpl-file-dl-lg" (click)="download(previewRow)">
+                    <i class="fa-solid fa-download mr-1"></i> Télécharger
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

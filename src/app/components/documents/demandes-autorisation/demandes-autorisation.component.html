@@ -1,0 +1,328 @@
+<div class="container main-setting">
+    <div class="grid grid-cols-12 card-gap">
+        <div class="col-span-12">
+            <app-card [border]="true" [padding]="false">
+
+                <div class="grid grid-cols-12 gap-4 tabs">
+                    <div class="col-span-12">
+                        <div class="relative">
+
+                            <!-- ══ OVERLAY SPINNER ══════════════════════════════ -->
+                            <div *ngIf="isloading"
+                                 class="absolute inset-0 flex justify-center items-center z-10 rounded-lg"
+                                 style="background: rgba(248,250,252,0.85); backdrop-filter: blur(2px);">
+                                <div class="text-center">
+                                    <div class="op-spinner"></div>
+                                    <p class="mt-3" style="color:#64748b; font-size:13px; font-weight:600;">
+                                        Chargement des demandes...
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="table-container" [class.op-loading]="isloading">
+                                <!-- ══ TOOLBAR ══════════════════════════════════ -->
+                                <div class="op-toolbar">
+                                    <div class="op-toolbar-left">
+                                        <div class="op-toolbar-title">
+                                            <div class="op-toolbar-icon">
+                                                <i class="fa-solid fa-shield-halved"></i>
+                                            </div>
+                                            <div>
+                                                <span class="op-toolbar-label">DEMANDES D'AUTORISATION</span>
+                                                <span class="op-toolbar-count">
+                                                    {{ rows.length || 0 }} demande(s)
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="op-toolbar-right">
+                                        <nz-select class="da-statut"
+                                                   nzAllowClear
+                                                   nzPlaceHolder="Tous les statuts"
+                                                   [ngModel]="selectedStatut"
+                                                   (ngModelChange)="onStatutChange($event)">
+                                            <nz-option *ngFor="let s of statuts" [nzValue]="s" [nzLabel]="statutLabel(s)"></nz-option>
+                                        </nz-select>
+
+                                        <div class="op-search-wrap">
+                                            <svg class="op-search-icon" viewBox="0 0 24 24" fill="none"
+                                                 stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                                                <circle cx="11" cy="11" r="8"/>
+                                                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                                            </svg>
+                                            <input class="op-search-input"
+                                                   placeholder="Rechercher..."
+                                                   [ngModel]="searchValue"
+                                                   (ngModelChange)="onSearch($event)"/>
+                                            <button *ngIf="searchValue"
+                                                    class="op-search-clear"
+                                                    (click)="onSearch('')">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                     stroke-width="2.5" stroke-linecap="round" width="12" height="12">
+                                                    <line x1="18" y1="6" x2="6" y2="18"/>
+                                                    <line x1="6" y1="6" x2="18" y2="18"/>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- ══ TABLE ════════════════════════════════════ -->
+                                <div class="overflow-x-auto support-ticket-table custom-scrollbar">
+                                    <nz-table
+                                        #nzTable
+                                        [nzData]="rows"
+                                        [nzPageSize]="10"
+                                        [nzShowPagination]="true"
+                                        [nzShowTotal]="totalTemplate"
+                                        nzShowSizeChanger
+                                        nzBordered
+                                        nzSize="small"
+                                        [nzScroll]="rows.length > 0 ? { x: '1050px' } : {}">
+                                        <thead>
+                                        <tr>
+                                            <th nzWidth="220px">Bénéficiaire</th>
+                                            <th nzWidth="260px">Document</th>
+                                            <th nzWidth="130px">Action(s)</th>
+                                            <th nzWidth="110px">Statut</th>
+                                            <th nzWidth="210px">Période</th>
+                                            <th nzWidth="160px">Date demande</th>
+                                            <th nzWidth="170px" nzAlign="center" nzRight>Décision</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr *ngFor="let r of nzTable.data" class="op-table-row">
+                                            <!-- Bénéficiaire -->
+                                            <td>
+                                                <div class="op-benef-cell">
+                                                    <span class="op-benef-avatar">{{ initials(r.beneficiaire) }}</span>
+                                                    <span class="cell-text">{{ r.beneficiaire }}</span>
+                                                </div>
+                                            </td>
+
+                                            <!-- Document -->
+                                            <td>
+                                                <div class="da-doc">
+                                                    <span class="da-doc-name" [title]="r.document">{{ r.document }}</span>
+                                                    <span class="da-motif" *ngIf="r.motif"
+                                                          nz-tooltip [nzTooltipTitle]="r.motif">
+                                                        <i class="fa-regular fa-comment-dots"></i> motif
+                                                    </span>
+                                                </div>
+                                            </td>
+
+                                            <!-- Actions demandées -->
+                                            <td>
+                                                <div class="flex flex-wrap gap-1">
+                                                    <nz-tag *ngFor="let a of r.actions" [nzColor]="actionColor(a)">{{ a }}</nz-tag>
+                                                    <span *ngIf="!r.actions.length">—</span>
+                                                </div>
+                                            </td>
+
+                                            <!-- Statut -->
+                                            <td>
+                                                <nz-tag [nzColor]="statutColor(r.statut)">{{ statutLabel(r.statut) }}</nz-tag>
+                                            </td>
+
+                                            <!-- Période -->
+                                            <td><span class="cell-text">{{ r.periode }}</span></td>
+
+                                            <!-- Date -->
+                                            <td><span class="cell-text">{{ r.date || '—' }}</span></td>
+
+                                            <!-- Décision -->
+                                            <td nzAlign="center" nzRight>
+                                                <div class="op-actions">
+                                                    <button class="btn-round-edit btn-round-detail"
+                                                            nz-tooltip [nzTooltipTitle]="'Détails'" nzTooltipPlacement="top"
+                                                            (click)="openDetail(r)">
+                                                        <app-feather-icon class="icon-small" [icon]="'eye'"></app-feather-icon>
+                                                    </button>
+                                                    <ng-container *ngIf="isPending(r)">
+                                                        <button class="btn-round-edit btn-round-valid"
+                                                                nz-tooltip [nzTooltipTitle]="'Valider'" nzTooltipPlacement="top"
+                                                                (click)="openDecision(r, 1)">
+                                                            <app-feather-icon class="icon-small" [icon]="'check'"></app-feather-icon>
+                                                        </button>
+                                                        <button class="btn-round-edit btn-round-reject"
+                                                                nz-tooltip [nzTooltipTitle]="'Rejeter'" nzTooltipPlacement="top"
+                                                                (click)="openDecision(r, 2)">
+                                                            <app-feather-icon class="icon-small" [icon]="'x'"></app-feather-icon>
+                                                        </button>
+                                                    </ng-container>
+                                                    <span class="da-decided" *ngIf="!isPending(r)">
+                                                        <i class="fa-solid fa-circle-check"></i>
+                                                    </span>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        <tr *ngIf="!isloading && rows.length === 0">
+                                            <td colspan="7">
+                                                <div class="op-empty-state">
+                                                    <app-feather-icon class="icon-inbox" [icon]="'inbox'"></app-feather-icon>
+                                                    <span>Aucune demande d'autorisation</span>
+                                                    <small *ngIf="searchValue || selectedStatut">Aucun résultat pour ce filtre</small>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </nz-table>
+                                </div>
+                                <ng-template #totalTemplate let-total>
+                                    Total : <strong>{{ total }}</strong> demande(s)
+                                </ng-template>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </app-card>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ POPUP : Décision (validation / rejet) ═════════════════════ -->
+<div class="dd-backdrop" *ngIf="showDecision && decisionRow" (click)="closeDecision()">
+    <div class="dd-panel" (click)="$event.stopPropagation()">
+
+        <div class="dd-header" [class.dd-header-ok]="decisionAction === 1" [class.dd-header-ko]="decisionAction === 2">
+            <div class="dd-header-titles">
+                <span class="dd-title">
+                    <i class="fa-solid" [ngClass]="decisionAction === 1 ? 'fa-circle-check' : 'fa-circle-xmark'"></i>
+                    {{ decisionAction === 1 ? 'Valider la demande' : 'Rejeter la demande' }}
+                </span>
+                <span class="dd-subtitle">
+                    {{ decisionRow.demandeur }} — {{ decisionRow.document }}
+                </span>
+            </div>
+            <button class="dd-close" type="button" (click)="closeDecision()" title="Fermer">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="dd-body custom-input">
+
+            <div class="dd-alert" *ngIf="decisionError">
+                <i class="fa-solid fa-circle-exclamation"></i> {{ decisionError }}
+            </div>
+
+            <!-- Récap actions demandées -->
+            <div class="dd-recap" *ngIf="decisionRow.actions.length">
+                <span class="dd-recap-label">Actions demandées :</span>
+                <nz-tag *ngFor="let a of decisionRow.actions" [nzColor]="actionColor(a)">{{ a }}</nz-tag>
+            </div>
+
+            <!-- Validation : période accordée -->
+            <div class="dd-field" *ngIf="decisionAction === 1">
+                <label class="form-label">Période d'autorisation accordée</label>
+                <nz-range-picker class="w-full"
+                                 nzFormat="dd/MM/yyyy"
+                                 [nzPlaceHolder]="['Date début', 'Date fin']"
+                                 [nzDisabledDate]="disabledPastDate"
+                                 [(ngModel)]="decisionData.range" name="ddRange"></nz-range-picker>
+            </div>
+
+            <!-- Rejet : motif -->
+            <div class="dd-field" *ngIf="decisionAction === 2">
+                <label class="form-label">Motif du rejet <span class="txt-danger">*</span></label>
+                <textarea class="dd-textarea" rows="3"
+                          [(ngModel)]="decisionData.reason" name="ddReason"
+                          placeholder="Indiquez la raison du rejet…"></textarea>
+            </div>
+
+            <!-- Commentaire de décision (validation uniquement) -->
+            <div class="dd-field" *ngIf="decisionAction === 1">
+                <label class="form-label">Commentaire de décision</label>
+                <textarea class="dd-textarea" rows="2"
+                          [(ngModel)]="decisionData.comment" name="ddComment"
+                          placeholder="Commentaire (facultatif)…"></textarea>
+            </div>
+        </div>
+
+        <div class="dd-footer">
+            <button class="dd-btn dd-btn-cancel" type="button" (click)="closeDecision()">Annuler</button>
+            <button class="dd-btn"
+                    [class.dd-btn-ok]="decisionAction === 1"
+                    [class.dd-btn-ko]="decisionAction === 2"
+                    type="button" [disabled]="decisionSaving" (click)="submitDecision()">
+                <i class="fa-solid" [ngClass]="decisionSaving ? 'fa-circle-notch fa-spin' : (decisionAction === 1 ? 'fa-check' : 'fa-xmark')"></i>
+                {{ decisionSaving ? 'Traitement…' : (decisionAction === 1 ? 'Valider' : 'Rejeter') }}
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ POPUP : Détails de la demande ═════════════════════════════ -->
+<div class="dd-backdrop" *ngIf="showDetail && detailRow" (click)="closeDetail()">
+    <div class="dd-panel" (click)="$event.stopPropagation()">
+
+        <div class="dd-header dd-header-info">
+            <div class="dd-header-titles">
+                <span class="dd-title"><i class="fa-solid fa-circle-info"></i> Détails de la demande</span>
+                <span class="dd-subtitle">{{ detailRow.document }}</span>
+            </div>
+            <button class="dd-close" type="button" (click)="closeDetail()" title="Fermer">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="dd-body">
+            <div class="dtl-row">
+                <span class="dtl-label">Demandeur</span>
+                <span class="dtl-value">
+                    {{ detailRow.demandeur }}
+                    <small *ngIf="detailRow.demandeurMail">({{ detailRow.demandeurMail }})</small>
+                </span>
+            </div>
+            <div class="dtl-row">
+                <span class="dtl-label">Bénéficiaire</span>
+                <span class="dtl-value">{{ detailRow.beneficiaire }}</span>
+            </div>
+            <div class="dtl-row">
+                <span class="dtl-label">Document</span>
+                <span class="dtl-value">
+                    {{ detailRow.document }}
+                    <small *ngIf="detailRow.code_docs">N° {{ detailRow.code_docs }}</small>
+                </span>
+            </div>
+            <div class="dtl-row">
+                <span class="dtl-label">Action(s)</span>
+                <span class="dtl-value">
+                    <nz-tag *ngFor="let a of detailRow.actions" [nzColor]="actionColor(a)">{{ a }}</nz-tag>
+                    <span *ngIf="!detailRow.actions.length">—</span>
+                </span>
+            </div>
+            <div class="dtl-row">
+                <span class="dtl-label">Statut</span>
+                <span class="dtl-value"><nz-tag [nzColor]="statutColor(detailRow.statut)">{{ statutLabel(detailRow.statut) }}</nz-tag></span>
+            </div>
+            <div class="dtl-row">
+                <span class="dtl-label">Période</span>
+                <span class="dtl-value">{{ detailRow.periode }}</span>
+            </div>
+            <div class="dtl-row" *ngIf="detailRow.motif">
+                <span class="dtl-label">Motif</span>
+                <span class="dtl-value">{{ detailRow.motif }}</span>
+            </div>
+            <div class="dtl-row" *ngIf="detailRow.raw?.rejected_reason">
+                <span class="dtl-label">Motif de rejet</span>
+                <span class="dtl-value">{{ detailRow.raw.rejected_reason }}</span>
+            </div>
+            <div class="dtl-row" *ngIf="detailRow.raw?.decision_comment">
+                <span class="dtl-label">Commentaire décision</span>
+                <span class="dtl-value">{{ detailRow.raw.decision_comment }}</span>
+            </div>
+            <div class="dtl-row">
+                <span class="dtl-label">Date demande</span>
+                <span class="dtl-value">{{ detailRow.date || '—' }}</span>
+            </div>
+        </div>
+
+        <div class="dd-footer">
+            <button class="dd-btn dd-btn-cancel" type="button" (click)="closeDetail()">Fermer</button>
+        </div>
+    </div>
+</div>

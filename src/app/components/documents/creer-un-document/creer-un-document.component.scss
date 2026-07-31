@@ -942,6 +942,13 @@ input[type="checkbox"]:checked {
   }
 }
 
+// Dossier cible du rangement des prochains fichiers uploadés
+::ng-deep .folder-selected-target {
+  background: rgba(0, 54, 110, 0.06) !important;
+  border-radius: 6px !important;
+  //box-shadow: inset 3px 0 0 rgba(0, 54, 110, 0.55) !important;
+}
+
 // Badge "Déposer ici" (dossiers avec et sans enfants)
 .folder-drop-badge {
   display: inline-flex;
@@ -1251,6 +1258,30 @@ input[type="checkbox"]:checked {
   align-items: center !important;
   width: 100% !important;
   flex: 1 !important;
+}
+
+// ── Adoucir la sélection : bleu vif ng-zorro → teinte de marque discrète ──
+// Le tree "directory" peint une bande pleine largeur en couleur primaire via
+// un ::before sur le treenode sélectionné, et force le texte en blanc.
+::ng-deep .ant-tree.ant-tree-directory .ant-tree-treenode-selected::before,
+::ng-deep .ant-tree-directory .ant-tree-treenode-selected::before,
+::ng-deep .ant-tree-treenode-selected::before {
+  background:   rgb(223 225 227 / 10%) !important ;// rgba(0, 54, 110, 0.10) !important;
+}
+
+// Texte des nœuds sélectionnés : rester lisible (foncé) au lieu du blanc
+::ng-deep .ant-tree-directory .ant-tree-treenode-selected .ant-tree-node-content-wrapper,
+::ng-deep .ant-tree-treenode-selected .ant-tree-node-content-wrapper,
+::ng-deep .ant-tree-node-content-wrapper.ant-tree-node-selected {
+  color: #0F172A !important;
+  font-weight: 600;
+  background: transparent !important;
+}
+
+// Survol : bande pleine largeur très légère
+::ng-deep .ant-tree.ant-tree-directory .ant-tree-treenode:hover::before,
+::ng-deep .ant-tree-directory .ant-tree-treenode:hover::before {
+  background: rgba(0, 54, 110, 0.05) !important;
 }
 
 ::ng-deep nz-tree-node {

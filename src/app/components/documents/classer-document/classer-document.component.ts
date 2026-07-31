@@ -15,6 +15,7 @@ import {ToastrService} from 'ngx-toastr';
 import Swal from 'sweetalert2';
 import * as pdfjsLib from 'pdfjs-dist';
 import {FeatherIconsComponent} from "../../icons/feather-icon/feather-icon.component";
+import {HistoLogService} from "../../../shared/services/histo-log.service";
 
 interface ClassifyNode {
     name: string;
@@ -140,8 +141,21 @@ export class ClasserDocumentComponent implements OnInit {
         private httService: HttpService,
         private toast: ToastrService,
         private sanitizer: DomSanitizer,
-        private cdr: ChangeDetectorRef
+        private cdr: ChangeDetectorRef,
+        private histoLog: HistoLogService
     ) {
+    }
+
+    /* Nom d'un dossier du plan de classement par sa clé (recherche récursive) */
+    private findFolderName(key: string, nodes: ClassifyNode[] = this.cleanTreeData): string {
+        for (const n of nodes) {
+            if ((n.key || n.uid) === key) return n.name || '';
+            if (n.children?.length) {
+                const found = this.findFolderName(key, n.children);
+                if (found) return found;
+            }
+        }
+        return '';
     }
 
     ngOnInit(): void {
@@ -529,6 +543,16 @@ export class ClasserDocumentComponent implements OnInit {
                 if (res.body.status || res.body.success) {
                     if (folderKey) {
                         this.fileAssignments.set(fileUid, folderKey);
+                        // Log d'action (classement dans un dossier)
+                        const f = this.pieceFiles.find(p => p.uid === fileUid) || {};
+                        const nameCategorie = this.sessionData?.datacategories?.name_categories
+                            || this.sessionData?.datatype_document?.[0]?.libelle_type_docs || '';
+                        const codePiece = f?.code_piece_docs || '';
+                        const origneName = f?.origne_name || f?.name_piece_docs || '';
+                        const extPiece = f?.extension_piece_docs || f?.extension_file_docs || (f?.extension ? '.' + f.extension : '');
+                        const folderName = this.findFolderName(folderKey);
+                        const actionLogs = `A classé le document (${nameCategorie}) numéro (${codePiece}) fichier (${origneName}${extPiece}) dans le dossier(${folderName})`;
+                        this.histoLog.log(actionLogs, {idpiece_docs: fileUid});
                     } else {
                         this.fileAssignments.delete(fileUid);
                     }

@@ -49,8 +49,8 @@ export const content: Routes = [
         }
     },
     {
-        path: 'mail-box',
-        loadChildren: () => import('../../components/mail-box/mail-box.routes').then(r => r.mail)
+        path: 'imputation',
+        loadChildren: () => import('../../components/imputation/mail-box.routes').then(r => r.mail)
     },
     {
         path: 'chat',
@@ -105,16 +105,16 @@ export const content: Routes = [
         },
     },
     {
-        path: 'bookmark',
-        loadChildren: () => import('../../components/bookmark/bookmark.routes').then(r => r.bookmark)
+        path: 'journal',
+        loadChildren: () => import('../../components/journal/bookmark.routes').then(r => r.bookmark)
     },
     {
         path: 'contacts',
         loadChildren: () => import('../../components/contacts/contacts.routes').then(r => r.contacts)
     },
     {
-        path: 'task',
-        loadChildren: () => import('../../components/task/task.routes').then(r => r.task)
+        path: 'interoperabilite',
+        loadChildren: () => import('../../components/interoperabilite/task.routes').then(r => r.task)
     },
     {
         path: 'calendar',
@@ -239,11 +239,11 @@ export const content: Routes = [
         loadChildren: () => import('../../components/pricing/pricing.routes').then(r => r.pricing),
     },
     {
-        path: 'faq',
+        path: 'flash-infos',
         data: {
             breadcrumb: 'Pages'
         },
-        loadChildren: () => import('../../components/faq/faq.routes').then(r => r.faq),
+        loadChildren: () => import('../../components/flash-info/faq.routes').then(r => r.faq),
     },
     {
         path: 'subscribed-user',

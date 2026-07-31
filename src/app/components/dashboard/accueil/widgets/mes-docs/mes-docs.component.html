@@ -1,6 +1,20 @@
 <app-card [cardClass]="'mes-docs-wrapper'" [padding]="false"
           [headerTitle]="titreSection" [cardBodyClass]="'pt-0'">
 
+    <!-- ══ RECHERCHE (dans l'en-tête sombre, à droite) ══════════ -->
+    <div header5 class="docs-header-search">
+        <span class="docs-hsearch-icon">
+            <app-feather-icon [icon]="'search'" class="icon-xs"></app-feather-icon>
+        </span>
+        <input class="docs-hsearch-input"
+               placeholder="Rechercher un document..."
+               [ngModel]="searchValue"
+               (ngModelChange)="onSearch($event)"/>
+        <button *ngIf="searchValue" class="docs-hsearch-clear" (click)="onSearch('')">
+            <app-feather-icon [icon]="'x'" class="icon-xs"></app-feather-icon>
+        </button>
+    </div>
+
     <div class="relative">
 
         <!-- Overlay chargement -->
@@ -57,19 +71,6 @@
             </button>
         </div>
 
-        <!-- Recherche -->
-        <div class="docs-search-wrap">
-            <span class="docs-search-icon">
-                <app-feather-icon [icon]="'search'" class="icon-xs"></app-feather-icon>
-            </span>
-            <input class="docs-search-input"
-                   placeholder="Rechercher un document..."
-                   [ngModel]="searchValue"
-                   (ngModelChange)="onSearch($event)"/>
-            <button *ngIf="searchValue" class="docs-search-clear" (click)="onSearch('')">
-                <app-feather-icon [icon]="'x'" class="icon-xs"></app-feather-icon>
-            </button>
-        </div>
     </div>
 
     <!-- ══ COMPTEUR ══════════════════════════════════════════════ -->
@@ -91,7 +92,8 @@
 <!--                 [style.color]="doc.categorie_color">-->
 <!--                {{ getInitiale(doc.categorie) }}-->
 <!--            </div>-->
-            <div class="doc-icon-wrap">
+            <div class="doc-icon-wrap doc-consult" (click)="consulterDoc(doc)"
+                 title="Consulter le document">
             <nz-icon
                     [nzType]="'extension'"
                     nzTheme="twotone"
@@ -99,7 +101,8 @@
             </nz-icon>
             </div>
             <!-- Corps -->
-            <div class="doc-body">
+            <div class="doc-body doc-consult" (click)="consulterDoc(doc)"
+                 title="Consulter le document">
                 <div class="doc-numero">N° : {{ doc.numero }}</div>
                 <div class="doc-titre">{{ doc.lib_document }}</div>
                 <div class="doc-meta">
@@ -123,66 +126,7 @@
 
             <!-- Menu 3 points -->
             <div class="doc-menu">
-                <button class="doc-menu-btn"
-                        nz-dropdown
-                        [nzDropdownMenu]="menuDoc"
-                        nzTrigger="click"
-                        nzPlacement="bottomRight">
-                    <app-feather-icon [icon]="'more-vertical'" class="icon-sm"></app-feather-icon>
-                </button>
-                <nz-dropdown-menu #menuDoc="nzDropdownMenu">
-                    <ul nz-menu class="doc-action-menu">
-                        <li nz-menu-item>
-                            <i class="fa-regular fa-eye mr-2"></i>
-                            <span>Consulter</span>
-                        </li>
-                        <li nz-menu-item>
-                            <i class="far fa-file-alt mr-2"></i>
-                            <span>Voir le détail</span>
-                        </li>
-                        <li nz-menu-item>
-                            <i class="fa-regular fa-pen-to-square mr-2"></i>
-                            <span>Modifier le document</span>
-                        </li>
-                        <li nz-menu-item>
-                            <i class="far fa-paper-plane mr-2"></i>
-                            <span>Envoyer par mail</span>
-                        </li>
-                        <li nz-menu-item>
-                            <i class="fa-solid fa-recycle mr-2"></i>
-                            <span>Ajouter dans un workflow</span>
-                        </li>
-                        <li nz-menu-item  (click)="navToDoc(doc,'rang')">
-                            <i class="fa-regular fa-folder-open mr-2"></i>
-                            <span>Classer les fichiers</span>
-                        </li>
-                        <li nz-menu-item>
-                            <i class="fa-solid fa-print mr-2"></i>
-                            <span>Imprimer le document</span>
-                        </li>
-                        <li nz-menu-item>
-                            <i class="fa-solid fa-exchange mr-2"></i>
-                            <span>Prêter le document</span>
-                        </li>
-                        <li nz-menu-item>
-                            <i class="fa-solid fa-tasks mr-2"></i>
-                            <span>Imputer</span>
-                        </li>
-                        <li nz-menu-item>
-                            <i class="fas fa-file-text mr-2"></i>
-                            <span>Voir la situation</span>
-                        </li>
-                        <li nz-menu-item>
-                            <i class="fas fa-trash-alt mr-2"></i>
-                            <span>Demande de suppression</span>
-                        </li>
-                        <li nz-menu-divider></li>
-                        <li nz-menu-item class="menu-item-danger">
-                            <i class="fa-regular fa-trash-can mr-2"></i>
-                            <span>Supprimer</span>
-                        </li>
-                    </ul>
-                </nz-dropdown-menu>
+                <app-doc-action-menu [doc]="doc" (deleted)="onDocDeleted()"/>
             </div>
         </div>
     </div>

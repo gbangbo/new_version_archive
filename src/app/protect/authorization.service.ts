@@ -36,4 +36,17 @@ export class Authorization {
         }
         return undefined;
     }
+
+    /* Document à modifier, déposé par l'action "Modifier" du menu */
+    getEditDoc() {
+        const data = localStorage.getItem(`_edit_doc_`);
+        if (data) {
+            return JSON.parse(this.Conf.getDecrypt(data, decode64(environment.CONFIG.APP_PASS)));
+        }
+        return undefined;
+    }
+
+    clearEditDoc() {
+        localStorage.removeItem(`_edit_doc_`);
+    }
 }

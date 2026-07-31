@@ -5,14 +5,14 @@ import {CardComponent} from '../../../../../shared/components/ui/card/card.compo
 import {FeatherIconComponent} from '../../../../../shared/components/ui/feather-icon/feather-icon.component';
 import {NzTagModule} from 'ng-zorro-antd/tag';
 import {NzSelectModule} from 'ng-zorro-antd/select';
-import {NzDropDownModule} from 'ng-zorro-antd/dropdown';
 import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
+import {DocActionMenuComponent} from '../../../../../shared/components/ui/doc-action-menu/doc-action-menu.component';
 import {NzIconModule} from 'ng-zorro-antd/icon';
-import {cryptSession, decode64} from '../../../../../config/config';
 import {environment} from '../../../../../../environments/environment';
 import {Router} from '@angular/router';
 import {Authorization} from '../../../../../protect/authorization.service';
 import {HttpService} from '../../../../../core/http.service';
+import {cryptSession, decode64} from '../../../../../config/config';
 import moment from 'moment';
 
 export interface DocSimule {
@@ -37,7 +37,7 @@ const PAGE_SIZE = 4;
 @Component({
     selector: 'app-mes-docs',
     imports: [CommonModule, FormsModule, CardComponent, NzIconModule,
-        FeatherIconComponent, NzTagModule, NzSelectModule, NzDropDownModule, NzTooltipDirective],
+        FeatherIconComponent, NzTagModule, NzSelectModule, NzTooltipDirective, DocActionMenuComponent],
     templateUrl: './mes-docs.component.html',
     styleUrl: './mes-docs.component.scss',
 })
@@ -128,8 +128,8 @@ export class MesDocsComponent implements OnInit {
                         categorie: e?.datatype_document?.[0]?.libelle_type_docs || '',
                         categorie_color: '#7366ff',
                         date_document: e.date_docs ? moment(e.date_docs).format('DD/MM/YYYY') : '',
-                        service: e?.dataservice?.libelle || '',
-                        auteur: e?.datauser ? `${e.datauser.nom || ''} ${e.datauser.prenoms || ''}`.trim() : '',
+                        service: e?.datauser?.dataservice?.libelle || '',
+                        auteur: e?.datauser?.datapersonnel ? `${e.datauser?.datapersonnel?.nom || ''} ${e.datauser?.datapersonnel?.prenom || ''}`.trim() : '',
                     }));
                 }
                 this.applyFiltre();
@@ -138,6 +138,11 @@ export class MesDocsComponent implements OnInit {
                 this.isloading = false;
                 this.applyFiltre();
             });
+    }
+
+    // ── Rechargement après suppression d'un document ──────────────
+    onDocDeleted(): void {
+        this.showDocuments();
     }
 
     // ── Filtres ──────────────────────────────────────────────────
@@ -219,12 +224,12 @@ export class MesDocsComponent implements OnInit {
         return categorie.charAt(0).toUpperCase();
     }
 
-    navToDoc(doc: any, nav: string): void {
-        if (nav === 'rang') {
-            const mapSessionTemp = cryptSession(JSON.stringify(doc), decode64(environment.CONFIG.APP_PASS));
-            localStorage.setItem('_eye_', mapSessionTemp);
-            this.router.navigate(['/documents/classer-document']);
-        }
+    /* Clic sur un document → consultation (même comportement que l'action
+       « Consulter » du menu : dépôt chiffré en session puis prévisualisation) */
+    consulterDoc(doc: DocSimule): void {
+        const mapSessionTemp = cryptSession(JSON.stringify(doc), decode64(environment.CONFIG.APP_PASS));
+        localStorage.setItem('_eye_', mapSessionTemp);
+        this.router.navigate(['/recherche/previsualisation']);
     }
 
     // ── Utilitaires ──────────────────────────────────────────────

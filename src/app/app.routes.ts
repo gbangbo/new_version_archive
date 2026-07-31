@@ -60,7 +60,7 @@ export const routes: Routes = [
         }
     },
     {
-        path: 'documents/recu/:id',
+        path: 'documents/recu',
         component: ConsultFileComponent,
         data: {
             title: 'Consultation des fichiers reçu'

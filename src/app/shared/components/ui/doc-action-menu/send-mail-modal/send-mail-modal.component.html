@@ -1,0 +1,356 @@
+<div class="modal  fade show modal-backdrop" *ngIf="visible">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content category-popup">
+            <div class="modal-header">
+                <h5 class="modal-title">ENVOYER PAR MAIL</h5>
+                <button class="btn-close" type="button" aria-label="Close" (click)="close()" [disabled]="isSending"></button>
+            </div>
+            <div class="modal-body p-0 custom-input">
+
+                <app-card [headerTitle]="''"
+                          [header]="'pb-0'"
+                          [border]="true"
+                          [padding]="false"
+                          [cardBodyClass]="'basic-wizard important-validation'">
+
+                    <!-- ── Succès ── -->
+                    <div class="sm-success" *ngIf="sendSuccess">
+                        <div class="sm-success-icon">
+                            <i class="fa-solid fa-circle-check"></i>
+                        </div>
+                        <p class="sm-success-title">E-mail envoyé !</p>
+                        <p class="sm-success-sub">
+                            {{ selectedFiles.length }} fichier{{ selectedFiles.length > 1 ? 's' : '' }}
+                            envoyé{{ selectedFiles.length > 1 ? 's' : '' }} à {{ emailList.join(', ') }}
+                        </p>
+                    </div>
+
+                    <!-- ── Chargement (bloquant) ── -->
+                    <div class="sm-loading-full" *ngIf="isloadingFiles && !sendSuccess">
+                        <div class="sm-loading-spinner"></div>
+                        <p class="sm-loading-text">Chargement des fichiers…</p>
+                    </div>
+
+                    <!-- ── Accès refusé (403) ── -->
+                    <div class="sm-lock" *ngIf="!isloadingFiles && accessForbidden && !sendSuccess">
+                        <div class="sm-lock-ico"><i class="fa-solid fa-lock"></i></div>
+                        <p class="sm-lock-title">Accès restreint</p>
+                        <p class="sm-lock-sub" *ngIf="!authRequested">
+                            Vous n'avez pas l'autorisation de consulter ce document,
+                            vous ne pouvez donc pas l'envoyer par mail.
+                        </p>
+                        <p class="sm-lock-sub sm-lock-ok" *ngIf="authRequested">
+                            <i class="fa-solid fa-circle-check"></i>
+                            Votre demande a été envoyée. Vous serez notifié après validation.
+                        </p>
+                        <button class="btn btn-primary text-white newBtn" type="button"
+                                *ngIf="!authRequested" (click)="openAuthModal()">
+                            <i class="far fa-paper-plane"></i> Demander l'autorisation
+                        </button>
+                    </div>
+
+                    <!-- ── Corps ── -->
+                    <div class="sm-container" *ngIf="!sendSuccess && !accessForbidden && !isloadingFiles">
+
+                        <!-- Document concerné -->
+                        <div class="sm-doc-banner" *ngIf="doc?.lib_docs || doc?.lib_document">
+                            <i class="far fa-file-alt"></i>
+                            <span>{{ doc?.lib_document || doc?.lib_docs }}</span>
+                        </div>
+
+                        <!-- ═══ Fichiers à joindre ═══ -->
+                        <div class="sm-section">
+                            <div class="sm-section-title">
+                                <span>
+                                    <i class="fa-solid fa-paperclip"></i>
+                                    FICHIERS À JOINDRE
+                                    <span class="sm-count">{{ files.length }}</span>
+                                </span>
+                                <button class="sm-checkall"
+                                        type="button"
+                                        *ngIf="files.length > 1"
+                                        (click)="toggleAll()">
+                                    {{ allChecked ? 'Tout décocher' : 'Tout cocher' }}
+                                </button>
+                            </div>
+
+                            <!-- Chargement -->
+                            <div class="sm-files-loading" *ngIf="isloadingFiles">
+                                <div class="sm-mini-spinner"></div>
+                                <span>Chargement des fichiers…</span>
+                            </div>
+
+                            <!-- Liste -->
+                            <div class="sm-files-list" *ngIf="!isloadingFiles">
+                                <label class="sm-file-row"
+                                       *ngFor="let file of files"
+                                       [class.sm-file-checked]="file.checked">
+                                    <span class="sm-checkbox" [class.checked]="file.checked">
+                                        <input type="checkbox"
+                                               [checked]="file.checked"
+                                               (change)="toggleFile(file)"/>
+                                        <i class="fa-solid fa-check"></i>
+                                    </span>
+
+                                    <nz-icon *ngIf="file.extension === 'pdf'" nzType="file-pdf"
+                                             nzTheme="twotone" [nzTwotoneColor]="'#ff4d4f'" class="sm-file-icon"/>
+                                    <nz-icon *ngIf="isImage(file.extension)"
+                                             nzType="file-image" nzTheme="twotone" [nzTwotoneColor]="'#722ed1'" class="sm-file-icon"/>
+                                    <nz-icon *ngIf="['doc','docx'].includes(file.extension)"
+                                             nzType="file-word" nzTheme="twotone" [nzTwotoneColor]="'#1890ff'" class="sm-file-icon"/>
+                                    <nz-icon *ngIf="['xls','xlsx'].includes(file.extension)"
+                                             nzType="file-excel" nzTheme="twotone" [nzTwotoneColor]="'#52c41a'" class="sm-file-icon"/>
+                                    <nz-icon *ngIf="['ppt','pptx'].includes(file.extension)"
+                                             nzType="file-ppt" nzTheme="twotone" [nzTwotoneColor]="'#fa8c16'" class="sm-file-icon"/>
+                                    <nz-icon *ngIf="file.extension &&
+                                                   file.extension !== 'pdf' &&
+                                                   !isImage(file.extension) &&
+                                                   !['doc','docx','xls','xlsx','ppt','pptx'].includes(file.extension)"
+                                             nzType="file" nzTheme="outline" class="sm-file-icon"/>
+
+                                    <span class="sm-file-name">
+                                        {{ file.name }}<ng-container *ngIf="file.extension">.{{ file.extension }}</ng-container>
+                                    </span>
+                                    <span class="sm-file-pages" *ngIf="file.nombre_page">
+                                        {{ file.nombre_page }} p.
+                                    </span>
+                                    <button class="sm-preview-btn"
+                                            type="button"
+                                            *ngIf="file.url_file"
+                                            title="Prévisualiser le fichier"
+                                            [disabled]="previewingUid === file.uid"
+                                            (click)="previewFile(file, $event)">
+                                        <i [class]="previewingUid === file.uid ? 'fa-solid fa-circle-notch fa-spin' : 'fa-regular fa-eye'"></i>
+                                    </button>
+                                </label>
+
+                                <!-- Aucun fichier -->
+                                <div class="sm-files-empty" *ngIf="!files.length">
+                                    <i class="fa-regular fa-folder-open"></i>
+                                    <span>Aucun fichier disponible pour ce document</span>
+                                </div>
+                            </div>
+
+                            <div class="sm-selection-hint" *ngIf="files.length">
+                                {{ selectedFiles.length }} fichier{{ selectedFiles.length > 1 ? 's' : '' }}
+                                sélectionné{{ selectedFiles.length > 1 ? 's' : '' }}
+                            </div>
+                        </div>
+
+                        <!-- ═══ Formulaire d'envoi ═══ -->
+                        <div class="sm-form">
+                            <div class="sm-field">
+                                <label class="form-label">
+                                    Destinataire(s) <span class="txt-danger">*</span>
+                                </label>
+                                <input type="text"
+                                       class="form-control"
+                                       placeholder="exemple@mail.com ; autre@mail.com"
+                                       [(ngModel)]="destinataires"
+                                       [class.is-invalid]="destinataires && !emailsValid"/>
+                                <span class="sm-field-hint" *ngIf="destinataires && !emailsValid">
+                                    Une ou plusieurs adresses sont invalides
+                                </span>
+                                <span class="sm-field-hint sm-field-hint-muted" *ngIf="!destinataires">
+                                    Séparez plusieurs adresses par « ; » ou « , »
+                                </span>
+                            </div>
+
+                            <div class="sm-field">
+                                <label class="form-label">Message</label>
+                                <textarea class="form-control sm-textarea"
+                                          rows="3"
+                                          placeholder="Message d'accompagnement (facultatif)"
+                                          [(ngModel)]="message"></textarea>
+                            </div>
+
+                            <div class="sm-field">
+                                <label class="form-label">
+                                    <i class="fa-solid fa-lock sm-label-icon"></i>
+                                    Mot de passe des fichiers
+                                </label>
+                                <input type="text"
+                                       class="form-control"
+                                       placeholder="Facultatif"
+                                       [(ngModel)]="filePassword"/>
+                                <span class="sm-field-hint sm-field-hint-muted">
+                                    Si renseigné, le destinataire devra le saisir pour ouvrir les fichiers
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Erreur d'envoi -->
+                        <div class="sm-error" *ngIf="sendError">
+                            <i class="fa-solid fa-circle-exclamation"></i>
+                            <span>{{ sendError }}</span>
+                        </div>
+
+                    </div>
+
+                    <!-- ── Pied ── -->
+                    <div class="wizard-footer flex gap-2 justify-end mt-16">
+                        <button class="btn button-light-primary"
+                                type="button"
+                                (click)="close()"
+                                [disabled]="isSending">
+                            {{ sendSuccess ? 'Fermer' : 'Annuler' }}
+                        </button>
+                        <button class="btn btn-primary text-white newBtn"
+                                type="button"
+                                *ngIf="!sendSuccess && !accessForbidden && !isloadingFiles"
+                                (click)="send()"
+                                [disabled]="!canSend">
+                            <i [class]="isSending ? 'fa-solid fa-circle-notch fa-spin' : 'far fa-paper-plane'"></i>
+                            <span *ngIf="!isSending">
+                                Envoyer{{ selectedFiles.length ? ' (' + selectedFiles.length + ')' : '' }}
+                            </span>
+                            <span *ngIf="isSending">Envoi en cours…</span>
+                        </button>
+                    </div>
+
+                </app-card>
+
+            </div>
+
+            <!-- ═══ Panneau de prévisualisation (glisse depuis la droite) ═══ -->
+            <div class="sm-preview-panel" [class.open]="previewOpen">
+                <div class="sm-preview-header">
+                    <button class="sm-preview-back" type="button" (click)="closePreview()" title="Retour">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                    <span class="sm-preview-title">{{ previewItem?.name }}</span>
+                    <button class="sm-preview-close" type="button" (click)="closePreview()" title="Fermer l'aperçu">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <div class="sm-preview-body custom-scrollbar"
+                     (contextmenu)="$event.preventDefault()"
+                     (dragstart)="$event.preventDefault()">
+
+                    <!-- Chargement -->
+                    <div class="sm-preview-loading" *ngIf="previewLoading">
+                        <div class="sm-mini-spinner"></div>
+                        <span>Préparation de l'aperçu…</span>
+                    </div>
+
+                    <!-- Erreur / non prévisualisable -->
+                    <div class="sm-preview-error" *ngIf="!previewLoading && previewError">
+                        <i class="fa-regular fa-file-lines"></i>
+                        <span>{{ previewError }}</span>
+                        <button class="sm-open-tab-btn" type="button" (click)="openInNewTab()">
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i> Ouvrir dans un onglet
+                        </button>
+                    </div>
+
+                    <!-- Image -->
+                    <img *ngIf="!previewLoading && !previewError && previewIsImage"
+                         [src]="previewImageUrl" class="sm-preview-img" alt="aperçu"
+                         [style.width.%]="previewZoom * 100"/>
+
+                    <!-- PDF (page courante) -->
+                    <img *ngIf="!previewLoading && !previewError && !previewIsImage && previewImages.length"
+                         [src]="previewImages[currentPreviewPage - 1]" class="sm-preview-page" alt="page"
+                         [style.width.%]="previewZoom * 100"/>
+
+                </div>
+
+                <!-- Barre d'outils : pagination + zoom -->
+                <div class="sm-preview-toolbar"
+                     *ngIf="!previewLoading && !previewError && (previewImages.length || previewIsImage)">
+
+                    <div class="sm-pager" *ngIf="!previewIsImage && previewImages.length > 1">
+                        <button type="button" (click)="prevPage()" [disabled]="currentPreviewPage <= 1" title="Page précédente">
+                            <i class="fa-solid fa-chevron-left"></i>
+                        </button>
+                        <span class="sm-pager-info">{{ currentPreviewPage }} / {{ previewImages.length }}</span>
+                        <button type="button" (click)="nextPage()" [disabled]="currentPreviewPage >= previewImages.length" title="Page suivante">
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </button>
+                    </div>
+
+                    <div class="sm-zoomer">
+                        <button type="button" (click)="zoomOut()" [disabled]="previewZoom <= minZoom" title="Dézoomer">
+                            <i class="fa-solid fa-magnifying-glass-minus"></i>
+                        </button>
+                        <span class="sm-zoom-info" (click)="resetZoom()" title="Réinitialiser le zoom">
+                            {{ previewZoom * 100 | number:'1.0-0' }}%
+                        </span>
+                        <button type="button" (click)="zoomIn()" [disabled]="previewZoom >= maxZoom" title="Zoomer">
+                            <i class="fa-solid fa-magnifying-glass-plus"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- ═══ POPUP — Demande d'autorisation de consultation ═══════════ -->
+<div class="auth-backdrop" *ngIf="showAuthModal" (click)="closeAuthModal()">
+    <div class="auth-panel" (click)="$event.stopPropagation()">
+
+        <div class="auth-header">
+            <div class="auth-header-titles">
+                <span class="auth-title"><i class="fa-solid fa-lock-open"></i> Demande d'autorisation</span>
+                <span class="auth-subtitle" [title]="doc?.lib_docs || doc?.lib_document">
+                    {{ doc?.lib_docs || doc?.lib_document || 'Document' }}
+                </span>
+            </div>
+            <button class="auth-close" type="button" (click)="closeAuthModal()" title="Fermer">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="auth-body custom-input">
+
+            <div class="auth-alert" *ngIf="authError">
+                <i class="fa-solid fa-circle-exclamation"></i> {{ authError }}
+            </div>
+
+            <div class="auth-notice">
+                <i class="fa-solid fa-lock"></i>
+                <span>Vous n'êtes pas autorisé à consulter ce document. Renseignez votre demande ci-dessous.</span>
+            </div>
+
+            <div class="auth-field">
+                <label class="form-label">Actions souhaitées <span class="txt-danger">*</span></label>
+                <div class="auth-checklist">
+                    <label class="auth-check" *ngFor="let a of authActions" [class.active]="a.checked">
+                        <input type="checkbox" [(ngModel)]="a.checked" [name]="'act_' + a.key"/>
+                        <span class="auth-check-box"><i class="fa-solid fa-check"></i></span>
+                        <i [class]="a.icon" class="auth-check-ico"></i>
+                        <span class="auth-check-label">{{ a.label }}</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="auth-field">
+                <label class="form-label">Période d'autorisation</label>
+                <nz-range-picker class="w-full"
+                                 nzFormat="dd/MM/yyyy"
+                                 [nzPlaceHolder]="['Date début', 'Date fin']"
+                                 [nzDisabledDate]="disabledPastDate"
+                                 [(ngModel)]="authData.deadlineRange"
+                                 name="deadlineRange"></nz-range-picker>
+            </div>
+
+            <div class="auth-field">
+                <label class="form-label">Motif de la demande <span class="txt-danger">*</span></label>
+                <textarea class="auth-textarea" rows="3"
+                          [(ngModel)]="authData.motif_auth" name="motif_auth"
+                          placeholder="Expliquez pourquoi vous souhaitez consulter ce document…"></textarea>
+            </div>
+        </div>
+
+        <div class="auth-footer">
+            <button class="auth-btn auth-btn-cancel" type="button" (click)="closeAuthModal()">Annuler</button>
+            <button class="auth-btn auth-btn-confirm" type="button"
+                    [disabled]="authSaving" (click)="submitAuthRequest()">
+                <i class="fa-solid" [ngClass]="authSaving ? 'fa-circle-notch fa-spin' : 'fa-paper-plane'"></i>
+                {{ authSaving ? 'Envoi…' : 'Envoyer la demande' }}
+            </button>
+        </div>
+    </div>
+</div>

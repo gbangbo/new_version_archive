@@ -1,0 +1,11 @@
+/* Chevron des menus depliants : rotation fluide au lieu d'un changement de glyphe */
+.according-menu {
+  i {
+    display: inline-block;
+    transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+
+    &.is-open {
+      transform: rotate(90deg);
+    }
+  }
+}

@@ -1,0 +1,191 @@
+<div class="container main-setting">
+    <div class="grid grid-cols-12 card-gap">
+        <div class="col-span-12">
+            <app-card [border]="true" [padding]="false">
+
+                <div class="relative">
+
+                    <!-- Overlay chargement -->
+                    <div *ngIf="isloading"
+                         class="absolute inset-0 flex justify-center items-center z-10 rounded-lg"
+                         style="background: rgba(248,250,252,0.85); backdrop-filter: blur(2px);">
+                        <div class="text-center">
+                            <div class="fi-spinner"></div>
+                            <p class="mt-3" style="color:#64748b; font-size:13px; font-weight:600;">
+                                Chargement des flash infos...
+                            </p>
+                        </div>
+                    </div>
+
+                    <div [class.fi-loading]="isloading">
+
+                        <!-- ══ TOOLBAR ══════════════════════════════ -->
+                        <div class="fi-toolbar">
+                            <div class="fi-toolbar-title">
+                                <div class="fi-toolbar-icon">
+                                    <i class="fa-solid fa-bolt"></i>
+                                </div>
+                                <div>
+                                    <span class="fi-toolbar-label">FLASH INFOS</span>
+                                    <span class="fi-toolbar-count">{{ rows.length }} flash info(s)</span>
+                                </div>
+                            </div>
+
+                            <div class="fi-toolbar-actions">
+                                <div class="fi-search-wrap">
+                                    <svg class="fi-search-icon" viewBox="0 0 24 24" fill="none"
+                                         stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                                        <circle cx="11" cy="11" r="8"/>
+                                        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                                    </svg>
+                                    <input class="fi-search-input"
+                                           placeholder="Rechercher..."
+                                           [ngModel]="searchValue"
+                                           (ngModelChange)="onSearch($event)"/>
+                                    <button *ngIf="searchValue" class="fi-search-clear" (click)="onSearch('')">
+                                        <i class="fa-solid fa-xmark"></i>
+                                    </button>
+                                </div>
+                                <button class="fi-btn-new" (click)="openCreate()">
+                                    <i class="fa-solid fa-plus"></i> Nouveau
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- ══ TABLE ════════════════════════════════ -->
+                        <div class="overflow-x-auto custom-scrollbar">
+                            <nz-table
+                                #nzTable
+                                [nzData]="rows"
+                                [nzPageSize]="10"
+                                [nzShowPagination]="rows.length > 0"
+                                nzShowSizeChanger
+                                nzBordered
+                                nzSize="small"
+                                [nzNoResult]="emptyTpl"
+                                [nzScroll]="rows.length > 0 ? { x: '760px' } : {}">
+                                <thead>
+                                <tr>
+                                    <th nzWidth="220px">Libellé</th>
+                                    <th>Description</th>
+                                    <th nzWidth="190px">Période</th>
+                                    <th nzWidth="110px" nzAlign="center">Statut</th>
+                                    <th nzWidth="150px">Date</th>
+                                    <th nzWidth="150px" nzAlign="center" nzRight>Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr *ngFor="let r of nzTable.data" class="fi-row">
+                                    <td><span class="fi-lib">{{ r.lib_flashinfo || '—' }}</span></td>
+                                    <td><span class="fi-desc">{{ r.desc_flashinfo || '—' }}</span></td>
+                                    <td><span class="fi-date">{{ r.periode }}</span></td>
+                                    <td nzAlign="center">
+                                        <nz-tag [nzColor]="r.actif ? 'green' : 'default'">
+                                            {{ r.actif ? 'Actif' : 'Inactif' }}
+                                        </nz-tag>
+                                    </td>
+                                    <td><span class="fi-date">{{ r.date || '—' }}</span></td>
+                                    <td nzAlign="center" nzRight>
+                                        <div class="op-actions">
+                                            <button class="btn-round-edit btn-round-nav"
+                                                    nz-tooltip [nzTooltipTitle]="'Modifier'" nzTooltipPlacement="top"
+                                                    (click)="openEdit(r)">
+                                                <app-feather-icon class="icon-small" [icon]="'edit-3'"></app-feather-icon>
+                                            </button>
+                                            <button class="btn-round-edit"
+                                                    [class.btn-round-on]="r.actif" [class.btn-round-off]="!r.actif"
+                                                    nz-tooltip [nzTooltipTitle]="r.actif ? 'Désactiver' : 'Activer'" nzTooltipPlacement="top"
+                                                    [disabled]="togglingUid === r.uid"
+                                                    (click)="toggleActive(r)">
+                                                <i *ngIf="togglingUid === r.uid" class="fa-solid fa-circle-notch fa-spin"></i>
+                                                <app-feather-icon *ngIf="togglingUid !== r.uid" class="icon-small"
+                                                                  [icon]="r.actif ? 'toggle-right' : 'toggle-left'"></app-feather-icon>
+                                            </button>
+                                            <button class="btn-round-edit btn-round-del"
+                                                    nz-tooltip [nzTooltipTitle]="'Supprimer'" nzTooltipPlacement="top"
+                                                    (click)="remove(r)">
+                                                <app-feather-icon class="icon-small" [icon]="'trash-2'"></app-feather-icon>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </nz-table>
+
+                            <ng-template #emptyTpl>
+                                <div class="fi-empty">
+                                    <i class="fa-solid fa-bolt"></i>
+                                    <span>Aucun flash info</span>
+                                    <small *ngIf="searchValue">Aucun résultat pour « {{ searchValue }} »</small>
+                                </div>
+                            </ng-template>
+                        </div>
+
+                    </div>
+                </div>
+
+            </app-card>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ MODAL : Créer / modifier un flash info ═══════════════════ -->
+<div class="fi-backdrop" *ngIf="showModal">
+    <div class="fi-panel">
+        <div class="fi-header">
+            <div class="fi-header-titles">
+                <span class="fi-title">
+                    <i class="fa-solid fa-bolt"></i> {{ isEdit ? 'Modifier le flash info' : 'Nouveau flash info' }}
+                </span>
+            </div>
+            <button class="fi-close" type="button" (click)="closeModal()" title="Fermer">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="fi-body custom-input">
+            <div class="fi-alert" *ngIf="modalError">
+                <i class="fa-solid fa-circle-exclamation"></i> {{ modalError }}
+            </div>
+
+            <div class="fi-field">
+                <label class="form-label">Libellé <span class="txt-danger">*</span></label>
+                <input class="fi-input" type="text" [(ngModel)]="form.libflashinfo" name="lib"
+                       placeholder="Titre du flash info"/>
+            </div>
+
+            <div class="fi-field">
+                <label class="form-label">Description</label>
+                <textarea class="fi-textarea" rows="4" [(ngModel)]="form.desc_flashinfo" name="desc"
+                          placeholder="Contenu / description du flash info…"></textarea>
+            </div>
+
+            <div class="fi-grid2">
+                <div class="fi-field">
+                    <label class="form-label">Date début</label>
+                    <nz-date-picker class="w-full"
+                                    nzFormat="dd/MM/yyyy"
+                                    nzPlaceHolder="Date début"
+                                    [nzDisabledDate]="disabledStartDate"
+                                    [(ngModel)]="form.dateDebut" name="dateDebut"></nz-date-picker>
+                </div>
+                <div class="fi-field">
+                    <label class="form-label">Date fin</label>
+                    <nz-date-picker class="w-full"
+                                    nzFormat="dd/MM/yyyy"
+                                    nzPlaceHolder="Date fin"
+                                    [nzDisabledDate]="disabledEndDate"
+                                    [(ngModel)]="form.dateFin" name="dateFin"></nz-date-picker>
+                </div>
+            </div>
+        </div>
+
+        <div class="fi-footer">
+            <button class="fi-btn fi-btn-cancel" type="button" (click)="closeModal()">Annuler</button>
+            <button class="fi-btn fi-btn-confirm" type="button" [disabled]="saving" (click)="submit()">
+                <i class="fa-solid" [ngClass]="saving ? 'fa-circle-notch fa-spin' : 'fa-check'"></i>
+                {{ saving ? 'Enregistrement…' : (isEdit ? 'Modifier' : 'Créer') }}
+            </button>
+        </div>
+    </div>
+</div>

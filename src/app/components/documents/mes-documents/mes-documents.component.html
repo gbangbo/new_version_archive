@@ -170,66 +170,7 @@
                                                 <nz-tag [nzColor]="row.color">{{ ''}}</nz-tag>
                                             </td>
                                             <td nzAlign="center">
-                                                <button class="btn-context-menu"
-                                                        nz-dropdown
-                                                        [nzDropdownMenu]="actionMenu"
-                                                        nzTrigger="click"
-                                                        nzPlacement="bottomRight">
-                                                    <i class="fa-solid fa-ellipsis-vertical"></i>
-                                                </button>
-                                                <nz-dropdown-menu #actionMenu="nzDropdownMenu">
-                                                    <ul nz-menu class="doc-action-menu">
-                                                        <li nz-menu-item>
-                                                            <i class="fa-regular fa-eye mr-2"></i>
-                                                            <span>Consulter</span>
-                                                        </li>
-                                                        <li nz-menu-item>
-                                                            <i class="far fa-file-alt mr-2"></i>
-                                                            <span>Voir le détail</span>
-                                                        </li>
-                                                        <li nz-menu-item>
-                                                            <i class="fa-regular fa-pen-to-square mr-2"></i>
-                                                            <span>Modifier le document</span>
-                                                        </li>
-                                                        <li nz-menu-item>
-                                                            <i class="far fa-paper-plane mr-2"></i>
-                                                            <span>Envoyer par mail</span>
-                                                        </li>
-                                                        <li nz-menu-item>
-                                                            <i class="fa-solid fa-recycle mr-2"></i>
-                                                            <span>Ajouter dans un workflow</span>
-                                                        </li>
-                                                        <li nz-menu-item>
-                                                            <i class="fa-regular fa-folder-open mr-2"></i>
-                                                            <span>Classer les fichiers</span>
-                                                        </li>
-                                                        <li nz-menu-item>
-                                                            <i class="fa-solid fa-print mr-2"></i>
-                                                            <span>Imprimer le document</span>
-                                                        </li>
-                                                        <li nz-menu-item>
-                                                            <i class="fa-solid fa-exchange mr-2"></i>
-                                                            <span>Prêter le document</span>
-                                                        </li>
-                                                        <li nz-menu-item>
-                                                            <i class="fa-solid fa-tasks mr-2"></i>
-                                                            <span>Imputer</span>
-                                                        </li>
-                                                        <li nz-menu-item>
-                                                            <i class="fas fa-file-text mr-2"></i>
-                                                            <span>Voir la situation</span>
-                                                        </li>
-                                                        <li nz-menu-item>
-                                                            <i class="fas fa-trash-alt mr-2"></i>
-                                                            <span>Demande de suppression</span>
-                                                        </li>
-                                                        <li nz-menu-divider></li>
-                                                        <li nz-menu-item class="menu-item-danger">
-                                                            <i class="fa-regular fa-trash-can mr-2"></i>
-                                                            <span>Supprimer</span>
-                                                        </li>
-                                                    </ul>
-                                                </nz-dropdown-menu>
+                                                <app-doc-action-menu [doc]="row" (deleted)="onDocDeleted()"/>
                                             </td>
                                         </tr>
                                         </tbody>

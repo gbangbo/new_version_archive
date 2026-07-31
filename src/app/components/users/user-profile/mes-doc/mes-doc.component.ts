@@ -769,10 +769,16 @@ export class MesDocComponent implements OnInit {
         this.refreshData();
     }
 
+    // ── Extension propre (retire ?query et #hash des URL signées S3) ──
+    private cleanExt(item: any): string {
+        const src = item?.nom_fichiers || item?.name || item?.url_file || item?.piece_jointe || '';
+        const clean = String(src).split('?')[0].split('#')[0];
+        return (clean.split('.').pop() || '').toLowerCase();
+    }
+
     // ── Icônes fichiers ───────────────────────────────────
     getFileIconClass(item: any): string {
-        const url = item.url_file || item.piece_jointe || item.nom_fichiers || '';
-        const ext = url.split('.').pop()?.toLowerCase() ?? '';
+        const ext = this.cleanExt(item);
         if (ext === 'pdf') return 'fa-file-pdf';
         if (['doc', 'docx'].includes(ext)) return 'fa-file-word';
         if (['xls', 'xlsx'].includes(ext)) return 'fa-file-excel';
@@ -785,8 +791,7 @@ export class MesDocComponent implements OnInit {
     }
 
     getFileExtLabel(item: any): string {
-        const url = item.url_file || item.piece_jointe || item.nom_fichiers || '';
-        const ext = url.split('.').pop()?.toLowerCase() ?? '';
+        const ext = this.cleanExt(item);
         const labels: Record<string, string> = {
             pdf: 'Document PDF', doc: 'Document Word', docx: 'Document Word',
             xls: 'Feuille Excel', xlsx: 'Feuille Excel',
@@ -818,6 +823,7 @@ export class MesDocComponent implements OnInit {
     // ── Prévisualisation ──────────────────────────────────
     openPreview(item: ContentItem): void {
         if (!item || item.type !== 'file') return;
+        this.selectRow(item);
         this.previewFile = item;
         this.showPreview = true;
         this.isLoadingPreview = true;
@@ -830,7 +836,7 @@ export class MesDocComponent implements OnInit {
 
         const url = item.url_file || item.piece_jointe || '';
         this.previewUrl = url;
-        this.previewExt = url.split('.').pop()?.toLowerCase() ?? '';
+        this.previewExt = this.cleanExt(item);
 
         if (this.previewExt === 'pdf') {
             setTimeout(() => this.renderPdf(url), 80);
@@ -960,10 +966,22 @@ export class MesDocComponent implements OnInit {
         this.currentPdfDoc.getPage(pageNum).then((page: any) => {
             const canvas = document.getElementById('fm-pdf-canvas') as HTMLCanvasElement;
             if (!canvas) return;
-            const scale = this.zoomLevel * 1.5;
-            const viewport = page.getViewport({scale, rotation: this.rotation});
-            canvas.height = viewport.height;
+
+            // 100 % = ajusté à la largeur du panneau ; le zoom multiplie cette base
+            const base = page.getViewport({scale: 1, rotation: this.rotation});
+            const container = canvas.parentElement as HTMLElement | null;
+            const avail = (container?.clientWidth || base.width) - 32; // padding 16px de chaque côté
+            const fitScale = avail > 0 ? avail / base.width : 1;
+            const cssScale = fitScale * this.zoomLevel;
+
+            // Rendu à la résolution de l'écran pour rester net (retina)
+            const dpr = window.devicePixelRatio || 1;
+            const viewport = page.getViewport({scale: cssScale * dpr, rotation: this.rotation});
             canvas.width = viewport.width;
+            canvas.height = viewport.height;
+            canvas.style.width = (viewport.width / dpr) + 'px';
+            canvas.style.height = (viewport.height / dpr) + 'px';
+
             page.render({canvasContext: canvas.getContext('2d')!, viewport}).promise.then(() => {
                 setTimeout(() => {
                     this.isLoadingPreview = false;

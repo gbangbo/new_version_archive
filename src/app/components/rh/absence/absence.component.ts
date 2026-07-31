@@ -1,4 +1,5 @@
 import {Component, OnInit} from '@angular/core';
+import * as XLSX from 'xlsx';
 import {CardComponent} from "../../../shared/components/ui/card/card.component";
 import {CommonModule} from "@angular/common";
 import {FormsModule} from "@angular/forms";
@@ -24,6 +25,9 @@ interface RowData {
     nbreJourRestant: string;
     lib_agent_absence: string;
     lib_agent_remplacant: string;
+    statut_absence: string;
+    statut_absence_lib: string;
+    statut_absence_color: string;
     isEnable: boolean
 }
 
@@ -53,6 +57,22 @@ export class AbsenceComponent implements OnInit {
 
     searchValue = '';
 
+    // ── Statut d'absence (0=En cours, 1=Validé, 2=Terminé, 3=Annulé) ──
+    statutMap: { [key: string]: { lib: string; color: string } } = {
+        '0': {lib: 'En cours', color: '#faad14'},
+        '1': {lib: 'Validé', color: '#87d068'},
+        '2': {lib: 'Terminé', color: '#108ee9'},
+        '3': {lib: 'Annulé', color: '#f50'},
+    };
+
+    getStatutLib(statut: any): string {
+        return this.statutMap[String(statut)]?.lib ?? '—';
+    }
+
+    getStatutColor(statut: any): string {
+        return this.statutMap[String(statut)]?.color ?? 'default';
+    }
+
     // ── Données ──────────────────────────────────────────────
 
     filteredData: RowData[] = [];
@@ -72,9 +92,10 @@ export class AbsenceComponent implements OnInit {
         lib_agent_remplacant: (a: RowData, b: RowData) =>
             (a.lib_agent_remplacant ?? '').localeCompare(b.lib_agent_remplacant ?? ''),
         type_absence: (a: RowData, b: RowData) =>
-            (a.type_absence ?? '').localeCompare(b.type_absence ?? '')
+            (a.type_absence ?? '').localeCompare(b.type_absence ?? ''),
+        statut_absence: (a: RowData, b: RowData) =>
+            (a.statut_absence_lib ?? '').localeCompare(b.statut_absence_lib ?? '')
     };
-
 
 
     // ── Filtres ───────────────────────────────────────────────
@@ -84,12 +105,14 @@ export class AbsenceComponent implements OnInit {
         motif_absence: { text: string; value: string }[];
         lib_agent_absence: { text: string; value: string }[];
         lib_agent_remplacant: { text: string; value: string }[];
+        statut_absence: { text: string; value: string }[];
     } = {
         type_absence: [],
         periode: [],
         motif_absence: [],
         lib_agent_absence: [],
         lib_agent_remplacant: [],
+        statut_absence: [],
     };
 
     filterFns = {
@@ -114,6 +137,8 @@ export class AbsenceComponent implements OnInit {
             list.some(val =>
                 (item.lib_agent_remplacant ?? '').toLowerCase().includes(val.toLowerCase())
             ),
+        statut_absence: (list: string[], item: RowData) =>
+            list.some(val => (item.statut_absence_lib ?? '') === val),
     };
     private dataBenef: any = [];
 
@@ -166,7 +191,10 @@ export class AbsenceComponent implements OnInit {
                             date_fin: moment(e?.date_fin).format('DD-MM-YYYY'),
                             periode: `${moment(e?.date_debut).format('DD-MM-YYYY')} au ${moment(e?.date_fin).format('DD-MM-YYYY')}`,
                             nbreJourRestant: `${nbreJourRestant < 0 ? 'Terminé' : nbreJourRestant} jour${nbreJourRestant > 1 ? 's' : ''} restant`,
-                            color: nbreJourRestant <= 0 ? '#f50' : '#87d068',
+                            statut_absence_lib: this.getStatutLib(e?.statut_absence),
+                            statut_absence_color: this.getStatutColor(e?.statut_absence),
+                            color: 'rgb(169 172 167)',
+                            // color: nbreJourRestant <= 0 ? '#f50' : 'rgb(169 172 167)',
                             isEnable: nbreJourRestant <= 0
                         }
                     });
@@ -183,32 +211,40 @@ export class AbsenceComponent implements OnInit {
                                 ?.filter((e: any) => e?.periode)
                                 .map((e: any) => e.periode)
                         )].map((v: any) => ({
-                          text: v,
-                          value: v
+                            text: v,
+                            value: v
                         })) || [],
                         motif_absence: [...new Set(
                             this.dataBenef
                                 ?.filter((e: any) => e?.motif_absence)
                                 .map((e: any) => e.motif_absence)
                         )].map((v: any) => ({
-                          text: v,
-                          value: v
+                            text: v,
+                            value: v
                         })) || [],
                         lib_agent_absence: [...new Set(
                             this.dataBenef
                                 ?.filter((e: any) => e?.lib_agent_absence)
                                 .map((e: any) => e.lib_agent_absence)
                         )].map((v: any) => ({
-                          text: v,
-                          value: v
+                            text: v,
+                            value: v
                         })) || [],
                         lib_agent_remplacant: [...new Set(
                             this.dataBenef
                                 ?.filter((e: any) => e?.lib_agent_remplacant)
                                 .map((e: any) => e.lib_agent_remplacant)
                         )].map((v: any) => ({
-                          text: v,
-                          value: v
+                            text: v,
+                            value: v
+                        })) || [],
+                        statut_absence: [...new Set(
+                            this.dataBenef
+                                ?.filter((e: any) => e?.statut_absence_lib)
+                                .map((e: any) => e.statut_absence_lib)
+                        )].map((v: any) => ({
+                            text: v,
+                            value: v
                         })) || []
                     }
 
@@ -222,6 +258,33 @@ export class AbsenceComponent implements OnInit {
                 this.isloading = false;
             });
 
+    }
+
+    exportToExcel(): void {
+        const source = this.filteredData?.length ? this.filteredData : this.dataBenef;
+        if (!source?.length) return;
+
+        const rows = source.map((row: any) => ({
+            'Agent en absence': row.lib_agent_absence || '',
+            'Agent remplaçant': row.lib_agent_remplacant || '',
+            'Type d\'absence': row.type_absence || '',
+            'Motif': row.motif_absence || '',
+            'Période': row.periode || '',
+            'Nbre de jour restant': row.nbreJourRestant || '',
+            'Statut': row.statut_absence_lib || '',
+        }));
+
+        const ws = XLSX.utils.json_to_sheet(rows);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Absences');
+
+        const colWidths = Object.keys(rows[0] || {}).map(key => ({
+            wch: Math.max(key.length, ...rows.map((r: any) => String(r[key] || '').length)) + 2
+        }));
+        ws['!cols'] = colWidths;
+
+        const fileName = `absences_${moment().format('YYYYMMDD_HHmmss')}.xlsx`;
+        XLSX.writeFile(wb, fileName);
     }
 
     getInitials(fullName: string): string {

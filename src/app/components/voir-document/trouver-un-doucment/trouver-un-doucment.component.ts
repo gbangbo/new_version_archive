@@ -10,8 +10,8 @@ import {Authorization} from '../../../protect/authorization.service';
 import {HttpService} from '../../../core/http.service';
 import {environment} from '../../../../environments/environment';
 import moment from "moment";
-import {NzDropDownModule} from "ng-zorro-antd/dropdown";
 import {cryptSession, decode64} from "../../../config/config";
+import {DocActionMenuComponent} from "../../../shared/components/ui/doc-action-menu/doc-action-menu.component";
 
 const SEARCH_STORAGE_KEY = 'trouver_document_last_search';
 
@@ -20,7 +20,7 @@ const SEARCH_STORAGE_KEY = 'trouver_document_last_search';
     imports: [CommonModule, RouterModule,
         FormsModule, NzSelectModule,
         NzDatePickerModule, NzTagModule,
-        NzIconModule, NzDropDownModule],
+        NzIconModule, DocActionMenuComponent],
     templateUrl: './trouver-un-doucment.component.html',
     styleUrl: './trouver-un-doucment.component.scss',
 })
@@ -45,16 +45,26 @@ export class TrouverUnDoucmentComponent implements OnInit, OnDestroy {
     advSearch: {
         reference: string;
         idtype_document: string;
+        niveau: number | null;
         idservice: string;
+        date_doc: Date | null;
         date_debut: Date | null;
         date_fin: Date | null;
+        idsite: string;
+        idrayon: string;
+        idboite: string;
         idpriorite: string;
     } = {
         reference: '',
         idtype_document: '',
+        niveau: null,
         idservice: '',
+        date_doc: null,
         date_debut: null,
         date_fin: null,
+        idsite: '',
+        idrayon: '',
+        idboite: '',
         idpriorite: '',
     };
 
@@ -66,8 +76,21 @@ export class TrouverUnDoucmentComponent implements OnInit, OnDestroy {
 
     // ── Données des filtres ───────────────────────────────
     dataTypeDocument: any[] = [];
-    dataService: any[] = [];
     dataPriorite: any[] = [];
+    dataSites: any[] = [];
+    dataRayons: any[] = [];
+    dataBoites: any[] = [];
+    loadingRayons: boolean = false;
+    loadingBoites: boolean = false;
+
+    // ── Organigramme hiérarchique (critère 2 : service par niveau) ──
+    dataNiveaux = [
+        {value: 0, label: 'Direction'},
+        {value: 1, label: 'Sous-direction'},
+        {value: 2, label: 'Service'},
+    ];
+    dataOrganigramme: any[] = [];
+    loadingOrganigramme: boolean = false;
     dataCritere = [
         {
             index: 1,
@@ -126,19 +149,94 @@ export class TrouverUnDoucmentComponent implements OnInit, OnDestroy {
         });
 
         this.httService
-            .getData(`${environment.api_url}auth/:saveservice?idsociete=${id}&idservice=&iddepartement=`, false, token)
-            .toPromise()
-            .then((res: any) => {
-                if (res?.body?.status || res?.body?.success) this.dataService = res.body.data || [];
-            }).catch(() => {
-        });
-
-        this.httService
             .getData(`${environment.api_url}api/:savepriorite?idsociete=${id}&idpriorites=`, false, token)
             .toPromise()
             .then((res: any) => {
                 if (res?.body?.status || res?.body?.success) this.dataPriorite = res.body.data || [];
             }).catch(() => {
+        });
+
+        this.httService
+            .getData(`${environment.api_url}api/:savesites?idsociete=${id}&idsite=`, false, token)
+            .toPromise()
+            .then((res: any) => {
+                if (res?.body?.status || res?.body?.success) {
+                    this.dataSites = (res.body.data || []).map((e: any) => ({label: e.libelle_sites, value: e.uid}));
+                }
+            }).catch(() => {
+        });
+    }
+
+    // ── Cascade site → rayon → boîte (critère 8) ──────────
+    onSiteChange(idsite: string): void {
+        this.advSearch.idrayon = '';
+        this.advSearch.idboite = '';
+        this.dataRayons = [];
+        this.dataBoites = [];
+        if (!idsite) return;
+
+        const id = this.users?.datasociete?.uid || '';
+        const token = this.users?.access_token || '';
+        this.loadingRayons = true;
+        this.httService
+            .getData(`${environment.api_url}api/:saverayons?idsociete=${id}&idrayon=&idsite=${idsite}`, false, token)
+            .toPromise()
+            .then((res: any) => {
+                this.loadingRayons = false;
+                if (res?.body?.status || res?.body?.success) {
+                    this.dataRayons = (res.body.data || []).map((e: any) => ({label: e.libelle_rayon, value: e.uid}));
+                }
+            }).catch(() => {
+            this.loadingRayons = false;
+        });
+    }
+
+    onRayonChange(idrayon: string): void {
+        this.advSearch.idboite = '';
+        this.dataBoites = [];
+        if (!idrayon) return;
+
+        const id = this.users?.datasociete?.uid || '';
+        const token = this.users?.access_token || '';
+        this.loadingBoites = true;
+        this.httService
+            .getData(`${environment.api_url}api/:saveboites?idsociete=${id}&idrayon=${idrayon}&idsite=`, false, token)
+            .toPromise()
+            .then((res: any) => {
+                this.loadingBoites = false;
+                if (res?.body?.status || res?.body?.success) {
+                    this.dataBoites = (res.body.data || []).map((e: any) => ({label: e.code_boites, value: e.uid}));
+                }
+            }).catch(() => {
+            this.loadingBoites = false;
+        });
+    }
+
+    // ── Niveau → entités de l'organigramme (critère 2) ────
+    onNiveauChange(niveau: number | null): void {
+        this.advSearch.idservice = '';
+        this.dataOrganigramme = [];
+        if (niveau === null || niveau === undefined) return;
+        this.loadOrganigramme(niveau);
+    }
+
+    private loadOrganigramme(niveau: number): void {
+        const id = this.users?.datasociete?.uid || '';
+        const token = this.users?.access_token || '';
+        this.loadingOrganigramme = true;
+        this.httService
+            .getData(`${environment.api_url}auth/:organigramme-responsable-service?idsociete=${id}&idservices=&niveau=${niveau}`, false, token)
+            .toPromise()
+            .then((res: any) => {
+                this.loadingOrganigramme = false;
+                if (res?.body?.status || res?.body?.success) {
+                    this.dataOrganigramme = (res.body.data || []).map((e: any) => ({
+                        label: e?.sigle ? `${e.sigle} — ${e.libelle}` : e?.libelle,
+                        value: e?.uid,
+                    })).filter((o: any) => o.value && o.label);
+                }
+            }).catch(() => {
+            this.loadingOrganigramme = false;
         });
     }
 
@@ -159,6 +257,7 @@ export class TrouverUnDoucmentComponent implements OnInit, OnDestroy {
         sessionStorage.setItem(SEARCH_STORAGE_KEY, JSON.stringify({
             activeMode: this.activeMode,
             fulltextQuery: this.fulltextQuery,
+            idCritere: this.idCritere,
             advSearch: this.advSearch,
         }));
     }
@@ -172,17 +271,29 @@ export class TrouverUnDoucmentComponent implements OnInit, OnDestroy {
             this.fulltextQuery = saved.fulltextQuery ?? '';
             if (saved.advSearch) {
                 this.advSearch = {
+                    ...this.advSearch,
                     ...saved.advSearch,
+                    date_doc: saved.advSearch.date_doc ? new Date(saved.advSearch.date_doc) : null,
                     date_debut: saved.advSearch.date_debut ? new Date(saved.advSearch.date_debut) : null,
                     date_fin: saved.advSearch.date_fin ? new Date(saved.advSearch.date_fin) : null,
                 };
+                // Recharge la liste des entités si un niveau était sélectionné
+                if (this.advSearch.niveau !== null && this.advSearch.niveau !== undefined) {
+                    this.loadOrganigramme(this.advSearch.niveau);
+                }
             }
+            if (typeof saved.idCritere === 'number') this.idCritere = saved.idCritere;
             if (this.activeMode) {
                 this.runSearch();
             }
         } catch {
             sessionStorage.removeItem(SEARCH_STORAGE_KEY);
         }
+    }
+
+    // ── Rechargement après suppression d'un document ──────────
+    onDocDeleted(): void {
+        if (this.activeMode) this.runSearch();
     }
 
     private runSearch(): void {
@@ -192,23 +303,15 @@ export class TrouverUnDoucmentComponent implements OnInit, OnDestroy {
         this.hasSearched = false;
         this.results = [];
 
-        let params: string;
+        let url: string;
         if (this.activeMode === 'fulltext') {
-            params = `idsociete=${id}&data_docs=${encodeURIComponent(this.fulltextQuery)}`;
+            url = `${environment.api_url}api/:recherchedocuments?idsociete=${id}&data_docs=${encodeURIComponent(this.fulltextQuery)}`;
         } else {
-            params = [
-                `idsociete=${id}`,
-                `reference=${encodeURIComponent(this.advSearch.reference)}`,
-                `idtype_document=${this.advSearch.idtype_document}`,
-                `idservice=${this.advSearch.idservice}`,
-                `date_debut=${this.advSearch.date_debut ? this.fmtDate(this.advSearch.date_debut) : ''}`,
-                `date_fin=${this.advSearch.date_fin ? this.fmtDate(this.advSearch.date_fin) : ''}`,
-                `idpriorite=${this.advSearch.idpriorite}`,
-            ].join('&');
+            url = `${environment.api_url}api/:savedocuments?${this.buildAdvancedParams(id)}`;
         }
 
         this.httService
-            .getData(`${environment.api_url}api/:recherchedocuments?${params}`, false, token)
+            .getData(url, false, token)
             .toPromise()
             .then((res: any) => {
                 this.isSearching = false;
@@ -238,15 +341,79 @@ export class TrouverUnDoucmentComponent implements OnInit, OnDestroy {
             });
     }
 
+    /* Construit les paramètres de api/:savedocuments selon le critère choisi.
+       Seuls les paramètres pertinents au critère sont renseignés ; les autres
+       restent vides (ignorés côté API). */
+    private buildAdvancedParams(idsociete: string): string {
+        const p: Record<string, string> = {
+            idsociete: idsociete,
+            iduser_save: '',
+            iddocuments: '',
+            idsites: '',
+            idrayons: '',
+            idboites: '',
+            idtype_documents: '',
+            idservices: '',
+            code_docs: '',
+            lib_docs: '',
+            date_docs: '',
+            date_sig: '',
+            date_debut_docs: '',
+            date_fin_docs: '',
+            date_debut_sig: '',
+            date_fin_sig: '',
+        };
+
+        const d = this.advSearch;
+        switch (this.idCritere) {
+            case 1: // Selon numéro du document
+                p['code_docs'] = (d.reference || '').trim();
+                break;
+            case 2: // Selon le type du document et service
+                p['idtype_documents'] = d.idtype_document || '';
+                p['idservices'] = d.idservice || '';
+                break;
+            case 3: // Selon la date du document
+                p['date_docs'] = d.date_doc ? this.fmtDate(d.date_doc) : '';
+                break;
+            case 5: // Selon type sur une période (date du document)
+                p['idtype_documents'] = d.idtype_document || '';
+                p['date_debut_docs'] = d.date_debut ? this.fmtDate(d.date_debut) : '';
+                p['date_fin_docs'] = d.date_fin ? this.fmtDate(d.date_fin) : '';
+                break;
+            case 7: // Selon les dates d'enregistrement
+                p['date_debut_sig'] = d.date_debut ? this.fmtDate(d.date_debut) : '';
+                p['date_fin_sig'] = d.date_fin ? this.fmtDate(d.date_fin) : '';
+                break;
+            case 8: // Selon les rayons, boîtes d'archives
+                p['idsites'] = d.idsite || '';
+                p['idrayons'] = d.idrayon || '';
+                p['idboites'] = d.idboite || '';
+                break;
+        }
+
+        return Object.entries(p)
+            .map(([k, v]) => `${k}=${encodeURIComponent(v ?? '')}`)
+            .join('&');
+    }
+
     resetAdvanced(): void {
         this.advSearch = {
             reference: '',
             idtype_document: '',
+            niveau: null,
             idservice: '',
+            date_doc: null,
             date_debut: null,
             date_fin: null,
+            idsite: '',
+            idrayon: '',
+            idboite: '',
             idpriorite: '',
         };
+        this.dataRayons = [];
+        this.dataBoites = [];
+        this.dataOrganigramme = [];
         this.results = [];
         this.hasSearched = false;
         this.totalResults = 0;
@@ -337,13 +504,4 @@ export class TrouverUnDoucmentComponent implements OnInit, OnDestroy {
         this.router.navigate(['/recherche/previsualisation'])
     }
 
-    navToDoc(doc: any, nav: string) {
-        switch (nav) {
-            case 'rang':
-                const mapSessionTemp = cryptSession(JSON.stringify(doc), decode64(environment.CONFIG.APP_PASS));
-                localStorage.setItem(`_eye_`, mapSessionTemp);
-                this.router.navigate(['/documents/classer-document'])
-                break
-        }
-    }
 }

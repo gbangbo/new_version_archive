@@ -1,0 +1,34 @@
+<button class="btn-context-menu"
+        nz-dropdown
+        [nzDropdownMenu]="actionMenu"
+        nzTrigger="click"
+        nzPlacement="bottomRight">
+    <i class="fa-solid fa-ellipsis-vertical"></i>
+</button>
+
+<nz-dropdown-menu #actionMenu="nzDropdownMenu">
+    <ul nz-menu class="doc-action-menu">
+        <li nz-menu-item
+            *ngFor="let item of visibleActions"
+            (click)="onItemClick(item.type)">
+            <i class="{{ item.icon }} mr-2"></i>
+            <span>{{ item.label }}</span>
+        </li>
+
+        <li nz-menu-divider *ngIf="visibleActions.length && visibleDangerActions.length"></li>
+
+        <li nz-menu-item
+            class="menu-item-danger"
+            *ngFor="let item of visibleDangerActions"
+            (click)="onItemClick(item.type)">
+            <i class="{{ item.icon }} mr-2"></i>
+            <span>{{ item.label }}</span>
+        </li>
+    </ul>
+</nz-dropdown-menu>
+
+<!-- Popup d'envoi des fichiers par mail -->
+<app-send-mail-modal #mailModal/>
+
+<!-- Popup de détail du document -->
+<app-detail-modal #detailModal/>

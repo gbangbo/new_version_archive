@@ -2,6 +2,93 @@
   text-transform: initial !important;
 }
 
+/* ══ En-tête sombre du widget "Mes documents" ══════════════ */
+::ng-deep .card.mes-docs-wrapper {
+  overflow: hidden;
+  border-radius: 5px !important;
+
+  .card-header {
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    background: #fafafa !important;
+    padding: 7px 20px !important;
+    border: none !important;
+    border-radius: 5px 5px 0 0 !important;
+
+    h5 {
+      color: #595959 !important;
+      font-weight: 700 !important;
+      margin: 0 !important;
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+  }
+}
+
+/* ── Champ de recherche dans l'en-tête ── */
+.docs-header-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 260px;
+  max-width: 100%;
+  flex-shrink: 0;
+}
+
+.docs-hsearch-icon {
+  position: absolute;
+  left: 11px;
+  display: flex;
+  align-items: center;
+  color: #6b7280;
+  pointer-events: none;
+}
+
+.docs-hsearch-input {
+  width: 100%;
+  height: 34px;
+  padding: 0 32px 0 34px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 8px;
+  background: #ffffff;
+  color: #1f2937;
+  font-size: 13px;
+  outline: none;
+  transition: all 0.2s;
+
+  &::placeholder {
+    color: #9ca3af !important;
+    opacity: 1 !important;
+  }
+
+  &:focus {
+    border-color: #9ca3af;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.06);
+  }
+}
+
+.docs-hsearch-clear {
+  position: absolute;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: none;
+  background: transparent;
+  color: #9ca3af;
+  border-radius: 50%;
+  cursor: pointer;
+
+  &:hover {
+    color: #4b5563;
+  }
+}
+
 .op-spinner {
   width: 38px;
   height: 38px;
@@ -312,6 +399,15 @@
   line-height: 1.3;
 }
 
+// Zones cliquables ouvrant la consultation du document
+.doc-consult {
+  cursor: pointer;
+}
+
+.doc-card:hover .doc-consult .doc-titre {
+  color: rgba(0, 54, 110, 1);
+}
+
 .doc-meta {
   display: flex;
   align-items: center;
@@ -340,25 +436,7 @@
 
 .doc-menu { flex-shrink: 0; }
 
-.doc-menu-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  border: 1px solid #E8EDF2;
-  background: #F8FAFC;
-  color: #94A3B8;
-  cursor: pointer;
-  transition: all 0.15s;
-
-  &:hover {
-    background: #EFF6FF;
-    border-color: rgba(0, 54, 110, 0.3);
-    color: rgba(0, 54, 110);
-  }
-}
+// Bouton + menu contextuel : voir shared/components/ui/doc-action-menu
 
 // ═══════════════════════════════════════
 // DROPDOWN MENU

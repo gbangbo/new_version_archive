@@ -60,7 +60,7 @@
             <div class="sidebar-card" [class.sidebar-card-active]="activeMode === 'advanced'">
                 <div class="sidebar-card-header">
                     <span class="sidebar-card-icon adv-icon">
-                        <i class="fa-solid fa-sliders"></i>
+                        <i class="fa-solid fa-filter"></i>
                     </span>
                     <div>
                         <span class="sidebar-card-title">Recherche spécifique</span>
@@ -116,28 +116,77 @@
                         </nz-select>
                     </div>
 
-                    <!-- Service -->
+                    <!-- Niveau hiérarchique -->
+                    <div class="filter-field">
+                        <label class="filter-label">
+                            Niveau
+                        </label>
+                        <nz-select
+                            [(ngModel)]="advSearch.niveau"
+                            (ngModelChange)="onNiveauChange($event)"
+                            nzPlaceHolder="Choisir un niveau"
+                            nzAllowClear
+                            class="filter-select">
+                            <nz-option *ngFor="let n of dataNiveaux"
+                                       [nzValue]="n.value"
+                                       [nzLabel]="n.label">
+                            </nz-option>
+                        </nz-select>
+                    </div>
+
+                    <!-- Entité (Direction / Sous-direction / Service…) -->
                     <div class="filter-field">
                         <label class="filter-label">
                             Service
                         </label>
                         <nz-select
                             [(ngModel)]="advSearch.idservice"
-                            nzPlaceHolder="Tous les services"
+                            nzPlaceHolder="Sélectionnez une entité"
                             nzAllowClear
                             nzShowSearch
+                            [nzLoading]="loadingOrganigramme"
+                            [nzDisabled]="advSearch.niveau === null || advSearch.niveau === undefined"
                             class="filter-select">
-                            <nz-option *ngFor="let s of dataService"
-                                       [nzValue]="s.uid"
-                                       [nzLabel]="s.libelle || s.lib_service || s.name">
+                            <nz-option *ngFor="let o of dataOrganigramme"
+                                       [nzValue]="o.value"
+                                       [nzLabel]="o.label">
                             </nz-option>
                         </nz-select>
                     </div>
                     }@else if(idCritere===3){
-                    <!-- Période -->
+                    <!-- Date du document -->
                     <div class="filter-field">
                         <label class="filter-label">
-                            <i class="fa-regular fa-calendar"></i> Période
+                            Date du document
+                        </label>
+                        <nz-date-picker
+                            [(ngModel)]="advSearch.date_doc"
+                            nzPlaceHolder="Date du document"
+                            nzFormat="dd/MM/yyyy"
+                            class="filter-date w-full">
+                        </nz-date-picker>
+                    </div>
+                    }@else if(idCritere===5){
+                    <!-- Type de document -->
+                    <div class="filter-field">
+                        <label class="filter-label">
+                            Type de document
+                        </label>
+                        <nz-select
+                            [(ngModel)]="advSearch.idtype_document"
+                            nzPlaceHolder="Tous les types"
+                            nzAllowClear
+                            class="filter-select">
+                            <nz-option *ngFor="let t of dataTypeDocument"
+                                       [nzValue]="t.uid"
+                                       [nzLabel]="t.libelle_type_docs || t.libelle">
+                            </nz-option>
+                        </nz-select>
+                    </div>
+                    <!-- Période (date du document) -->
+                    <div class="filter-field">
+                        <label class="filter-label">
+                           Période
                         </label>
                         <div class="date-range-wrap">
                             <nz-date-picker
@@ -155,20 +204,83 @@
                             </nz-date-picker>
                         </div>
                     </div>
-                    }@else if(idCritere===4){
-                    <!-- Priorité -->
+                    }@else if(idCritere===7){
+                    <!-- Période d'enregistrement -->
                     <div class="filter-field">
                         <label class="filter-label">
-                            <i class="fa-solid fa-flag"></i> Priorité
+                            Période d'enregistrement
+                        </label>
+                        <div class="date-range-wrap">
+                            <nz-date-picker
+                                [(ngModel)]="advSearch.date_debut"
+                                nzPlaceHolder="Du"
+                                nzFormat="dd/MM/yyyy"
+                                class="filter-date">
+                            </nz-date-picker>
+                            <span class="date-sep">→</span>
+                            <nz-date-picker
+                                [(ngModel)]="advSearch.date_fin"
+                                nzPlaceHolder="Au"
+                                nzFormat="dd/MM/yyyy"
+                                class="filter-date">
+                            </nz-date-picker>
+                        </div>
+                    </div>
+                    }@else if(idCritere===8){
+                    <!-- Site -->
+                    <div class="filter-field">
+                        <label class="filter-label">
+                            Site
                         </label>
                         <nz-select
-                            [(ngModel)]="advSearch.idpriorite"
-                            nzPlaceHolder="Toutes les priorités"
+                            [(ngModel)]="advSearch.idsite"
+                            (ngModelChange)="onSiteChange($event)"
+                            nzPlaceHolder="Tous les sites"
                             nzAllowClear
+                            nzShowSearch
                             class="filter-select">
-                            <nz-option *ngFor="let p of dataPriorite"
-                                       [nzValue]="p.uid"
-                                       [nzLabel]="p.lib_priorite || p.libelle">
+                            <nz-option *ngFor="let s of dataSites"
+                                       [nzValue]="s.value"
+                                       [nzLabel]="s.label">
+                            </nz-option>
+                        </nz-select>
+                    </div>
+                    <!-- Rayon -->
+                    <div class="filter-field">
+                        <label class="filter-label">
+                            Rayon
+                        </label>
+                        <nz-select
+                            [(ngModel)]="advSearch.idrayon"
+                            (ngModelChange)="onRayonChange($event)"
+                            nzPlaceHolder="Tous les rayons"
+                            nzAllowClear
+                            nzShowSearch
+                            [nzLoading]="loadingRayons"
+                            [nzDisabled]="!advSearch.idsite"
+                            class="filter-select">
+                            <nz-option *ngFor="let r of dataRayons"
+                                       [nzValue]="r.value"
+                                       [nzLabel]="r.label">
+                            </nz-option>
+                        </nz-select>
+                    </div>
+                    <!-- Boîte d'archives -->
+                    <div class="filter-field">
+                        <label class="filter-label">
+                            Boîte d'archives
+                        </label>
+                        <nz-select
+                            [(ngModel)]="advSearch.idboite"
+                            nzPlaceHolder="Toutes les boîtes"
+                            nzAllowClear
+                            nzShowSearch
+                            [nzLoading]="loadingBoites"
+                            [nzDisabled]="!advSearch.idrayon"
+                            class="filter-select">
+                            <nz-option *ngFor="let b of dataBoites"
+                                       [nzValue]="b.value"
+                                       [nzLabel]="b.label">
                             </nz-option>
                         </nz-select>
                     </div>
@@ -287,66 +399,7 @@
 <!--                            <button class="doc-btn-view" title="Voir le document">-->
 <!--                                <i class="fa-solid fa-eye"></i>-->
 <!--                            </button>-->
-                            <button class="btn-context-menu"
-                                    nz-dropdown
-                                    [nzDropdownMenu]="actionMenu"
-                                    nzTrigger="click"
-                                    nzPlacement="bottomRight">
-                                <i class="fa-solid fa-ellipsis-vertical"></i>
-                            </button>
-                            <nz-dropdown-menu #actionMenu="nzDropdownMenu">
-                                <ul nz-menu class="doc-action-menu">
-                                    <li nz-menu-item>
-                                        <i class="fa-regular fa-eye mr-2"></i>
-                                        <span>Consulter</span>
-                                    </li>
-                                    <li nz-menu-item>
-                                        <i class="far fa-file-alt mr-2"></i>
-                                        <span>Voir le détail</span>
-                                    </li>
-                                    <li nz-menu-item>
-                                        <i class="fa-regular fa-pen-to-square mr-2"></i>
-                                        <span>Modifier le document</span>
-                                    </li>
-                                    <li nz-menu-item>
-                                        <i class="far fa-paper-plane mr-2"></i>
-                                        <span>Envoyer par mail</span>
-                                    </li>
-                                    <li nz-menu-item>
-                                        <i class="fa-solid fa-recycle mr-2"></i>
-                                        <span>Ajouter dans un workflow</span>
-                                    </li>
-                                    <li nz-menu-item  (click)="navToDoc(doc,'rang')">
-                                        <i class="fa-regular fa-folder-open mr-2"></i>
-                                        <span>Classer les fichiers</span>
-                                    </li>
-                                    <li nz-menu-item>
-                                        <i class="fa-solid fa-print mr-2"></i>
-                                        <span>Imprimer le document</span>
-                                    </li>
-                                    <li nz-menu-item>
-                                        <i class="fa-solid fa-exchange mr-2"></i>
-                                        <span>Prêter le document</span>
-                                    </li>
-                                    <li nz-menu-item>
-                                        <i class="fa-solid fa-tasks mr-2"></i>
-                                        <span>Imputer</span>
-                                    </li>
-                                    <li nz-menu-item>
-                                        <i class="fas fa-file-text mr-2"></i>
-                                        <span>Voir la situation</span>
-                                    </li>
-                                    <li nz-menu-item>
-                                        <i class="fas fa-trash-alt mr-2"></i>
-                                        <span>Demande de suppression</span>
-                                    </li>
-                                    <li nz-menu-divider></li>
-                                    <li nz-menu-item class="menu-item-danger">
-                                        <i class="fa-regular fa-trash-can mr-2"></i>
-                                        <span>Supprimer</span>
-                                    </li>
-                                </ul>
-                            </nz-dropdown-menu>
+                            <app-doc-action-menu [doc]="doc" (deleted)="onDocDeleted()"/>
 <!--                            <button class="doc-btn-download" title="Télécharger" *ngIf="doc.url_file">-->
 <!--                                <i class="icofont icofont-download-alt"></i>-->
 <!--                            </button>-->

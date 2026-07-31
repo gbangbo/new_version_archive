@@ -34,6 +34,9 @@ interface RowData {
     _idtype: string;
     // état UI
     _processing?: boolean;
+    data_agent_absence?: any;
+    data_remplacant_absence?: any;
+    datatype_absence?: any;
 }
 
 
@@ -105,6 +108,7 @@ export class ValiderAbsenceComponent implements OnInit {
     ngOnInit(): void {
         window.scrollTo({top: 0, behavior: 'smooth'});
         this.users = this.autor.getInfosUsers();
+        console.log(this.users)
         this.loadData(this.users?.datasociete?.uid, '', '', '', '0', '');
     }
 
@@ -235,18 +239,18 @@ export class ValiderAbsenceComponent implements OnInit {
         if (row._processing) return;
 
         row._processing = true;
-
         const payload = {
-            action,
-            idsociete: this.users?.datasociete?.uid ?? '',
-            idautorisation_absence: row.uid,
-            agent_en_absence: row._idagent,
-            remplacant_absence: row._idremplacant,
-            type_absence: row._idtype,
-            motif_absence: row.motif_absence ?? motifRejet,
-            date_debut: row._date_debut,
-            date_fin: row._date_fin,
-        };
+            "action": action,
+            "idsociete": this.users?.datasociete?.uid ?? '',
+            "idautorisation_absence": row.uid,
+            "agent_en_absence": row?.data_agent_absence?.datapersonnel?.uid,
+            "remplacant_absence": row?.data_remplacant_absence?.datapersonnel?.uid,
+            "type_absence": row.datatype_absence.uid,
+            "motif_absence": row.motif_absence,
+            "date_debut": row._date_debut,
+            "date_fin": row._date_fin
+        }
+
         console.log("payload 1 =   ", payload)
         this.httService
             .postData(
@@ -257,17 +261,36 @@ export class ValiderAbsenceComponent implements OnInit {
             .toPromise()
             .then((res: any) => {
                 row._processing = false;
+                console.log("====", res?.body)
                 if (res?.body?.status) {
                     const label = action === 4 ? 'validée' : 'rejetée';
-                    this.msg.success(`Absence ${label} avec succès.`);
-                    this.loadData();
+                    Swal.fire({
+                        title: action === 4 ? 'Absence validée' : 'Absence rejetée',
+                        html: `L'absence de <strong>${row.lib_agent_absence}</strong> a été ${label} avec succès.`,
+                        icon: 'success',
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#16a34a',
+                    });
+                    this.loadData(this.users?.datasociete?.uid, '', '', '', '0', '');
                 } else {
-                    this.msg.error(res?.body?.message || 'Une erreur est survenue.');
+                    Swal.fire({
+                        title: 'Erreur',
+                        text: res?.body?.message || 'Une erreur est survenue.',
+                        icon: 'error',
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#dc2626',
+                    });
                 }
             })
             .catch(() => {
                 row._processing = false;
-                this.msg.error('Erreur de connexion au serveur.');
+                Swal.fire({
+                    title: 'Erreur',
+                    text: 'Erreur de connexion au serveur.',
+                    icon: 'error',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#dc2626',
+                });
             });
     }
 }

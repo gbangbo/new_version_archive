@@ -4,15 +4,29 @@
 
 /* ══ LOADER PLEIN ÉCRAN GLOBAL (attaché au body via Renderer2) ══ */
 @keyframes g-loader-spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
+
 @keyframes g-loader-fadein {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
+
 @keyframes g-loader-slideup {
-  from { transform: translateY(16px); opacity: 0; }
-  to   { transform: translateY(0);    opacity: 1; }
+  from {
+    transform: translateY(16px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 .td-fullscreen-loader {
@@ -139,4 +153,12 @@ input, textarea, select {
 .swal2-container {
   z-index: 99999 !important;
   pointer-events: all !important;
+}
+
+.sidebar-wrapper {
+  background-color: #19202f !important;
+}
+
+.page-wrapper.compact-wrapper .page-body-wrapper div.sidebar-wrapper .logo-wrapper, .page-wrapper.compact-wrapper .page-body-wrapper div.sidebar-wrapper .logo-icon-wrapper {
+  padding: 6px 20px !important;
 }

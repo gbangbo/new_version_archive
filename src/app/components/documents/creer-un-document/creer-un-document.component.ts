@@ -10,6 +10,7 @@ import {environment} from "../../../../environments/environment";
 import {Authorization} from "../../../protect/authorization.service";
 import {FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {HttpService} from "../../../core/http.service";
+import {Router} from "@angular/router";
 import {ToastrService} from "ngx-toastr";
 import {NzSplitterModule} from 'ng-zorro-antd/splitter';
 import {NzTreeFlatDataSource, NzTreeFlattener, NzTreeViewModule} from 'ng-zorro-antd/tree-view';
@@ -33,6 +34,7 @@ import {SvgIconComponent} from "../../../shared/components/ui/svg-icon/svg-icon.
 import Swal from 'sweetalert2';
 import moment from "moment";
 import {decryptData} from "../../../config/config";
+import {HistoLogService} from "../../../shared/services/histo-log.service";
 // Désactiver l'auto-découverte AU NIVEAU MODULE (en dehors de la classe)
 Dropzone.autoDiscover = false;
 
@@ -262,7 +264,7 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
     pdfRotation = 0;
     isRenderingPdf = false;
     currentPageInput = 1;
-    private idcategorie: string = 'i';
+    idcategorie: string = 'i';
 
     // ── État du viewer Office ────────────────────────────────────
     officeZoom: number = 1.0;
@@ -335,6 +337,13 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
     applyOCR: boolean = false;
     dateInputDisplay: string = '';
     notifyBeneficiary: boolean = false;
+    assignProprietaires: boolean = false;
+    dataSocietes: any[] = [];
+    loadingSocietes: boolean = false;
+    selectedSociete: string = '';
+    dataComptes: any[] = [];
+    loadingComptes: boolean = false;
+    selectedProprietaires: string[] = [];
     dataTypeDocument: any = [];
     ligneTypeOfDoc: any = [];
     uidTypeDocument: string = '';
@@ -366,6 +375,8 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
         idcategories: new FormControl('',),
     })
     isSaving: boolean = false;
+    isDeleting: boolean = false;   // suppression d'un fichier en cours
+    isEdit: boolean = false;   // mode modification d'un document existant
     loadingType: boolean = false;
     loadingService: boolean = false;
     isGeneratingCode: boolean = false;
@@ -385,7 +396,9 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
     constructor(private autor: Authorization,
                 private fb: FormBuilder,
                 private httService: HttpService,
-                private toast: ToastrService, private cdr: ChangeDetectorRef, private sanitizer: DomSanitizer) {
+                private router: Router,
+                private toast: ToastrService, private cdr: ChangeDetectorRef, private sanitizer: DomSanitizer,
+                private histoLog: HistoLogService) {
         //  this.dataSource.setData(TREE_DATA);
 
     }
@@ -396,13 +409,140 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
         this.editor2 = new Editor();
         window.scrollTo({top: 0, behavior: 'smooth'});
         this.users = this.autor.getInfosUsers();
-        this.loadFileTemps(this.users?.datasociete?.uid, this.users?.uid);
+
+        // En modification, on charge les pièces du document (pas la zone temporaire)
+        const editDoc = this.autor.getEditDoc();
+        if (!editDoc) {
+            this.loadFileTemps(this.users?.datasociete?.uid, this.users?.uid);
+        }
         //  this.showTypeDoc(this.users?.datasociete?.uid, '');
         this.showOrganigramme(this.users?.datasociete?.uid, '');
         this.showSites(this.users?.datasociete?.uid, '');
         this.showSerie('', '', '');
         // Forcer la mise à jour de l'icône dossier à chaque toggle
         this.treeControl.expansionModel.changed.subscribe(() => setTimeout(() => this.cdr.detectChanges(), 0));
+
+        // ── Mode modification : document déposé par l'action "Modifier" ──
+        if (editDoc) {
+            this.autor.clearEditDoc();
+            this.hydrateForEdit(editDoc);
+        }
+    }
+
+    /* Pré-remplit le formulaire à partir d'un document existant */
+    private async hydrateForEdit(doc: any): Promise<void> {
+        this.isEdit = true;
+
+        // Type d'archivage selon la présence d'une boîte
+        const hasBoite = !!doc?.databoites?.uid;
+        this.validationForm.get('typeArchivage')?.setValue(hasBoite ? 'definitive' : 'courante');
+
+        // Statut public / privé
+        this.documentStatus = doc?.publishe ? 'public' : 'privee';
+
+        // Champs scalaires
+        this.validationForm.patchValue({
+            iddocuments: doc?.uid || '',
+            code_docs: doc?.code_docs || '',
+            lib_docs: doc?.lib_docs || doc?.lib_document || '',
+            desc_docs: doc?.desc_docs || '',
+            date_docs: doc?.date_docs ? new Date(doc.date_docs) : null,
+            publishe: doc?.publishe ? 'public' : 'privee',
+            idcategories: doc?.datacategories?.uid || '',
+        });
+
+        // Boîte (si archivage définitif) : on injecte l'option pour l'afficher
+        if (hasBoite) {
+            this.dataBoites = [{label: doc.databoites.code_boites, value: doc.databoites.uid}];
+            this.validationForm.get('idboites')?.setValue(doc.databoites.uid);
+        }
+
+        // Services bénéficiaires
+        const services = (doc?.dataservices || []).map((s: any) => s?.uid).filter((v: any) => v);
+        if (services.length) {
+            this.validationForm.get('dataservices')?.setValue(services);
+        }
+
+        // Pièces déjà attachées au document (remplacent la zone temporaire)
+        await this.loadDocumentPieces(doc?.uid || '');
+
+        // Type de document : charger les types de la catégorie puis appliquer
+        const catUid = doc?.datacategories?.uid || '';
+        const typeUid = doc?.datatype_document?.[0]?.uid || '';
+        if (catUid && typeUid) {
+            await this.showTypeDoc('', '', catUid);
+            this.validationForm.get('idtype_docs')?.setValue(typeUid);
+            this.changeType({value: typeUid});   // déclenche showCatOrder → rebuildTreeWithFiles
+            this.prefillProprietes(doc);
+        }
+
+        this.cdr.detectChanges();
+    }
+
+    /* Nettoie le nom d'une pièce : retire l'éventuelle URL/query et
+       l'extension en double (le gabarit rajoute déjà « .ext ») */
+    private cleanPieceName(rawName: string, ext: string): string {
+        if (!rawName) return '';
+        let base = rawName.split('?')[0].split('#')[0];
+        base = base.substring(base.lastIndexOf('/') + 1);
+        if (ext && base.toLowerCase().endsWith('.' + ext.toLowerCase())) {
+            base = base.slice(0, -(ext.length + 1));
+        }
+        return base;
+    }
+
+    /* Charge les pièces existantes d'un document et les met au format attendu
+       par l'arbre de classement (dataFileTemps) */
+    private async loadDocumentPieces(iddocuments: string): Promise<void> {
+        if (!iddocuments) return;
+        const iduser = this.users?.uid || '';
+        this.isloading = true;
+        try {
+            const res: any = await this.httService.getData(
+                `${environment.api_url}api/:consultation-pieces-documents?iduser=${iduser}&iddocuments=${iddocuments}`,
+                false,
+                this.users?.access_token || ''
+            ).toPromise();
+            this.isloading = false;
+            if (res.body.status || res.body.success) {
+                this.dataFileTemps = (res.body.data || []).map((d: any) => {
+                    const url = d.url_file || d.lib_file_temp || d.file || '';
+                    const ext = (d.extension || this.getFileExtension(url) || '').toLowerCase();
+                    const rawName = d.name_piece_docs || d.name_file_docs || d.name || '';
+                    return {
+                        uid: d.uid,
+                        name_file_docs: this.cleanPieceName(rawName, ext),
+                        lib_file_temp: url,
+                        url_file: url,
+                        extension: ext,
+                        desc_ocr_text: d.desc_ocr_text || '',
+                        nombre_page: d.nombre_page || '',
+                        password_file: d.password_file || '',
+                        iduser_save: d.iduser_save || '',
+                        datacats: d.datacats || null,
+                    };
+                });
+                this.fileAssignments.clear();
+                if (this.cleanTreeData.length > 0) {
+                    this.rebuildTreeWithFiles();
+                }
+            }
+        } catch {
+            this.isloading = false;
+        }
+    }
+
+    /* Reporte les valeurs des propriétés dynamiques du document sur le formulaire */
+    private prefillProprietes(doc: any): void {
+        const saved = doc?.proprietes_docs || doc?.dataproprietes_docs || doc?.dataproprietes || [];
+        if (!this.ligneTypeOfDoc?.dataPro?.length || !saved?.length) return;
+        this.ligneTypeOfDoc.dataPro.forEach((p: any) => {
+            const match = saved.find((s: any) =>
+                s?.idproprietes_docs === p.uid || s?.uid === p.uid || s?.iduid === p.uid);
+            if (match) {
+                p.value_proprietes_docs = match.value_proprietes_docs ?? match.value ?? '';
+            }
+        });
     }
 
     hasChild = (_: number, node: ExampleFlatNode): boolean => node.expandable;
@@ -420,7 +560,7 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
             return;
         }
 
-     //   console.log("Élément trouvé, initialisation de Dropzone");
+        //   console.log("Élément trouvé, initialisation de Dropzone");
 
         // Détruire l'instance existante si elle existe
         if ((element as any).dropzone) {
@@ -431,7 +571,7 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
 
         // Événement 'addedfile' - quand un fichier est ajouté
         this.dropzoneInstance.on("addedfile", (file: any) => {
-           // console.log("Fichier ajouté:", file.name);
+            // console.log("Fichier ajouté:", file.name);
         });
 
         // Événement 'sending'
@@ -448,25 +588,25 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
                 formData.append("lib_file_temp", "Fichier de Build__1");
                 formData.append("date", new Date().toISOString());
             } else {
-               // console.error("Les données utilisateur ne sont pas disponibles !");
+                // console.error("Les données utilisateur ne sont pas disponibles !");
             }
         });
 
         // Événement 'success'
         this.dropzoneInstance.on("success", (file: any, response: any) => {
-           // console.log("Upload réussi:", file.name, response);
+            // console.log("Upload réussi:", file.name, response);
             // NE PAS ouvrir l'explorateur ici !
         });
 
         // Événement 'complete' - après l'upload (succès ou échec)
         this.dropzoneInstance.on("complete", (file: any) => {
-           // console.log("Upload terminé:", file.name);
+            // console.log("Upload terminé:", file.name);
             // NE PAS ouvrir l'explorateur ici !
         });
 
         // Événement 'queuecomplete' - quand tous les uploads sont terminés
         this.dropzoneInstance.on("queuecomplete", () => {
-          //  console.log("Tous les uploads sont terminés");
+            //  console.log("Tous les uploads sont terminés");
             // NE PAS ouvrir l'explorateur ici !
         });
 
@@ -539,6 +679,7 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
                 this.isloading = false;
                 if (res.body.status) {
                     this.dataFileTemps = res.body.data;
+                    console.log("File temps ====", res.body.data)
                     // datacats de l'API est désormais la source de vérité : on purge les overrides locaux
                     this.fileAssignments.clear();
                     if (this.cleanTreeData.length > 0) {
@@ -557,7 +698,7 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
             key: d.uid,
             uid: d.uid,
             url_file: d.url_file,
-            extension: this.getFileExtension(d?.lib_file_temp),
+            extension: (d.extension || this.getFileExtension(d?.lib_file_temp) || '').toLowerCase(),
             desc_ocr_text: d.desc_ocr_text,
             nombre_page: d.nombre_page,
             password_file: d.password_file,
@@ -715,10 +856,12 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
         formData.append('idfile_temp', node.uid ?? '');
         formData.append('idsociete', this.users?.datasociete?.uid ?? '');
 
+        this.isDeleting = true;
         this.httService
             .postDataMultipart(`${environment.api_url}api/:saveuploadfile-temps`, formData, this.users?.access_token || '')
             .toPromise()
             .then((res: any) => {
+                this.isDeleting = false;
                 if (res.body.status || res.body.success) {
                     this.toast.success('Fichier supprimé avec succès.', 'Succès');
                     if (this.selectedFile?.uid === node.uid) {
@@ -730,6 +873,7 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
                 }
             })
             .catch(() => {
+                this.isDeleting = false;
                 this.toast.error('Erreur lors de la suppression du fichier.', 'Erreur');
             });
     }
@@ -752,6 +896,7 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
         // Vérifier si les données utilisateur sont disponibles
         if (this.users && this.users.datasociete && this.users.uid) {
 
+            console.log("this.idcategorie ===", this.idcategorie)
             formData.append("action", '1');
             formData.append("idsociete", this.users.datasociete.uid);
             formData.append("idfile_temp", "");
@@ -867,6 +1012,18 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
         return extension ? extension : '';
     }
 
+    /* Sélection d'un dossier : c'est ce dossier qui devient la cible de
+       rangement des prochains fichiers uploadés (via this.idcategorie). */
+    onFolderClick(node: any): void {
+        this.selectListSelection.toggle(node);
+        if (this.selectListSelection.isSelected(node)) {
+            this.idcategorie = node.key || '';
+        } else {
+            // Désélection : on retombe sur le dossier racine par défaut
+            this.idcategorie = this.cleanTreeData?.[0]?.key || '';
+        }
+    }
+
     // Pour gérer la sélection
     onNodeClick(node: any) {
         if (!node.children) {
@@ -926,7 +1083,7 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
         // const extension = proxyUrl.split('.').pop()?.toLowerCase();
 
         if (data.extension === 'pdf') {
-        // if (extension === 'pdf') {
+            // if (extension === 'pdf') {
             this.officePreviewUrl = null;
             this.renderPdf(data.url_file, data.password_file);
             // this.renderPdf(proxyUrl, data.password_file);
@@ -1214,7 +1371,7 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
         this.dataTypeDocument = [];
         this.dataTypeDocument = [];
         this.loadingType = true;
-        this.httService.getData(`${environment.api_url}api/:categories-type-documents?idsociete=${idsociete}&idtype_document=${idtype_document}&idcategories=${idcategories}`, false, this.users?.access_token || '')
+        return this.httService.getData(`${environment.api_url}api/:categories-type-documents?idsociete=${idsociete}&idtype_document=${idtype_document}&idcategories=${idcategories}`, false, this.users?.access_token || '')
             // this.httService.getData(`${environment.api_url}api/:savetypedocuments?idsociete=${idsociete}`, false, this.users?.access_token || '')
             .toPromise()
             .then((res: any) => {
@@ -1273,6 +1430,7 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
         this.validationForm.markAsPristine();
         this.validationForm.markAsUntouched();
 
+        this.isEdit = false;
         this.ligneTypeOfDoc = [];
         this.dynamicValues = {};
         this.archiveStatus = 'courante';
@@ -1280,6 +1438,10 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
         this.applyOCR = false;
         this.dateInputDisplay = '';
         this.notifyBeneficiary = false;
+        this.assignProprietaires = false;
+        this.selectedSociete = '';
+        this.dataComptes = [];
+        this.selectedProprietaires = [];
         this.dataRayon = [];
         this.dataBoites = [];
         this.dataFileTemps = [];
@@ -1305,8 +1467,8 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
             this.validationForm.get('idboites')?.setValue('');
         }
         const payload = {
-            "action": 1,
-            "iddocuments": "",
+            "action": this.isEdit ? 2 : 1,
+            "iddocuments": this.isEdit ? (this.validationForm.value.iddocuments || '') : "",
             "idsociete": this.users.datasociete.uid,
             "iduser": this.users?.uid,
             "idtype_docs": this.validationForm.value.idtype_docs,
@@ -1330,14 +1492,26 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
                     };
                 }),
             "dataservices": this.setTranformer(this.validationForm.value.dataservices),
-            "dataproprietaire": [],
+            "dataproprietaire": this.assignProprietaires
+                ? this.selectedProprietaires.map((uid: string) => ({"idproprietaire": uid}))
+                : [],
             "region_dep_localite": "",
             "statut_docs": 0,
-            "publishe": true,
+            "publishe": this.isEdit ? (this.documentStatus === 'public') : true,
             "fulltexts_docs": "",
             "idproprietaire": 0,
             "sendmail": this.validationForm.value.sendmail || false
         }
+        // Log d'action (construit avant reset du formulaire)
+        const typeLabel = this.ligneTypeOfDoc?.libelle_type_docs
+            || this.dataTypeDocument.find((d: any) => d.uid === this.validationForm.value.idtype_docs)?.libelle_type_docs || '';
+        const codeDocs = this.validationForm.value.code_docs || '';
+        const addFields = (this.ligneTypeOfDoc?.dataPro || [])
+            .filter((e: any) => e.value_proprietes_docs)
+            .map((e: any) => `${e.lib_proprietes_docs} : ${e.value_proprietes_docs}`)
+            .join('\n');
+        const actionLogs = `Enregistré le document (${typeLabel}) numéro (${codeDocs})` + "  \n \n " + addFields;
+
         this.isloading = true;
         this.isSaving = true;
         this.httService.postData(`${environment.api_url}api/:savedocuments`, payload, this.users?.access_token || '')
@@ -1346,11 +1520,15 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
                 this.isloading = false;
                 this.isSaving = false;
                 if (res.body.status || res.body.success) {
+                    this.histoLog.log(actionLogs);
+                    const wasEdit = this.isEdit;
                     this.resetAfterSave();
                     Swal.fire({
                         title: res?.body?.message,
                         icon: 'success',
                         confirmButtonText: 'OK'
+                    }).then(() => {
+                        if (wasEdit) this.router.navigate(['/documents/mes-documents']);
                     });
                 } else {
                     Swal.fire({
@@ -1487,8 +1665,81 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
     }
 
 
-    setArchive(value: 'courante' | 'definitive'): void {
+    setArchive(value: 'courante' | 'definitive', event?: Event): void {
+        // Comportement radio : un re-clic sur le switch déjà actif ne doit pas le décocher
+        const input = event?.target as HTMLInputElement | null;
+        if (input) input.checked = true;
         this.validationForm.get('typeArchivage')?.setValue(value);
+    }
+
+    toggleProprietaires(event: Event): void {
+        const input = event.target as HTMLInputElement;
+        this.assignProprietaires = input.checked;
+        if (this.assignProprietaires) {
+            if (!this.dataSocietes.length) {
+                this.showSocietes('');
+            }
+        } else {
+            this.selectedSociete = '';
+            this.selectedProprietaires = [];
+            this.dataComptes = [];
+        }
+    }
+
+    showSocietes(code_societe: string = ''): void {
+        this.loadingSocietes = true;
+        this.dataSocietes = [];
+        this.httService.getData(`${environment.api_url}auth/:savesociete?code_societe=${code_societe}`, false, this.users?.access_token || '')
+            .toPromise()
+            .then((res: any) => {
+                this.loadingSocietes = false;
+                if (res.body.status || res.body.success) {
+                    this.dataSocietes = (res.body.data || []).map((e: any) => ({
+                        ...e,
+                        label: e?.raison_sociale ?? '',
+                        value: e?.uid || e?.id,
+                    }));
+                }
+            })
+            .catch(() => {
+                this.loadingSocietes = false;
+            });
+    }
+
+    onSocieteChange(idsociete: string): void {
+        this.selectedSociete = idsociete || '';
+        this.selectedProprietaires = [];
+        this.dataComptes = [];
+        if (this.selectedSociete) {
+            this.showComptes(this.selectedSociete);
+        }
+    }
+
+    showComptes(idsociete: string = ''): void {
+        this.loadingComptes = true;
+        this.dataComptes = [];
+        this.httService.getData(`${environment.api_url}auth/:liste-des-comptes?idsociete=${idsociete}`, false, this.users?.access_token || '')
+            .toPromise()
+            .then((res: any) => {
+                this.loadingComptes = false;
+                if (res.body.status) {
+                    this.dataComptes = res.body.data.map((e: any) => ({
+                        ...e,
+                        label: `${e?.datapersonnel?.nom ?? ''} ${e?.datapersonnel?.prenom ?? ''}`.trim(),
+                        value: e?.uid || e?.id,
+                    }));
+                }
+            })
+            .catch(() => {
+                this.loadingComptes = false;
+            });
+    }
+
+    setStatut(value: 'privee' | 'public', event?: Event): void {
+        // Comportement radio : un re-clic sur le switch déjà actif ne doit pas le décocher
+        const input = event?.target as HTMLInputElement | null;
+        if (input) input.checked = true;
+        this.documentStatus = value;
     }
 
     disableFutureDates = (date: Date): boolean => {

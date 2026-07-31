@@ -60,6 +60,14 @@
                                                 </svg>
                                             </button>
                                         </div>
+                                        <!-- Exportation Excel -->
+                                        <button class="op-btn op-btn-outline"
+                                                nz-tooltip nzTooltipTitle="Exporter en Excel"
+                                                [disabled]="!filteredData.length"
+                                                (click)="exportToExcel()">
+                                            <i data-feather="download" style="width: 15px;"></i>
+                                            <span class="btn-label">Exporter</span>
+                                        </button>
                                         <!-- Nouvelle dotation -->
                                         <button class="op-btn op-btn-outline"
                                                 nz-tooltip nzTooltipTitle="Nouvelle autorisation d'absence"
@@ -84,7 +92,7 @@
                                         nzShowSizeChanger
                                         nzBordered
                                         nzSize="small"
-                                        [nzScroll]="filteredData.length > 0 ? { x: '1200px' } : {}"
+                                        [nzScroll]="filteredData.length > 0 ? { x: '1300px' } : {}"
                                     >
                                         <thead>
                                         <tr>
@@ -124,6 +132,15 @@
                                                 nzColumnKey="source_fin">
                                                 Nbre de jour restant
                                             </th>
+                                            <th nzWidth="90px"
+                                                nzColumnKey="statut_absence"
+                                                [nzSortFn]="sortFns.statut_absence"
+                                                [nzSortDirections]="['ascend','descend',null]"
+                                                [nzFilterFn]="filterFns.statut_absence"
+                                                [nzFilters]="filters.statut_absence"
+                                                nzAlign="center">
+                                                Statut
+                                            </th>
                                             <th nzWidth="50px" nzColumnKey="action" nzAlign="center">
                                                 Actions
                                             </th>
@@ -161,7 +178,7 @@
 
                                             <!-- Motif -->
                                             <td>
-                                                <span class="cell-text" style="max-width:180px" [title]="row.motif_absence">
+                                                <span class="cell-text" [title]="row.motif_absence">
                                                     {{ row.motif_absence || '—' }}
                                                 </span>
                                             </td>
@@ -176,6 +193,11 @@
                                             <!-- Jours restants -->
                                             <td nzAlign="center">
                                                 <nz-tag [nzColor]="row.color">{{ row.nbreJourRestant }}</nz-tag>
+                                            </td>
+
+                                            <!-- Statut -->
+                                            <td nzAlign="center">
+                                                <nz-tag [nzColor]="row.statut_absence_color">{{ row.statut_absence_lib }}</nz-tag>
                                             </td>
 
                                             <!-- Actions -->
@@ -193,7 +215,7 @@
                                             </td>
                                         </tr>
                                         <tr *ngIf="!isloading && filteredData?.length === 0">
-                                            <td colspan="9">
+                                            <td colspan="8">
                                                 <div class="op-empty-state">
                                                     <app-feather-icon  class="icon-inbox" [icon]="'inbox'"></app-feather-icon>
                                                     <span>Aucun donnée trouvé !</span>

@@ -1,6 +1,14 @@
 <div class="preview-wrapper">
 
     <!-- ═══════════════════════════════════════════════
+         SPINNER DE CHARGEMENT DE LA PAGE
+    ══════════════════════════════════════════════════ -->
+    <div class="page-loader" *ngIf="pageLoading">
+        <div class="page-loader-spinner"></div>
+        <p>Chargement du document…</p>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════
          TEMPLATE ARBRE
     ══════════════════════════════════════════════════ -->
     <ng-template #treeTpl>
@@ -300,6 +308,103 @@
     <div *ngIf="isMobile" class="mobile-layout">
         <ng-container *ngTemplateOutlet="treeTpl"></ng-container>
         <ng-container *ngTemplateOutlet="previewTpl"></ng-container>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════
+         ACCÈS REFUSÉ (403) — voile + accès à la demande
+    ══════════════════════════════════════════════════ -->
+    <div class="auth-lock" *ngIf="accessForbidden && !showAuthModal">
+        <i class="fa-solid fa-lock auth-lock-ico"></i>
+        <p class="auth-lock-title">Accès restreint</p>
+        <p class="auth-lock-sub" *ngIf="!authRequested">
+            Vous n'avez pas l'autorisation de consulter ce document.
+        </p>
+        <p class="auth-lock-sub auth-lock-ok" *ngIf="authRequested">
+            <i class="fa-solid fa-circle-check"></i>
+            Votre demande a été envoyée. Vous serez notifié après validation.
+        </p>
+        <div class="auth-lock-actions">
+            <button class="auth-lock-btn auth-lock-back" (click)="goBack()">
+                <i class="fa-solid fa-arrow-left"></i> Retour
+            </button>
+            <button class="auth-lock-btn" *ngIf="!authRequested" (click)="openAuthModal()">
+                <i class="fa-regular fa-paper-plane"></i> Demander l'autorisation
+            </button>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════
+         POPUP — Demande d'autorisation de consultation
+    ══════════════════════════════════════════════════ -->
+    <div class="auth-backdrop" *ngIf="showAuthModal" (click)="closeAuthModal()">
+        <div class="auth-panel" (click)="$event.stopPropagation()">
+
+            <div class="auth-header">
+                <div class="auth-header-titles">
+                    <span class="auth-title"><i class="fa-solid fa-lock-open"></i> Demande d'autorisation</span>
+                    <span class="auth-subtitle" [title]="sessionData?.lib_docs || sessionData?.lib_document">
+                        {{ sessionData?.lib_docs || sessionData?.lib_document || 'Document' }}
+                    </span>
+                </div>
+                <button class="auth-close" type="button" (click)="closeAuthModal()" title="Fermer">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="auth-body custom-input">
+
+                <div class="auth-alert" *ngIf="authError">
+                    <i class="fa-solid fa-circle-exclamation"></i> {{ authError }}
+                </div>
+
+                <!-- Information : accès non autorisé -->
+                <div class="auth-notice">
+                    <i class="fa-solid fa-lock"></i>
+                    <span>Vous n'êtes pas autorisé à consulter ce document. Renseignez votre demande ci-dessous.</span>
+                </div>
+
+                <div class="auth-field">
+                    <label class="form-label">Actions souhaitées <span class="txt-danger">*</span></label>
+                    <div class="auth-checklist">
+                        <label class="auth-check" *ngFor="let a of authActions" [class.active]="a.checked">
+                            <input type="checkbox" [(ngModel)]="a.checked" [name]="'act_' + a.key"/>
+                            <span class="auth-check-box"><i class="fa-solid fa-check"></i></span>
+                            <i [class]="a.icon" class="auth-check-ico"></i>
+                            <span class="auth-check-label">{{ a.label }}</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="auth-field">
+                    <label class="form-label">Période d'autorisation</label>
+                    <nz-range-picker class="w-full"
+                                     nzFormat="dd/MM/yyyy"
+                                     [nzPlaceHolder]="['Date début', 'Date fin']"
+                                     [nzDisabledDate]="disabledPastDate"
+                                     [(ngModel)]="authData.deadlineRange"
+                                     name="deadlineRange"></nz-range-picker>
+                </div>
+
+                <div class="auth-field">
+                    <label class="form-label">Motif de la demande <span class="txt-danger">*</span></label>
+                    <textarea class="auth-textarea" rows="3"
+                              [(ngModel)]="authData.motif_auth" name="motif_auth"
+                              placeholder="Expliquez pourquoi vous souhaitez consulter ce document…"></textarea>
+                </div>
+            </div>
+
+            <div class="auth-footer">
+                <button class="auth-btn auth-btn-cancel" type="button" (click)="closeAuthModal()">
+                    Annuler
+                </button>
+                <button class="auth-btn auth-btn-confirm" type="button"
+                        [disabled]="authSaving" (click)="submitAuthRequest()">
+                    <i class="fa-solid" [ngClass]="authSaving ? 'fa-circle-notch fa-spin' : 'fa-paper-plane'"></i>
+                    {{ authSaving ? 'Envoi…' : 'Envoyer la demande' }}
+                </button>
+            </div>
+
+        </div>
     </div>
 
 </div>

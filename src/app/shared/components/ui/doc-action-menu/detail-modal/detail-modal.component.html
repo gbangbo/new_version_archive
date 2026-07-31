@@ -1,0 +1,86 @@
+<div class="fv-backdrop" *ngIf="visible" (click)="closeModal()">
+    <div class="fv-panel" (click)="$event.stopPropagation()">
+
+        <div class="fv-header">
+            <div class="fv-header-titles">
+                <span class="fv-title">
+                    <i class="fa-regular fa-file-lines"></i> DÉTAIL DU DOCUMENT
+                </span>
+                <span class="fv-subtitle">{{ title }}</span>
+            </div>
+            <button class="fv-close" type="button" (click)="closeModal()" title="Fermer">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="fv-body custom-input custom-scrollbar">
+
+                <app-card [headerTitle]="''"
+                          [header]="'pb-0'"
+                          [border]="true"
+                          [padding]="false"
+                          [cardBodyClass]="'basic-wizard important-validation'">
+
+                    <div class="resume-container">
+                        <!-- ── Informations générales ── -->
+                        <div class="resume-section" *ngIf="infosGenerales.length">
+                            <div class="resume-section-title">
+                                <app-feather-icon [icon]="'file-text'" class="icon-sm"></app-feather-icon>
+                                INFORMATIONS GÉNÉRALES
+                            </div>
+                            <div class="resume-row" *ngFor="let r of infosGenerales">
+                                <div class="resume-label">{{ r.label }}</div>
+                                <div class="resume-value">
+                                    <nz-tag *ngIf="r.bool !== undefined" [nzColor]="r.bool ? 'success' : 'error'">
+                                        {{ r.value  || '—' }}
+                                    </nz-tag>
+                                    <strong *ngIf="r.bool === undefined">{{ r.value || '—' }}</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ── Services associés ── -->
+                        <div class="resume-section" *ngIf="services.length">
+                            <div class="resume-section-title">
+                                <app-feather-icon [icon]="'git-merge'" class="icon-sm"></app-feather-icon>
+                                SERVICES BENEFICIAIRE
+                                <span class="resume-count">{{ services.length }}</span>
+                            </div>
+                            <div class="resume-row" *ngFor="let r of services">
+                                <div class="resume-label">{{ r.label }}</div>
+                                <div class="resume-value"><strong>{{ r.value || '—' }}</strong></div>
+                            </div>
+                        </div>
+
+                        <!-- ── Champs additionnels ── -->
+                        <div class="resume-section">
+                            <div class="resume-section-title">
+                                <app-feather-icon [icon]="'list'" class="icon-sm"></app-feather-icon>
+                                CHAMPS ADDITIONNELS
+                                <span class="resume-count">{{ proprietes.length }}</span>
+                            </div>
+
+                            <ng-container *ngIf="proprietes.length > 0; else noFields">
+                                <div class="resume-row" *ngFor="let p of proprietes; let i = index">
+                                    <div class="resume-label">
+                                        <span class="field-index">{{ i + 1 }}</span>
+                                        {{ p.label || '—' }}
+                                    </div>
+                                    <div class="resume-value">
+                                        <strong>{{ p.value || '—' }}</strong>
+                                    </div>
+                                </div>
+                            </ng-container>
+
+                            <ng-template #noFields>
+                                <div class="resume-empty">
+                                    <app-feather-icon [icon]="'inbox'" class="icon-sm"></app-feather-icon>
+                                    Aucun champ additionnel défini
+                                </div>
+                            </ng-template>
+                        </div>
+                    </div>
+                </app-card>
+        </div>
+    </div>
+</div>
