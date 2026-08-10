@@ -288,6 +288,7 @@ export class SendMailModalComponent {
             message_send: this.message,
             file_password: this.filePassword
         };
+        console.log("send mail ===", payload)
         this.httService
             .postData(
                 `${environment.api_url}api/:save-send-mails`,

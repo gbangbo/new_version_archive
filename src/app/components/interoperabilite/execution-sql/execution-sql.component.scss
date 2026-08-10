@@ -1,0 +1,435 @@
+// ══════════════════════════════════════════════════════════
+// EXÉCUTION SQL — maquette « form-builder »
+// ══════════════════════════════════════════════════════════
+$blue: #2563EB;
+$blue-dark: #1D4ED8;
+$ink: #0F172A;
+$muted: #64748B;
+$line: #EAECF0;
+
+.exs-page {
+  padding: 20px;
+  background: #EEF0F4;
+  min-height: 100%;
+}
+
+.exs-shell {
+  max-width: 1180px;
+  margin: 0 auto;
+  background: #ffffff;
+  border-radius: 22px;
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.08);
+  padding: 22px 26px 30px;
+}
+
+// ── Barre haute ──────────────────────────────────────────
+.exs-topbar {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding-bottom: 20px;
+}
+
+.exs-quit {
+  padding: 8px 16px;
+  border: 1px solid #E5E7EB;
+  border-radius: 10px;
+  background: #fff;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  &:hover { background: #F8FAFC; border-color: #CBD5E1; }
+}
+
+.exs-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13.5px;
+
+  .exs-bc-root { color: #334155; font-weight: 700; }
+  .exs-bc-sep { font-size: 10px; color: #CBD5E1; }
+  .exs-bc-current { color: #94A3B8; font-weight: 500; }
+}
+
+.exs-feedback {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: none;
+  background: transparent;
+  color: #475569;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  i { color: $blue; }
+  &:hover { color: $ink; }
+}
+
+// ── Corps ────────────────────────────────────────────────
+.exs-body {
+  display: flex;
+  gap: 32px;
+  align-items: flex-start;
+}
+
+.exs-aside {
+  flex-shrink: 0;
+  padding-top: 4px;
+  position: sticky;
+  top: 20px;
+}
+
+.exs-main {
+  flex: 1;
+  min-width: 0;
+  max-width: 660px;
+  margin: 0 auto;
+}
+
+.exs-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 60px 24px;
+  color: #94A3B8;
+  i { font-size: 40px; color: #CBD5E1; }
+  span { font-size: 14px; font-weight: 700; color: #64748B; }
+}
+
+// ── Titre ────────────────────────────────────────────────
+.exs-title {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 18px;
+
+  h2 { font-size: 20px; font-weight: 800; color: $ink; margin: 0; }
+}
+
+.exs-title-ico {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #3B82F6, $blue);
+  color: #fff;
+  font-size: 17px;
+  box-shadow: 0 6px 14px rgba(37, 99, 235, 0.3);
+}
+
+// ── Bannière info ────────────────────────────────────────
+.exs-banner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  background: #F6F7F9;
+  border-radius: 14px;
+  margin-bottom: 18px;
+}
+
+.exs-banner-ico {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 40px;
+  border-radius: 10px;
+  background: #E8EEFF;
+  color: $blue;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.exs-banner-title { font-size: 14px; font-weight: 700; color: $ink; }
+.exs-banner-sub { font-size: 12.5px; color: $muted; margin-top: 2px; }
+
+// ── Carte de section ─────────────────────────────────────
+.exs-card {
+  border: 1px solid $line;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.exs-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.exs-card-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  font-weight: 700;
+  color: $ink;
+
+  &.mt { margin-top: 22px; margin-bottom: 12px; }
+}
+
+.exs-mini-ico {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  background: #F1F3F7;
+  color: #475569;
+  font-size: 13px;
+
+  &.orange { background: #FFF1E6; color: #EA580C; }
+}
+
+.exs-link {
+  font-size: 13px;
+  font-weight: 700;
+  color: $blue;
+  cursor: pointer;
+  &:hover { text-decoration: underline; }
+}
+
+.exs-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: $ink;
+  margin-bottom: 8px;
+}
+
+// ── Champ à tags (multi-select) ──────────────────────────
+.exs-tagfield {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-height: 44px;
+  padding: 6px 10px;
+  border: 1px solid #E5E7EB;
+  border-radius: 11px;
+  background: #fff;
+  transition: border-color 0.15s, box-shadow 0.15s;
+
+  &:hover { border-color: #CBD5E1; }
+  &.grow { flex: 1; }
+}
+
+.exs-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 10px;
+  border-radius: 8px;
+  background: #F1F3F7;
+  color: #475569;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+
+  i { font-size: 10px; color: #94A3B8; cursor: pointer; &:hover { color: #ef4444; } }
+}
+
+.exs-tagfield-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  color: #94A3B8;
+  font-size: 13px;
+
+  i { cursor: pointer; &:hover { color: #475569; } }
+  .exs-sep { width: 1px; height: 16px; background: #E5E7EB; }
+}
+
+// ── Sous-en-tête (filtre additionnel) ────────────────────
+.exs-subhead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 20px 0 10px;
+}
+
+.exs-subhead-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #475569;
+  i { color: #94A3B8; }
+}
+
+.exs-trash {
+  border: none;
+  background: transparent;
+  color: #94A3B8;
+  font-size: 14px;
+  cursor: pointer;
+  &:hover { color: #ef4444; }
+}
+
+// ── Select simulé ────────────────────────────────────────
+.exs-select {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 44px;
+  padding: 0 14px;
+  border: 1px solid #E5E7EB;
+  border-radius: 11px;
+  background: #fff;
+  font-size: 13.5px;
+  color: #334155;
+  cursor: pointer;
+  transition: border-color 0.15s;
+
+  i { color: #94A3B8; font-size: 13px; }
+  &:hover { border-color: #CBD5E1; }
+  &.sm { width: 210px; flex-shrink: 0; }
+}
+
+.exs-row2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+// ── Ajouter un filtre (bouton pointillé) ─────────────────
+.exs-add-filter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 16px;
+  padding: 16px;
+  border: 1.5px dashed #D6DBE3;
+  border-radius: 12px;
+  background: #fff;
+  color: #475569;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+
+  i { color: #94A3B8; }
+  &:hover { border-color: $blue; color: $blue; background: #F8FAFF; i { color: $blue; } }
+}
+
+// ── Onglets Transactions ─────────────────────────────────
+.exs-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: #F1F3F7;
+  border-radius: 12px;
+}
+
+.exs-tab {
+  flex: 1;
+  padding: 10px 12px;
+  border: none;
+  border-radius: 9px;
+  background: transparent;
+  color: #64748B;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+
+  &:hover:not(.active) { color: $ink; }
+
+  &.active {
+    background: #fff;
+    color: $ink;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
+  }
+}
+
+// ── Sections repliées ────────────────────────────────────
+.exs-collapse {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 16px 18px;
+  border: 1px solid $line;
+  border-radius: 14px;
+  background: #fff;
+  color: $ink;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-bottom: 14px;
+  transition: all 0.15s;
+
+  &:hover { border-color: #CBD5E1; background: #FAFBFC; }
+  &.ghost { border-color: transparent; background: transparent; padding-left: 18px; }
+}
+
+// ── Pied de page ─────────────────────────────────────────
+.exs-footer {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 24px;
+}
+
+.exs-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 22px;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  background: #fff;
+  color: #334155;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  i { font-size: 12px; }
+  &:hover { background: #F8FAFC; border-color: #CBD5E1; }
+}
+
+.exs-validate {
+  flex: 1;
+  padding: 13px 22px;
+  border: none;
+  border-radius: 12px;
+  background: $blue;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
+  transition: all 0.15s;
+  &:hover { background: $blue-dark; }
+}
+
+// ── Responsive ───────────────────────────────────────────
+@media (max-width: 991px) {
+  .exs-body { flex-direction: column; gap: 18px; }
+  .exs-aside { padding-top: 0; width: 100%; position: static; top: auto; }
+  .exs-aside ::ng-deep .steps-menu { width: 100%; }
+  .exs-main { max-width: 100%; }
+}
+
+@media (max-width: 640px) {
+  .exs-page { padding: 10px; }
+  .exs-shell { padding: 16px 14px 22px; border-radius: 16px; }
+  .exs-topbar { padding-bottom: 14px; }
+  .exs-title h2 { font-size: 18px; }
+}

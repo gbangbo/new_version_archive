@@ -29,7 +29,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         sessionStorage.removeItem(environment.CONFIG.APP_TOKEN_NAME);
         // const userDetails = localStorage.getItem('user');
         // if (userDetails?.length != null) {
-        //     router.navigate(['/dashboard/accueil'])
+        //     router.navigate(['/accueil'])
         // }
         this.loginForm = new FormGroup({
             email: new FormControl("", [Validators.required, Validators.email]),
@@ -106,7 +106,7 @@ export class LoginComponent implements OnInit, OnDestroy {
                         if (!localStorage.getItem(environment.CONFIG.layout_name)) {
                             localStorage.setItem(environment.CONFIG.layout_name, 'dark-sidebar');
                         }
-                        this.router.navigate(["/dashboard/accueil"]);
+                        this.router.navigate(["/accueil"]);
                     } else {
                         this.loading = false;
                         this.toast.error(`${res?.body?.message || 'Une erreur est survenue.'} `, '',

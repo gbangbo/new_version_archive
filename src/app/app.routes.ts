@@ -11,6 +11,7 @@ import {ConfirmeAuthOtpComponent} from "./auth/confirme-auth-otp/confirme-auth-o
 import {ExpireComponent} from "./auth/expire/expire.component";
 import {ResetPasswordComponent} from "./auth/reset-password/reset-password.component";
 import {ConsultFileComponent} from "./auth/consult-file/consult-file.component";
+import {ConfidentialiteComponent} from "./auth/confidentialite/confidentialite.component";
 
 export const routes: Routes = [
     {
@@ -64,6 +65,13 @@ export const routes: Routes = [
         component: ConsultFileComponent,
         data: {
             title: 'Consultation des fichiers reçu'
+        }
+    },
+    {
+        path: 'auth/confidentialite-extension',
+        component: ConfidentialiteComponent,
+        data: {
+            title: 'Politique de confidentialité'
         }
     },
     {

@@ -1,0 +1,171 @@
+<!-- Titre -->
+<div class="cx-title">
+    <span class="cx-title-ico"><i class="fa-solid fa-database"></i></span>
+    <h2>Connexions base de données</h2>
+</div>
+
+<!-- Bannière info -->
+<div class="cx-banner">
+    <span class="cx-banner-ico"><i class="fa-solid fa-plug"></i></span>
+    <div class="cx-banner-txt">
+        <div class="cx-banner-title">Sources de données interrogeables</div>
+        <div class="cx-banner-sub">Enregistrez les connexions (PostgreSQL, MySQL, SQL Server, Oracle) utilisées pour l'exécution des requêtes.</div>
+    </div>
+</div>
+
+<!-- Toolbar -->
+<div class="cx-toolbar">
+    <div class="cx-search">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input placeholder="Rechercher une connexion..."
+               [ngModel]="searchValue" (ngModelChange)="onSearch($event)"/>
+        <button *ngIf="searchValue" class="cx-search-clear" (click)="onSearch('')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <button class="cx-btn-new" (click)="openCreate()">
+        <i class="fa-solid fa-plus"></i> Nouvelle connexion
+    </button>
+</div>
+
+<!-- Overlay chargement -->
+<div class="cx-loading" *ngIf="isloading">
+    <div class="cx-spinner"></div>
+    <span>Chargement des connexions...</span>
+</div>
+
+<!-- Liste -->
+<div class="cx-list" *ngIf="!isloading">
+    <div class="cx-card" *ngFor="let r of rows">
+        <span class="cx-db-ico">
+            <img *ngIf="dbLogo(r.db_type)" [src]="dbLogo(r.db_type)" [alt]="dbLabel(r.db_type)"/>
+            <i *ngIf="!dbLogo(r.db_type)" class="fa-solid fa-database"></i>
+        </span>
+
+        <div class="cx-info">
+            <div class="cx-info-top">
+                <span class="cx-name">{{ r.name || '—' }}</span>
+                <span class="cx-type-badge">{{ dbLabel(r.db_type) }}</span>
+                <span class="cx-status" [class.on]="r.is_active" [class.off]="!r.is_active">
+                    <i class="fa-solid fa-circle"></i> {{ r.is_active ? 'Active' : 'Inactive' }}
+                </span>
+            </div>
+            <div class="cx-meta">
+                <span><i class="fa-solid fa-server"></i> {{ r.host || '—' }}<ng-container *ngIf="r.port">:{{ r.port }}</ng-container></span>
+                <span class="cx-dot"></span>
+                <span><i class="fa-solid fa-table"></i> {{ r.dbname || '—' }}</span>
+                <span class="cx-dot"></span>
+                <span><i class="fa-solid fa-user"></i> {{ r.user || '—' }}</span>
+            </div>
+        </div>
+
+        <div class="cx-actions">
+            <button class="btn-round-edit" title="Modifier" (click)="openEdit(r)">
+                <app-feather-icon class="icon-small" [icon]="'edit-3'"></app-feather-icon>
+            </button>
+            <button class="btn-round-edit"
+                    [title]="r.is_active ? 'Désactiver' : 'Activer'"
+                    [disabled]="togglingUid === r.uid" (click)="toggleActive(r)">
+                <i *ngIf="togglingUid === r.uid" class="fa-solid fa-circle-notch fa-spin"></i>
+                <app-feather-icon *ngIf="togglingUid !== r.uid" class="icon-small"
+                                  [icon]="r.is_active ? 'toggle-right' : 'toggle-left'"></app-feather-icon>
+            </button>
+            <button class="btn-round-edit" title="Supprimer" (click)="remove(r)">
+                <app-feather-icon class="icon-small" [icon]="'trash-2'"></app-feather-icon>
+            </button>
+        </div>
+    </div>
+
+    <!-- Vide -->
+    <div class="cx-empty" *ngIf="rows.length === 0">
+        <i class="fa-solid fa-database"></i>
+        <span>Aucune connexion</span>
+        <small *ngIf="searchValue">Aucun résultat pour « {{ searchValue }} »</small>
+    </div>
+</div>
+
+<!-- ═══ MODAL : Créer / modifier une connexion ═══════════════════ -->
+<div class="cx-backdrop" *ngIf="showModal">
+    <div class="cx-panel">
+        <div class="cx-panel-head">
+            <span class="cx-panel-title"><i class="fa-solid fa-database"></i> {{ isEdit ? 'Modifier la connexion' : 'Nouvelle connexion' }}</span>
+            <button class="cx-panel-close" (click)="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+
+        <div class="cx-panel-body">
+            <div class="cx-alert" *ngIf="modalError"><i class="fa-solid fa-circle-exclamation"></i> {{ modalError }}</div>
+
+            <div class="cx-grid2">
+                <div class="cx-field">
+                    <label>Nom <span class="req">*</span></label>
+                    <input [(ngModel)]="form.name" name="name" placeholder="Prod MSSQL"/>
+                </div>
+                <div class="cx-field">
+                    <label>Type de base <span class="req">*</span></label>
+                    <select2 class="cx-select2"
+                             [data]="dbOptions"
+                             [(ngModel)]="form.db_type"
+                             name="db_type"
+                             placeholder="Type de base"
+                             [minCountForSearch]="0"
+                             noResultMessage="Aucun type trouvé"></select2>
+                </div>
+            </div>
+
+            <div class="cx-grid2">
+                <div class="cx-field">
+                    <label>Hôte <span class="req">*</span></label>
+                    <input [(ngModel)]="form.host" name="host" placeholder="192.168.1.10"/>
+                </div>
+                <div class="cx-field">
+                    <label>Port</label>
+                    <input type="number" [(ngModel)]="form.port" name="port" placeholder="1433"/>
+                </div>
+            </div>
+
+            <div class="cx-grid2">
+                <div class="cx-field">
+                    <label>Base de données</label>
+                    <input [(ngModel)]="form.dbname" name="dbname" placeholder="archive_db"/>
+                </div>
+                <div class="cx-field">
+                    <label>Utilisateur</label>
+                    <input [(ngModel)]="form.user" name="user" placeholder="sa"/>
+                </div>
+            </div>
+
+            <div class="cx-grid2">
+                <div class="cx-field">
+                    <label>Mot de passe <span class="hint" *ngIf="isEdit">(vide = inchangé)</span></label>
+                    <input type="password" [(ngModel)]="form.password" name="password" placeholder="••••••••"/>
+                </div>
+                <div class="cx-field">
+                    <label>Driver</label>
+                    <input [(ngModel)]="form.driver" name="driver" placeholder="ODBC Driver 18 for SQL Server"/>
+                </div>
+            </div>
+
+            <div class="cx-field">
+                <label>Paramètres additionnels <span class="hint">(JSON)</span></label>
+                <app-json-editor [(ngModel)]="form.extra_params"
+                                 (validChange)="jsonExtraValid = $event"
+                                 placeholder='&#123; "timeout": "10" &#125;'></app-json-editor>
+                <div class="cx-json-err" *ngIf="!jsonExtraValid"><i class="fa-solid fa-triangle-exclamation"></i> JSON invalide</div>
+            </div>
+
+            <div class="cx-field">
+                <label>État de la connexion</label>
+                <nz-switch class="cx-switch2"
+                           [(ngModel)]="form.is_active" name="active"
+                           nzCheckedChildren="Actif"
+                           nzUnCheckedChildren="Inactif"></nz-switch>
+            </div>
+        </div>
+
+        <div class="cx-panel-foot">
+            <button class="cx-btn-cancel" (click)="closeModal()">Annuler</button>
+            <button class="cx-btn-confirm" [disabled]="saving || !jsonExtraValid" (click)="submit()">
+                <i class="fa-solid" [ngClass]="saving ? 'fa-circle-notch fa-spin' : 'fa-check'"></i>
+                {{ saving ? 'Enregistrement…' : (isEdit ? 'Modifier' : 'Créer') }}
+            </button>
+        </div>
+    </div>
+</div>

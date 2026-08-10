@@ -1,0 +1,191 @@
+<app-card [cardClass]="'mes-docs-wrapper'" [padding]="false"
+          [headerTitle]="titreSection" [cardBodyClass]="'pt-0'">
+
+    <!-- ══ RECHERCHE (dans l'en-tête sombre, à droite) ══════════ -->
+    <div header5 class="docs-header-search">
+        <span class="docs-hsearch-icon">
+            <app-feather-icon [icon]="'search'" class="icon-xs"></app-feather-icon>
+        </span>
+        <input class="docs-hsearch-input"
+               placeholder="Rechercher un document..."
+               [ngModel]="searchValue"
+               (ngModelChange)="onSearch($event)"/>
+        <button *ngIf="searchValue" class="docs-hsearch-clear" (click)="onSearch('')">
+            <app-feather-icon [icon]="'x'" class="icon-xs"></app-feather-icon>
+        </button>
+    </div>
+
+    <div class="relative">
+
+        <!-- Overlay chargement -->
+        <div *ngIf="isloading"
+             class="absolute inset-0 flex justify-center items-center z-10 rounded-lg"
+             style="background: rgba(248,250,252,0.85); backdrop-filter: blur(2px);">
+            <div class="text-center">
+                <div class="op-spinner"></div>
+                <p class="mt-3" style="color:#64748b; font-size:13px; font-weight:600;">
+                    Chargement des données...
+                </p>
+            </div>
+        </div>
+
+        <div [class.op-loading]="isloading">
+
+    <!-- ══ TOOLBAR ══════════════════════════════════════════════ -->
+    <div class="docs-toolbar">
+
+        <!-- Filtre mois -->
+        <div class="docs-mois-wrap">
+            <nz-select
+                [(ngModel)]="moisActif"
+                (ngModelChange)="onMoisChange($event)"
+                nzShowSearch
+                nzPlaceHolder="Sélectionner un mois"
+                [nzFilterOption]="filterMois"
+                class="docs-mois-select">
+                <nz-option *ngFor="let opt of moisOptions"
+                           [nzLabel]="opt.label"
+                           [nzValue]="opt.value">
+                </nz-option>
+            </nz-select>
+        </div>
+
+        <!-- Intervalle de dates (un seul champ owl range) -->
+        <div class="docs-interval-wrap">
+            <div class="docs-owl-field">
+                <input class="docs-owl-input" readonly
+                       placeholder="Sélectionner une période"
+                       [selectMode]="'range'"
+                       [owlDateTimeTrigger]="dtRange"
+                       [owlDateTime]="dtRange"
+                       [ngModel]="dateRange"
+                       (ngModelChange)="onRangeChange($event)"/>
+                <span class="docs-owl-icon" [owlDateTimeTrigger]="dtRange">
+                    <app-feather-icon [icon]="'calendar'" class="icon-xs"></app-feather-icon>
+                </span>
+                <owl-date-time #dtRange [pickerType]="'calendar'"></owl-date-time>
+            </div>
+            <button class="docs-interval-btn" (click)="appliquerIntervalle()"
+                    title="Appliquer l'intervalle">
+                <app-feather-icon [icon]="'search'" class="icon-xs"></app-feather-icon>
+            </button>
+            <button class="docs-interval-reset" *ngIf="modeIntervalle"
+                    (click)="reinitialiserIntervalle()" title="Réinitialiser">
+                <app-feather-icon [icon]="'x'" class="icon-xs"></app-feather-icon>
+            </button>
+        </div>
+
+    </div>
+
+    <!-- ══ COMPTEUR ══════════════════════════════════════════════ -->
+    <div class="docs-count-bar" *ngIf="docsFiltered.length > 0">
+        <strong>{{ docsFiltered.length }}</strong>&nbsp;document{{ docsFiltered.length > 1 ? 's' : '' }}
+        <span *ngIf="searchValue" class="search-chip">
+            <app-feather-icon [icon]="'search'" class="icon-xs"></app-feather-icon>
+            « {{ searchValue }} »
+        </span>
+    </div>
+
+    <!-- ══ LISTE DOCUMENTS ═══════════════════════════════════════ -->
+    <div class="docs-list" *ngIf="docsPage.length > 0; else emptyState">
+        <div class="doc-card" *ngFor="let doc of docsPage">
+
+            <!-- Avatar catégorie -->
+<!--            <div class="doc-avatar"-->
+<!--                 [style.background]="doc.categorie_color + '22'"-->
+<!--                 [style.color]="doc.categorie_color">-->
+<!--                {{ getInitiale(doc.categorie) }}-->
+<!--            </div>-->
+            <div class="doc-icon-wrap doc-consult" (click)="consulterDoc(doc)"
+                 title="Consulter le document">
+                <app-feather-icon [icon]="'folder'"></app-feather-icon>
+            </div>
+            <!-- Corps -->
+            <div class="doc-body doc-consult" (click)="consulterDoc(doc)"
+                 title="Consulter le document">
+                <div class="doc-numero">N° : {{ doc.numero }}</div>
+                <div class="doc-titre">{{ doc.lib_document }}</div>
+                <div class="doc-meta">
+                    <nz-tag [nzColor]="'rgba(115, 102, 255, 0.1)'" class="doc-cat-tag">
+                        {{ doc.categorie }}
+                    </nz-tag>
+                    <span class="doc-meta-item">
+                        <app-feather-icon [icon]="'calendar'" class="icon-xs"></app-feather-icon>
+                        {{ doc.date_document }}
+                    </span>
+                    <span class="doc-meta-item">
+                        <app-feather-icon [icon]="'briefcase'" class="icon-xs"></app-feather-icon>
+                        {{ doc.service }}
+                    </span>
+                    <span class="doc-meta-item">
+                        <app-feather-icon [icon]="'user'" class="icon-xs"></app-feather-icon>
+                        {{ doc.auteur }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Menu 3 points -->
+            <div class="doc-menu">
+                <app-doc-action-menu [doc]="doc" (deleted)="onDocDeleted()"/>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ EMPTY ═════════════════════════════════════════════════ -->
+    <ng-template #emptyState>
+        <div class="docs-empty">
+            <i class="fa-regular fa-folder-open docs-empty-ico"></i>
+            <span>Aucun document pour {{ moisLabels[moisActif] }}</span>
+            <small *ngIf="searchValue">correspondant à « {{ searchValue }} »</small>
+        </div>
+    </ng-template>
+
+    <!-- ══ PAGINATION ════════════════════════════════════════════ -->
+    <div class="docs-pagination" *ngIf="docsFiltered.length > 0">
+
+        <!-- Total -->
+        <div class="pag-total-info">
+            Total&nbsp;: <strong>{{ docsFiltered.length }}</strong>&nbsp;document{{ docsFiltered.length > 1 ? 's' : '' }}
+        </div>
+
+        <!-- Contrôles -->
+        <div class="pag-controls">
+
+            <!-- Lignes par page -->
+            <div class="pag-rows-wrap">
+                <span class="pag-rows-label">Lignes/page</span>
+                <select class="pag-rows-select"
+                        [ngModel]="pageSize"
+                        (ngModelChange)="onPageSizeChange($event)">
+                    <option *ngFor="let s of pageSizeOptions" [value]="s">{{ s }}</option>
+                </select>
+            </div>
+
+            <!-- Navigation -->
+            <div class="pag-nav">
+                <button class="pag-arrow" [disabled]="pageActuelle === 1"
+                        (click)="goToPage(pageActuelle - 1)" title="Précédent">
+                    <app-feather-icon [icon]="'chevron-left'" class="icon-xs"></app-feather-icon>
+                </button>
+
+                <ng-container *ngFor="let p of visiblePages">
+                    <button *ngIf="p !== '…'" class="pag-page" [class.active]="p === pageActuelle"
+                            (click)="goToPage(+p)">{{ p }}</button>
+                    <span *ngIf="p === '…'" class="pag-ellipsis">…</span>
+                </ng-container>
+
+                <button class="pag-arrow" [disabled]="pageActuelle === totalPages"
+                        (click)="goToPage(pageActuelle + 1)" title="Suivant">
+                    <app-feather-icon [icon]="'chevron-right'" class="icon-xs"></app-feather-icon>
+                </button>
+            </div>
+
+        </div>
+
+    </div><!-- /.docs-pagination -->
+
+        </div><!-- /.op-loading -->
+
+    </div><!-- /.relative -->
+
+</app-card>

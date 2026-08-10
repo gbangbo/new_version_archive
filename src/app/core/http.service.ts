@@ -27,9 +27,19 @@ export class HttpService {
         this.cacheSubject.next(this.cache);
     }
 
-    postData(url: string, data: any, token: string): Observable<HttpResponse<any>> {
+    postData(url: string, data: any, token: string, extraHeaders?: { [key: string]: string }): Observable<HttpResponse<any>> {
         const body = JSON.stringify(data);
         let headers = token ? this.HEADER_OPTIONS.set('Authorization', 'Bearer ' + token) : this.HEADER_OPTIONS;
+
+        // En-têtes supplémentaires (ex. X-API-KEY pour le proxy d'interopérabilité)
+        if (extraHeaders) {
+            Object.keys(extraHeaders).forEach(name => {
+                const value = extraHeaders[name];
+                if (value !== null && value !== undefined && `${value}`.trim() !== '') {
+                    headers = headers.set(name, `${value}`);
+                }
+            });
+        }
 
         return this.http.post(url, {data: postDataCrypte(data)}, {
             headers: headers,
@@ -420,9 +430,9 @@ export class HttpService {
         );
     }
 
-    postDataNoCrypt(url: string, data: any): Observable<HttpResponse<any>> {
+    postDataNoCrypt(url: string, data: any, extraHeaders?: { [key: string]: string }): Observable<HttpResponse<any>> {
 
-        const HEADER_OPTIONSs = new HttpHeaders({
+        let HEADER_OPTIONSs = new HttpHeaders({
             // 'Authorization': 'Bearer ' + AUTHORIZATION.apwParam.token,
             'Access-Control-Allow-Origin': '*',
             //'Access-Control-Allow-Headers': 'Content-Type, Access-Control-Allow-Headers, Access-Control-Allow-Methods, Access-Control-Allow-Origin, Authorization, X-Requested-With',
@@ -430,6 +440,17 @@ export class HttpService {
             // 'no-encoded-request': 'true'
             // 'Access-Control-Request-Private-Network': 'true'
         });
+
+        // En-têtes supplémentaires (ex. X-API-KEY / X-CSRFTOKEN)
+        if (extraHeaders) {
+            Object.keys(extraHeaders).forEach(name => {
+                const value = extraHeaders[name];
+                if (value !== null && value !== undefined && `${value}`.trim() !== '') {
+                    HEADER_OPTIONSs = HEADER_OPTIONSs.set(name, `${value}`);
+                }
+            });
+        }
+
         return this.http.post(url, data, {
             headers: HEADER_OPTIONSs,
             observe: 'response',

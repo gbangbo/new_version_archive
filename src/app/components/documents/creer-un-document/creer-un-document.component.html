@@ -27,12 +27,15 @@
 
                 <form class="form-panel" [formGroup]="validationForm" (ngSubmit)="submitForm()">
 
+                    <!-- Zone défilante : tout le contenu au-dessus de la barre d'actions -->
+                    <div class="form-scroll">
+
                     <!-- Section : Informations générales -->
                     <div class="form-section">
                         <div class="form-section-label">
                             <i class="ti ti-settings"></i> Informations générales
                         </div>
-                        <div class="grid grid-cols-12 gap-x-4 gap-y-3 form-section-body">
+                        <div class="grid grid-cols-12 gap-x-4 gap-y-5 form-section-body">
 
 
                             <!-- Archives -->
@@ -40,32 +43,23 @@
                                 <label class="form-label section-label">
                                     <i class="ti ti-archive"></i> Archives
                                 </label>
-                                <div class="switch-group">
-
-                                    <div class="switch-item border-bottom-light">
-                                        <div class="common-f-start gap-2">
-                                            <div class="form-check form-switch form-check-inline mb-0">
-                                                <input class="form-check-input switch-primary check-size"
-                                                       type="checkbox" role="switch"
-                                                       [checked]="validationForm.get('typeArchivage')?.value === 'courante'"
-                                                       (change)="setArchive('courante', $event)">
-                                            </div>
-                                        </div>
-                                        <span class="switch-label">Courante</span>
-                                    </div>
-
-                                    <div class="switch-item">
-                                        <div class="common-f-start gap-2">
-                                            <div class="form-check form-switch form-check-inline mb-0">
-                                                <input class="form-check-input switch-primary check-size"
-                                                       type="checkbox" role="switch"
-                                                       [checked]="validationForm.get('typeArchivage')?.value === 'definitive'"
-                                                       (change)="setArchive('definitive', $event)">
-                                            </div>
-                                        </div>
-                                        <span class="switch-label">Définitive</span>
-                                    </div>
-
+                                <div class="statut-pills statut-pills--mono" role="radiogroup" aria-label="Type d'archives">
+                                    <button type="button"
+                                            class="statut-pill"
+                                            [class.active]="validationForm.get('typeArchivage')?.value === 'courante'"
+                                            role="radio" [attr.aria-checked]="validationForm.get('typeArchivage')?.value === 'courante'"
+                                            (click)="setArchive('courante')">
+                                        <span class="statut-pill-dot"><i class="ti ti-check"></i></span>
+                                        <span class="statut-pill-label">Courante</span>
+                                    </button>
+                                    <button type="button"
+                                            class="statut-pill"
+                                            [class.active]="validationForm.get('typeArchivage')?.value === 'definitive'"
+                                            role="radio" [attr.aria-checked]="validationForm.get('typeArchivage')?.value === 'definitive'"
+                                            (click)="setArchive('definitive')">
+                                        <span class="statut-pill-dot"><i class="ti ti-check"></i></span>
+                                        <span class="statut-pill-label">Définitive</span>
+                                    </button>
                                 </div>
                             </div>
 
@@ -74,30 +68,31 @@
                                 <label class="form-label section-label">
                                     <i class="ti ti-shield"></i> Statut du document
                                 </label>
-                                <div class="switch-group">
-                                    <div class="switch-item border-bottom-light">
-                                        <div class="common-f-start gap-2">
-                                            <div class="form-check form-switch form-check-inline mb-0">
-                                                <input class="form-check-input switch-primary check-size"
-                                                       type="checkbox" role="switch"
-                                                       [checked]="documentStatus === 'privee'"
-                                                       (change)="setStatut('privee', $event)"
-                                                >
-                                            </div>
-                                        </div>
-                                        <span class="switch-label">Privée</span>
-                                    </div>
-                                    <div class="switch-item">
-                                        <div class="common-f-start gap-2">
-                                            <div class="form-check form-switch form-check-inline mb-0">
-                                                <input class="form-check-input switch-primary check-size"
-                                                       type="checkbox" role="switch"
-                                                       [checked]="documentStatus === 'public'"
-                                                       (change)="setStatut('public', $event)">
-                                            </div>
-                                        </div>
-                                        <span class="switch-label">Public</span>
-                                    </div>
+                                <div class="statut-pills" role="radiogroup" aria-label="Statut du document">
+                                    <button type="button"
+                                            class="statut-pill statut-pill--privee"
+                                            [class.active]="documentStatus === 'privee'"
+                                            role="radio" [attr.aria-checked]="documentStatus === 'privee'"
+                                            (click)="setStatut('privee')">
+                                        <span class="statut-pill-dot"><i class="ti ti-check"></i></span>
+                                        <span class="statut-pill-label">Privée</span>
+                                    </button>
+                                    <button type="button"
+                                            class="statut-pill statut-pill--public"
+                                            [class.active]="documentStatus === 'public'"
+                                            role="radio" [attr.aria-checked]="documentStatus === 'public'"
+                                            (click)="setStatut('public')">
+                                        <span class="statut-pill-dot"><i class="ti ti-check"></i></span>
+                                        <span class="statut-pill-label">Public</span>
+                                    </button>
+                                    <button type="button"
+                                            class="statut-pill statut-pill--confidentiel"
+                                            [class.active]="documentStatus === 'confidentiel'"
+                                            role="radio" [attr.aria-checked]="documentStatus === 'confidentiel'"
+                                            (click)="setStatut('confidentiel')">
+                                        <span class="statut-pill-dot"><i class="ti ti-check"></i></span>
+                                        <span class="statut-pill-label">Confidentiel</span>
+                                    </button>
                                 </div>
                             </div>
 
@@ -221,86 +216,82 @@
 
                             <!-- Notification mail -->
                             <div class="col-span-12 mt-2">
-                                <div class="switch-group">
-                                    <div class="switch-item">
-                                        <div class="common-f-start gap-2">
-                                            <div class="form-check form-switch form-check-inline mb-0">
-                                                <input class="form-check-input switch-primary check-size"
-                                                       type="checkbox" role="switch"
-                                                       formControlName="sendmail">
-                                            </div>
-                                        </div>
-                                        <div class="switch-mail-label">
-                                            <i class="ti ti-mail"></i>
-                                            <span class="switch-label">Informer les services bénéficiaires par mail</span>
-                                        </div>
-                                    </div>
+                                <div class="statut-pills statut-pills--mono">
+                                    <button type="button" class="statut-pill statut-pill--wide"
+                                            [class.active]="validationForm.get('sendmail')?.value"
+                                            role="switch" [attr.aria-checked]="validationForm.get('sendmail')?.value"
+                                            (click)="validationForm.patchValue({sendmail: !validationForm.value.sendmail})">
+                                        <span class="statut-pill-dot"><i class="ti ti-check"></i></span>
+                                        <i class="ti ti-mail statut-pill-ico"></i>
+                                        <span class="statut-pill-label">Informer les services bénéficiaires par mail</span>
+                                    </button>
                                 </div>
                             </div>
 
-                            <!-- Propriétaires du document -->
+                            <!-- Propriétaires du document (accordéon) -->
                             <div class="col-span-12 mt-2">
-                                <div class="switch-group">
-                                    <div class="switch-item">
-                                        <div class="common-f-start gap-2">
-                                            <div class="form-check form-switch form-check-inline mb-0">
-                                                <input class="form-check-input switch-primary check-size"
-                                                       type="checkbox" role="switch"
-                                                       [checked]="assignProprietaires"
-                                                       (change)="toggleProprietaires($event)">
+                                <div class="assign-accordion"
+                                     [class.active]="assignProprietaires"
+                                     [class.open]="assignProprietaires && !proprietairesCollapsed">
+                                    <div class="assign-acc-header"
+                                         [class.active]="assignProprietaires"
+                                         role="button" tabindex="0"
+                                         (click)="onAssignHeader()"
+                                         (keydown.enter)="onAssignHeader()" (keydown.space)="onAssignHeader()">
+                                        <span class="statut-pill-dot"
+                                              role="switch" [attr.aria-checked]="assignProprietaires"
+                                              title="Activer / désactiver"
+                                              (click)="onAssignDot($event)"><i class="ti ti-check"></i></span>
+                                        <i class="ti ti-users statut-pill-ico"></i>
+                                        <span class="statut-pill-label">Attribuer le document à des utilisateurs</span>
+                                    </div>
+
+                                    <div class="assign-acc-body" *ngIf="assignProprietaires && !proprietairesCollapsed">
+                                        <div class="position-relative">
+                                            <label class="form-label" for="datasociete">
+                                                Société
+                                            </label>
+                                            <nz-select id="datasociete"
+                                                       style="width: 100%"
+                                                       nzShowSearch
+                                                       nzAllowClear
+                                                       nzPlaceHolder="Sélectionnez une société"
+                                                       [nzLoading]="loadingSocietes"
+                                                       [nzDropdownStyle]="{ 'max-height': '300px', 'overflow': 'auto' }"
+                                                       [ngModel]="selectedSociete"
+                                                       (ngModelChange)="onSocieteChange($event)"
+                                                       [ngModelOptions]="{standalone: true}">
+                                                <nz-option *ngFor="let societe of dataSocietes"
+                                                           [nzLabel]="societe.label"
+                                                           [nzValue]="societe.value"></nz-option>
+                                            </nz-select>
+                                            <div class="select-loader" *ngIf="loadingSocietes">
+                                                <i class="fas fa-spin fa-circle-notch"></i>
                                             </div>
                                         </div>
-                                        <div class="switch-mail-label">
-                                            <i class="ti ti-users"></i>
-                                            <span class="switch-label">Attribuer le document à des utilisateurs</span>
+
+                                        <div class="position-relative mt-3">
+                                            <label class="form-label" for="dataproprietaire">
+                                                Utilisateurs propriétaires
+                                            </label>
+                                            <nz-select id="dataproprietaire"
+                                                       class="proprietaire-select"
+                                                       style="width: 100%"
+                                                       nzMode="multiple"
+                                                       nzShowSearch
+                                                       [nzMaxTagCount]="2"
+                                                       [nzDisabled]="!selectedSociete"
+                                                       [nzPlaceHolder]="selectedSociete ? 'Sélectionnez les utilisateurs' : 'Sélectionnez d’abord une société'"
+                                                       [nzLoading]="loadingComptes"
+                                                       [nzDropdownStyle]="{ 'max-height': '300px', 'overflow': 'auto' }"
+                                                       [(ngModel)]="selectedProprietaires"
+                                                       [ngModelOptions]="{standalone: true}">
+                                                <nz-option *ngFor="let compte of dataComptes"
+                                                           [nzLabel]="compte.label"
+                                                           [nzValue]="compte.value"></nz-option>
+                                            </nz-select>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-
-                            <div class="col-span-12 position-relative" *ngIf="assignProprietaires">
-                                <label class="form-label" for="datasociete">
-                                    Société
-                                </label>
-                                <nz-select id="datasociete"
-                                           style="width: 100%"
-                                           nzShowSearch
-                                           nzAllowClear
-                                           nzPlaceHolder="Sélectionnez une société"
-                                           [nzLoading]="loadingSocietes"
-                                           [nzDropdownStyle]="{ 'max-height': '300px', 'overflow': 'auto' }"
-                                           [ngModel]="selectedSociete"
-                                           (ngModelChange)="onSocieteChange($event)"
-                                           [ngModelOptions]="{standalone: true}">
-                                    <nz-option *ngFor="let societe of dataSocietes"
-                                               [nzLabel]="societe.label"
-                                               [nzValue]="societe.value"></nz-option>
-                                </nz-select>
-                                <div class="select-loader" *ngIf="loadingSocietes">
-                                    <i class="fas fa-spin fa-circle-notch"></i>
-                                </div>
-                            </div>
-
-                            <div class="col-span-12 position-relative" *ngIf="assignProprietaires && selectedSociete">
-                                <label class="form-label" for="dataproprietaire">
-                                    Utilisateurs propriétaires
-                                </label>
-                                <nz-select id="dataproprietaire"
-                                           style="width: 100%"
-                                           nzMode="multiple"
-                                           nzShowSearch
-                                           [nzMaxTagCount]="2"
-                                           nzPlaceHolder="Sélectionnez les utilisateurs"
-                                           [nzLoading]="loadingComptes"
-                                           [nzDropdownStyle]="{ 'max-height': '300px', 'overflow': 'auto' }"
-                                           [(ngModel)]="selectedProprietaires"
-                                           [ngModelOptions]="{standalone: true}">
-                                    <nz-option *ngFor="let compte of dataComptes"
-                                               [nzLabel]="compte.label"
-                                               [nzValue]="compte.value"></nz-option>
-                                </nz-select>
-                                <div class="select-loader" *ngIf="loadingComptes">
-                                    <i class="fas fa-spin fa-circle-notch"></i>
                                 </div>
                             </div>
 
@@ -369,13 +360,17 @@
                                     <label class="form-label mb-0" for="code_docs">Numéro du document
                                         <span class="txt-danger">*</span>
                                     </label>
-                                    <a class="generate-num-link"
-                                       [class.generate-num-link--loading]="isGeneratingCode"
-                                       (click)="generateDocumentNumber()">
+                                    <button type="button" class="generate-num-btn"
+                                            [class.generate-num-btn--loading]="isGeneratingCode"
+                                            [disabled]="isGeneratingCode"
+                                            (click)="generateDocumentNumber()"
+                                            nz-tooltip
+                                            [nzTooltipTitle]="isGeneratingCode ? 'Génération en cours…' : 'Générer un numéro automatique'"
+                                            nzTooltipPlacement="top"
+                                            aria-label="Générer un numéro automatique">
                                         <span class="gen-spinner" *ngIf="isGeneratingCode"></span>
-                                        <i class="ti ti-refresh" *ngIf="!isGeneratingCode"></i>
-                                        {{ isGeneratingCode ? 'Génération en cours...' : 'Générer un numéro automatique' }}
-                                    </a>
+                                        <i class="fa-solid fa-arrows-rotate" *ngIf="!isGeneratingCode"></i>
+                                    </button>
                                 </div>
                                 <div class="code-input-wrap">
                                     <input class="form-control" id="code_docs" type="text"
@@ -458,7 +453,7 @@
                             <i class="ti ti-list-details"></i> Métadonnées
                             <nz-tag class="type-badge" [nzColor]="'rgba(115, 102, 255, 0.1)'">{{ ligneTypeOfDoc?.libelle_type_docs }}</nz-tag>
                         </div>
-                        <div class="grid grid-cols-12 gap-x-4 gap-y-3 form-section-body">
+                        <div class="grid grid-cols-12 gap-x-4 gap-y-5 form-section-body">
                             <ng-container *ngFor="let item of ligneTypeOfDoc?.dataPro">
 
                                 <!-- Champ date -->
@@ -521,12 +516,14 @@
                         <span>Sélectionnez un type de document pour afficher les champs spécifiques</span>
                     </div>
 
-                    <!-- Ajoutez à la fin de votre page, en dehors des colonnes -->
+                    </div><!-- /.form-scroll -->
+
+                    <!-- Barre d'actions ancrée en bas de la colonne « Informations générales » -->
                     <div class="form-footer-bar">
                         <div class="form-footer-left">
-                                <span style="font-size:12px; color:#94A3B8;">
-                                    Remplissez tous les champs obligatoires <span class="txt-danger">*</span>
-                                </span>
+                            <span class="footer-hint">
+                                Remplissez tous les champs obligatoires <span class="txt-danger">*</span>
+                            </span>
                         </div>
                         <div class="form-footer-right">
                             <button class="btn btn-light me-2" type="button" (click)="resetAfterSave()">

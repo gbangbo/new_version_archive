@@ -1,0 +1,88 @@
+<app-card [cardClass]="'live-auction-wrapper'" [padding]="false" [headerTitle]="'Flash Info'" [cardBodyClass]="'pt-0'">
+
+    <!-- ══ NAVIGATION (dans l'en-tête, à droite) ══════════════ -->
+    <div header5 class="fi-nav" *ngIf="liveAuction.length > 0">
+        <button class="fi-nav-btn" (click)="owlPrev()" [disabled]="atStart" title="Précédent">
+            <i class="fa-solid fa-chevron-left"></i>
+        </button>
+        <button class="fi-nav-btn" (click)="owlNext()" [disabled]="atEnd" title="Suivant">
+            <i class="fa-solid fa-chevron-right"></i>
+        </button>
+    </div>
+
+    <div class="relative">
+
+        <!-- Overlay chargement -->
+        <div *ngIf="isloading"
+             class="absolute inset-0 flex justify-center items-center z-10 rounded-lg"
+             style="background: rgba(248,250,252,0.85); backdrop-filter: blur(2px);">
+            <div class="text-center">
+                <div class="op-spinner"></div>
+                <p class="mt-3" style="color:#64748b; font-size:13px; font-weight:600;">
+                    Chargement des données...
+                </p>
+            </div>
+        </div>
+
+        <div [class.op-loading]="isloading">
+
+        <!-- État vide -->
+        <div class="fi-widget-empty" *ngIf="!isloading && liveAuction.length === 0">
+            <div class="fi-bolt-stage" aria-hidden="true">
+                <span class="fi-glow"></span>
+                <i class="fa-solid fa-bolt fi-bolt"></i>
+                <span class="fi-spark fi-spark-1"></span>
+                <span class="fi-spark fi-spark-2"></span>
+                <span class="fi-spark fi-spark-3"></span>
+            </div>
+            <span class="fi-empty-title">Aucun flash info</span>
+            <small class="fi-empty-sub">Les actualités apparaîtront ici</small>
+        </div>
+
+    <div class="slider-wrapper arrow-round" *ngIf="!isloading && liveAuction.length > 0">
+        <owl-carousel-o #owlCar [options]="options" class="swiper live-auction-slider"
+                        (initialized)="onSlideChange($event)"
+                        (translated)="onSlideChange($event)"
+                        (changed)="onSlideChange($event)">
+            @for(auction of liveAuction; track auction) {
+                <ng-template carouselSlide>
+                    <div class="product-card">
+
+                        <!-- Titre de l'annonce -->
+                        <h6 class="fi-card-title" *ngIf="auction.title" [title]="auction.title">
+                            {{ auction.title }}
+                        </h6>
+
+                        <!-- Description (rendu HTML avec mise en forme) -->
+                        <div class="product-description">
+                            <div class="desc-text"
+                                 [class.desc-clamped]="!isExpanded(auction.id)"
+                                 [innerHTML]="auction.description"></div>
+                            <button *ngIf="needsExpand(auction)"
+                                    class="desc-lire-btn"
+                                    (click)="toggleExpand(auction.id, $event)">
+                                {{ isExpanded(auction.id) ? 'Réduire' : 'Lire la suite' }}
+                                <app-feather-icon
+                                    [icon]="isExpanded(auction.id) ? 'chevron-up' : 'chevron-down'"
+                                    class="lire-icon">
+                                </app-feather-icon>
+                            </button>
+                        </div>
+
+                        <div class="product-nft-content">
+                            <div class="fi-period" *ngIf="auction.periode">
+                                <app-feather-icon [icon]="'calendar'" class="fi-period-ico"></app-feather-icon>
+                                <span class="fi-period-text">{{ auction.periode }}</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </ng-template>
+            }
+        </owl-carousel-o>
+        </div><!-- /.slider-wrapper -->
+        </div><!-- /.op-loading -->
+
+    </div><!-- /.relative -->
+
+</app-card>

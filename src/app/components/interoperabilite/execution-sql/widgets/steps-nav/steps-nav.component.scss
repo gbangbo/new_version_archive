@@ -1,0 +1,52 @@
+// ── Menu latéral flottant (façon référence) ──────────────────
+.steps-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px;
+  background: #ffffff;
+  border: 1px solid #EDEFF3;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+  width: 210px;
+}
+
+.steps-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 11px 14px;
+  border: none;
+  border-radius: 12px;
+  background: transparent;
+  color: #475569;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s, color 0.15s;
+
+  .steps-ico {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    color: #94A3B8;
+    font-size: 15px;
+    transition: color 0.15s;
+  }
+
+  &:hover:not(.active) {
+    background: #F5F7FA;
+    color: #1E293B;
+  }
+
+  &.active {
+    background: #111827;
+    color: #ffffff;
+    box-shadow: 0 6px 16px rgba(17, 24, 39, 0.22);
+
+    .steps-ico { color: #ffffff; }
+  }
+}

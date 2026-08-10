@@ -1,0 +1,194 @@
+<!-- Titre -->
+<div class="cx-title">
+    <span class="cx-title-ico"><i class="fa-solid fa-tower-broadcast"></i></span>
+    <h2>Communication via API</h2>
+</div>
+
+<!-- Bannière info -->
+<div class="cx-banner">
+    <span class="cx-banner-ico"><i class="fa-solid fa-arrow-right-arrow-left"></i></span>
+    <div class="cx-banner-txt">
+        <div class="cx-banner-title">Proxy de requête HTTP externe</div>
+        <div class="cx-banner-sub">Exécute une requête HTTP vers une URL autorisée à partir d'une clé API. La clé peut être transmise via l'en-tête X-API-KEY.</div>
+    </div>
+</div>
+
+<!-- Formulaire -->
+<div class="px-panel">
+
+    <div class="cx-grid2">
+        <div class="cx-field">
+            <label>Clé API</label>
+            <select2 class="cx-select2"
+                     [data]="apiKeyOptions"
+                     [(ngModel)]="form.uid_apikey"
+                     [minCountForSearch]="0"
+                     placeholder="Sélectionner une clé API"
+                     noResultMessage="Aucune clé"></select2>
+        </div>
+        <div class="cx-field">
+            <label>Nom de l'en-tête</label>
+            <input [(ngModel)]="form.header_name" placeholder="X-API-KEY"/>
+        </div>
+    </div>
+
+    <div class="px-url-row">
+        <div class="cx-field px-method">
+            <label>Méthode</label>
+            <select2 class="cx-select2"
+                     [data]="methods"
+                     [(ngModel)]="form.method"
+                     placeholder="GET"></select2>
+        </div>
+        <div class="cx-field px-url">
+            <label>URL cible <span class="req">*</span></label>
+            <input [(ngModel)]="form.url" placeholder="https://api.exemple.com/v1/data"/>
+        </div>
+    </div>
+
+    <div class="cx-grid2">
+        <div class="cx-field">
+            <label>Payload <span class="hint">(JSON)</span></label>
+            <app-json-editor [(ngModel)]="form.payload" (validChange)="payloadValid = $event"
+                             placeholder='&#123; "id": "123" &#125;'></app-json-editor>
+            <div class="cx-json-err" *ngIf="!payloadValid"><i class="fa-solid fa-triangle-exclamation"></i> JSON invalide</div>
+        </div>
+        <div class="cx-field">
+            <label>En-têtes cibles <span class="hint">(JSON)</span></label>
+            <app-json-editor [(ngModel)]="form.target_headers" (validChange)="headersValid = $event"
+                             placeholder='&#123; "Content-Type": "application/json" &#125;'></app-json-editor>
+            <div class="cx-json-err" *ngIf="!headersValid"><i class="fa-solid fa-triangle-exclamation"></i> JSON invalide</div>
+        </div>
+    </div>
+
+    <div class="px-actions">
+        <button class="px-run" [disabled]="executing || !payloadValid || !headersValid" (click)="execute()">
+            <i class="fa-solid" [ngClass]="executing ? 'fa-circle-notch fa-spin' : 'fa-paper-plane'"></i>
+            {{ executing ? 'Envoi…' : 'Envoyer la requête' }}
+        </button>
+    </div>
+</div>
+
+<!-- Réponse -->
+<div class="px-response" *ngIf="executing || execError || hasResponse || (responseMessage && !execError)">
+    <div class="px-response-head">
+        <span class="px-response-title">
+            <i class="fa-solid fa-server"></i> Réponse
+            <span class="px-status" *ngIf="statusCode !== null"
+                  [class.ok]="statusOk" [class.ko]="!statusOk">{{ statusCode }}</span>
+            <span class="px-count" *ngIf="tableRows.length">
+                {{ viewRows.length }}<span *ngIf="viewRows.length !== tableRows.length"> / {{ tableRows.length }}</span>
+                résultat{{ tableRows.length > 1 ? 's' : '' }}
+            </span>
+        </span>
+
+        <div class="px-head-actions" *ngIf="hasResponse && !executing">
+            <!-- Recherche libre sur toutes les colonnes -->
+            <div class="px-search" *ngIf="viewMode === 'table' && tableCols.length">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input [ngModel]="tableSearch"
+                       (ngModelChange)="tableSearch = $event; pageIndex = 1; applyTableView()"
+                       placeholder="Rechercher..." aria-label="Rechercher dans le tableau"/>
+                <button class="px-search-x" *ngIf="tableSearch"
+                        (click)="tableSearch = ''; pageIndex = 1; applyTableView()" title="Effacer">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Export CSV des lignes visibles -->
+            <button class="px-copy" *ngIf="viewMode === 'table' && viewRows.length"
+                    (click)="exportCsv()" title="Exporter les lignes affichées en CSV">
+                <i class="fa-solid fa-file-csv"></i> CSV
+            </button>
+
+            <!-- Bascule Tableau / JSON -->
+            <div class="px-toggle" *ngIf="tableCols.length">
+                <button [class.on]="viewMode === 'table'" (click)="viewMode = 'table'">
+                    <i class="fa-solid fa-table-list"></i> Tableau
+                </button>
+                <button [class.on]="viewMode === 'json'" (click)="viewMode = 'json'">
+                    <i class="fa-solid fa-code"></i> JSON
+                </button>
+            </div>
+
+            <button class="px-copy" *ngIf="responseText" (click)="copyResponse()">
+                <i class="fa-regular fa-copy"></i> Copier
+            </button>
+        </div>
+    </div>
+
+    <div class="px-loading" *ngIf="executing">
+        <div class="px-spinner"></div>
+        <span>Envoi de la requête...</span>
+    </div>
+
+    <div class="px-alert" *ngIf="execError && !executing">
+        <i class="fa-solid fa-circle-exclamation"></i> {{ execError }}
+    </div>
+
+    <div class="px-msg" *ngIf="!executing && !execError && !responseText && responseMessage">
+        <i class="fa-regular fa-circle-check"></i> {{ responseMessage }}
+    </div>
+
+    <ng-container *ngIf="!executing && hasResponse">
+
+        <!-- Vue tableau -->
+        <div class="px-table-wrap" *ngIf="viewMode === 'table' && tableCols.length">
+            <table class="px-table">
+                <thead>
+                <tr>
+                    <th *ngFor="let c of tableCols">{{ colLabel(c) }}</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let r of pagedRows">
+                    <td *ngFor="let c of tableCols">{{ cellValue(r, c) }}</td>
+                </tr>
+                <tr *ngIf="!viewRows.length">
+                    <td [attr.colspan]="tableCols.length" class="px-table-empty">
+                        <i class="fa-regular fa-face-frown"></i>
+                        Aucune ligne ne correspond aux filtres
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="px-pager" *ngIf="viewMode === 'table' && viewRows.length">
+            <div class="px-pager-left">
+                <span>Lignes par page</span>
+                <select class="px-pager-size" [ngModel]="pageSize"
+                        (ngModelChange)="onPageSizeChange($event)">
+                    <option *ngFor="let s of pageSizes" [ngValue]="s">{{ s }}</option>
+                </select>
+            </div>
+
+            <div class="px-pager-right">
+                <span class="px-pager-info">
+                    <strong>{{ rangeStart }}–{{ rangeEnd }}</strong> sur <strong>{{ viewRows.length }}</strong>
+                </span>
+                <button class="px-pager-btn" [disabled]="pageIndex === 1"
+                        (click)="goToPage(1)" title="Première page">
+                    <i class="fa-solid fa-angles-left"></i>
+                </button>
+                <button class="px-pager-btn" [disabled]="pageIndex === 1"
+                        (click)="goToPage(pageIndex - 1)" title="Page précédente">
+                    <i class="fa-solid fa-angle-left"></i>
+                </button>
+                <span class="px-pager-page">{{ pageIndex }}</span>
+                <button class="px-pager-btn" [disabled]="pageIndex === totalPages"
+                        (click)="goToPage(pageIndex + 1)" title="Page suivante">
+                    <i class="fa-solid fa-angle-right"></i>
+                </button>
+                <button class="px-pager-btn" [disabled]="pageIndex === totalPages"
+                        (click)="goToPage(totalPages)" title="Dernière page">
+                    <i class="fa-solid fa-angles-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Vue JSON brute -->
+        <pre class="px-body" *ngIf="viewMode === 'json' && responseText">{{ responseText }}</pre>
+    </ng-container>
+</div>

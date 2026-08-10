@@ -9,7 +9,7 @@
 .page-title-inner {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start; // fil d'Ariane aligné à gauche
   padding: 0px 20px; // réduit de 18px à 12px
 
   @media (max-width: 640px) {
@@ -37,8 +37,8 @@
   margin: 0;
   padding: 5px 12px; // réduit de 8px 14px
   background: #F7F8F9;
-  border-radius: 30px;
-  border: 1px solid rgba(99, 102, 241, 0.15);
+  //border-radius: 10px;
+  //border: 1px solid rgba(99, 102, 241, 0.15);
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
 }
 
@@ -70,6 +70,12 @@
   line-height: 1;
 }
 
+// Pas de séparateur devant le premier élément affiché
+// (utile quand le maillon « Accueil » est masqué).
+.breadcrumb-custom-item:first-child .breadcrumb-separator {
+  display: none;
+}
+
 .breadcrumb-parent {
   font-size: 11px; // réduit de 12px à 11px
   color: #6b7280;
@@ -82,5 +88,5 @@
   font-weight: 600;
   background: rgba(99, 102, 241, 0.08);
   padding: 1px 8px; // réduit de 2px 10px
-  border-radius: 20px;
+  border-radius: 5px;
 }

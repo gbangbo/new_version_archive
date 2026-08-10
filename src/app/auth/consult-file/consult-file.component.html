@@ -36,6 +36,62 @@
     </div>
 
     <!-- ═══════════════════════════════════════════════
+         ÉCRAN VERROUILLÉ (file_password)
+    ══════════════════════════════════════════════════ -->
+    <div class="lock-screen" *ngIf="locked && !isloading && !errorMessage">
+
+        <!-- Faux documents floutés en arrière-plan (suspense) -->
+        <div class="lock-bg" aria-hidden="true">
+            <div class="lock-doc lock-doc-a">
+                <span class="ld-line ld-title"></span>
+                <span class="ld-line"></span>
+                <span class="ld-line"></span>
+                <span class="ld-line ld-short"></span>
+                <span class="ld-block"></span>
+                <span class="ld-line"></span>
+                <span class="ld-line ld-short"></span>
+            </div>
+            <div class="lock-doc lock-doc-b">
+                <span class="ld-line ld-title"></span>
+                <span class="ld-line"></span>
+                <span class="ld-line ld-short"></span>
+                <span class="ld-block"></span>
+                <span class="ld-line"></span>
+                <span class="ld-line"></span>
+            </div>
+        </div>
+
+        <div class="lock-card">
+            <div class="lock-ico"><i class="fa-solid fa-lock"></i></div>
+            <h2 class="lock-title">Fichiers protégés</h2>
+            <p class="lock-sub">
+                Ces documents sont protégés par un mot de passe.
+                Saisissez-le pour déverrouiller la consultation.
+            </p>
+
+            <div class="lock-search" [class.err]="unlockError" [class.loading]="unlocking">
+                <i class="fa-solid fa-magnifying-glass lock-search-ico" *ngIf="!unlocking"></i>
+                <div class="lock-mini-spinner" *ngIf="unlocking"></div>
+                <input type="password"
+                       class="lock-search-input"
+                       placeholder="Mot de passe…"
+                       [(ngModel)]="unlockValue"
+                       [disabled]="unlocking"
+                       (keydown.enter)="submitUnlock()"/>
+            </div>
+
+            <div class="lock-error" *ngIf="unlockError">
+                <i class="fa-solid fa-circle-exclamation"></i> {{ unlockError }}
+            </div>
+
+            <button class="lock-btn" (click)="submitUnlock()" [disabled]="unlocking || !unlockValue.trim()">
+                <i class="fa-solid" [ngClass]="unlocking ? 'fa-circle-notch fa-spin' : 'fa-unlock-keyhole'"></i>
+                {{ unlocking ? 'Vérification…' : 'Déverrouiller' }}
+            </button>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════
          TEMPLATE LISTE DES FICHIERS
     ══════════════════════════════════════════════════ -->
     <ng-template #listTpl>

@@ -1,0 +1,157 @@
+<!-- Titre -->
+<div class="cx-title">
+    <span class="cx-title-ico"><i class="fa-solid fa-key"></i></span>
+    <h2>Clés API</h2>
+</div>
+
+<!-- Bannière info -->
+<div class="cx-banner">
+    <span class="cx-banner-ico"><i class="fa-solid fa-fingerprint"></i></span>
+    <div class="cx-banner-txt">
+        <div class="cx-banner-title">Clés d'authentification</div>
+        <div class="cx-banner-sub">Générez et gérez les clés API, associez-les aux domaines autorisés.</div>
+    </div>
+</div>
+
+<!-- Toolbar -->
+<div class="cx-toolbar">
+    <div class="cx-search">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input placeholder="Rechercher une clé..."
+               [ngModel]="searchValue" (ngModelChange)="onSearch($event)"/>
+        <button *ngIf="searchValue" class="cx-search-clear" (click)="onSearch('')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <button class="cx-btn-new" (click)="openCreate()">
+        <i class="fa-solid fa-plus"></i> Nouvelle clé
+    </button>
+</div>
+
+<!-- Chargement -->
+<div class="cx-loading" *ngIf="isloading">
+    <div class="cx-spinner"></div>
+    <span>Chargement des clés API...</span>
+</div>
+
+<!-- Liste -->
+<div class="cx-list" *ngIf="!isloading">
+    <div class="cx-card" *ngFor="let r of rows">
+        <span class="cx-db-ico"><i class="fa-solid fa-key"></i></span>
+
+        <div class="cx-info">
+            <div class="cx-info-top">
+                <span class="cx-name">{{ r.name || '—' }}</span>
+                <span class="cx-type-badge">{{ r.header_name }}</span>
+                <span class="cx-status" [class.on]="r.is_active" [class.off]="!r.is_active">
+                    <i class="fa-solid fa-circle"></i> {{ r.is_active ? 'Actif' : 'Inactif' }}
+                </span>
+            </div>
+
+            <!-- Clé -->
+            <div class="ck-key-cell">
+                <code class="ck-key">{{ r.revealed ? r.revealedKey : r.key }}</code>
+                <button class="ck-key-btn" [title]="r.revealed ? 'Masquer' : 'Afficher'"
+                        [disabled]="r.revealing" (click)="toggleReveal(r)">
+                    <i *ngIf="r.revealing" class="fa-solid fa-circle-notch fa-spin"></i>
+                    <i *ngIf="!r.revealing" class="fa-solid" [ngClass]="r.revealed ? 'fa-eye-slash' : 'fa-eye'"></i>
+                </button>
+                <button class="ck-key-btn" title="Copier" (click)="copyKey(r)"><i class="fa-regular fa-copy"></i></button>
+            </div>
+
+            <!-- Domaines -->
+            <div class="ck-domains" *ngIf="domainLabels(r).length">
+                <span class="ck-domain-tag" *ngFor="let d of domainLabels(r)"><i class="fa-solid fa-globe"></i> {{ d }}</span>
+            </div>
+        </div>
+
+        <div class="cx-actions">
+            <button class="btn-round-edit" title="Modifier" (click)="openEdit(r)">
+                <app-feather-icon class="icon-small" [icon]="'edit-3'"></app-feather-icon>
+            </button>
+            <button class="btn-round-edit"
+                    [title]="r.is_active ? 'Désactiver' : 'Activer'"
+                    [disabled]="togglingUid === r.uid" (click)="toggleActive(r)">
+                <i *ngIf="togglingUid === r.uid" class="fa-solid fa-circle-notch fa-spin"></i>
+                <app-feather-icon *ngIf="togglingUid !== r.uid" class="icon-small"
+                                  [icon]="r.is_active ? 'toggle-right' : 'toggle-left'"></app-feather-icon>
+            </button>
+            <button class="btn-round-edit" title="Supprimer" (click)="remove(r)">
+                <app-feather-icon class="icon-small" [icon]="'trash-2'"></app-feather-icon>
+            </button>
+        </div>
+    </div>
+
+    <div class="cx-empty" *ngIf="rows.length === 0">
+        <i class="fa-solid fa-key"></i>
+        <span>Aucune clé API</span>
+        <small *ngIf="searchValue">Aucun résultat pour « {{ searchValue }} »</small>
+    </div>
+</div>
+
+<!-- ═══ MODAL ═══════════════════════════════════════════════ -->
+<div class="cx-backdrop" *ngIf="showModal">
+    <div class="cx-panel">
+        <div class="cx-panel-head">
+            <span class="cx-panel-title"><i class="fa-solid fa-key"></i> {{ isEdit ? 'Modifier la clé API' : 'Nouvelle clé API' }}</span>
+            <button class="cx-panel-close" (click)="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+
+        <div class="cx-panel-body">
+            <div class="cx-alert" *ngIf="modalError"><i class="fa-solid fa-circle-exclamation"></i> {{ modalError }}</div>
+
+            <div class="cx-grid2">
+                <div class="cx-field">
+                    <label>Nom <span class="req">*</span></label>
+                    <input [(ngModel)]="form.name" name="name" placeholder="App CRM Partner"/>
+                </div>
+                <div class="cx-field">
+                    <label>Nom de l'en-tête</label>
+                    <input [(ngModel)]="form.header_name" name="header" placeholder="X-API-KEY"/>
+                </div>
+            </div>
+
+            <div class="cx-field">
+                <label>
+                    Clé <span class="req" *ngIf="!isEdit">*</span>
+                    <span class="hint" *ngIf="isEdit">(laisser vide pour conserver l'actuelle)</span>
+                </label>
+                <div class="ck-key-input">
+                    <input [(ngModel)]="form.key" name="key" placeholder="sk_client_shared_key_123"/>
+                    <button type="button" class="ck-gen-btn" (click)="generateKey()">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Générer
+                    </button>
+                </div>
+            </div>
+
+            <div class="cx-field">
+                <label>Domaines autorisés</label>
+                <select2 class="cx-select2"
+                         [data]="dataDomaines"
+                         [multiple]="true"
+                         [(ngModel)]="form.allowed_domains_uids"
+                         name="domains"
+                         [minCountForSearch]="0"
+                         placeholder="Sélectionner un ou plusieurs domaines"
+                         noResultMessage="Aucun domaine"></select2>
+            </div>
+
+            <div class="cx-field">
+                <label>Description</label>
+                <textarea rows="2" [(ngModel)]="form.description" name="desc" placeholder="Ex. Clé dédiée au connecteur CRM…"></textarea>
+            </div>
+
+            <div class="cx-field">
+                <label>État de la clé</label>
+                <nz-switch class="cx-switch2" [(ngModel)]="form.is_active" name="active"
+                           nzCheckedChildren="Actif" nzUnCheckedChildren="Inactif"></nz-switch>
+            </div>
+        </div>
+
+        <div class="cx-panel-foot">
+            <button class="cx-btn-cancel" (click)="closeModal()">Annuler</button>
+            <button class="cx-btn-confirm" [disabled]="saving" (click)="submit()">
+                <i class="fa-solid" [ngClass]="saving ? 'fa-circle-notch fa-spin' : 'fa-check'"></i>
+                {{ saving ? 'Enregistrement…' : (isEdit ? 'Modifier' : 'Créer') }}
+            </button>
+        </div>
+    </div>
+</div>

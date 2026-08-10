@@ -15,14 +15,26 @@
 
                     <!-- ── Succès ── -->
                     <div class="sm-success" *ngIf="sendSuccess">
-                        <div class="sm-success-icon">
-                            <i class="fa-solid fa-circle-check"></i>
+                        <div class="sm-success-badge">
+                            <span class="sm-ring sm-ring-1"></span>
+                            <span class="sm-ring sm-ring-2"></span>
+                            <div class="sm-success-icon">
+                                <svg viewBox="0 0 52 52" class="sm-check-svg">
+                                    <circle class="sm-check-circle" cx="26" cy="26" r="24" fill="none"/>
+                                    <path class="sm-check-path" fill="none" d="M14 27 l8 8 l16 -16"/>
+                                </svg>
+                            </div>
                         </div>
-                        <p class="sm-success-title">E-mail envoyé !</p>
+                        <p class="sm-success-title">E-mail envoyé&nbsp;!</p>
                         <p class="sm-success-sub">
-                            {{ selectedFiles.length }} fichier{{ selectedFiles.length > 1 ? 's' : '' }}
-                            envoyé{{ selectedFiles.length > 1 ? 's' : '' }} à {{ emailList.join(', ') }}
+                            <strong>{{ selectedFiles.length }}</strong> fichier{{ selectedFiles.length > 1 ? 's' : '' }}
+                            envoyé{{ selectedFiles.length > 1 ? 's' : '' }} à
                         </p>
+                        <div class="sm-success-mails">
+                            <span class="sm-mail-chip" *ngFor="let m of emailList">
+                                <i class="fa-solid fa-paper-plane"></i> {{ m }}
+                            </span>
+                        </div>
                     </div>
 
                     <!-- ── Chargement (bloquant) ── -->

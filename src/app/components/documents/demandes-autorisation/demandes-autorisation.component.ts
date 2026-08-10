@@ -87,6 +87,7 @@ export class DemandesAutorisationComponent implements OnInit {
     ngOnInit(): void {
         window.scrollTo({top: 0, behavior: 'smooth'});
         this.users = this.autor.getInfosUsers();
+        console.log(this.users?.dataservice?.uid)
         this.loadDemandes();
     }
 
@@ -96,8 +97,9 @@ export class DemandesAutorisationComponent implements OnInit {
         this.allRows = [];
         this.rows = [];
         const id = this.users?.datasociete?.uid || '';
+        const idservice = this.users?.dataservice?.uid || '';
         this.httService.getData(
-            `${environment.api_url}api/:save-demande-authorisation?idsociete=${id}`,
+            `${environment.api_url}api/:save-demande-authorisation?idsociete=${id}&idservice=${idservice}`,
             false,
             this.users?.access_token || ''
         ).toPromise()

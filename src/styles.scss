@@ -126,15 +126,193 @@ input, textarea, select {
 // Owl au-dessus de tout
 .owl-dt-container,
 .owl-dt-popup-container,
-.cdk-overlay-container,
-.cdk-overlay-pane {
+.cdk-overlay-container {
   z-index: 999999 !important;
   position: fixed !important;
+}
+
+// NB : ne PAS forcer position:fixed sur le pane — ça casse le repositionnement
+// automatique de CDK (flip vers le haut quand il n'y a pas de place en bas).
+.cdk-overlay-pane {
+  z-index: 999999 !important;
 }
 
 .owl-dt-backdrop {
   z-index: 999998 !important;
   position: fixed !important;
+}
+
+// calendrier nz-date-picker au-dessus des modals
+.ant-picker-dropdown {
+  z-index: 1000000 !important;
+}
+
+// ═══ Popups « category-popup » — harmonisation charte navy ═══
+// (scopé à .category-popup : n'affecte pas les .form-control hors modal)
+.modal-content.category-popup {
+  border-radius: 5px !important;
+}
+
+// en-tête : icône générique + titre en casse normale + croix carrée translucide
+.category-popup .modal-header {
+  justify-content: flex-start !important;
+  gap: 10px !important;
+  align-items: center !important;
+
+  &::before {
+    content: "\f044"; // fa-pen-to-square
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    color: #fff;
+    font-size: 15px;
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+}
+
+.category-popup .modal-header > h5 {
+  text-transform: lowercase !important;
+  letter-spacing: 0 !important;
+  font-size: 14px !important;
+
+  &::first-letter { text-transform: uppercase !important; }
+}
+
+.category-popup .modal-header .btn-close {
+  margin-left: auto !important;
+  width: 30px !important;
+  height: 30px !important;
+  padding: 0 !important;
+  border-radius: 6px !important;
+  background-color: rgba(255, 255, 255, 0.16) !important;
+  background-size: 12px !important;
+  filter: brightness(0) invert(1) !important;
+  opacity: 1 !important;
+
+  &:hover { background-color: rgba(255, 255, 255, 0.3) !important; }
+}
+
+// champs texte
+.category-popup .form-control {
+  border: 1px solid #E5E7EB !important;
+  border-radius: 10px !important;
+  background: #F8FAFC !important;
+  transition: all 0.2s !important;
+
+  &:focus {
+    border-color: rgba(0, 54, 110, 0.7) !important;
+    background: #fff !important;
+    box-shadow: 0 0 0 3px rgba(0, 54, 110, 0.1) !important;
+  }
+}
+.category-popup input.form-control { height: 42px !important; }
+
+// select2
+.category-popup .select2-selection {
+  min-height: 42px !important;
+  display: flex !important;
+  align-items: center !important;
+  padding: 4px 12px !important;
+  background: #F8FAFC !important;
+  border: 1px solid #E5E7EB !important;
+  border-radius: 10px !important;
+  font-size: 13px !important;
+  color: #0F172A !important;
+}
+.category-popup .select2-container--focus .select2-selection,
+.category-popup .select2-container--open .select2-selection {
+  background: #fff !important;
+  border-color: rgba(0, 54, 110, 0.7) !important;
+  box-shadow: 0 0 0 3px rgba(0, 54, 110, 0.1) !important;
+}
+.category-popup .select2-selection__rendered { padding: 0 !important; line-height: 34px !important; }
+.category-popup .select2-results__option--highlighted,
+.category-popup .select2-results__option--highlighted[aria-selected] { background: rgba(0, 54, 110, 0.09) !important; color: rgba(0, 54, 110) !important; }
+.category-popup .select2-results__option[aria-selected="true"] { background: rgba(0, 54, 110, 0.14) !important; color: rgba(0, 54, 110) !important; }
+
+// ng-zorro select / tree-select
+.category-popup .ant-select-selector {
+  min-height: 42px !important;
+  height: 42px !important;
+  display: flex !important;
+  align-items: center !important;
+  padding: 0 12px !important;
+  border: 1px solid #E5E7EB !important;
+  border-radius: 10px !important;
+  background: #F8FAFC !important;
+  box-shadow: none !important;
+}
+.category-popup .ant-select-focused .ant-select-selector {
+  border-color: rgba(0, 54, 110, 0.7) !important;
+  background: #fff !important;
+  box-shadow: 0 0 0 3px rgba(0, 54, 110, 0.1) !important;
+}
+.category-popup .ant-select-selection-item,
+.category-popup .ant-select-selection-placeholder { line-height: 40px !important; }
+
+// bouton principal (Créer / Valider / Suivant) → navy
+.category-popup .newBtn {
+  border-radius: 10px !important;
+  background-color: rgba(0, 54, 110) !important;
+  box-shadow: 0 2px 8px rgba(0, 54, 110, 0.25) !important;
+
+  &:hover:not(:disabled) {
+    background-color: #003a75 !important;
+    transform: none !important;
+    box-shadow: 0 2px 8px rgba(0, 54, 110, 0.25) !important;
+  }
+}
+
+// bouton secondaire (Annuler / Précédent) → gris clair
+.category-popup .btn.button-light-primary {
+  border: none !important;
+  border-radius: 10px !important;
+  background: #F1F5F9 !important;
+  color: #475569 !important;
+
+  &:hover:not(:disabled) { background: #E2E8F0 !important; color: #334155 !important; }
+}
+
+// ═══ Onglets « steps-nav » (métier) — item actif en pastille sombre ═══
+.tab-links.nav-steps {
+  display: inline-flex !important;
+  flex-wrap: wrap;
+  gap: 2px !important;
+  padding: 6px !important;
+  margin: 0 0 6px !important;
+  list-style: none !important;
+  background: #ffffff !important;
+  border: 1px solid #EDEFF3 !important;
+  border-radius: 14px !important;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.07) !important;
+
+  .tab-link {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px !important;
+    border: none !important;
+    border-radius: 10px !important;
+    background: transparent !important;
+    color: #475569 !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0 !important;
+    text-transform: none !important;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s !important;
+
+    &::before, &::after { display: none !important; }
+
+    &:hover:not(.active) { background: #F5F7FA !important; color: #1E293B !important; }
+
+    &.active {
+      background: #111827 !important;
+      color: #ffffff !important;
+      box-shadow: 0 6px 16px rgba(17, 24, 39, 0.22) !important;
+    }
+  }
 }
 
 .modal-backdrop.show {
@@ -159,6 +337,56 @@ input, textarea, select {
   background-color: #19202f !important;
 }
 
+/* Supprime l'ombre périphérique de la sidebar + la force à remplir toute la
+   hauteur (en mode replié elle avait height:auto → vide blanc en bas). */
+.page-wrapper.compact-wrapper .page-body-wrapper div.sidebar-wrapper {
+  box-shadow: none !important;
+  height: 100vh !important;
+  min-height: 100vh !important;
+}
+
 .page-wrapper.compact-wrapper .page-body-wrapper div.sidebar-wrapper .logo-wrapper, .page-wrapper.compact-wrapper .page-body-wrapper div.sidebar-wrapper .logo-icon-wrapper {
   padding: 6px 20px !important;
+  box-shadow: none !important;
+}
+/* Masque le pied de page global « Copyright » sur les écrans qui le gèrent
+   eux-mêmes (ex. creer-un-document, où l'info est reprise dans la barre d'actions). */
+body.hide-app-footer app-footer,
+body.hide-app-footer .footer {
+    display: none !important;
+}
+
+/* ── Logo compact (sidebar repliée en mode icônes) ──────────────────────
+   On y affiche le logo complet (logo_apw_full). Comme la barre repliée est
+   étroite, on cadre l'image pour qu'elle occupe la largeur disponible sans
+   déborder ni élargir la sidebar. */
+/* Le logo compact ne doit apparaître qu'en mode replié (icônes). En mode déployé,
+   c'est le header-logo (« ARCHIVE WEB PRO ») qui s'affiche → on garde le
+   .logo-icon-wrapper masqué pour éviter un logo en double. */
+.sidebar-wrapper:not(.close_icon) .logo-icon-wrapper {
+    display: none !important;
+}
+
+/* Mode replié : bloc-logo figé à la hauteur de l'en-tête (44px padding + 35px
+   contenu = 79px) avec centrage flex → la sidebar reste alignée sur l'en-tête. */
+.sidebar-wrapper.close_icon .logo-icon-wrapper {
+    height: 79px !important;
+    padding: 0 12px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* Au survol, la sidebar repliée se déploie et réaffiche le header-logo :
+   on masque alors le logo compact pour éviter le doublon. */
+.sidebar-wrapper.close_icon:hover .logo-icon-wrapper {
+    display: none !important;
+}
+.sidebar-wrapper .logo-icon-wrapper img.sidebar-logo-full {
+    width: auto !important;
+    height: auto !important;
+    max-height: 42px !important;      /* légèrement plus grand que l'ancienne icône (35px) */
+    max-width: 100% !important;       /* ne déborde jamais la largeur de la sidebar */
+    object-fit: contain !important;
+    display: block !important;
 }

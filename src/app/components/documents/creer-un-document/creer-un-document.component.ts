@@ -29,6 +29,7 @@ import {OwlDateTimeModule, OwlNativeDateTimeModule} from "@danielmoncada/angular
 import {TreeNode} from "../../configuration/plan-de-classement/tree-node.model";
 import {NzTagModule} from "ng-zorro-antd/tag";
 import {NzPopoverModule} from "ng-zorro-antd/popover";
+import {NzToolTipModule} from "ng-zorro-antd/tooltip";
 import {NzTreeSelectModule} from "ng-zorro-antd/tree-select";
 import {SvgIconComponent} from "../../../shared/components/ui/svg-icon/svg-icon.component";
 import Swal from 'sweetalert2';
@@ -104,6 +105,7 @@ interface ExampleFlatNode {
         ReactiveFormsModule,
         FormsModule,
         NzSelectModule,
+        NzToolTipModule,
         NzDatePickerModule, OwlDateTimeModule,
         OwlNativeDateTimeModule, NzTagModule, NzPopoverModule, NzTreeSelectModule, SvgIconComponent
     ],
@@ -117,6 +119,7 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
     @ViewChild('pdfWrapper', {static: false}) pdfWrapper!: ElementRef<HTMLDivElement>;
 
 
+    public currentYear: number = new Date().getFullYear();
     public addBlogCategory: Select2Data = addBlogCategory;
     public blogType = blogType;
     public text = `
@@ -338,6 +341,7 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
     dateInputDisplay: string = '';
     notifyBeneficiary: boolean = false;
     assignProprietaires: boolean = false;
+    proprietairesCollapsed: boolean = false;  // repli de l'accordéon (sans désélectionner)
     dataSocietes: any[] = [];
     loadingSocietes: boolean = false;
     selectedSociete: string = '';
@@ -356,7 +360,7 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
         code_docs: new FormControl('', Validators.required),
         lib_docs: new FormControl('', Validators.required),
         date_docs: new FormControl<Date | null>(null, Validators.required),
-        publishe: new FormControl('', Validators.required),
+        publishe: new FormControl<number>(0, Validators.required),
         typeArchivage: new FormControl('courante', Validators.required),
         idrayon: new FormControl('',),
         idsite: new FormControl('',),
@@ -371,7 +375,7 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
         statut_docs: new FormControl('',),
         fulltexts_docs: new FormControl('',),
         idproprietaire: new FormControl('',),
-        sendmail: new FormControl('',),
+        sendmail: new FormControl<boolean>(false),
         idcategories: new FormControl('',),
     })
     isSaving: boolean = false;
@@ -405,6 +409,8 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
 
     ngOnInit(): void {
         pdfjsLib.GlobalWorkerOptions.workerSrc = '/assets/pdfjs/pdf.worker.mjs';
+        // Masque le pied de page global sur cet écran (l'info est reprise dans la barre d'actions)
+        document.body.classList.add('hide-app-footer');
         this.editor = new Editor();
         this.editor2 = new Editor();
         window.scrollTo({top: 0, behavior: 'smooth'});
@@ -437,8 +443,8 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
         const hasBoite = !!doc?.databoites?.uid;
         this.validationForm.get('typeArchivage')?.setValue(hasBoite ? 'definitive' : 'courante');
 
-        // Statut public / privé
-        this.documentStatus = doc?.publishe ? 'public' : 'privee';
+        // Statut : privé (0) / public (1) / confidentiel (2)
+        this.documentStatus = this.codeToStatut(doc?.publishe);
 
         // Champs scalaires
         this.validationForm.patchValue({
@@ -447,7 +453,7 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
             lib_docs: doc?.lib_docs || doc?.lib_document || '',
             desc_docs: doc?.desc_docs || '',
             date_docs: doc?.date_docs ? new Date(doc.date_docs) : null,
-            publishe: doc?.publishe ? 'public' : 'privee',
+            publishe: this.statutToCode(this.documentStatus),
             idcategories: doc?.datacategories?.uid || '',
         });
 
@@ -661,6 +667,8 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
     }
 
     ngOnDestroy(): void {
+        // Rétablit le pied de page global en quittant l'écran
+        document.body.classList.remove('hide-app-footer');
         this.editor.destroy();
         this.editor2.destroy();
         // ou componentWillUnmount() ou onUnmounted()
@@ -1425,7 +1433,7 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
     resetAfterSave(): void {
         this.validationForm.reset({
             typeArchivage: 'courante',
-            publishe: '',
+            publishe: 0,
         });
         this.validationForm.markAsPristine();
         this.validationForm.markAsUntouched();
@@ -1439,6 +1447,7 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
         this.dateInputDisplay = '';
         this.notifyBeneficiary = false;
         this.assignProprietaires = false;
+        this.proprietairesCollapsed = false;
         this.selectedSociete = '';
         this.dataComptes = [];
         this.selectedProprietaires = [];
@@ -1497,7 +1506,7 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
                 : [],
             "region_dep_localite": "",
             "statut_docs": 0,
-            "publishe": this.isEdit ? (this.documentStatus === 'public') : true,
+            "publishe": this.statutToCode(this.documentStatus),
             "fulltexts_docs": "",
             "idproprietaire": 0,
             "sendmail": this.validationForm.value.sendmail || false
@@ -1672,9 +1681,9 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
         this.validationForm.get('typeArchivage')?.setValue(value);
     }
 
-    toggleProprietaires(event: Event): void {
-        const input = event.target as HTMLInputElement;
-        this.assignProprietaires = input.checked;
+    toggleProprietaires(value: boolean): void {
+        this.assignProprietaires = value;
+        this.proprietairesCollapsed = false;
         if (this.assignProprietaires) {
             if (!this.dataSocietes.length) {
                 this.showSocietes('');
@@ -1683,6 +1692,21 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
             this.selectedSociete = '';
             this.selectedProprietaires = [];
             this.dataComptes = [];
+        }
+    }
+
+    /** Rond (coche) : active / désactive l'attribution (désélection possible). */
+    onAssignDot(event: Event): void {
+        event.stopPropagation();
+        this.toggleProprietaires(!this.assignProprietaires);
+    }
+
+    /** En-tête / chevron : replie ou déplie l'accordéon sans perdre la sélection. */
+    onAssignHeader(): void {
+        if (!this.assignProprietaires) {
+            this.toggleProprietaires(true);
+        } else {
+            this.proprietairesCollapsed = !this.proprietairesCollapsed;
         }
     }
 
@@ -1735,11 +1759,28 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
             });
     }
 
-    setStatut(value: 'privee' | 'public', event?: Event): void {
+    setStatut(value: 'privee' | 'public' | 'confidentiel', event?: Event): void {
         // Comportement radio : un re-clic sur le switch déjà actif ne doit pas le décocher
         const input = event?.target as HTMLInputElement | null;
         if (input) input.checked = true;
         this.documentStatus = value;
+        // Synchronise la valeur numérique du formulaire (0 = privé, 1 = public, 2 = confidentiel)
+        this.validationForm.get('publishe')?.setValue(this.statutToCode(value));
+    }
+
+    /** Convertit le statut en code numérique attendu par l'API (publishe). */
+    private statutToCode(status: string): number {
+        if (status === 'public') return 1;
+        if (status === 'confidentiel') return 2;
+        return 0; // privé
+    }
+
+    /** Convertit le code numérique de l'API (publishe) en statut. */
+    private codeToStatut(code: any): 'privee' | 'public' | 'confidentiel' {
+        const n = Number(code);
+        if (n === 1 || code === true) return 'public';
+        if (n === 2) return 'confidentiel';
+        return 'privee';
     }
 
     disableFutureDates = (date: Date): boolean => {

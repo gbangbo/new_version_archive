@@ -16,7 +16,7 @@ import Swal from "sweetalert2";
 import {NzSwitchModule} from "ng-zorro-antd/switch";
 import {Select2Module} from "ng-select2-component";
 import {CardComponent} from "../../../../../shared/components/ui/card/card.component";
-import {OWL_DATE_TIME_LOCALE, OwlDateTimeModule, OwlNativeDateTimeModule} from "@danielmoncada/angular-datetime-picker";
+import {NzDatePickerModule} from "ng-zorro-antd/date-picker";
 import {FeatherIconComponent} from "../../../../../shared/components/ui/feather-icon/feather-icon.component";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {decryptData, postDataCrypte} from "../../../../../config/config";
@@ -34,12 +34,8 @@ const TREE_DATA: TreeNode[] = [];
     selector: 'app-add-modal',
     imports: [CommonModule, FormsModule,
         ReactiveFormsModule, NzSwitchModule,
-        Select2Module, CardComponent, OwlDateTimeModule,
-        OwlNativeDateTimeModule,
+        Select2Module, CardComponent, NzDatePickerModule,
         FeatherIconComponent, DocUploadComponent, NzTreeSelectModule],
-    providers: [
-        {provide: OWL_DATE_TIME_LOCALE, useValue: 'fr'}
-    ],
     templateUrl: './add-modal.component.html',
     styleUrl: './add-modal.component.scss',
 })

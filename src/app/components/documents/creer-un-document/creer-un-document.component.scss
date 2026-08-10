@@ -68,9 +68,37 @@
   height: auto;
 }
 
+// Le composant remplit exactement la zone de contenu (page-body = 100vh - header)
+// → pas de vide blanc sous la carte, scroll délégué aux colonnes internes.
+:host {
+  display: block;
+  // La zone de contenu du template = calc(100vh - 136px) (header 135px).
+  // Le footer global étant masqué, on occupe presque toute cette hauteur
+  // pour maximiser la partie visible du formulaire → scroll au dernier moment.
+  height: calc(100vh - 136px);
+}
+
+.container.job-apply-wrapper {
+  height: 100%;
+}
+
 nz-splitter {
   height: 100%;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 6px;
+  overflow: hidden; // arrondit proprement les coins (dont la barre du bas)
+}
+
+// La hauteur doit descendre du host jusqu'aux panneaux, sinon .box height:100%
+// retombe sur auto → la zone de formulaire ne remplit pas la carte et le scroll
+// apparaît trop tôt.
+:host ::ng-deep .ant-splitter {
+  height: 100% !important;
+}
+
+:host ::ng-deep .ant-splitter-panel {
+  height: 100%;
+  overflow: hidden; // chaque colonne borne son propre scroll interne
 }
 
 .box {
@@ -343,7 +371,9 @@ nz-splitter {
   -moz-appearance: textfield;
 
   &::-webkit-inner-spin-button,
-  &::-webkit-outer-spin-button { -webkit-appearance: none; }
+  &::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+  }
 }
 
 .pdf-page-sep {
@@ -457,14 +487,132 @@ input[type="checkbox"]:checked {
 }
 
 
-:host ::ng-deep .ant-select, .ant-picker {
-  width: 100% !important;
-  border-radius: 5px !important;
-  height: 37px !important;
-}
+// ═══════════════════════════════════════
+// SELECTS (ng-zorro) + DATE PICKER — harmonisés avec les inputs
+// ═══════════════════════════════════════
+:host ::ng-deep {
 
-:host ::ng-deep .ant-select > .ant-select-selector {
-  border-radius: 4px !important;
+  .ant-select {
+    width: 100% !important;
+
+    // Boîte du select
+    .ant-select-selector {
+      min-height: 40px !important;
+      border: 1px solid #E2E8F0 !important;
+      border-radius: 4px !important;
+      background: #fff !important;
+      padding: 0 12px !important;
+      transition: border-color 0.2s, box-shadow 0.2s !important;
+    }
+
+    // Select simple : hauteur fixe + centrage vertical
+    &.ant-select-single .ant-select-selector {
+      height: 40px !important;
+
+      .ant-select-selection-item,
+      .ant-select-selection-placeholder {
+        line-height: 38px !important;
+      }
+    }
+
+    // Placeholder cohérent
+    .ant-select-selection-placeholder { color: #CBD5E1 !important; }
+
+    // Survol
+    &:not(.ant-select-disabled):hover .ant-select-selector {
+      border-color: #CBD5E1 !important;
+    }
+
+    // Focus / ouvert
+    &.ant-select-focused:not(.ant-select-disabled) .ant-select-selector,
+    &.ant-select-open .ant-select-selector {
+      border-color: #94A3B8 !important;
+      box-shadow: none !important;
+    }
+
+    // Désactivé
+    &.ant-select-disabled .ant-select-selector {
+      background: #F8FAFC !important;
+      color: #94A3B8 !important;
+    }
+
+    // Tags (mode multiple)
+    .ant-select-selection-item {
+      border-radius: 5px !important;
+      background: #EEF3F8 !important;
+      border-color: #DBE6F0 !important;
+      color: #0F2F52 !important;
+      font-weight: 600 !important;
+    }
+  }
+
+  // Date picker aligné sur le même style
+  .ant-picker {
+    width: 100% !important;
+    height: 40px !important;
+    border: 1px solid #E2E8F0 !important;
+    border-radius: 4px !important;
+    transition: border-color 0.2s, box-shadow 0.2s !important;
+
+    &:hover { border-color: #CBD5E1 !important; }
+
+    &.ant-picker-focused {
+      border-color: #94A3B8 !important;
+      box-shadow: none !important;
+    }
+
+    input::placeholder { color: #CBD5E1 !important; }
+  }
+
+  // Select2 (Série, Type, Site, Rayon, Boîte) aligné sur le même style
+  .raise-input-select {
+    display: block !important;
+    width: 100% !important;
+
+    .select2,
+    .select2-container,
+    .selection { width: 100% !important; display: block !important; }
+
+    // Boîte : hauteur fixe 40px, bordure fine, pas d'ombre parasite
+    .select2-selection {
+      height: 40px !important;
+      min-height: 40px !important;
+      max-height: 40px !important;
+      border: 1px solid #E2E8F0 !important;
+      border-radius: 4px !important;
+      background: #fff !important;
+      box-shadow: none !important;
+      padding: 0 !important;
+      overflow: hidden !important;
+      display: flex !important;
+      align-items: center !important;
+      transition: border-color 0.2s, box-shadow 0.2s !important;
+
+      &:hover { border-color: #CBD5E1 !important; }
+    }
+
+    .select2-selection__rendered {
+      color: #0F172A !important;
+      font-size: 13px !important;
+      line-height: 40px !important;
+      padding: 0 32px 0 12px !important;
+      margin: 0 !important;
+    }
+
+    .select2-selection__placeholder { color: #CBD5E1 !important; }
+
+    .select2-selection__arrow {
+      height: 40px !important;
+      top: 0 !important;
+      right: 8px !important;
+    }
+
+    .select2-container--focus .select2-selection,
+    .select2-container--open .select2-selection {
+      border-color: #94A3B8 !important;
+      box-shadow: none !important;
+    }
+  }
 }
 
 
@@ -475,23 +623,23 @@ input[type="checkbox"]:checked {
 // FORM LABELS
 // ═══════════════════════════════════════
 .form-label {
-  font-size: 11px !important;
-  font-weight: 700 !important;
-  color: #475569 !important;
-  letter-spacing: 0.05em;
-  margin-bottom: 5px !important;
+  font-size: 12.5px !important;
+  font-weight: 600 !important;
+  color: #64748B !important;
+  letter-spacing: 0 !important;
+  margin-bottom: 7px !important;
 }
 
 .section-label {
   display: flex;
   align-items: center;
   gap: 6px;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
+  text-transform: none;
+  letter-spacing: 0;
 
   i {
     font-size: 14px;
-    color: rgba(0, 54, 110);
+    color: #94A3B8;
   }
 }
 
@@ -505,28 +653,32 @@ input[type="checkbox"]:checked {
   font-size: 13px !important;
   color: #0F172A !important;
   background: #fff !important;
-  transition: all 0.2s !important;
+  transition: border-color 0.2s, box-shadow 0.2s !important;
 
   &::placeholder {
     color: #CBD5E1 !important;
   }
 
+  &:hover:not(:focus):not(.is-invalid):not(.is-valid) {
+    border-color: #CBD5E1 !important;
+  }
+
   &:focus {
-    border-color: rgba(0, 54, 110) !important;
+    border-color: #94A3B8 !important;
     background: #fff !important;
-    box-shadow: 0 0 0 3px rgba(0, 54, 110, 0.1) !important;
+    box-shadow: none !important;
     outline: none !important;
   }
 
   &.is-invalid {
     border-color: #EF4444 !important;
-    background: #FEF2F2 !important;
-    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.08) !important;
+    background: #fff !important;
+    box-shadow: none !important;
   }
 
   &.is-valid {
-    border-color: #10B981 !important;
-    background: #F0FDF4 !important;
+    border-color: #E2E8F0 !important;
+    background: #fff !important;
   }
 }
 
@@ -557,6 +709,183 @@ input[type="checkbox"]:checked {
   gap: 12px;
   padding: 4px 14px;
 }
+
+// ══ Statut du document — petites pastilles minimalistes ══════
+.statut-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.statut-pill {
+  --c: #64748b;       // couleur d'accent
+  --c-bg: #f1f5f9;    // fond pill active
+
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px 3px 4px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.15s ease;
+
+  &--public { --c: #10b981; --c-bg: #ecfdf5; }
+  &--confidentiel { --c: #ef4444; --c-bg: #fef2f2; }
+
+  // Groupe couleur unique (Archives : Courante / Définitive)
+  .statut-pills--mono & { --c: #00366e; --c-bg: #eaf1f8; }
+
+  &:hover:not(.active) { background: #f5f7fa; }
+
+  &.active {
+    //background: var(--c-bg);
+
+    .statut-pill-dot {
+      background: var(--c);
+      border-color: var(--c);
+      i { opacity: 1; }
+    }
+    .statut-pill-label { color: var(--c); }
+  }
+}
+
+.statut-pill-dot {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 1.5px solid #CBD5E1;
+  background: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 8px;
+  transition: all 0.15s ease;
+
+  i { line-height: 1; opacity: 0; transition: opacity 0.15s ease; }
+}
+
+.statut-pill-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
+  white-space: nowrap;
+  transition: color 0.15s ease;
+}
+
+// Icône optionnelle dans la pastille (interrupteurs mail / utilisateurs)
+.statut-pill-ico {
+  font-size: 15px;
+  line-height: 1;
+  color: #94a3b8;
+  transition: color 0.15s ease;
+}
+
+.statut-pill.active .statut-pill-ico { color: var(--c); }
+
+// Variante « large » : interrupteur booléen avec libellé long
+.statut-pill--wide {
+  padding: 6px 14px 6px 6px;
+
+  .statut-pill-label { white-space: normal; }
+}
+
+// ══ Accordéon « Attribuer le document à des utilisateurs » ══════
+.assign-accordion {
+  --c: #00366e;
+  //border: 1px solid #EDF1F5;
+  border-radius: 8px;
+  background: #fff;
+  overflow: hidden;
+  transition: border-color 0.18s ease;
+
+  &.active {
+    //border-color: rgba(0, 54, 110, 0.28);
+  }
+}
+
+.assign-acc-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.15s ease;
+
+  &:hover { background: #f8fafc; }
+
+  .statut-pill-dot { cursor: pointer; }
+
+  .statut-pill-label {
+    flex: 1;
+    text-align: left;
+    font-size: 12.5px;
+    white-space: normal;
+  }
+
+  &.active {
+    .statut-pill-dot {
+      background: var(--c);
+      border-color: var(--c);
+      i { opacity: 1; }
+    }
+    .statut-pill-label,
+    .statut-pill-ico { color: var(--c); }
+  }
+}
+
+// Petit bouton fermer / déplier à droite de l'en-tête
+.assign-acc-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  color: #94a3b8;
+  transition: background 0.15s ease, color 0.15s ease;
+
+  i { font-size: 15px; line-height: 1; }
+
+  &:hover {
+    background: rgba(0, 54, 110, 0.1);
+    color: var(--c);
+  }
+
+  // En mode déplié (icône ×) : bien visible
+  .assign-accordion.open & { color: var(--c); }
+}
+
+.assign-acc-body {
+  padding: 4px 14px 14px;
+  border-top: 1px solid #F1F5F9;
+  animation: assignAccIn 0.22s ease;
+}
+
+// Spinner de chargement interne au select « Utilisateurs propriétaires »
+:host ::ng-deep .proprietaire-select {
+  .ant-select-arrow {
+    .anticon-loading,
+    .anticon-spin,
+    .ant-select-arrow-loading {
+      color: #00366e;
+      font-size: 15px;
+    }
+  }
+}
+
+@keyframes assignAccIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 
 .border-bottom-light {
   border-bottom: 1px solid #F1F5F9;
@@ -601,12 +930,56 @@ input[type="checkbox"]:checked {
 .form-panel {
   display: flex;
   flex-direction: column;
-  gap: 14px;
   width: 100%;
   height: 100%;
-  overflow-y: auto;
-  padding: 14px;
+  overflow: hidden; // le scroll est délégué à .form-scroll
   box-sizing: border-box;
+}
+
+// Zone défilante : contient toutes les sections, laisse la barre d'actions en bas
+.form-scroll {
+  flex: 1 1 auto;
+  min-height: 0; // indispensable pour que overflow fonctionne en flex
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 14px 14px 20px;
+  box-sizing: border-box;
+}
+
+// ── Barre de défilement design (colonnes gauche + droite) ──
+.form-scroll,
+.upload-panel {
+  scrollbar-width: thin; // Firefox
+  scrollbar-color: rgba(0, 54, 110, 0.35) transparent;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+    margin: 6px 0;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, rgba(0, 54, 110, 0.35), rgba(0, 90, 175, 0.35));
+    border-radius: 8px;
+    border: 2px solid transparent;
+    background-clip: content-box; // marge visuelle autour du pouce
+    transition: background 0.2s;
+  }
+
+  &:hover::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, rgba(0, 54, 110, 0.6), rgba(0, 90, 175, 0.6));
+    background-clip: content-box;
+  }
+
+  &::-webkit-scrollbar-thumb:active {
+    background: rgba(0, 54, 110, 0.75);
+    background-clip: content-box;
+  }
 }
 
 // ═══════════════════════════════════════
@@ -663,24 +1036,25 @@ input[type="checkbox"]:checked {
   //background: #fff;
   //box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
   width: 100%;
+  flex-shrink: 0; // ne pas comprimer dans la colonne défilante (sinon champs clippés)
 }
 
 .form-section-label {
   display: flex;
   align-items: center;
-  gap: 7px;
-  padding: 8px 14px;
-  background: #F1F5F9;
-  font-size: 11px;
+  gap: 9px;
+  padding: 0 2px 16px;
+  background: transparent;
+  font-size: 17px;
   font-weight: 700;
-  color: #475569;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  border-bottom: 1px solid #E2E8F0;
+  color: #1E293B;
+  text-transform: none;
+  letter-spacing: 0;
+  border-bottom: none;
 
   i {
-    font-size: 14px;
-    color: rgba(0, 54, 110);
+    font-size: 18px;
+    color: #00366e;
   }
 }
 
@@ -705,6 +1079,7 @@ input[type="checkbox"]:checked {
 // EMPTY META STATE
 // ═══════════════════════════════════════
 .form-empty-meta {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -883,7 +1258,9 @@ input[type="checkbox"]:checked {
   color: #94A3B8;
   white-space: nowrap;
 
-  i { font-size: 11px; }
+  i {
+    font-size: 11px;
+  }
 }
 
 // Zone draggable autour du contenu d'un fichier
@@ -897,7 +1274,9 @@ input[type="checkbox"]:checked {
   transition: background 0.15s, opacity 0.15s;
   user-select: none;
 
-  &:active { cursor: grabbing; }
+  &:active {
+    cursor: grabbing;
+  }
 
   &:hover {
     background: rgba(0, 54, 110, 0.05);
@@ -963,7 +1342,9 @@ input[type="checkbox"]:checked {
   padding: 1px 7px;
   animation: pulse-badge 0.6s ease-in-out infinite alternate;
 
-  i { font-size: 9px; }
+  i {
+    font-size: 9px;
+  }
 }
 
 // Icône de dossier pour les dossiers vides (feuilles)
@@ -979,8 +1360,12 @@ input[type="checkbox"]:checked {
 }
 
 @keyframes pulse-badge {
-  from { opacity: 0.7; }
-  to   { opacity: 1; }
+  from {
+    opacity: 0.7;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 // Bouton suppression fichier
@@ -997,7 +1382,9 @@ input[type="checkbox"]:checked {
   opacity: 0;
   transition: opacity 0.15s, background 0.15s;
 
-  &:hover { background: #FEE2E2; }
+  &:hover {
+    background: #FEE2E2;
+  }
 }
 
 // Rendre le bouton visible au survol de la ligne
@@ -1232,19 +1619,25 @@ input[type="checkbox"]:checked {
 
 
 .form-footer-bar {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 999;
+  flex-shrink: 0; // toujours visible, ancrée en bas de la colonne
   height: 60px;
-  background: #fff;
-  border-top: 1px solid #E2E8F0;
-  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08);
+  background: #FAFBFC;
+  border-top: 1px solid #EEF2F7;
+  box-shadow: 0 -2px 6px rgba(15, 23, 42, 0.04);
+  border-radius: 0 0 10px 10px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 32px;
+  padding: 0 20px;
+}
+
+.form-footer-left {
+  min-width: 0;
+
+  .footer-hint {
+    font-size: 12px;
+    color: #94A3B8;
+  }
 }
 
 // Évite que le contenu soit caché derrière la barre
@@ -1266,7 +1659,7 @@ input[type="checkbox"]:checked {
 ::ng-deep .ant-tree.ant-tree-directory .ant-tree-treenode-selected::before,
 ::ng-deep .ant-tree-directory .ant-tree-treenode-selected::before,
 ::ng-deep .ant-tree-treenode-selected::before {
-  background:   rgb(223 225 227 / 10%) !important ;// rgba(0, 54, 110, 0.10) !important;
+  background: rgb(223 225 227 / 10%) !important; // rgba(0, 54, 110, 0.10) !important;
 }
 
 // Texte des nœuds sélectionnés : rester lisible (foncé) au lieu du blanc
@@ -1304,9 +1697,23 @@ input[type="checkbox"]:checked {
 // ── Tablet (≤ 991px) : panels en colonne, hauteurs auto ──
 @media (max-width: 991px) {
 
+  :host {
+    height: auto !important; // plus de hauteur figée : la page reprend le scroll
+  }
+
+  .container.job-apply-wrapper {
+    height: auto !important;
+  }
+
+  .form-scroll {
+    overflow-y: visible !important; // le contenu s'étale, la page scrolle
+  }
+
   nz-splitter {
     height: auto !important;
     box-shadow: none;
+    border-radius: 0;
+    overflow: visible;
   }
 
   :host ::ng-deep .ant-splitter {
@@ -1368,7 +1775,11 @@ input[type="checkbox"]:checked {
     gap: 10px !important;
   }
 
-  .form-section-label,
+  .form-section-label {
+    padding: 0 2px 12px;
+    font-size: 15px;
+  }
+
   .upload-section-label {
     padding: 7px 10px;
     font-size: 10px;
@@ -1506,26 +1917,33 @@ input[type="checkbox"]:checked {
 // ═══════════════════════════════════════
 // GENERATE DOC NUMBER — LOADER
 // ═══════════════════════════════════════
-.generate-num-link {
+// Bouton icône « Générer un numéro automatique » (avec tooltip)
+.generate-num-btn {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  font-size: 12px;
-  font-weight: 600;
-  color: rgba(0, 54, 110);
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  //border: 1px solid rgba(0, 54, 110, 0.2);
+  border-radius: 7px;
+  //background: rgba(0, 54, 110, 0.06);
+  color: #00366e;
   cursor: pointer;
-  transition: opacity 0.2s;
-  user-select: none;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
 
-  &:hover:not(.generate-num-link--loading) {
-    text-decoration: underline;
-    opacity: 0.85;
+  i { font-size: 15px; line-height: 1; }
+
+  &:hover:not(:disabled) {
+    background: rgba(0, 54, 110, 0.12);
+    border-color: rgba(0, 54, 110, 0.4);
   }
 
-  &.generate-num-link--loading {
-    opacity: 0.6;
+  &:active:not(:disabled) { transform: scale(0.93); }
+
+  &:disabled,
+  &.generate-num-btn--loading {
     cursor: not-allowed;
-    pointer-events: none;
+    opacity: 0.7;
   }
 }
 
@@ -1556,8 +1974,14 @@ input[type="checkbox"]:checked {
 }
 
 @keyframes save-card-in {
-  from { opacity: 0; transform: scale(0.92); }
-  to   { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .save-spinner {
@@ -1570,7 +1994,9 @@ input[type="checkbox"]:checked {
 }
 
 @keyframes save-spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .save-overlay-msg {
@@ -1600,7 +2026,9 @@ input[type="checkbox"]:checked {
 }
 
 @keyframes gen-spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .code-input-wrap {
@@ -1642,4 +2070,13 @@ input[type="checkbox"]:checked {
   font-weight: 600;
   color: rgba(0, 54, 110);
   letter-spacing: 0.01em;
+}
+
+// La hauteur doit descendre jusqu'aux panneaux, sinon .box height:100% retombe sur auto
+:host ::ng-deep .ant-splitter {
+  height: 140% !important;
+}
+
+::ng-deep .page-wrapper.compact-wrapper .page-body-wrapper .page-body {
+  min-height: calc(143vh - 80px) !important;
 }

@@ -79,6 +79,7 @@
                                         nzShowSizeChanger
                                         nzBordered
                                         nzSize="small"
+                                        [nzNoResult]="emptyTpl"
                                         [nzScroll]="rows.length > 0 ? { x: '1050px' } : {}">
                                         <thead>
                                         <tr>
@@ -158,18 +159,18 @@
                                             </td>
                                         </tr>
 
-                                        <tr *ngIf="!isloading && rows.length === 0">
-                                            <td colspan="7">
-                                                <div class="op-empty-state">
-                                                    <app-feather-icon class="icon-inbox" [icon]="'inbox'"></app-feather-icon>
-                                                    <span>Aucune demande d'autorisation</span>
-                                                    <small *ngIf="searchValue || selectedStatut">Aucun résultat pour ce filtre</small>
-                                                </div>
-                                            </td>
-                                        </tr>
                                         </tbody>
                                     </nz-table>
                                 </div>
+
+                                <ng-template #emptyTpl>
+                                    <div class="op-empty-state">
+                                        <app-feather-icon class="icon-inbox" [icon]="'inbox'"></app-feather-icon>
+                                        <span>Aucune demande d'autorisation</span>
+                                        <small *ngIf="searchValue || selectedStatut">Aucun résultat pour ce filtre</small>
+                                    </div>
+                                </ng-template>
+
                                 <ng-template #totalTemplate let-total>
                                     Total : <strong>{{ total }}</strong> demande(s)
                                 </ng-template>

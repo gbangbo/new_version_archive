@@ -1,0 +1,237 @@
+<div class="container main-setting">
+    <div class="grid grid-cols-12 card-gap">
+        <div class="col-span-12">
+            <app-card [border]="true" [padding]="false">
+
+                <div class="relative">
+
+                    <!-- ══ OVERLAY SPINNER ══════════════════════════════ -->
+                    <div *ngIf="isloading"
+                         class="absolute inset-0 flex justify-center items-center z-10 rounded-lg"
+                         style="background: rgba(248,250,252,0.85); backdrop-filter: blur(2px);">
+                        <div class="text-center">
+                            <div class="op-spinner"></div>
+                            <p class="mt-3" style="color:#64748b; font-size:13px; font-weight:600;">
+                                Chargement des imputations...
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="table-container" [class.op-loading]="isloading">
+
+                        <!-- ══ TOOLBAR ══════════════════════════════════ -->
+                        <div class="op-toolbar">
+                            <div class="op-toolbar-title">
+                                <div class="op-toolbar-icon">
+                                    <i class="fa-solid fa-share-from-square"></i>
+                                </div>
+                                <div>
+                                    <span class="op-toolbar-label">MES IMPUTATIONS</span>
+                                    <span class="op-toolbar-count">{{ rows.length }} imputation(s)</span>
+                                </div>
+                            </div>
+
+                            <div class="op-toolbar-right">
+                                <div class="op-search-wrap">
+                                    <svg class="op-search-icon" viewBox="0 0 24 24" fill="none"
+                                         stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                                        <circle cx="11" cy="11" r="8"/>
+                                        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                                    </svg>
+                                    <input class="op-search-input"
+                                           placeholder="Rechercher..."
+                                           [(ngModel)]="searchValue"
+                                           (ngModelChange)="onSearch($event)"/>
+                                    <button *ngIf="searchValue" class="op-search-clear"
+                                            (click)="searchValue=''; onSearch('')">
+                                        <i class="fa-solid fa-xmark"></i>
+                                    </button>
+                                </div>
+
+                                <button class="op-btn op-btn-outline" (click)="loadImputations()"
+                                        nz-tooltip nzTooltipTitle="Actualiser">
+                                    <i class="fa-solid fa-arrows-rotate"></i>
+                                    <span class="btn-label">Actualiser</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- ══ TABLE ════════════════════════════════════ -->
+                        <div class="overflow-x-auto custom-scrollbar">
+                            <nz-table
+                                #nzTable
+                                [nzData]="rows"
+                                [nzPageSize]="10"
+                                [nzShowPagination]="true"
+                                [nzShowTotal]="totalTemplate"
+                                nzShowSizeChanger
+                                nzBordered
+                                nzSize="small"
+                                [nzNoResult]="emptyTpl">
+                                <thead>
+                                <tr>
+                                    <th nzWidth="240px"
+                                        nzColumnKey="document"
+                                        [nzSortFn]="sortFns.document"
+                                        [nzSortDirections]="['ascend','descend',null]">
+                                        Document
+                                    </th>
+                                    <th nzWidth="220px">Destinataire(s)</th>
+                                    <th>Instruction</th>
+                                    <th nzWidth="130px"
+                                        nzColumnKey="priorite"
+                                        [nzSortFn]="sortFns.priorite"
+                                        [nzSortDirections]="['ascend','descend',null]">
+                                        Priorité
+                                    </th>
+                                    <th nzWidth="130px" nzAlign="center">Statut</th>
+                                    <th nzWidth="150px"
+                                        nzColumnKey="date"
+                                        [nzSortFn]="sortFns.date"
+                                        [nzSortDirections]="['descend','ascend',null]">
+                                        Date
+                                    </th>
+                                    <th nzWidth="90px" nzAlign="center">Détail</th>
+                                </tr>
+                                </thead>
+
+                                <tbody>
+                                <tr *ngFor="let r of nzTable.data" class="op-table-row">
+                                    <!-- Document -->
+                                    <td>
+                                        <span class="cell-text cell-wrap mi-doc">{{ r.document || '—' }}</span>
+                                        <span class="mi-code" *ngIf="r.code_docs">{{ r.code_docs }}</span>
+                                    </td>
+
+                                    <!-- Destinataires -->
+                                    <td>
+                                        <div class="mi-dests" *ngIf="r.destinataires.length; else noDest">
+                                            <span class="mi-dest" *ngFor="let d of r.destinataires"
+                                                  nz-tooltip [nzTooltipTitle]="d">
+                                                <span class="mi-avatar">{{ initials(d) }}</span>
+                                                <span class="cell-text">{{ d }}</span>
+                                            </span>
+                                        </div>
+                                        <ng-template #noDest><span class="cell-text">—</span></ng-template>
+                                    </td>
+
+                                    <!-- Instruction (consigne + description) -->
+                                    <td>
+                                        <span class="cell-text cell-wrap" *ngIf="r.consigne">{{ r.consigne }}</span>
+                                        <span class="mi-desc cell-wrap" *ngIf="r.description">{{ r.description }}</span>
+                                        <span class="cell-text" *ngIf="!r.consigne && !r.description">—</span>
+                                    </td>
+
+                                    <!-- Priorité -->
+                                    <td>
+                                        <nz-tag *ngIf="r.priorite" [nzColor]="prioriteColor(r.priorite)">
+                                            {{ r.priorite }}
+                                        </nz-tag>
+                                        <span class="cell-text" *ngIf="!r.priorite">—</span>
+                                    </td>
+
+                                    <!-- Statut -->
+                                    <td nzAlign="center">
+                                        <nz-tag [nzColor]="statutColor(r.statut)">{{ statutLabel(r.statut) }}</nz-tag>
+                                    </td>
+
+                                    <!-- Date -->
+                                    <td>
+                                        <span class="cell-text">{{ r.date || '—' }}</span>
+                                        <span class="mi-echeance" *ngIf="r.dateEcheance">
+                                            <i class="fa-regular fa-clock"></i> {{ r.dateEcheance }}
+                                        </span>
+                                    </td>
+
+                                    <!-- Détail -->
+                                    <td nzAlign="center">
+                                        <button class="btn-round-edit btn-round-nav"
+                                                nz-tooltip nzTooltipTitle="Voir le détail"
+                                                (click)="openDetail(r)">
+                                            <app-feather-icon class="icon-small" [icon]="'eye'"></app-feather-icon>
+                                        </button>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </nz-table>
+                        </div>
+
+                        <ng-template #totalTemplate let-total>
+                            Total : <strong>{{ total }}</strong> imputation(s)
+                        </ng-template>
+
+                        <ng-template #emptyTpl>
+                            <div class="op-empty-state">
+                                <app-feather-icon class="icon-inbox" [icon]="'inbox'"></app-feather-icon>
+                                <span>Aucune imputation</span>
+                                <small *ngIf="searchValue">Aucun résultat pour « {{ searchValue }} »</small>
+                            </div>
+                        </ng-template>
+
+                    </div>
+                </div>
+
+            </app-card>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ MODAL : détail de l'imputation ═══════════════════════════ -->
+<div class="mi-backdrop" *ngIf="showDetail" (click)="closeDetail()">
+    <div class="mi-panel" (click)="$event.stopPropagation()">
+        <div class="mi-header">
+            <span class="mi-title">
+                <i class="fa-solid fa-share-from-square"></i> Détail de l'imputation
+            </span>
+            <button class="mi-close" type="button" (click)="closeDetail()" title="Fermer">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="mi-body" *ngIf="detailRow">
+            <div class="mi-field">
+                <span class="mi-label">Document</span>
+                <span class="mi-value">
+                    {{ detailRow.document || '—' }}
+                    <small *ngIf="detailRow.code_docs">{{ detailRow.code_docs }}</small>
+                </span>
+            </div>
+
+            <div class="mi-field">
+                <span class="mi-label">Destinataire(s)</span>
+                <span class="mi-value">{{ detailRow.destinataires.join(', ') || '—' }}</span>
+            </div>
+
+            <div class="mi-grid2">
+                <div class="mi-field">
+                    <span class="mi-label">Priorité</span>
+                    <span class="mi-value">{{ detailRow.priorite || '—' }}</span>
+                </div>
+                <div class="mi-field">
+                    <span class="mi-label">Consigne</span>
+                    <span class="mi-value">{{ detailRow.consigne || '—' }}</span>
+                </div>
+            </div>
+
+            <div class="mi-field">
+                <span class="mi-label">Description</span>
+                <span class="mi-value">{{ detailRow.description || '—' }}</span>
+            </div>
+
+            <div class="mi-grid2">
+                <div class="mi-field">
+                    <span class="mi-label">Date d'imputation</span>
+                    <span class="mi-value">{{ detailRow.date || '—' }}</span>
+                </div>
+                <div class="mi-field">
+                    <span class="mi-label">Échéance</span>
+                    <span class="mi-value">{{ detailRow.dateEcheance || '—' }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="mi-footer">
+            <button class="op-btn op-btn-outline" type="button" (click)="closeDetail()">Fermer</button>
+        </div>
+    </div>
+</div>

@@ -893,9 +893,12 @@
 
   .page-body-wrapper {
     background-color: $main-body-color;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 
     .page-body {
-      min-height: calc(100vh - #{$header-size});
+      flex: 1 0 auto;
       margin-top: $header-size;
       padding: $page-body-padding;
       position: relative;
@@ -1575,8 +1578,8 @@
       width: calc(100% - $sidebar-compact-width);
 
       &.close_icon {
-        margin-left: 80px;
-        width: calc(100% - 80px);
+        margin-left: 66px;
+        width: calc(100% - 58px);
       }
 
       .header-wrapper {
@@ -1618,7 +1621,7 @@
             width: auto;
             transition: all 0.3s ease;
             ~ * footer {
-              margin-left: 80px;
+              margin-left: 66px;
               transition: 0.5s;
             }
             .badge {

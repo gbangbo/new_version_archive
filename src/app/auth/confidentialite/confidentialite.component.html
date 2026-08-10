@@ -1,0 +1,68 @@
+<div class="confidentialite-page">
+    <div class="confidentialite-card">
+        <h1>Politique de confidentialité — ArchivePro Scanner Bridge</h1>
+        <p class="maj">Dernière mise à jour : {{ majDate }}</p>
+
+        <p>
+            <strong>ArchivePro Scanner Bridge</strong> (« l'extension ») est une extension Chrome
+            qui sert de pont entre l'application web ArchivePro et le scanner ou l'imprimante
+            multifonction installé sur le poste de l'utilisateur. Elle permet à l'application web
+            de déclencher une numérisation via une application native installée localement.
+        </p>
+
+        <h2>1. Données collectées</h2>
+        <p>
+            L'extension <strong>ne collecte, ne stocke et ne transmet aucune donnée personnelle</strong>
+            à l'éditeur ni à un quelconque tiers. Elle ne réalise aucun suivi, aucune analyse
+            d'audience et n'utilise aucun cookie de traçage.
+        </p>
+
+        <h2>2. Données traitées localement</h2>
+        <p>
+            Pour assurer sa fonction, l'extension échange des informations uniquement
+            <strong>sur la machine de l'utilisateur</strong> (adresses <code>localhost</code> /
+            <code>127.0.0.1</code>) et avec l'application native locale :
+        </p>
+        <ul>
+            <li>les commandes de numérisation et les identifiants techniques transmis par
+                l'application ArchivePro (identifiant utilisateur, code société, jeton de session) ;
+            </li>
+            <li>les documents numérisés, récupérés depuis le service local uniquement pour être
+                affichés à l'utilisateur.
+            </li>
+        </ul>
+        <p>
+            Ces informations ne quittent jamais l'appareil par l'intermédiaire de l'extension.
+            L'envoi éventuel d'un document numérisé vers le compte ArchivePro de l'utilisateur est
+            effectué par l'application native locale, sous le contrôle de l'utilisateur, et non par
+            l'extension.
+        </p>
+
+        <h2>3. Autorisations demandées</h2>
+        <ul>
+            <li><code>nativeMessaging</code> : communiquer avec l'application native locale qui
+                pilote le scanner.
+            </li>
+            <li><code>tabs</code> et <code>scripting</code> : détecter les pages ArchivePro et y
+                injecter l'identifiant de l'extension afin que l'application web puisse la reconnaître.
+            </li>
+            <li>Accès aux pages du domaine <code>archivepro.ci</code> et à <code>localhost</code> :
+                établir la communication entre la page web, l'extension et le service local de
+                numérisation.
+            </li>
+        </ul>
+
+        <h2>4. Partage des données</h2>
+        <p>
+            Aucune donnée n'est vendue, louée ni transférée à des tiers. L'extension n'utilise pas
+            les données à des fins étrangères à sa fonction, ni pour évaluer la solvabilité ou à des
+            fins de prêt.
+        </p>
+
+        <h2>5. Contact</h2>
+        <p>
+            Pour toute question relative à cette politique :
+            <a href="mailto:gbangbojb@gmail.com">gbangbojb&#64;gmail.com</a>.
+        </p>
+    </div>
+</div>

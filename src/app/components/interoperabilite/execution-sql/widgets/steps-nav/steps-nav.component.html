@@ -1,0 +1,10 @@
+<nav class="steps-menu">
+    <button *ngFor="let s of steps"
+            type="button"
+            class="steps-item"
+            [class.active]="s.id === activeId"
+            (click)="pick(s.id)">
+        <span class="steps-ico"><i [class]="s.icon"></i></span>
+        <span class="steps-label">{{ s.label }}</span>
+    </button>
+</nav>

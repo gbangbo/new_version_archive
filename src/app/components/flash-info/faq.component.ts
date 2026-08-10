@@ -1,10 +1,11 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {NzTableModule} from 'ng-zorro-antd/table';
 import {NzTagModule} from 'ng-zorro-antd/tag';
 import {NzToolTipModule} from 'ng-zorro-antd/tooltip';
 import {NzDatePickerModule} from 'ng-zorro-antd/date-picker';
+import {Editor, NgxEditorModule, Toolbar} from 'ngx-editor';
 import {ToastrService} from 'ngx-toastr';
 import Swal from 'sweetalert2';
 import moment from 'moment';
@@ -17,7 +18,8 @@ import {environment} from '../../../environments/environment';
 interface FlashInfoRow {
     uid: string;
     lib_flashinfo: string;
-    desc_flashinfo: string;
+    desc_flashinfo: string;   // HTML (mise en forme)
+    desc_text: string;        // texte brut (aperçu tableau + recherche)
     actif: boolean;
     date: string;
     periode: string;
@@ -26,15 +28,27 @@ interface FlashInfoRow {
 
 @Component({
     selector: 'app-faq',
-    imports: [CommonModule, FormsModule, NzTableModule, NzTagModule, NzToolTipModule, NzDatePickerModule, CardComponent, FeatherIconComponent],
+    imports: [CommonModule, FormsModule, NzTableModule, NzTagModule, NzToolTipModule, NzDatePickerModule, NgxEditorModule, CardComponent, FeatherIconComponent],
     templateUrl: './faq.component.html',
     styleUrl: './faq.component.scss'
 })
-export class FaqComponent implements OnInit {
+export class FaqComponent implements OnInit, OnDestroy {
 
     private users: any = [];
     isloading: boolean = false;
     searchValue: string = '';
+
+    // Éditeur de texte enrichi (description)
+    editor!: Editor;
+    toolbar: Toolbar = [
+        ['bold', 'italic', 'underline', 'strike'],
+        ['ordered_list', 'bullet_list'],
+        [{heading: ['h1', 'h2', 'h3']}],
+        ['link'],
+        ['align_left', 'align_center', 'align_right'],
+        ['text_color', 'background_color'],
+        ['blockquote', 'code'],
+    ];
 
     private allRows: FlashInfoRow[] = [];
     rows: FlashInfoRow[] = [];
@@ -81,8 +95,22 @@ export class FaqComponent implements OnInit {
     }
 
     ngOnInit(): void {
+        this.editor = new Editor();
         this.users = this.autor.getInfosUsers();
         this.loadFlashInfos();
+    }
+
+    ngOnDestroy(): void {
+        this.editor?.destroy();
+    }
+
+    /** Retire les balises HTML pour un aperçu texte (tableau, recherche). */
+    private stripHtml(html: string): string {
+        return (html || '')
+            .replace(/<[^>]*>/g, ' ')
+            .replace(/&nbsp;/g, ' ')
+            .replace(/\s+/g, ' ')
+            .trim();
     }
 
     // ── Chargement ────────────────────────────────────────────────────
@@ -110,16 +138,18 @@ export class FaqComponent implements OnInit {
     }
 
     private mapRow(e: any): FlashInfoRow {
-        const start = e?.date_debut || e?.date_debut_flashinfo || '';
-        const end = e?.date_fin || e?.date_fin_flashinfo || '';
+        const start = e?.date_start || e?.date_debut || e?.date_debut_flashinfo || '';
+        const end = e?.date_end || e?.date_fin || e?.date_fin_flashinfo || '';
         const fmt = (d: any) => d ? moment(d).format('DD/MM/YYYY') : '';
         const s = fmt(start);
         const f = fmt(end);
+        const descHtml = e?.desc_flashinfo || '';
         return {
             uid: e?.uid || e?.idflashinfo || '',
             lib_flashinfo: e?.lib_flashinfo || e?.libflashinfo || '',
-            desc_flashinfo: e?.desc_flashinfo || '',
-            actif: e?.actif ?? e?.active ?? e?.is_active ?? e?.statut_flashinfo ?? true,
+            desc_flashinfo: descHtml,
+            desc_text: this.stripHtml(descHtml),
+            actif: e?.active_flash,
             date: e?.created_at ? moment(e.created_at).format('DD/MM/YYYY HH:mm') : '',
             periode: (s && f) ? `${s} → ${f}` : (s || f || '—'),
             raw: e,
@@ -137,7 +167,7 @@ export class FaqComponent implements OnInit {
         this.rows = q
             ? this.allRows.filter(r =>
                 r.lib_flashinfo.toLowerCase().includes(q) ||
-                r.desc_flashinfo.toLowerCase().includes(q))
+                r.desc_text.toLowerCase().includes(q))
             : [...this.allRows];
     }
 
@@ -153,8 +183,8 @@ export class FaqComponent implements OnInit {
     openEdit(row: FlashInfoRow): void {
         this.isEdit = true;
         this.editUid = row.uid;
-        const rawStart = row.raw?.date_debut || row.raw?.date_debut_flashinfo || null;
-        const rawEnd = row.raw?.date_fin || row.raw?.date_fin_flashinfo || null;
+        const rawStart = row.raw?.date_start || row.raw?.date_debut || row.raw?.date_debut_flashinfo || null;
+        const rawEnd = row.raw?.date_end || row.raw?.date_fin || row.raw?.date_fin_flashinfo || null;
         this.form = {
             libflashinfo: row.lib_flashinfo,
             desc_flashinfo: row.desc_flashinfo,
@@ -190,8 +220,8 @@ export class FaqComponent implements OnInit {
             desc_flashinfo: this.form.desc_flashinfo.trim(),
         };
         // Dates envoyées uniquement si renseignées (format YYYY-MM-DD)
-        if (this.form.dateDebut) payload.date_debut = moment(this.form.dateDebut).format('YYYY-MM-DD');
-        if (this.form.dateFin) payload.date_fin = moment(this.form.dateFin).format('YYYY-MM-DD');
+        if (this.form.dateDebut) payload.date_start = moment(this.form.dateDebut).format('YYYY-MM-DD');
+        if (this.form.dateFin) payload.date_end = moment(this.form.dateFin).format('YYYY-MM-DD');
 
         this.saving = true;
         this.httService.postData(`${environment.api_url}api/:save-flash-info`, payload, this.users?.access_token || '')

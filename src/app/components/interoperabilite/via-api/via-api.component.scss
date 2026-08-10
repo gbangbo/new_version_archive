@@ -1,0 +1,92 @@
+// ══════════════════════════════════════════════════════════
+// VIA-API — même modèle de page que execution-sql
+// ══════════════════════════════════════════════════════════
+$ink: #0F172A;
+
+.va-page {
+  padding: 20px;
+  background: #EEF0F4;
+  min-height: 100%;
+}
+
+.va-shell {
+  max-width: 1280px;
+  margin: 0 auto;
+  background: #ffffff;
+  border-radius: 22px;
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.08);
+  padding: 22px 26px 30px;
+}
+
+// ── Barre haute ──────────────────────────────────────────
+.va-topbar {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding-bottom: 20px;
+}
+
+.va-quit {
+  padding: 8px 16px;
+  border: 1px solid #E5E7EB;
+  border-radius: 10px;
+  background: #fff;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  &:hover { background: #F8FAFC; border-color: #CBD5E1; }
+}
+
+.va-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13.5px;
+
+  .va-bc-root { color: #334155; font-weight: 700; }
+  .va-bc-sep { font-size: 10px; color: #CBD5E1; }
+  .va-bc-current { color: #94A3B8; font-weight: 500; }
+}
+
+// ── Corps ────────────────────────────────────────────────
+.va-body {
+  display: flex;
+  gap: 32px;
+  align-items: flex-start;
+}
+
+.va-aside {
+  flex-shrink: 0;
+  padding-top: 4px;
+  position: sticky;
+  top: 20px;
+}
+
+.va-main {
+  flex: 1;
+  min-width: 0;
+}
+
+// Les composants réutilisés (domaine / cle-api) ont leur propre
+// conteneur : on neutralise ses marges/padding pour un rendu à plat.
+.va-main ::ng-deep .container.main-setting {
+  padding: 0 !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+}
+.va-main ::ng-deep .card-gap { margin: 0 !important; }
+
+// ── Responsive ───────────────────────────────────────────
+@media (max-width: 991px) {
+  .va-body { flex-direction: column; gap: 18px; }
+  .va-aside { padding-top: 0; width: 100%; position: static; top: auto; }
+  .va-aside ::ng-deep .steps-menu { width: 100%; }
+}
+
+@media (max-width: 640px) {
+  .va-page { padding: 10px; }
+  .va-shell { padding: 16px 14px 22px; border-radius: 16px; }
+  .va-topbar { padding-bottom: 14px; }
+}

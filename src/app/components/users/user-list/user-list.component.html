@@ -1,7 +1,7 @@
 <div class="bg-navbar tabs">
-    <ul class="tab-links flex nav-primary">
-        <li class="tab-link" [class.active]="activeTab == 'role'" (click)="handleTab('role')">RÔLE</li>
-        <li class="tab-link" [class.active]="activeTab == 'compte'" (click)="handleTab('compte')">COMPTE</li>
+    <ul class="tab-links nav-steps flex nav-primary">
+        <li class="tab-link" [class.active]="activeTab == 'role'" (click)="handleTab('role')">Rôle</li>
+        <li class="tab-link" [class.active]="activeTab == 'compte'" (click)="handleTab('compte')">Compte</li>
     </ul>
     <div class="container user-list-wrapper">
         <div class="grid grid-cols-12">

@@ -1,0 +1,35 @@
+<div class="va-page">
+    <div class="va-shell">
+
+        <!-- ══ BARRE HAUTE ═══════════════════════════════════════════ -->
+        <div class="va-topbar">
+            <div class="va-breadcrumb">
+                <span class="va-bc-root">Communication via API</span>
+                <i class="fa-solid fa-chevron-right va-bc-sep"></i>
+                <span class="va-bc-current">{{ activeLabel }}</span>
+            </div>
+        </div>
+
+        <!-- ══ CORPS (menu + contenu) ════════════════════════════════ -->
+        <div class="va-body">
+
+            <!-- Menu latéral flottant -->
+            <aside class="va-aside">
+                <app-steps-nav [steps]="steps" [(activeId)]="activeStep"></app-steps-nav>
+            </aside>
+
+            <!-- Contenu principal -->
+            <main class="va-main">
+                <!-- ÉTAPE : Domaines autorisés -->
+                <app-domaines *ngIf="activeStep === 'domaines'"></app-domaines>
+
+                <!-- ÉTAPE : Clés API -->
+                <app-cles-api *ngIf="activeStep === 'cles'"></app-cles-api>
+
+                <!-- ÉTAPE : Communication (proxy HTTP externe) -->
+                <app-proxy *ngIf="activeStep === 'proxy'"></app-proxy>
+            </main>
+        </div>
+
+    </div>
+</div>

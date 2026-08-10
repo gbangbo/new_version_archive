@@ -1,0 +1,27 @@
+.sql-editor-host {
+  border: 1px solid #1f2733;
+  border-radius: 10px;
+  overflow: hidden;
+
+  ::ng-deep .cm-editor {
+    min-height: 170px;
+    max-height: 340px;
+    font-size: 13px;
+    background: #282c34;
+  }
+
+  ::ng-deep .cm-editor.cm-focused {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 54, 110, 0.25);
+  }
+
+  ::ng-deep .cm-scroller {
+    font-family: 'Courier New', 'Consolas', monospace;
+    line-height: 1.6;
+  }
+
+  ::ng-deep .cm-gutters {
+    background: #21252b;
+    border-right: 1px solid #1f2733;
+  }
+}

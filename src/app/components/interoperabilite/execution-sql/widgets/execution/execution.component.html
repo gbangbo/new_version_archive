@@ -1,0 +1,321 @@
+<!-- Titre -->
+<div class="cx-title">
+    <span class="cx-title-ico"><i class="fa-solid fa-play"></i></span>
+    <h2>Exécution</h2>
+</div>
+
+<!-- Onglets -->
+<div class="ex-tabs">
+    <button class="ex-tab" [class.active]="mode === 'stored'" (click)="mode = 'stored'">
+        <i class="fa-solid fa-bookmark"></i> Requête enregistrée
+    </button>
+    <button class="ex-tab" [class.active]="mode === 'dynamic'" (click)="mode = 'dynamic'">
+        <i class="fa-solid fa-bolt"></i> Requête dynamique
+    </button>
+    <button class="ex-tab" [class.active]="mode === 'folder'" (click)="mode = 'folder'">
+        <i class="fa-solid fa-folder-open"></i> Vérification dossier
+    </button>
+</div>
+
+<!-- ══ TAB : Requête enregistrée ═══════════════════════════════ -->
+<div class="ex-panel" *ngIf="mode === 'stored'">
+
+    <div class="ex-grid2">
+        <div class="ex-field">
+            <label>Connexion <span class="req">*</span></label>
+            <select2 class="cx-select2"
+                     [data]="connexionOptions"
+                     [(ngModel)]="stored.idconnection"
+                     [minCountForSearch]="0"
+                     placeholder="Sélectionner une connexion"
+                     noResultMessage="Aucune connexion"></select2>
+        </div>
+        <div class="ex-field">
+            <label>Requête enregistrée</label>
+            <select2 class="cx-select2"
+                     [data]="queryOptions"
+                     [ngModel]="stored.idquery"
+                     (ngModelChange)="onQuerySelected($event)"
+                     [minCountForSearch]="0"
+                     placeholder="Choisir une requête (optionnel)"
+                     noResultMessage="Aucune requête"></select2>
+        </div>
+    </div>
+
+    <div class="ex-field">
+        <label>Requête SQL</label>
+        <app-sql-editor [(ngModel)]="stored.query"
+                        placeholder="SELECT * FROM users WHERE active = :active"></app-sql-editor>
+    </div>
+
+    <div class="ex-field">
+        <label>Paramètres <span class="hint">(JSON)</span></label>
+        <app-json-editor [(ngModel)]="stored.params" (validChange)="storedJsonValid = $event"
+                         placeholder='&#123; "active": "1" &#125;'></app-json-editor>
+        <div class="ex-json-err" *ngIf="!storedJsonValid"><i class="fa-solid fa-triangle-exclamation"></i> JSON invalide</div>
+    </div>
+
+    <div class="ex-actions">
+        <button class="ex-run" [disabled]="executing || !storedJsonValid" (click)="executeStored()">
+            <i class="fa-solid" [ngClass]="executing ? 'fa-circle-notch fa-spin' : 'fa-play'"></i>
+            {{ executing ? 'Exécution…' : 'Exécuter' }}
+        </button>
+    </div>
+</div>
+
+<!-- ══ TAB : Requête dynamique (SQL Server) ════════════════════ -->
+<div class="ex-panel" *ngIf="mode === 'dynamic'">
+
+    <div class="ex-info-line">
+        <img class="ex-info-logo" [src]="dbLogos['mssql']" alt="SQL Server"/>
+        <span class="ex-info-txt">Exécute une requête paramétrée sur une base <strong>SQL Server</strong> distante — identifiants saisis à la volée (aucune connexion enregistrée).</span>
+    </div>
+
+    <div class="ex-grid3">
+        <div class="ex-field">
+            <label>Hôte <span class="req">*</span></label>
+            <input [(ngModel)]="dynamic.db_host" placeholder="127.0.0.1"/>
+        </div>
+        <div class="ex-field">
+            <label>Port</label>
+            <input type="number" [(ngModel)]="dynamic.db_port" placeholder="1433"/>
+        </div>
+        <div class="ex-field">
+            <label>Base de données <span class="req">*</span></label>
+            <input [(ngModel)]="dynamic.db_name" placeholder="my_database"/>
+        </div>
+    </div>
+
+    <div class="ex-grid3">
+        <div class="ex-field">
+            <label>Utilisateur <span class="req">*</span></label>
+            <input [(ngModel)]="dynamic.db_user" placeholder="sa"/>
+        </div>
+        <div class="ex-field">
+            <label>Mot de passe <span class="req">*</span></label>
+            <input type="password" [(ngModel)]="dynamic.db_password" placeholder="••••••••"/>
+        </div>
+        <div class="ex-field">
+            <label>Driver</label>
+            <input [(ngModel)]="dynamic.db_driver" placeholder="ODBC Driver 18 for SQL Server"/>
+        </div>
+    </div>
+
+    <div class="ex-field">
+        <label>Requête SQL <span class="req">*</span></label>
+        <app-sql-editor [(ngModel)]="dynamic.query"
+                        placeholder="SELECT TOP 10 * FROM users WHERE id = :id"></app-sql-editor>
+    </div>
+
+    <div class="ex-field">
+        <label>Paramètres <span class="hint">(JSON)</span></label>
+        <app-json-editor [(ngModel)]="dynamic.params" (validChange)="dynamicJsonValid = $event"
+                         placeholder='&#123; "id": "1" &#125;'></app-json-editor>
+        <div class="ex-json-err" *ngIf="!dynamicJsonValid"><i class="fa-solid fa-triangle-exclamation"></i> JSON invalide</div>
+    </div>
+
+    <div class="ex-actions">
+        <button class="ex-run" [disabled]="executing || !dynamicJsonValid" (click)="executeDynamic()">
+            <i class="fa-solid" [ngClass]="executing ? 'fa-circle-notch fa-spin' : 'fa-play'"></i>
+            {{ executing ? 'Exécution…' : 'Exécuter' }}
+        </button>
+    </div>
+</div>
+
+<!-- ══ TAB : Vérification dossier ══════════════════════════════ -->
+<div class="ex-panel" *ngIf="mode === 'folder'">
+
+    <div class="ex-info-line">
+        <i class="fa-solid fa-folder-open ex-info-fa"></i>
+        <span class="ex-info-txt">Lit un dossier serveur : chaque <strong>nom de fichier</strong> est injecté comme paramètre SQL, la requête est exécutée et les résultats sont retournés <strong>fichier par fichier</strong>.</span>
+    </div>
+
+    <div class="ex-grid2">
+        <div class="ex-field">
+            <label>Connexion <span class="req">*</span></label>
+            <select2 class="cx-select2"
+                     [data]="connexionOptions"
+                     [(ngModel)]="folder.idconnection"
+                     [minCountForSearch]="0"
+                     placeholder="Sélectionner une connexion"
+                     noResultMessage="Aucune connexion"></select2>
+        </div>
+        <div class="ex-field">
+            <label>Requête enregistrée</label>
+            <select2 class="cx-select2"
+                     [data]="queryOptions"
+                     [ngModel]="folder.idquery"
+                     (ngModelChange)="onFolderQuerySelected($event)"
+                     [minCountForSearch]="0"
+                     placeholder="Choisir une requête (optionnel)"
+                     noResultMessage="Aucune requête"></select2>
+        </div>
+    </div>
+
+    <div class="ex-field">
+        <label>Requête SQL</label>
+        <app-sql-editor [(ngModel)]="folder.query"
+                        placeholder="SELECT * FROM clients WHERE reference = :code_fichier"></app-sql-editor>
+    </div>
+
+    <div class="ex-grid2">
+        <div class="ex-field">
+            <label>Chemin du dossier <span class="req">*</span></label>
+            <input [(ngModel)]="folder.folder_path" placeholder="C:/app/myprojects/restapw/documents/import"/>
+        </div>
+        <div class="ex-field">
+            <label>Nom du paramètre <span class="req">*</span></label>
+            <input [(ngModel)]="folder.param_name" placeholder="code_fichier"/>
+        </div>
+    </div>
+
+    <div class="ex-field">
+        <label>Paramètres additionnels <span class="hint">(JSON)</span></label>
+        <app-json-editor [(ngModel)]="folder.params" (validChange)="folderJsonValid = $event"
+                         placeholder='&#123; "societe": "APW" &#125;'></app-json-editor>
+        <div class="ex-json-err" *ngIf="!folderJsonValid"><i class="fa-solid fa-triangle-exclamation"></i> JSON invalide</div>
+    </div>
+
+    <div class="ex-checks">
+        <label class="ex-check">
+            <input type="checkbox" [(ngModel)]="folder.recursive"/>
+            <span class="ex-check-box"><i class="fa-solid fa-check"></i></span>
+            Parcourir les sous-dossiers <span class="ex-check-hint">(recursive)</span>
+        </label>
+        <label class="ex-check">
+            <input type="checkbox" [(ngModel)]="folder.include_extension"/>
+            <span class="ex-check-box"><i class="fa-solid fa-check"></i></span>
+            Inclure l'extension dans le paramètre <span class="ex-check-hint">(include_extension)</span>
+        </label>
+    </div>
+
+    <div class="ex-actions">
+        <button class="ex-run" [disabled]="executing || !folderJsonValid" (click)="executeFolder()">
+            <i class="fa-solid" [ngClass]="executing ? 'fa-circle-notch fa-spin' : 'fa-play'"></i>
+            {{ executing ? 'Vérification…' : 'Lancer la vérification' }}
+        </button>
+    </div>
+</div>
+
+<!-- ══ RÉSULTATS (stored / dynamique) ══════════════════════════ -->
+<div class="ex-results"
+     *ngIf="mode !== 'folder' && (executing || execError || resultRows.length || (resultMessage && !execError))">
+
+    <div class="ex-results-head">
+        <span class="ex-results-title"><i class="fa-solid fa-table-list"></i> Résultats</span>
+        <div class="ex-results-actions">
+            <span class="ex-count" *ngIf="resultRows.length">{{ resultRows.length }} ligne(s)</span>
+            <button class="ex-export" *ngIf="resultRows.length" (click)="exportExcel()">
+                <i class="fa-regular fa-file-excel"></i> Excel
+            </button>
+        </div>
+    </div>
+
+    <!-- Chargement -->
+    <div class="ex-results-loading" *ngIf="executing">
+        <div class="cx-spinner"></div>
+        <span>Exécution en cours...</span>
+    </div>
+
+    <!-- Erreur -->
+    <div class="ex-alert" *ngIf="execError && !executing">
+        <i class="fa-solid fa-circle-exclamation"></i> {{ execError }}
+    </div>
+
+    <!-- Message sans données -->
+    <div class="ex-empty" *ngIf="!executing && !execError && !resultRows.length">
+        <i class="fa-regular fa-circle-check"></i>
+        <span>{{ resultMessage || 'Aucune donnée retournée.' }}</span>
+    </div>
+
+    <!-- Tableau -->
+    <div class="ex-table-wrap" *ngIf="!executing && resultRows.length && columns.length">
+        <table class="ex-table">
+            <thead>
+            <tr>
+                <th class="ex-th-num">#</th>
+                <th *ngFor="let c of columns">{{ c }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let row of resultRows; let i = index">
+                <td class="ex-td-num">{{ i + 1 }}</td>
+                <td *ngFor="let c of columns">{{ cellVal(row, c) }}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- ══ RÉSULTATS (vérification dossier — fichier par fichier) ═══ -->
+<div class="ex-results"
+     *ngIf="mode === 'folder' && (executing || execError || folderGroups.length || (resultMessage && !execError))">
+
+    <div class="ex-results-head">
+        <span class="ex-results-title"><i class="fa-solid fa-folder-tree"></i> Résultats par fichier</span>
+        <div class="ex-results-actions">
+            <span class="ex-count" *ngIf="folderGroups.length">
+                {{ folderGroups.length }} fichier(s) · {{ folderTotalRows }} ligne(s)
+            </span>
+            <button class="ex-export" *ngIf="folderGroups.length" (click)="exportFolderExcel()">
+                <i class="fa-regular fa-file-excel"></i> Excel
+            </button>
+        </div>
+    </div>
+
+    <!-- Chargement -->
+    <div class="ex-results-loading" *ngIf="executing">
+        <div class="cx-spinner"></div>
+        <span>Vérification du dossier...</span>
+    </div>
+
+    <!-- Erreur -->
+    <div class="ex-alert" *ngIf="execError && !executing">
+        <i class="fa-solid fa-circle-exclamation"></i> {{ execError }}
+    </div>
+
+    <!-- Vide -->
+    <div class="ex-empty" *ngIf="!executing && !execError && !folderGroups.length">
+        <i class="fa-regular fa-folder-open"></i>
+        <span>{{ resultMessage || 'Aucun fichier / résultat.' }}</span>
+    </div>
+
+    <!-- Groupes par fichier -->
+    <div class="ex-folders" *ngIf="!executing && folderGroups.length">
+        <div class="ex-folder" *ngFor="let g of folderGroups; let i = index">
+            <button class="ex-folder-head" [class.open]="folderExpanded.has(i)" (click)="toggleFolder(i)">
+                <i class="fa-solid fa-chevron-right ex-folder-caret"></i>
+                <i class="fa-regular fa-file ex-folder-fico"></i>
+                <span class="ex-folder-name">{{ g.file }}</span>
+                <span class="ex-folder-badge" [class.zero]="g.count === 0">{{ g.count }} ligne(s)</span>
+                <span class="ex-folder-err" *ngIf="g.error"><i class="fa-solid fa-triangle-exclamation"></i></span>
+            </button>
+
+            <div class="ex-folder-body" *ngIf="folderExpanded.has(i)">
+                <div class="ex-alert" *ngIf="g.error"><i class="fa-solid fa-circle-exclamation"></i> {{ g.error }}</div>
+
+                <div class="ex-empty small" *ngIf="!g.error && g.count === 0">
+                    <i class="fa-regular fa-circle-xmark"></i>
+                    <span>Aucune donnée trouvée pour ce fichier.</span>
+                </div>
+
+                <div class="ex-table-wrap" *ngIf="g.count && g.columns.length">
+                    <table class="ex-table">
+                        <thead>
+                        <tr>
+                            <th class="ex-th-num">#</th>
+                            <th *ngFor="let c of g.columns">{{ c }}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr *ngFor="let row of g.rows; let j = index">
+                            <td class="ex-td-num">{{ j + 1 }}</td>
+                            <td *ngFor="let c of g.columns">{{ cellVal(row, c) }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

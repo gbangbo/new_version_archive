@@ -1,0 +1,13 @@
+<!-- Cloche seule : cliquer conduit à la page des demandes d'autorisation -->
+<button type="button"
+        class="dn-bell-btn"
+        [class.dn-active]="hasPending"
+        (click)="voirDemandes()"
+        [attr.aria-label]="ariaLabel"
+        [title]="ariaLabel">
+    <span class="dn-halo" *ngIf="hasPending"></span>
+    <span class="dn-bell-circle">
+        <i class="fa-solid fa-bell dn-bell" [class.dn-ring]="hasPending"></i>
+    </span>
+    <span class="dn-badge" *ngIf="hasPending">{{ badgeLabel }}</span>
+</button>

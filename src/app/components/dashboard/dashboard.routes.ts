@@ -13,7 +13,7 @@ import {AnalyticsComponent} from './analytics/analytics.component';
 import {HrComponent} from './hr/hr.component';
 import {ProjectsComponent} from './projects/projects.component';
 import {LogisticsComponent} from './logistics/logistics.component';
-import {AccueilComponent} from "./accueil/accueil.component";
+import {AccueilComponent} from "../accueil/accueil.component";
 
 export const dashboard: Routes = [
     {

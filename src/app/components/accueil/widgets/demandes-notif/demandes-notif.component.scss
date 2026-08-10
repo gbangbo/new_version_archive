@@ -1,0 +1,144 @@
+// La cloche est remontée sur la ligne du fil d'Ariane, alignée à droite.
+:host {
+  display: flex;
+  justify-content: flex-end;
+  position: relative;
+  z-index: 5;
+  // Remonte la cloche sur la ligne du fil d'Ariane. La marge basse compense
+  // la marge haute négative pour que le contenu en dessous ne bouge pas.
+  margin-top: -77px;
+  margin-bottom: 33px;
+}
+
+:host.dn-hidden { display: none; }
+
+/* ── Bouton cloche ── */
+.dn-bell-btn {
+  position: relative;
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  animation: dn-in 0.4s ease both;
+
+  &:hover .dn-bell-circle {
+    transform: scale(1.06);
+    box-shadow: 0 8px 18px rgba(0, 54, 110, 0.32);
+  }
+}
+
+.dn-halo {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: rgba(0, 54, 110, 0.14);
+  animation: dn-halo 2s ease-out infinite;
+}
+
+.dn-bell-circle {
+  position: relative;
+  z-index: 2;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #003a75 0%, #00366e 100%);
+  box-shadow: 0 6px 14px rgba(0, 54, 110, 0.28);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+/* État calme (0 demande) : pastille grise */
+.dn-bell-btn:not(.dn-active) .dn-bell-circle {
+  background: #f1f5f9;
+  box-shadow: none;
+
+  .dn-bell { color: #94a3b8; }
+}
+
+.dn-bell {
+  font-size: 17px;
+  color: #ffffff;
+  transform-origin: top center;
+}
+
+.dn-bell.dn-ring {
+  animation: dn-ring 2.4s ease-in-out infinite;
+}
+
+.dn-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  z-index: 3;
+  min-width: 19px;
+  height: 19px;
+  padding: 0 5px;
+  border-radius: 10px;
+  background: #ef4444;
+  color: #fff;
+  font-size: 10.5px;
+  font-weight: 700;
+  line-height: 19px;
+  text-align: center;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 6px rgba(239, 68, 68, 0.4);
+  animation: dn-badge-pop 0.35s ease both, dn-badge-pulse 2.4s ease-in-out infinite;
+}
+
+/* ── Responsive : la cloche reste sur la ligne du fil d'Ariane ──
+   Sur mobile le fil d'Ariane passe en colonne (gap 8px) : on compense
+   ce léger décalage pour garder la cloche alignée sur la pilule. */
+@media (max-width: 640px) {
+  :host {
+    margin-top: -69px;
+    margin-bottom: 25px;
+  }
+
+  .dn-bell-btn,
+  .dn-bell-circle {
+    width: 38px;
+    height: 38px;
+  }
+
+  .dn-bell { font-size: 15px; }
+}
+
+/* ── Animations ── */
+@keyframes dn-in {
+  from { opacity: 0; transform: scale(0.8); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* La cloche sonne : petites secousses par intermittence */
+@keyframes dn-ring {
+  0%, 55%, 100% { transform: rotate(0); }
+  60% { transform: rotate(14deg); }
+  65% { transform: rotate(-12deg); }
+  70% { transform: rotate(9deg); }
+  75% { transform: rotate(-7deg); }
+  80% { transform: rotate(4deg); }
+  85% { transform: rotate(-2deg); }
+  90% { transform: rotate(0); }
+}
+
+/* Halo qui se propage */
+@keyframes dn-halo {
+  0%   { transform: scale(0.85); opacity: 0.7; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+@keyframes dn-badge-pop {
+  0%   { transform: scale(0); }
+  70%  { transform: scale(1.25); }
+  100% { transform: scale(1); }
+}
+
+@keyframes dn-badge-pulse {
+  0%, 60%, 100% { box-shadow: 0 2px 6px rgba(239, 68, 68, 0.4); }
+  70% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0.12); }
+}

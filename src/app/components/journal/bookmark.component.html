@@ -41,137 +41,116 @@
                                     <!-- Actions droite -->
                                     <div class="op-toolbar-right">
 
-                                        <!-- ── Pill : Société ── -->
-                                        <div class="flt" (click)="$event.stopPropagation()">
-                                            <button class="flt-pill" [class.active]="!!selectedSociete"
-                                                    (click)="toggleFilter('societe', $event)">
-                                                <span class="flt-label">Société</span>
-                                                <span class="flt-val" *ngIf="societeLabel">{{ societeLabel }}</span>
-                                                <i class="fa-solid fa-chevron-down flt-caret" [class.up]="openFilter === 'societe'"></i>
-                                            </button>
-
-                                            <div class="flt-menu" *ngIf="openFilter === 'societe'">
-                                                <div class="flt-search">
-                                                    <i class="fa-solid fa-magnifying-glass"></i>
-                                                    <input [(ngModel)]="societeSearch" placeholder="Rechercher une société…"/>
-                                                </div>
-                                                <div class="flt-options custom-scrollbar">
-                                                    <div class="flt-option" *ngFor="let s of filteredSocietes()"
-                                                         [class.sel]="selectedSociete === s.value" (click)="pickSociete(s.value)">
-                                                        <span class="flt-radio"><i class="fa-solid fa-check"></i></span>
-                                                        <span class="flt-option-txt">{{ s.label }}</span>
-                                                    </div>
-                                                    <div class="flt-empty" *ngIf="filteredSocietes().length === 0">Aucune société</div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- ── Pill : Niveau ── -->
-                                        <div class="flt" (click)="$event.stopPropagation()">
-                                            <button class="flt-pill" [class.active]="selectedNiveau !== null"
-                                                    (click)="toggleFilter('niveau', $event)">
-                                                <span class="flt-label">Niveau</span>
-                                                <span class="flt-val" *ngIf="niveauLabel">{{ niveauLabel }}</span>
-                                                <i class="fa-solid fa-chevron-down flt-caret" [class.up]="openFilter === 'niveau'"></i>
-                                            </button>
-                                            <button class="flt-x" *ngIf="selectedNiveau !== null" (click)="clearNiveau($event)">
-                                                <i class="fa-solid fa-xmark"></i>
-                                            </button>
-
-                                            <div class="flt-menu" *ngIf="openFilter === 'niveau'">
-                                                <div class="flt-options">
-                                                    <div class="flt-option" *ngFor="let n of dataNiveaux"
-                                                         [class.sel]="selectedNiveau === n.value" (click)="pickNiveau(n.value)">
-                                                        <span class="flt-radio"><i class="fa-solid fa-check"></i></span>
-                                                        <span class="flt-option-txt">{{ n.label }}</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- ── Pill : Service ── -->
-                                        <div class="flt" (click)="$event.stopPropagation()">
-                                            <button class="flt-pill"
-                                                    [class.active]="!!selectedService"
-                                                    [class.disabled]="selectedNiveau === null"
-                                                    (click)="toggleFilter('service', $event)">
-                                                <span class="flt-label">Service</span>
-                                                <span class="flt-val" *ngIf="serviceLabel">{{ serviceLabel }}</span>
-                                                <i class="fa-solid flt-caret"
-                                                   [ngClass]="loadingServices ? 'fa-circle-notch fa-spin' : 'fa-chevron-down'"
-                                                   [class.up]="openFilter === 'service' && !loadingServices"></i>
-                                            </button>
-                                            <button class="flt-x" *ngIf="selectedService" (click)="clearService($event)">
-                                                <i class="fa-solid fa-xmark"></i>
-                                            </button>
-
-                                            <div class="flt-menu" *ngIf="openFilter === 'service'">
-                                                <div class="flt-search">
-                                                    <i class="fa-solid fa-magnifying-glass"></i>
-                                                    <input [(ngModel)]="serviceSearch" placeholder="Rechercher un service…"/>
-                                                </div>
-                                                <div class="flt-options custom-scrollbar">
-                                                    <div class="flt-option" *ngFor="let s of filteredServices()"
-                                                         [class.sel]="selectedService === s.value" (click)="pickService(s.value)">
-                                                        <span class="flt-radio"><i class="fa-solid fa-check"></i></span>
-                                                        <span class="flt-option-txt">{{ s.label }}</span>
-                                                    </div>
-                                                    <div class="flt-empty" *ngIf="filteredServices().length === 0">Aucun service</div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- ── Date ── -->
-                                        <div class="flt flt-date-wrap" [class.active]="!!selectedDate">
-                                            <nz-date-picker class="flt-date"
-                                                            nzFormat="dd/MM/yyyy"
-                                                            nzPlaceHolder="Date"
-                                                            [ngModel]="selectedDate"
-                                                            (ngModelChange)="onDateChange($event)"></nz-date-picker>
-                                        </div>
-
-                                        <!-- ── Recherche ── -->
-                                        <div class="op-search-wrap">
-                                            <svg class="op-search-icon" viewBox="0 0 24 24" fill="none"
-                                                 stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                                                <circle cx="11" cy="11" r="8"/>
-                                                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-                                            </svg>
-                                            <input class="op-search-input"
-                                                   placeholder="Rechercher..."
-                                                   [(ngModel)]="searchValue"
-                                                   (ngModelChange)="onSearch($event)"/>
-                                            <button *ngIf="searchValue"
-                                                    class="op-search-clear"
-                                                    (click)="searchValue=''; onSearch('')">
-                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                     stroke-width="2.5" stroke-linecap="round" width="12" height="12">
-                                                    <line x1="18" y1="6" x2="6" y2="18"/>
-                                                    <line x1="6" y1="6" x2="18" y2="18"/>
-                                                </svg>
-                                            </button>
-                                        </div>
-
-                                        <!-- ── Effacer ── -->
-                                        <button class="op-btn op-btn-outline" *ngIf="hasFilters" (click)="resetFilters()">
-                                            <i class="fa-solid fa-xmark"></i>
-                                            <span class="btn-label">Effacer</span>
+                                        <!-- ── Bouton entonnoir : affiche/masque la barre de filtres ── -->
+                                        <button class="op-filter-toggle" [class.active]="filtersVisible"
+                                                (click)="filtersVisible = !filtersVisible; $event.stopPropagation()"
+                                                nz-tooltip [nzTooltipTitle]="filtersVisible ? 'Masquer les filtres' : 'Filtres de recherche'">
+                                            <i class="fa-solid fa-filter"></i>
+                                            <span class="btn-label">Filtres</span>
                                         </button>
 
-                                        <!-- ── Exports ── -->
-                                        <button class="op-btn op-btn-outline" [disabled]="!rows.length"
-                                                nz-tooltip nzTooltipTitle="Exporter en Excel"
-                                                (click)="exportExcel()">
-                                            <i class="fa-regular fa-file-excel"></i>
-                                            <span class="btn-label">Excel</span>
-                                        </button>
-                                        <button class="op-btn op-btn-outline" [disabled]="!rows.length"
-                                                nz-tooltip nzTooltipTitle="Exporter en PDF"
-                                                (click)="exportPdf()">
-                                            <i class="fa-regular fa-file-pdf"></i>
-                                            <span class="btn-label">PDF</span>
-                                        </button>
+                                        <!-- ── Export (menu déroulant) ── -->
+                                        <div class="op-export" (click)="$event.stopPropagation()">
+                                            <button class="op-btn op-btn-outline" [disabled]="!rows.length"
+                                                    [class.active]="exportOpen"
+                                                    (click)="toggleExport($event)">
+                                                <i class="fa-solid fa-file-export"></i>
+                                                <span class="btn-label">Exporter</span>
+                                                <i class="fa-solid fa-chevron-down op-export-caret" [class.up]="exportOpen"></i>
+                                            </button>
+
+                                            <div class="op-export-menu" *ngIf="exportOpen">
+                                                <button class="op-export-item" (click)="exportExcel(); exportOpen=false">
+                                                    <i class="fa-regular fa-file-excel" style="color:#1D6F42"></i>
+                                                    <span>Format Excel</span>
+                                                </button>
+                                                <button class="op-export-item" (click)="exportPdf(); exportOpen=false">
+                                                    <i class="fa-regular fa-file-pdf" style="color:#D93025"></i>
+                                                    <span>Format PDF</span>
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
+                                </div>
+
+                                <!-- ══ BARRE DE FILTRES (au-dessus du tableau, alignée à gauche) ══ -->
+                                <div class="op-filterbar" *ngIf="filtersVisible">
+
+                                    <!-- ── Pill : Société ── -->
+                                    <div class="flt" (click)="$event.stopPropagation()">
+                                        <button class="flt-pill" [class.active]="!!selectedSociete"
+                                                (click)="toggleFilter('societe', $event)">
+                                            <span class="flt-label">Société</span>
+                                            <span class="flt-val" *ngIf="societeLabel">{{ societeLabel }}</span>
+                                            <i class="fa-solid fa-chevron-down flt-caret" [class.up]="openFilter === 'societe'"></i>
+                                        </button>
+
+                                        <div class="flt-menu" *ngIf="openFilter === 'societe'">
+                                            <div class="flt-search">
+                                                <i class="fa-solid fa-magnifying-glass"></i>
+                                                <input [(ngModel)]="societeSearch" placeholder="Rechercher une société…"/>
+                                            </div>
+                                            <div class="flt-options custom-scrollbar">
+                                                <div class="flt-option" *ngFor="let s of filteredSocietes()"
+                                                     [class.sel]="selectedSociete === s.value" (click)="pickSociete(s.value)">
+                                                    <span class="flt-radio"><i class="fa-solid fa-check"></i></span>
+                                                    <span class="flt-option-txt">{{ s.label }}</span>
+                                                </div>
+                                                <div class="flt-empty" *ngIf="filteredSocietes().length === 0">Aucune société</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- ── Pill : Utilisateurs ── -->
+                                    <div class="flt" (click)="$event.stopPropagation()">
+                                        <button class="flt-pill" [class.active]="!!selectedUser"
+                                                (click)="toggleFilter('user', $event)">
+                                            <span class="flt-label">Utilisateur</span>
+                                            <span class="flt-val" *ngIf="userLabel">{{ userLabel }}</span>
+                                            <i class="fa-solid flt-caret"
+                                               [ngClass]="loadingUsers ? 'fa-circle-notch fa-spin' : 'fa-chevron-down'"
+                                               [class.up]="openFilter === 'user' && !loadingUsers"></i>
+                                        </button>
+                                        <button class="flt-x" *ngIf="selectedUser" (click)="clearUser($event)">
+                                            <i class="fa-solid fa-xmark"></i>
+                                        </button>
+
+                                        <div class="flt-menu" *ngIf="openFilter === 'user'">
+                                            <div class="flt-search">
+                                                <i class="fa-solid fa-magnifying-glass"></i>
+                                                <input [(ngModel)]="userSearch" placeholder="Rechercher un utilisateur…"/>
+                                            </div>
+                                            <div class="flt-options custom-scrollbar">
+                                                <div class="flt-option" *ngFor="let u of filteredUsers()"
+                                                     [class.sel]="selectedUser === u.value" (click)="pickUser(u.value)">
+                                                    <span class="flt-radio"><i class="fa-solid fa-check"></i></span>
+                                                    <span class="flt-option-txt">{{ u.label }}</span>
+                                                </div>
+                                                <div class="flt-empty" *ngIf="filteredUsers().length === 0">Aucun utilisateur</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- ── Plage de dates (date_start → date_end) ── -->
+                                    <div class="flt flt-date-wrap" [class.active]="selectedDateRange?.length">
+                                        <nz-range-picker class="flt-date"
+                                                         nzFormat="dd/MM/yyyy"
+                                                         [nzPlaceHolder]="['Début', 'Fin']"
+                                                         [ngModel]="selectedDateRange"
+                                                         (ngModelChange)="onDateRangeChange($event)"></nz-range-picker>
+                                    </div>
+
+                                    <!-- ── Rechercher (déclenche la requête serveur) ── -->
+                                    <button class="op-btn op-btn-primary" (click)="loadJournal()">
+                                        <i class="fa-solid fa-magnifying-glass"></i>
+                                        <span class="btn-label">Rechercher</span>
+                                    </button>
+
+                                    <!-- ── Effacer ── -->
+                                    <button class="op-btn op-btn-outline" *ngIf="hasFilters" (click)="resetFilters()">
+                                        <i class="fa-solid fa-xmark"></i>
+                                        <span class="btn-label">Effacer</span>
+                                    </button>
                                 </div>
 
                                 <!-- ══ TABLE ════════════════════════════════════ -->
@@ -185,21 +164,29 @@
                                         nzShowSizeChanger
                                         nzBordered
                                         nzSize="small"
-                                        [nzScroll]="rows.length > 0 ? { x: '1000px' } : {}"
                                         [nzNoResult]="emptyTpl"
                                     >
                                         <thead>
                                         <tr>
-                                            <th nzWidth="200px"
-                                                nzColumnKey="user"
-                                                [nzSortFn]="sortFns.user"
+                                            <th nzWidth="170px"
+                                                nzColumnKey="entite"
+                                                [nzSortFn]="sortFns.entite"
                                                 [nzSortDirections]="['ascend','descend',null]">
-                                                Utilisateur
+                                                Entité
                                             </th>
-                                            <th nzColumnKey="action">
-                                                Action
+                                            <th nzWidth="165px"
+                                                nzColumnKey="numero_doc"
+                                                [nzSortFn]="sortFns.numeroDoc"
+                                                [nzSortDirections]="['ascend','descend',null]">
+                                                Numéro doc.
                                             </th>
-                                            <th nzWidth="200px"
+                                            <th nzWidth="150px"
+                                                nzColumnKey="direction"
+                                                [nzSortFn]="sortFns.direction"
+                                                [nzSortDirections]="['ascend','descend',null]">
+                                                Direction
+                                            </th>
+                                            <th nzWidth="150px"
                                                 nzColumnKey="service"
                                                 [nzSortFn]="sortFns.service"
                                                 [nzSortDirections]="['ascend','descend',null]"
@@ -207,38 +194,71 @@
                                                 [nzFilters]="filtersService">
                                                 Service
                                             </th>
-                                            <th nzWidth="110px" nzAlign="center"
-                                                nzColumnKey="code"
-                                                [nzSortFn]="sortFns.code"
+                                            <th nzWidth="120px" nzAlign="center"
+                                                nzColumnKey="type_doc"
+                                                [nzSortFn]="sortFns.typeDoc"
                                                 [nzSortDirections]="['ascend','descend',null]">
-                                                Code
+                                                Type de doc.
                                             </th>
-                                            <th nzWidth="150px"
+                                            <!-- Colonne principale : le libellé de l'action -->
+                                            <th nzWidth="420px" class="col-action" nzColumnKey="action_logs">
+                                                Action
+                                            </th>
+                                            <th nzWidth="160px"
+                                                nzColumnKey="par_qui"
+                                                [nzSortFn]="sortFns.parQui"
+                                                [nzSortDirections]="['ascend','descend',null]">
+                                                Par qui ?
+                                            </th>
+                                            <th nzWidth="145px"
                                                 nzColumnKey="date"
                                                 [nzSortFn]="sortFns.date"
                                                 [nzSortDirections]="['descend','ascend',null]">
-                                                Date
+                                                Date d'action
+                                            </th>
+                                            <th nzWidth="110px" nzAlign="center" nzColumnKey="autorise">
+                                                Autorisé
                                             </th>
                                         </tr>
                                         </thead>
 
                                         <tbody>
                                         <tr *ngFor="let row of nzTable.data" class="op-table-row">
+                                            <!-- Entité -->
                                             <td>
-                                                <span class="cell-text cell-wrap">{{ row.user || '—' }}</span>
+                                                <span class="cell-text cell-wrap">{{ row.entite || '—' }}</span>
                                             </td>
+                                            <!-- Numéro doc. -->
                                             <td>
-                                                <span class="cell-text cell-wrap">{{ row.action_logs || '—' }}</span>
+                                                <span class="cell-text cell-wrap">{{ row.numero_doc || '—' }}</span>
                                             </td>
+                                            <!-- Direction -->
+                                            <td>
+                                                <span class="cell-text cell-wrap">{{ row.direction || '—' }}</span>
+                                            </td>
+                                            <!-- Service -->
                                             <td>
                                                 <span class="cell-text cell-wrap">{{ row.service || '—' }}</span>
                                             </td>
+                                            <!-- Type de doc. -->
                                             <td nzAlign="center">
-                                                <nz-tag *ngIf="row.code_action" nzColor="geekblue">{{ row.code_action }}</nz-tag>
-                                                <span *ngIf="!row.code_action">—</span>
+                                                <span class="cell-text cell-wrap">{{ row.type_doc || '—' }}</span>
                                             </td>
+                                            <!-- Action (libellé du log) — colonne principale -->
+                                            <td class="col-action">
+                                                <span class="cell-text cell-wrap cell-action">{{ row.action_logs || '—' }}</span>
+                                            </td>
+                                            <!-- Par qui ? -->
+                                            <td>
+                                                <span class="cell-text cell-wrap">{{ row.par_qui || '—' }}</span>
+                                            </td>
+                                            <!-- Date d'action -->
                                             <td>
                                                 <span class="cell-text cell-wrap">{{ row.date || '—' }}</span>
+                                            </td>
+                                            <!-- Autorisé -->
+                                            <td nzAlign="center">
+                                                <span class="cell-text cell-wrap">{{ row.autorise || '—' }}</span>
                                             </td>
                                         </tr>
                                         </tbody>

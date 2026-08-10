@@ -91,8 +91,10 @@
 .op-toolbar-right {
   display: flex;
   align-items: center;
+  justify-content: flex-end;   // aligne les filtres/boutons à droite (bord du tableau)
   gap: 8px;
   flex-wrap: wrap;
+  flex: 1 1 auto;              // occupe l'espace restant → poussé à droite même après retour à la ligne
 }
 
 // ── Search ────────────────────────────────────────────────
@@ -174,7 +176,144 @@
     }
   }
 
+  &.op-btn-primary {
+    border: 1.5px solid rgba(0, 54, 110, 0.25);
+    background: rgba(0, 54, 110, 0.08);
+    color: #00366e;
+
+    &:hover:not(:disabled) {
+      background: rgba(0, 54, 110, 0.14);
+      border-color: rgba(0, 54, 110, 0.4);
+    }
+  }
+
   &:disabled { opacity: 0.5; cursor: not-allowed; }
+}
+
+// ── Barre de filtres (au-dessus du tableau, alignée à gauche) ──
+.op-filterbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px 20px;
+  border-bottom: 1px solid #F1F5F9;
+  animation: op-filterbar-in 0.18s ease;
+}
+
+@keyframes op-filterbar-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+// ── Bouton entonnoir (toggle des filtres) ─────────────────
+.op-filter-toggle {
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 8px;
+  border: 1.5px solid #E2E8F0;
+  background: #fff;
+  color: #64748B;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  white-space: nowrap;
+  transition: all 0.2s;
+
+  i { font-size: 13px; }
+
+  &:hover {
+    border-color: #CBD5E1;
+    background: #F8FAFC;
+    color: #334155;
+  }
+
+  &.active {
+    border-color: #00366e;
+    background: #00366e;
+    color: #fff;
+  }
+}
+
+// ── Export (bouton + menu déroulant) ──────────────────────
+.op-export {
+  position: relative;
+
+  .op-export-caret {
+    font-size: 10px;
+    margin-left: 2px;
+    transition: transform 0.2s;
+    &.up { transform: rotate(180deg); }
+  }
+}
+
+.op-export-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 30;
+  min-width: 170px;
+  background: #fff;
+  border: 1px solid #E2E8F0;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+  padding: 6px;
+  animation: op-export-in 0.15s ease;
+}
+
+@keyframes op-export-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.op-export-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  border: none;
+  background: transparent;
+  border-radius: 7px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+  transition: background 0.15s;
+
+  i { font-size: 15px; width: 16px; text-align: center; }
+
+  &:hover { background: #F1F5F9; color: #0F172A; }
+}
+
+// ══════════════════════════════════════════════════════════
+// TABLE — collé à la barre d'outils (aucun vide au-dessus de l'entête)
+// ══════════════════════════════════════════════════════════
+:host ::ng-deep {
+  .ant-table-wrapper,
+  .ant-spin-nested-loading,
+  .ant-spin-container,
+  .ant-table,
+  .ant-table-container,
+  .ant-table-content,
+  nz-table-inner-default,
+  nz-table-inner-scroll {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+  }
+
+  nz-table-inner-default,
+  nz-table-inner-scroll { display: block; }
+
+  .ant-table-content > table,
+  .ant-table table { margin-top: 0 !important; }
+
+  // Reliquat d'entête flottant (mode nzScroll, désormais inutilisé ici)
+  .ant-table-header { display: none !important; }
 }
 
 // ══════════════════════════════════════════════════════════
@@ -252,10 +391,40 @@
 
 .cell-wrap {
   white-space: normal !important;
-  word-break: break-word;
+  // Coupe d'abord aux espaces ; ne casse un mot que s'il est vraiment trop long
+  word-break: normal;
+  overflow-wrap: break-word;
   overflow: visible !important;
   text-overflow: unset !important;
   line-height: 1.4;
+}
+
+// Colonne « Action » : la plus riche en information
+.cell-action {
+  color: #1E293B;
+}
+
+// Neutralise les min-width hérités du template DataTables (.support-ticket-table),
+// qui écrasaient la colonne Action au profit des 5 premières colonnes.
+:host ::ng-deep .support-ticket-table {
+  thead, tbody {
+    tr {
+      th, td {
+        &:first-child,
+        &:nth-child(2),
+        &:nth-child(3),
+        &:nth-child(4),
+        &:nth-child(5) {
+          min-width: 0 !important;
+        }
+      }
+    }
+  }
+}
+
+// Largeur minimale garantie pour la colonne Action
+:host ::ng-deep .col-action {
+  min-width: 380px !important;
 }
 
 // ══════════════════════════════════════════════════════════
@@ -282,6 +451,11 @@
   margin: 0 !important;
   border-top: 1px solid #E8EDF2;
   background: #F8FAFC;
+  // La table défile horizontalement : on épingle la pagination sur la zone
+  // visible pour qu'elle occupe toujours toute la largeur affichée.
+  position: sticky;
+  left: 0;
+  z-index: 2;
 }
 
 ::ng-deep .ant-pagination-total-text {

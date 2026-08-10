@@ -1,0 +1,347 @@
+/* ══ En-tête sombre du widget "Flash Info" ══════════════════ */
+::ng-deep .card.live-auction-wrapper {
+  overflow: hidden;
+  border-radius: 5px !important;
+
+  .card-header {
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    background: #fafafa !important;
+    padding: 7px 20px !important;
+    border: none !important;
+    border-radius: 5px 5px 0 0 !important;
+
+    h5 {
+      color: #595959 !important;
+      font-weight: 700 !important;
+      margin: 0 !important;
+    }
+  }
+
+  /* Espace entre l'en-tête et les éléments */
+  .card-body {
+    padding-top: 16px !important;
+  }
+}
+
+/* ── Boutons de navigation dans l'en-tête ── */
+.fi-nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.fi-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  background: rgba(255, 255, 255, 0.6);
+  color: #374151;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+
+  &:hover:not(:disabled) {
+    background: #374151;
+    color: #fff;
+    border-color: #374151;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+.op-spinner {
+  width: 38px;
+  height: 38px;
+  border: 4px solid #E2E8F0;
+  border-top-color: #1D4ED8;
+  border-radius: 50%;
+  animation: op-spin 0.8s linear infinite;
+  margin: 0 auto;
+}
+@keyframes op-spin { to { transform: rotate(360deg); } }
+
+.op-loading {
+  pointer-events: none;
+  opacity: 0.4;
+  filter: blur(1px);
+  transition: all 0.2s;
+  min-height: 160px;
+}
+
+// Titre de l'annonce
+.fi-card-title {
+  margin: 0;
+  padding: 14px 14px 0;
+  font-size: 14.5px;
+  font-weight: 700;
+  line-height: 1.35;
+  color: #00366e;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-word;
+}
+
+// Titre présent → la description n'a plus besoin du padding haut
+.fi-card-title + .product-description {
+  padding-top: 8px;
+}
+
+// Description (remplace l'image)
+.product-description {
+  padding: 14px 14px 10px;
+  border-bottom: 1px solid #F1F5F9;
+
+  .desc-text {
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: #3f4a5f;
+    margin: 0 0 8px;
+    word-break: break-word;
+
+    // Troncature visuelle (le HTML reste intact) quand replié
+    &.desc-clamped {
+      display: -webkit-box;
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    // Mise en forme injectée via [innerHTML]
+    ::ng-deep {
+      p { margin: 0 0 6px; }
+      p:last-child { margin-bottom: 0; }
+      ul, ol { margin: 0 0 6px; padding-left: 20px; }
+      h1, h2, h3 { margin: 0 0 6px; line-height: 1.3; color: #2a2c5e; }
+      h1 { font-size: 16px; }
+      h2 { font-size: 15px; }
+      h3 { font-size: 14px; }
+      a { color: var(--theme-default); text-decoration: underline; }
+      blockquote {
+        margin: 0 0 6px;
+        padding-left: 10px;
+        border-left: 3px solid #e2e8f0;
+        color: #64748b;
+      }
+      img { max-width: 100%; height: auto; }
+    }
+  }
+}
+
+.desc-lire-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: none;
+  background: none;
+  padding: 0;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--theme-default);
+  cursor: pointer;
+  &:hover { opacity: 0.75; }
+}
+
+.lire-icon {
+  ::ng-deep svg { width: 12px !important; height: 12px !important; }
+}
+
+// Dates
+.flash-dates {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.flash-date-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.date-icon {
+  ::ng-deep svg { width: 12px !important; height: 12px !important; color: #94A3B8; }
+}
+
+.date-arrow {
+  ::ng-deep svg { width: 11px !important; height: 11px !important; color: #CBD5E1; }
+}
+
+// ═══════════════════════════════════════
+// HAUTEURS ÉGALES — slides Owl (INDISPENSABLE)
+// ═══════════════════════════════════════
+::ng-deep .live-auction-slider {
+  .owl-stage { display: flex !important; }
+  .owl-item {
+    display: flex !important;
+    height: auto !important;
+    padding: 0 16px;
+    border-right: 1px solid #E9ECF0;
+    &:last-child { border-right: none; }
+    &:first-child { padding-left: 0; }
+  }
+  .owl-item > * { width: 100%; }
+}
+
+// La carte remplit toute la hauteur du slide
+::ng-deep .live-auction-slider .product-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+// ═══════════════════════════════════════
+// PÉRIODE — ligne discrète : 📅 du 02 août → 15 août 2026
+// ═══════════════════════════════════════
+::ng-deep .product-nft-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;        // occupe l'espace restant sous la description
+  width: 100%;
+  padding: 0 14px 12px;
+  box-sizing: border-box;
+}
+
+.fi-period {
+  margin-top: auto;      // ← aligne la ligne sur le bas (hauteurs égales)
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  padding-top: 8px;
+}
+
+.fi-period-ico {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  color: #00366e;
+  opacity: 0.8;
+
+  ::ng-deep svg {
+    width: 14px !important;
+    height: 14px !important;
+    stroke: #00366e !important;
+    fill: none !important;
+  }
+}
+
+.fi-period-text {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #47607d;
+  line-height: 1.35;
+  white-space: normal;
+  word-break: break-word;
+}
+// État vide du widget flash info
+.fi-widget-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 40px 16px;
+  color: #94a3b8;
+  animation: fi-empty-in 0.4s ease both;
+
+  .fi-empty-title { font-size: 13px; font-weight: 600; color: #64748b; }
+  .fi-empty-sub   { font-size: 11px; color: #cbd5e1; }
+}
+
+/* ── Scène de l'éclair « électrique » ── */
+.fi-bolt-stage {
+  position: relative;
+  width: 76px;
+  height: 76px;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Halo lumineux qui se charge puis flashe */
+.fi-glow {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(250, 204, 21, 0.45) 0%, rgba(250, 204, 21, 0) 70%);
+  opacity: 0;
+  transform: scale(0.6);
+  animation: fi-glow-pulse 2.6s ease-in-out infinite;
+}
+
+/* L'éclair : léger balancement continu + flash intermittent */
+.fi-bolt {
+  position: relative;
+  z-index: 2;
+  font-size: 40px;
+  color: #cbd5e1;
+  transform-origin: center;
+  animation:
+    fi-bolt-sway 2.6s ease-in-out infinite,
+    fi-bolt-flash 2.6s ease-in-out infinite;
+}
+
+/* Étincelles qui jaillissent au moment du flash */
+.fi-spark {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #facc15;
+  opacity: 0;
+  z-index: 1;
+}
+.fi-spark-1 { top: 14px; left: 18px; --sx: -8px; --sy: -8px; animation: fi-spark-burst 2.6s ease-out infinite; }
+.fi-spark-2 { top: 20px; right: 16px; --sx: 9px; --sy: -6px; animation: fi-spark-burst 2.6s ease-out infinite 0.08s; }
+.fi-spark-3 { bottom: 16px; left: 30px; --sx: 4px; --sy: 9px; animation: fi-spark-burst 2.6s ease-out infinite 0.16s; }
+
+@keyframes fi-empty-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Balancement doux permanent */
+@keyframes fi-bolt-sway {
+  0%, 100% { transform: translateY(0) rotate(-3deg); }
+  50%      { transform: translateY(-4px) rotate(3deg); }
+}
+
+/* Décharge : reste gris puis vire au jaune vif l'espace d'un flash */
+@keyframes fi-bolt-flash {
+  0%, 62%   { color: #cbd5e1; text-shadow: none; transform: scale(1); }
+  66%       { color: #facc15; text-shadow: 0 0 14px rgba(250, 204, 21, 0.9); }
+  70%       { color: #fde047; text-shadow: 0 0 22px rgba(250, 204, 21, 1); }
+  74%       { color: #facc15; text-shadow: 0 0 12px rgba(250, 204, 21, 0.7); }
+  80%, 100% { color: #cbd5e1; text-shadow: none; }
+}
+
+/* Halo synchronisé avec le flash */
+@keyframes fi-glow-pulse {
+  0%, 60%  { opacity: 0; transform: scale(0.6); }
+  70%      { opacity: 1; transform: scale(1.1); }
+  100%     { opacity: 0; transform: scale(1.3); }
+}
+
+/* Étincelles projetées vers l'extérieur pendant la décharge */
+@keyframes fi-spark-burst {
+  0%, 63%  { opacity: 0; transform: translate(0, 0) scale(0.4); }
+  70%      { opacity: 1; transform: translate(var(--sx, 6px), var(--sy, -6px)) scale(1); }
+  100%     { opacity: 0; transform: translate(calc(var(--sx, 6px) * 2.2), calc(var(--sy, -6px) * 2.2)) scale(0.3); }
+}

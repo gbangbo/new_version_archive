@@ -1,8 +1,5 @@
 import {Routes} from "@angular/router";
-import {configuration} from "../../components/configuration/configuration.routes";
-import {voirdocuments} from "../../components/voir-document/voir-documents.routes";
 import {AdminGuard} from "../guard/admin.guard";
-import {importerRoutes} from "../../components/importer/importer.routes";
 
 export const content: Routes = [
     {
@@ -47,10 +44,6 @@ export const content: Routes = [
         data: {
             breadcrumb: "Kanban"
         }
-    },
-    {
-        path: 'imputation',
-        loadChildren: () => import('../../components/imputation/mail-box.routes').then(r => r.mail)
     },
     {
         path: 'chat',
@@ -114,7 +107,10 @@ export const content: Routes = [
     },
     {
         path: 'interoperabilite',
-        loadChildren: () => import('../../components/interoperabilite/task.routes').then(r => r.task)
+        loadChildren: () => import('../../components/interoperabilite/task.routes').then(r => r.task),
+        data: {
+            breadcrumb: "Interopérabilité"
+        },
     },
     {
         path: 'calendar',
@@ -358,6 +354,21 @@ export const content: Routes = [
         loadChildren: () => import('../../components/importer/importer.routes').then(r => r.importerRoutes),
         data: {
             breadcrumb: "Importation"
+        }
+    }, {
+        path: 'gec',
+        canActivate:[AdminGuard],
+        loadChildren: () => import('../../components/gec/gec.routes').then(r => r.gecRoutes),
+        data: {
+            breadcrumb: "Gestion électronique des courriers"
+        }
+    },
+    {
+        path: 'accueil',
+        canActivate:[AdminGuard],
+        loadChildren: () => import('../../components/accueil/accueil.routes').then(r => r.accueilRoutes),
+        data: {
+            breadcrumb: "Accueil"
         }
     },
 ]

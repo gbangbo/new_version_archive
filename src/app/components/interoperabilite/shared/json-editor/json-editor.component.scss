@@ -1,0 +1,54 @@
+.json-editor-wrap {
+  position: relative;
+  border: 1px solid #1f2733;
+  border-radius: 10px;
+  overflow: hidden;
+
+  ::ng-deep .cm-editor {
+    min-height: 110px;
+    max-height: 300px;
+    font-size: 13px;
+    background: #282c34;
+  }
+  ::ng-deep .cm-editor.cm-focused {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 54, 110, 0.25);
+  }
+  ::ng-deep .cm-scroller {
+    font-family: 'Consolas', 'Courier New', monospace;
+    line-height: 1.6;
+  }
+  ::ng-deep .cm-gutters {
+    background: #21252b;
+    border-right: 1px solid #1f2733;
+  }
+  // marqueur d'erreur JSON
+  ::ng-deep .cm-lintRange-error {
+    background: none;
+    text-decoration: wavy underline #f87171;
+    text-decoration-skip-ink: none;
+  }
+  ::ng-deep .cm-lint-marker-error { color: #f87171; }
+}
+
+.je-format {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 7px;
+  background: rgba(40, 44, 52, 0.85);
+  color: #abb2bf;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+
+  i { font-size: 11px; color: #61afef; }
+  &:hover { background: rgba(97, 175, 239, 0.15); color: #fff; border-color: rgba(97, 175, 239, 0.4); }
+}

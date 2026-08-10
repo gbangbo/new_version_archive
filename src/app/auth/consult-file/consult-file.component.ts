@@ -53,6 +53,13 @@ export class ConsultFileComponent implements OnInit {
     listCollapsed: boolean = false;
     isMobile: boolean = window.innerWidth <= 768;
 
+    /* ── Verrouillage par mot de passe (file_password, niveau document) ── */
+    locked: boolean = false;
+    documentPassword: string = '';
+    unlockValue: string = '';
+    unlocking: boolean = false;
+    unlockError: string = '';
+
     @HostListener('window:resize')
     onResize(): void {
         this.isMobile = window.innerWidth <= 768;
@@ -120,12 +127,17 @@ export class ConsultFileComponent implements OnInit {
             .toPromise()
             .then((res: any) => {
                 let body:any = res?.body;
-                console.log('[consult-file] réponse API :', body );
 
                 if (body?.status || body?.success) {
                     const doc = body.data;
                     this.docInfo = this.mapDocInfo(doc);
-                    this.files = this.mapFiles(doc?.pieces ?? [], doc?.date_docs, doc?.password_file);
+                    this.files = this.mapFiles(doc?.pieces_docs ?? [], doc?.date_docs);
+
+                    // Verrou global : si file_password est renseigné, tout est
+                    // verrouillé jusqu'à saisie du mot de passe correspondant.
+                    this.documentPassword = (doc?.file_password ?? '').toString();
+                    this.locked = this.documentPassword.trim().length > 0;
+
                     if (!this.files.length) {
                         this.errorMessage = 'Aucun fichier disponible pour ce lien.';
                     }
@@ -161,22 +173,59 @@ export class ConsultFileComponent implements OnInit {
         };
     }
 
-    /* Normalise `data.pieces` vers le modèle FileItem */
-    private mapFiles(rows: any, dateDocs?: string, docPassword?: string): FileItem[] {
+    /* Normalise `data.pieces_docs` vers le modèle FileItem */
+    private mapFiles(rows: any, dateDocs?: string): FileItem[] {
         if (!Array.isArray(rows)) return [];
-        return rows.map((r: any) => ({
-            uid: r.uid ?? '',
-            name: r.name_piece_docs ?? 'Document',
-            // Le serveur renvoie l'extension avec le point (".pdf")
-            extension: (r.extension_piece_docs ?? '').toString().replace(/^\./, '').toLowerCase(),
-            url_file: r.url_file ?? r.url_file_piece ?? '',
-            // Mot de passe de lecture : porté par la pièce, sinon par le document
-            password_file: r.password_file ?? r.password_piece_docs ?? docPassword ?? '',
-            // `taille_piece_docs` est exprimée en kilo-octets
-            size: this.formatSize(r.taille_piece_docs),
-            nombre_page: r.nombre_page != null ? String(r.nombre_page) : undefined,
-            date_send: this.formatDate(dateDocs),
-        }));
+        return rows.map((r: any) => {
+            const url = r.url_file_piece ?? r.url_file ?? '';
+            return {
+                uid: r.uid ?? '',
+                name: r.name_piece_docs ?? r.lib_piece_docs ?? 'Document',
+                // Extension déduite de l'URL signée (on retire ?query / #hash)
+                extension: this.extractExtension(url, r.lib_piece_docs),
+                url_file: url,
+                // Mot de passe d'ouverture du PDF (propre à la pièce)
+                password_file: (r.password_file ?? r.password_piece_docs ?? '').toString(),
+                size: undefined,
+                nombre_page: undefined,
+                date_send: this.formatDate(dateDocs),
+            };
+        });
+    }
+
+    /* Déduit l'extension à partir de l'URL (nettoyée) ou du libellé de la pièce */
+    private extractExtension(url: string, lib?: string): string {
+        const src = (url || '').split('?')[0].split('#')[0] || lib || '';
+        const name = src.split('/').pop() || '';
+        const idx = name.lastIndexOf('.');
+        return idx >= 0 ? name.slice(idx + 1).toLowerCase() : '';
+    }
+
+    /* ────────────────────────────────────────
+       DÉVERROUILLAGE (file_password)
+       Le champ de recherche sert à saisir le mot de passe ;
+       on simule une recherche (patience) puis on vérifie.
+    ──────────────────────────────────────── */
+    submitUnlock(): void {
+        const pwd = (this.unlockValue || '').trim();
+        if (!pwd || this.unlocking) return;
+
+        this.unlocking = true;
+        this.unlockError = '';
+        this.cdr.detectChanges();
+
+        // Simulation de la recherche (patience)
+        setTimeout(() => {
+            this.unlocking = false;
+            if (pwd === this.documentPassword) {
+                this.locked = false;
+                this.unlockValue = '';
+                this.unlockError = '';
+            } else {
+                this.unlockError = 'Mot de passe incorrect. Veuillez réessayer.';
+            }
+            this.cdr.detectChanges();
+        }, 1300);
     }
 
     /* "129.4375" (Ko) → "129 Ko" | "1,2 Mo" */

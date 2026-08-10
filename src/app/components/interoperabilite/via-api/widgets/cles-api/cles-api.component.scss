@@ -1,0 +1,87 @@
+@use '../widget-base';
+
+// En-tête (badge) : monospace clair
+.cx-type-badge {
+  font-family: 'Courier New', monospace !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+}
+
+// ── Clé (liste) ──────────────────────────────────────────
+.ck-key-cell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+  max-width: 520px;
+}
+
+.ck-key {
+  flex: 1;
+  min-width: 0;
+  font-size: 12px;
+  font-family: 'Courier New', monospace;
+  color: #0f172a;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 4px 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ck-key-btn {
+  width: 28px;
+  height: 28px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  background: #fff;
+  color: #64748b;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.15s;
+  &:hover:not(:disabled) { background: #f0f7ff; border-color: rgba(0, 54, 110, 0.4); color: rgba(0, 54, 110); }
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+}
+
+// ── Domaines (tags) ──────────────────────────────────────
+.ck-domains { display: flex; flex-wrap: wrap; gap: 5px; }
+
+.ck-domain-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 9px;
+  border-radius: 20px;
+  background: rgba(0, 54, 110, 0.07);
+  color: rgba(0, 54, 110);
+  font-size: 11px;
+  font-weight: 600;
+  i { font-size: 8px; color: rgba(0, 54, 110, 0.55); }
+}
+
+// ── Clé + bouton générer (modal) ─────────────────────────
+.ck-key-input {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  input { flex: 1; }
+}
+
+.ck-gen-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 14px;
+  border: 1.5px solid rgba(0, 54, 110, 0.3);
+  border-radius: 10px;
+  background: rgba(0, 54, 110, 0.06);
+  color: rgba(0, 54, 110);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+  &:hover { background: rgba(0, 54, 110, 0.12); }
+}

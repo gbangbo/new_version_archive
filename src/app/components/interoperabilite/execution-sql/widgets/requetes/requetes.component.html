@@ -1,0 +1,203 @@
+<!-- Titre -->
+<div class="cx-title">
+    <span class="cx-title-ico"><i class="fa-solid fa-terminal"></i></span>
+    <h2>Requêtes SQL</h2>
+</div>
+
+<!-- Bannière info -->
+<div class="cx-banner">
+    <span class="cx-banner-ico"><i class="fa-solid fa-code"></i></span>
+    <div class="cx-banner-txt">
+        <div class="cx-banner-title">Requêtes enregistrées</div>
+        <div class="cx-banner-sub">Enregistrez des requêtes SQL réutilisables, chacune associée à une connexion existante.</div>
+    </div>
+</div>
+
+<!-- Toolbar -->
+<div class="cx-toolbar">
+    <div class="cx-search">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input placeholder="Rechercher une requête..."
+               [ngModel]="searchValue" (ngModelChange)="onSearch($event)"/>
+        <button *ngIf="searchValue" class="cx-search-clear" (click)="onSearch('')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <button class="cx-btn-new" (click)="openCreate()">
+        <i class="fa-solid fa-plus"></i> Nouvelle requête
+    </button>
+</div>
+
+<!-- Overlay chargement -->
+<div class="cx-loading" *ngIf="isloading">
+    <div class="cx-spinner"></div>
+    <span>Chargement des requêtes...</span>
+</div>
+
+<!-- Liste -->
+<div class="cx-list" *ngIf="!isloading">
+    <div class="cx-card" *ngFor="let r of pagedRows">
+        <span class="cx-db-ico">
+            <img *ngIf="connLogo(r.connectionDb)" [src]="connLogo(r.connectionDb)" [alt]="r.connectionDb"/>
+            <i *ngIf="!connLogo(r.connectionDb)" class="fa-solid fa-terminal"></i>
+        </span>
+
+        <div class="cx-info">
+            <div class="cx-info-top">
+                <span class="cx-name">{{ r.name || '—' }}</span>
+                <span class="cx-type-badge"><i class="fa-solid fa-plug"></i> {{ r.connectionName }}</span>
+                <span class="cx-status" [class.on]="r.is_active" [class.off]="!r.is_active">
+                    <i class="fa-solid fa-circle"></i> {{ r.is_active ? 'Active' : 'Inactive' }}
+                </span>
+            </div>
+            <div class="cx-query" *ngIf="r.query" (click)="openDrawer(r)"
+                 title="Voir la requête complète" [innerHTML]="r.query | sqlHighlight"></div>
+            <div class="cx-meta" *ngIf="r.description">
+                <span><i class="fa-regular fa-file-lines"></i> {{ r.description }}</span>
+            </div>
+        </div>
+
+        <div class="cx-actions">
+            <button class="btn-round-edit" title="Modifier" (click)="openEdit(r)">
+                <app-feather-icon class="icon-small" [icon]="'edit-3'"></app-feather-icon>
+            </button>
+            <button class="btn-round-edit"
+                    [title]="r.is_active ? 'Désactiver' : 'Activer'"
+                    [disabled]="togglingUid === r.uid" (click)="toggleActive(r)">
+                <i *ngIf="togglingUid === r.uid" class="fa-solid fa-circle-notch fa-spin"></i>
+                <app-feather-icon *ngIf="togglingUid !== r.uid" class="icon-small"
+                                  [icon]="r.is_active ? 'toggle-right' : 'toggle-left'"></app-feather-icon>
+            </button>
+            <button class="btn-round-edit" title="Supprimer" (click)="remove(r)">
+                <app-feather-icon class="icon-small" [icon]="'trash-2'"></app-feather-icon>
+            </button>
+        </div>
+    </div>
+
+    <!-- Vide -->
+    <div class="cx-empty" *ngIf="rows.length === 0">
+        <i class="fa-solid fa-terminal"></i>
+        <span>Aucune requête</span>
+        <small *ngIf="searchValue">Aucun résultat pour « {{ searchValue }} »</small>
+    </div>
+</div>
+
+<!-- ══ PAGINATION (comme l'accueil) ══════════════════════════════ -->
+<div class="rq-pagination" *ngIf="!isloading && rows.length > 0">
+    <div class="pag-total-info">
+        Total&nbsp;: <strong>{{ rows.length }}</strong>&nbsp;requête{{ rows.length > 1 ? 's' : '' }}
+    </div>
+    <div class="pag-controls">
+        <div class="pag-rows-wrap">
+            <span class="pag-rows-label">Lignes/page</span>
+            <select class="pag-rows-select" [ngModel]="pageSize" (ngModelChange)="onPageSizeChange($event)">
+                <option *ngFor="let s of pageSizeOptions" [value]="s">{{ s }}</option>
+            </select>
+        </div>
+        <div class="pag-nav">
+            <button class="pag-arrow" [disabled]="pageActuelle === 1" (click)="goToPage(pageActuelle - 1)" title="Précédent">
+                <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <ng-container *ngFor="let p of visiblePages">
+                <button *ngIf="p !== '…'" class="pag-page" [class.active]="p === pageActuelle" (click)="goToPage(+p)">{{ p }}</button>
+                <span *ngIf="p === '…'" class="pag-ellipsis">…</span>
+            </ng-container>
+            <button class="pag-arrow" [disabled]="pageActuelle === totalPages" (click)="goToPage(pageActuelle + 1)" title="Suivant">
+                <i class="fa-solid fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ══ PANNEAU LATÉRAL : requête complète ════════════════════════ -->
+<div class="rq-drawer-backdrop" [class.open]="!!drawerRow" (click)="closeDrawer()"></div>
+<aside class="rq-drawer" [class.open]="!!drawerRow">
+    <div class="rq-drawer-head" *ngIf="drawerRow">
+        <div class="rq-drawer-titles">
+            <div class="rq-drawer-title">{{ drawerRow.name }}</div>
+            <div class="rq-drawer-sub">
+                <span class="cx-type-badge"><i class="fa-solid fa-plug"></i> {{ drawerRow.connectionName }}</span>
+                <span class="cx-status" [class.on]="drawerRow.is_active" [class.off]="!drawerRow.is_active">
+                    <i class="fa-solid fa-circle"></i> {{ drawerRow.is_active ? 'Active' : 'Inactive' }}
+                </span>
+            </div>
+        </div>
+        <button class="rq-drawer-close" (click)="closeDrawer()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <div class="rq-drawer-body" *ngIf="drawerRow">
+        <div class="rq-drawer-desc" *ngIf="drawerRow.description">
+            <i class="fa-regular fa-file-lines"></i> {{ drawerRow.description }}
+        </div>
+
+        <div class="rq-drawer-sqlhead">
+            <span>Requête SQL</span>
+            <button class="rq-copy" (click)="copyQuery()"><i class="fa-regular fa-copy"></i> Copier</button>
+        </div>
+        <pre class="rq-drawer-sql" [innerHTML]="drawerRow.query | sqlHighlight"></pre>
+    </div>
+</aside>
+
+<!-- ═══ MODAL : Créer / modifier une requête ═══════════════════ -->
+<div class="cx-backdrop" *ngIf="showModal">
+    <div class="cx-panel">
+        <div class="cx-panel-head">
+            <span class="cx-panel-title"><i class="fa-solid fa-terminal"></i> {{ isEdit ? 'Modifier la requête' : 'Nouvelle requête' }}</span>
+            <button class="cx-panel-close" (click)="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+
+        <div class="cx-panel-body">
+            <div class="cx-alert" *ngIf="modalError"><i class="fa-solid fa-circle-exclamation"></i> {{ modalError }}</div>
+
+            <div class="cx-grid2">
+                <div class="cx-field">
+                    <label>Nom <span class="req">*</span></label>
+                    <input [(ngModel)]="form.name" name="name" placeholder="Liste utilisateurs"/>
+                </div>
+                <div class="cx-field">
+                    <label>Connexion <span class="req">*</span></label>
+                    <select2 class="cx-select2"
+                             [data]="connexionOptions"
+                             [(ngModel)]="form.connection"
+                             name="connection"
+                             placeholder="Sélectionner une connexion"
+                             [minCountForSearch]="0"
+                             noResultMessage="Aucune connexion"></select2>
+                </div>
+            </div>
+
+            <div class="cx-field">
+                <label>Description</label>
+                <input [(ngModel)]="form.description" name="description" placeholder="Retourne les utilisateurs actifs"/>
+            </div>
+
+            <div class="cx-field">
+                <label>Requête SQL <span class="req">*</span></label>
+                <app-sql-editor [(ngModel)]="form.query" name="query"
+                                placeholder="SELECT * FROM users WHERE active = 1"></app-sql-editor>
+            </div>
+
+            <div class="cx-field">
+                <label>Paramètres <span class="hint">(JSON)</span></label>
+                <app-json-editor [(ngModel)]="form.params"
+                                 (validChange)="jsonParamsValid = $event"
+                                 placeholder='&#123; "site": "abidjan" &#125;'></app-json-editor>
+                <div class="cx-json-err" *ngIf="!jsonParamsValid"><i class="fa-solid fa-triangle-exclamation"></i> JSON invalide</div>
+            </div>
+
+            <div class="cx-field">
+                <label>État de la requête</label>
+                <nz-switch class="cx-switch2"
+                           [(ngModel)]="form.is_active" name="active"
+                           nzCheckedChildren="Actif"
+                           nzUnCheckedChildren="Inactif"></nz-switch>
+            </div>
+        </div>
+
+        <div class="cx-panel-foot">
+            <button class="cx-btn-cancel" (click)="closeModal()">Annuler</button>
+            <button class="cx-btn-confirm" [disabled]="saving || !jsonParamsValid" (click)="submit()">
+                <i class="fa-solid" [ngClass]="saving ? 'fa-circle-notch fa-spin' : 'fa-check'"></i>
+                {{ saving ? 'Enregistrement…' : (isEdit ? 'Modifier' : 'Créer') }}
+            </button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,142 @@
+<div class="exs-page">
+    <div class="exs-shell">
+
+        <!-- ══ BARRE HAUTE ═══════════════════════════════════════════ -->
+        <div class="exs-topbar">
+            <div class="exs-breadcrumb">
+                <span class="exs-bc-root">Exécution SQL</span>
+                <i class="fa-solid fa-chevron-right exs-bc-sep"></i>
+                <span class="exs-bc-current">{{ activeLabel }}</span>
+            </div>
+        </div>
+
+        <!-- ══ CORPS (menu + contenu) ════════════════════════════════ -->
+        <div class="exs-body">
+
+            <!-- Menu latéral flottant -->
+            <aside class="exs-aside">
+                <app-steps-nav [steps]="steps" [(activeId)]="activeStep"></app-steps-nav>
+            </aside>
+
+            <!-- Contenu principal -->
+            <main class="exs-main">
+
+                <!-- ÉTAPE : Connexions base de données -->
+                <app-connexions *ngIf="activeStep === 'connexions'"></app-connexions>
+
+                <!-- ÉTAPE : Requêtes SQL enregistrées -->
+                <app-requetes *ngIf="activeStep === 'requetes'"></app-requetes>
+
+                <!-- ÉTAPE : Exécution -->
+                <app-execution *ngIf="activeStep === 'execution'"></app-execution>
+
+                <!-- ÉTAPE : ancienne maquette (désactivée) -->
+                <ng-container *ngIf="false">
+
+                <!-- Titre -->
+                <div class="exs-title">
+                    <span class="exs-title-ico"><i class="fa-solid fa-lock"></i></span>
+                    <h2>Données clients</h2>
+                </div>
+
+                <!-- Bannière info -->
+                <div class="exs-banner">
+                    <span class="exs-banner-ico"><i class="fa-solid fa-id-card"></i></span>
+                    <div class="exs-banner-txt">
+                        <div class="exs-banner-title">Tous vos clients sont sélectionnés par défaut</div>
+                        <div class="exs-banner-sub">Vous pouvez les modifier en utilisant le filtre ci-dessous.</div>
+                    </div>
+                </div>
+
+                <!-- Section : Comportemental -->
+                <section class="exs-card">
+                    <div class="exs-card-head">
+                        <div class="exs-card-title">
+                            <span class="exs-mini-ico"><i class="fa-solid fa-eye"></i></span>
+                            Comportemental
+                        </div>
+                        <a class="exs-link" href="javascript:void(0)">Tout sélectionner</a>
+                    </div>
+
+                    <label class="exs-label">Critères</label>
+                    <div class="exs-tagfield">
+                        <span class="exs-tag">Besoins essentiels <i class="fa-solid fa-xmark"></i></span>
+                        <span class="exs-tag">Achats impulsifs <i class="fa-solid fa-xmark"></i></span>
+                        <span class="exs-tagfield-actions">
+                            <i class="fa-solid fa-xmark"></i>
+                            <span class="exs-sep"></span>
+                            <i class="fa-solid fa-angle-down"></i>
+                        </span>
+                    </div>
+
+                    <!-- Filtre additionnel -->
+                    <div class="exs-subhead">
+                        <span class="exs-subhead-title"><i class="fa-regular fa-file-lines"></i> Filtre additionnel</span>
+                        <button class="exs-trash" type="button"><i class="fa-solid fa-trash-can"></i></button>
+                    </div>
+
+                    <div class="exs-select">
+                        <span>Groupes familliaux</span>
+                        <i class="fa-solid fa-angle-down"></i>
+                    </div>
+
+                    <div class="exs-row2">
+                        <div class="exs-select sm">
+                            <span>Inclure seulement</span>
+                            <i class="fa-solid fa-angle-down"></i>
+                        </div>
+                        <div class="exs-tagfield grow">
+                            <span class="exs-tag">Couples sans enfants <i class="fa-solid fa-xmark"></i></span>
+                            <span class="exs-tagfield-actions">
+                                <i class="fa-solid fa-xmark"></i>
+                                <span class="exs-sep"></span>
+                                <i class="fa-solid fa-angle-down"></i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <button class="exs-add-filter" type="button">
+                        <i class="fa-solid fa-plus"></i> Ajouter un filtre
+                    </button>
+
+                    <!-- Transactions -->
+                    <div class="exs-card-title mt">
+                        <span class="exs-mini-ico"><i class="fa-solid fa-wallet"></i></span>
+                        Transactions
+                    </div>
+                    <div class="exs-tabs">
+                        <button class="exs-tab" type="button"
+                                [class.active]="transaction === 'especes'"
+                                (click)="transaction = 'especes'">Espèces</button>
+                        <button class="exs-tab" type="button"
+                                [class.active]="transaction === 'credit'"
+                                (click)="transaction = 'credit'">Crédit/débit</button>
+                        <button class="exs-tab" type="button"
+                                [class.active]="transaction === 'mobile'"
+                                (click)="transaction = 'mobile'">Paiement mobiles</button>
+                    </div>
+                </section>
+
+                <!-- Sections repliées -->
+                <button class="exs-collapse" type="button">
+                    <span class="exs-mini-ico orange"><i class="fa-solid fa-layer-group"></i></span>
+                    Tendances d'achat
+                </button>
+                <button class="exs-collapse ghost" type="button">
+                    <span class="exs-mini-ico"><i class="fa-solid fa-medal"></i></span>
+                    Niveau de fidélité
+                </button>
+
+                <!-- Pied de page -->
+                <div class="exs-footer">
+                    <button class="exs-back" type="button"><i class="fa-solid fa-arrow-left"></i> Retour</button>
+                    <button class="exs-validate" type="button">Valider</button>
+                </div>
+
+                </ng-container>
+
+            </main>
+        </div>
+
+    </div>
+</div>

@@ -1,28 +1,28 @@
-import { Routes } from "@angular/router";
+import {Routes} from "@angular/router";
 
-import { DomaineComponent } from "./domaine/domaine.component";
-import { CleApiComponent } from "./cle-api/cle-api.component";
+import {ViaApiComponent} from "./via-api/via-api.component";
+import {ExecutionSqlComponent} from "./execution-sql/execution-sql.component";
 
 export const task: Routes = [
     {
         path: '',
-        redirectTo: 'domaine',
+        redirectTo: 'com-via-api',
         pathMatch: 'full'
     },
     {
-        path: 'domaine',
-        component: DomaineComponent,
+        path: 'com-via-api',
+        component: ViaApiComponent,
         data: {
-            title: 'Domaines autorisés',
-            breadcrumb: 'Domaines autorisés'
+            title: 'Communication via API',
+            breadcrumb: 'Communication via API'
         }
     },
     {
-        path: 'cle-api',
-        component: CleApiComponent,
+        path: 'execution-sql',
+        component: ExecutionSqlComponent,
         data: {
-            title: 'Clés API',
-            breadcrumb: 'Clés API'
+            title: 'Execution manuelle de requête',
+            breadcrumb: 'Execution manuelle de requête'
         }
     }
 ]

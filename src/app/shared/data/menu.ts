@@ -7,6 +7,15 @@ export const menuItems: Menu[] =
             main_title: "applications"
         },
         {
+            title: 'Accueil',
+            id: 'home',
+            icon: 'home',
+            type: 'link',
+            path: 'accueil',
+            bookmark: true,
+            level: 1,
+        },
+        {
             title: 'Tableau de bord',
             id: 'dashboards',
             icon: 'widget',
@@ -17,8 +26,8 @@ export const menuItems: Menu[] =
             badge_value: "13",
             badge_color: 'primary',
             children: [
-                {path: '/dashboard/accueil', title: 'Accueil', type: 'link'},
-                {path: '/dashboard/tableau-de-bord', title: 'Dashboards', type: 'link'},
+                // {path: '/dashboard/accueil', title: 'Accueil', type: 'link'},
+                // {path: '/dashboard/tableau-de-bord', title: 'Dashboards', type: 'link'},
                 {path: '/dashboard/statistique', title: 'Statistiques', type: 'link'}
             ],
         },
@@ -88,7 +97,7 @@ export const menuItems: Menu[] =
         {
             title: 'Importer',
             id: 'import',
-            icon: 'download-files',
+            icon: 'import',
             type: 'sub',
             active: false,
             level: 1,
@@ -120,18 +129,9 @@ export const menuItems: Menu[] =
             level: 1,
         },
         {
-            title: 'Imputation',
-            id: 'mail-box',
-            icon: 'editors',
-            type: 'link',
-            path: '/imputation',
-            bookmark: true,
-            level: 1,
-        },
-        {
             title: 'Journal des opérations',
             id: 'journal',
-            icon: 'journal',
+            icon: 'reports',
             type: 'link',
             path: '/journal',
             level: 1,
@@ -146,6 +146,32 @@ export const menuItems: Menu[] =
             badge_color: 'danger',
             badge_value: "0",
             level: 1,
+        },
+        {
+            main_title: "GEC"
+        },
+        {
+            title: 'Imputation',
+            id: 'mail-box',
+            icon: 'button',
+            type: 'sub',
+            active: false,
+            level: 1,
+            badge: false,
+            badge_value: "New",
+            badge_color: "success",
+            children: [
+                {
+                    path: '/gec/imputation',
+                    title: 'Imputer',
+                    type: 'link'
+                },
+                {
+                    path: '/gec/mes-imputations',
+                    title: 'Mes imputations',
+                    type: 'link'
+                }
+            ],
         },
         {
             main_title: "RH"
@@ -265,7 +291,7 @@ export const menuItems: Menu[] =
         {
             title: 'Absences',
             id: 'rh',
-            icon: 'user',
+            icon: 'editors',
             type: 'sub',
             active: false,
             level: 1,
@@ -477,13 +503,13 @@ export const menuItems: Menu[] =
             badge_color: "success",
             children: [
                 {
-                    path: '/interoperabilite/domaine',
-                    title: 'Domaine',
+                    path: '/interoperabilite/com-via-api',
+                    title: 'Communication via API',
                     type: 'link'
                 },
                 {
-                    path: '/interoperabilite/cle-api',
-                    title: 'Clé API',
+                    path: '/interoperabilite/execution-sql',
+                    title: 'Exécution SQL',
                     type: 'link'
                 }
             ],

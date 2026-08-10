@@ -27,7 +27,7 @@ export class HistoLogService {
             idpiece_docs: opts.idpiece_docs || '',
             action_logs: actionLogs,
             code_action: opts.code_action || this.randomCode(),
-            user_auth: nom || users?.login || users?.uid || '',
+            user_auth: users?.uid || '',
             date_en: moment().format('YYYY-MM-DD HH:mm:ss'),
         };
         console.log("payload ===Log ::", payload)

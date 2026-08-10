@@ -77,7 +77,7 @@
                                 <tbody>
                                 <tr *ngFor="let r of nzTable.data" class="fi-row">
                                     <td><span class="fi-lib">{{ r.lib_flashinfo || '—' }}</span></td>
-                                    <td><span class="fi-desc">{{ r.desc_flashinfo || '—' }}</span></td>
+                                    <td><span class="fi-desc">{{ r.desc_text || '—' }}</span></td>
                                     <td><span class="fi-date">{{ r.periode }}</span></td>
                                     <td nzAlign="center">
                                         <nz-tag [nzColor]="r.actif ? 'green' : 'default'">
@@ -156,8 +156,11 @@
 
             <div class="fi-field">
                 <label class="form-label">Description</label>
-                <textarea class="fi-textarea" rows="4" [(ngModel)]="form.desc_flashinfo" name="desc"
-                          placeholder="Contenu / description du flash info…"></textarea>
+                <div class="fi-editor NgxEditor__Wrapper">
+                    <ngx-editor-menu [editor]="editor" [toolbar]="toolbar"></ngx-editor-menu>
+                    <ngx-editor [editor]="editor" [(ngModel)]="form.desc_flashinfo" name="desc"
+                                [placeholder]="'Contenu / description du flash info…'"></ngx-editor>
+                </div>
             </div>
 
             <div class="fi-grid2">

@@ -37,7 +37,7 @@ export class ConfirmeAuthOtpComponent implements AfterViewInit {
 
         // const userDetails = localStorage.getItem('user');
         // if (userDetails?.length != null) {
-        //     router.navigate(['/dashboard/accueil'])
+        //     router.navigate(['/accueil'])
         // }
         this.countdown(30);
         this.users = this.autor.getInfosTemp();
@@ -122,7 +122,7 @@ export class ConfirmeAuthOtpComponent implements AfterViewInit {
                     if (!localStorage.getItem(environment.CONFIG.layout_name)) {
                         localStorage.setItem(environment.CONFIG.layout_name, 'dark-sidebar');
                     }
-                    this.router.navigate(["/dashboard/accueil"]);
+                    this.router.navigate(["/accueil"]);
                 }
 
             })
