@@ -10,12 +10,10 @@
 
             <div class="page-title-right">
                 <ol class="breadcrumb-custom">
-<!--                    <li class="breadcrumb-custom-item">-->
-<!--                        <a [routerLink]="['/']" class="breadcrumb-home">-->
-<!--                            <i class="icon-home"></i>-->
-<!--                            Accueil-->
-<!--                        </a>-->
-<!--                    </li>-->
+                    <li class="breadcrumb-custom-item breadcrumb-icon-item">
+                        <!-- Même icône que celle du menu latéral pour la page courante -->
+                        <app-svg-icon class="breadcrumb-icon" [icon]="menuIcon" [change]="true"></app-svg-icon>
+                    </li>
 
                     @if(breadcrumbs && breadcrumbs.parentBreadcrumb){
                     <li class="breadcrumb-custom-item">

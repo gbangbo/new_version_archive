@@ -7,6 +7,6 @@
 
 @if(showSessionModal) {
 <app-session-expired-modal [msgCnx]="msgCnx"
-(onReconnect)="closeSessionModal()">
+(modalOpen)="closeSessionModal()">
 </app-session-expired-modal>
 }

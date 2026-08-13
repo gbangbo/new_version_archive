@@ -263,7 +263,10 @@ export class ProxyComponent implements OnInit {
         const blob = new Blob(['﻿' + lines.join('\r\n')], {type: 'text/csv;charset=utf-8;'});
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
-        const stamp = new Date().toISOString().slice(0, 19).replace(/[-:T]/g, '');
+        // \D plutot qu'une classe de caracteres entre crochets : Tailwind scanne
+        // les .ts et prend "crochet + deux-points" pour une propriete arbitraire,
+        // ce qui genere du CSS invalide dans styles.css
+        const stamp = new Date().toISOString().slice(0, 19).replace(/\D/g, '');
         a.href = url;
         a.download = `reponse_api_${stamp}.csv`;
         a.click();

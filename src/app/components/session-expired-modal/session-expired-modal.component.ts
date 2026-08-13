@@ -24,8 +24,10 @@ export class SessionExpiredModalComponent implements OnInit {
     errorTexte: string = "";
 
     @HostListener('document:keydown.escape', ['$event'])
-    handleEscKey() {
-        this.closeModal();
+    handleEscKey(event: KeyboardEvent) {
+        // Reconnexion obligatoire : Échap ne doit pas fermer le modal
+        event.preventDefault();
+        event.stopPropagation();
     }
 
     isloading: boolean = false;

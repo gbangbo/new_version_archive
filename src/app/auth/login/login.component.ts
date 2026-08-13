@@ -124,15 +124,17 @@ export class LoginComponent implements OnInit, OnDestroy {
                 })
                 .catch((err) => {
                     this.loading = false;
-                    this.toast.error(`${err?.error?.err?.non_field_errors[0] || 'Une erreur est survenue.'} `, '',
-                        {
-                            positionClass: 'toast-top-right',
-                            closeButton: true,
-                            timeOut: 3000
-                        })
-                    setTimeout(() => {
-                        this.errorTexte = `${err?.error?.err?.non_field_errors[0] || 'Une erreur est survenue.'} `;
-                    }, 3000)
+                    console.log("err ====", err)
+                    this.errorTexte = `${err?.error?.err?.message || 'Une erreur est survenue.'} `;
+                    // this.toast.error(`${err?.error?.err?.message || 'Une erreur est survenue.'} `, '',
+                    //     {
+                    //         positionClass: 'toast-top-right',
+                    //         closeButton: true,
+                    //         timeOut: 3000
+                    //     })
+                    // setTimeout(() => {
+                    //     this.errorTexte = `${err?.error?.err?.message || 'Une erreur est survenue.'} `;
+                    // }, 3000)
                 });
         }
     }

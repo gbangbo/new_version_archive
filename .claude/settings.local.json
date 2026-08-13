@@ -12,7 +12,16 @@
       "Bash(xargs grep -l \"ti-grip\\\\|ti-folder\\\\|content.*e[0-9a-f]\")",
       "Bash(xargs grep -l \"ti-grip\\\\|ti-folder\")",
       "Bash(xargs grep -l \"ti ti-folder\\\\|ti ti-grip\")",
-      "Bash(python ~/.claude/skills/ui-ux-pro-max/scripts/search.py \"enterprise document management SaaS modal premium clean\" --design-system -p \"Archivage\")"
+      "Bash(python ~/.claude/skills/ui-ux-pro-max/scripts/search.py \"enterprise document management SaaS modal premium clean\" --design-system -p \"Archivage\")",
+      "Bash(node_modules/.bin/ng build *)",
+      "Bash(npm run *)",
+      "Bash(grep -rnB2 -A6 \"ant-table-container|ant-table-content\" public/assets/scss src/styles.scss)",
+      "Bash(awk 'NR>=488 && NR<=600' public/assets/scss/components/_datatable.scss)",
+      "Bash(grep -rnB4 -A8 \"thead.*th.*span\\\\s*\\\\{\" public/assets/scss/components/_datatable.scss)",
+      "Bash(git checkout *)",
+      "Read(//c/Users/pc/Desktop/**)",
+      "Bash(git commit *)",
+      "Bash(awk 'NR>=2560 && NR<=2600' public/assets/scss/layout/_sidebar.scss)"
     ]
   }
 }

@@ -70,6 +70,45 @@
   letter-spacing: 0.02em;
 }
 
+/* ══ SIDEBAR : la zone scrollable doit descendre jusqu'en bas de l'ecran ══
+   Le template fixe .sidebar-links a height: calc(100vh - 115px) ($sidebar-height
+   dans utils/_variables.scss), une valeur calee sur la hauteur de SON logo. Avec
+   notre en-tete le scroll s'arretait donc avant le bas. On passe la colonne en
+   flex : la liste prend exactement la place restante, quelle que soit la hauteur
+   du bloc logo. */
+.page-wrapper.compact-wrapper .page-body-wrapper div.sidebar-wrapper {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+
+  > app-sidebar,
+  > app-sidebar > div,
+  .sidebar-main,
+  #sidebar-menu {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0; /* sans ca un enfant flex refuse de retrecir et le scroll fuit */
+  }
+
+  /* le bloc logo garde sa hauteur naturelle */
+  > app-sidebar > div > app-header-logo,
+  > app-sidebar > div > .logo-icon-wrapper {
+    flex: 0 0 auto;
+  }
+
+  .sidebar-links {
+    flex: 1 1 auto;
+    min-height: 0;
+    height: auto;
+    margin-top: 10px;
+    margin-bottom: 0;
+    padding-bottom: 10px;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+}
+
 /* Importez une de ces polices dans votre fichier CSS principal ou dans index.html */
 
 /* 1. Quicksand - Très similaire, arrondie et élégante */

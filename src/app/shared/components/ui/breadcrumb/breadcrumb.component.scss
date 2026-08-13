@@ -70,9 +70,35 @@
   line-height: 1;
 }
 
+// ===== Icône reprise du menu latéral =====
+.breadcrumb-icon-item {
+  line-height: 0;
+}
+
+.breadcrumb-icon {
+  display: inline-flex;
+  align-items: center;
+
+  // ::ng-deep : le <svg> appartient au template de <app-svg-icon>
+  ::ng-deep svg {
+    width: 16px;
+    height: 16px;
+    vertical-align: middle;
+    stroke: #6366f1;
+    fill: none;
+
+    &.fill-icon {
+      stroke: none;
+      fill: #6366f1;
+    }
+  }
+}
+
 // Pas de séparateur devant le premier élément affiché
-// (utile quand le maillon « Accueil » est masqué).
-.breadcrumb-custom-item:first-child .breadcrumb-separator {
+// (utile quand le maillon « Accueil » est masqué)
+// ni juste après l'icône.
+.breadcrumb-custom-item:first-child .breadcrumb-separator,
+.breadcrumb-icon-item + .breadcrumb-custom-item .breadcrumb-separator {
   display: none;
 }
 

@@ -20,7 +20,7 @@ export const menuItems: Menu[] =
             id: 'dashboards',
             icon: 'widget',
             type: 'sub',
-            active: true,
+            active: false,
             level: 1,
             badge: false,
             badge_value: "13",
@@ -112,11 +112,11 @@ export const menuItems: Menu[] =
                     title: 'Excel : PDFs depuis dossiers',
                     type: 'link'
                 },
-                {
-                    path: '/importer/repertoire',
-                    title: 'Repertoire',
-                    type: 'link'
-                }
+                // {
+                //     path: '/importer/repertoire',
+                //     title: 'Repertoire',
+                //     type: 'link'
+                // }
             ],
         },
         {
@@ -173,6 +173,32 @@ export const menuItems: Menu[] =
                 }
             ],
         },
+        // {
+        //     main_title: "GED"
+        // },
+        // {
+        //     title: 'Imputation',
+        //     id: 'mail-box',
+        //     icon: 'button',
+        //     type: 'sub',
+        //     active: false,
+        //     level: 1,
+        //     badge: false,
+        //     badge_value: "New",
+        //     badge_color: "success",
+        //     children: [
+        //         {
+        //             path: '/gec/imputation',
+        //             title: 'Imputer',
+        //             type: 'link'
+        //         },
+        //         {
+        //             path: '/gec/mes-imputations',
+        //             title: 'Mes imputations',
+        //             type: 'link'
+        //         }
+        //     ],
+        // },
         {
             main_title: "RH"
         },
