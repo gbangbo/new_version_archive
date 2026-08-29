@@ -1,0 +1,104 @@
+<div class="im-backdrop">
+    <div class="im-panel">
+
+        <div class="im-header">
+            <div class="im-header-titles">
+                <span class="im-title"><i class="fa-solid fa-share"></i> Transférer l'imputation</span>
+                <span class="im-subtitle">Confier le traitement à un autre utilisateur</span>
+            </div>
+            <button class="im-close" type="button" (click)="closeModal()" title="Fermer">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="im-body">
+            <div class="im-alert" *ngIf="errorTexte">{{ errorTexte }}</div>
+
+            <!-- Rappel de ce qui est transféré : le document et l'expéditeur
+                 d'origine ne changent pas, seul le destinataire est réattribué. -->
+            <div class="im-section">
+                <div class="im-section-title">
+                    <app-feather-icon [icon]="'folder'"></app-feather-icon> Imputation concernée
+                </div>
+                <div class="im-field">
+                    <p class="tr-rappel">{{ imputation?.documentLabel || '—' }}</p>
+                    <p class="tr-rappel tr-rappel-clair">
+                        Reçue de {{ imputation?.expediteur?.nom }}
+                        @if(imputation?.prioriteLibelle) {
+                            · Priorité {{ imputation?.prioriteLibelle }}
+                        }
+                    </p>
+                </div>
+            </div>
+
+            <div class="im-section">
+                <div class="im-section-title">
+                    <app-feather-icon [icon]="'users'"></app-feather-icon> Nouveaux destinataires
+                </div>
+
+                <div class="im-field">
+                    <label class="form-label">Destinataire principal <span class="txt-danger">*</span></label>
+                    <nz-select class="w-full" nzShowSearch nzAllowClear
+                               nzPlaceHolder="Personne chargée du traitement"
+                               [nzLoading]="loadingPersonnels"
+                               [(ngModel)]="selectedPrincipal" name="principal">
+                        <nz-option *ngFor="let p of dataPersonnels" [nzLabel]="p.label" [nzValue]="p.value"></nz-option>
+                    </nz-select>
+                </div>
+
+                <div class="im-field">
+                    <label class="form-label">En copie</label>
+                    <nz-select class="w-full" nzMode="multiple" nzShowSearch nzAllowClear
+                               [nzMaxTagCount]="4"
+                               nzPlaceHolder="Personnes informées, sans action attendue"
+                               [nzLoading]="loadingPersonnels"
+                               [(ngModel)]="selectedCopies" name="copies">
+                        <nz-option *ngFor="let p of personnelsEnCopie" [nzLabel]="p.label" [nzValue]="p.value"></nz-option>
+                    </nz-select>
+                </div>
+
+                <div class="im-field">
+                    <label class="form-label">Échéance de traitement</label>
+                    <nz-date-picker class="w-full" nzFormat="dd/MM/yyyy HH:mm" nzShowTime
+                                    nzPlaceHolder="Sélectionnez une échéance"
+                                    [nzDisabledDate]="disabledPastDate"
+                                    [(ngModel)]="dateEnd" name="dateEnd"></nz-date-picker>
+                </div>
+            </div>
+
+            <div class="im-section">
+                <div class="im-section-title">
+                    <app-feather-icon [icon]="'message-circle'"></app-feather-icon> Instruction &amp; commentaire
+                </div>
+
+                <div class="im-field">
+                    <label class="form-label">Instruction <span class="txt-danger">*</span></label>
+                    <textarea class="im-textarea" rows="2"
+                              [(ngModel)]="instruction" name="instruction"
+                              placeholder="Instruction adressée au nouveau destinataire…"></textarea>
+                </div>
+
+                <div class="im-field">
+                    <label class="form-label">Commentaire de transfert</label>
+                    <textarea class="im-textarea" rows="2"
+                              [(ngModel)]="commentaire" name="commentaire"
+                              placeholder="Motif du transfert, précisions…"></textarea>
+                </div>
+
+                <label class="im-switch">
+                    <input type="checkbox" [(ngModel)]="notifier" name="notifier"/>
+                    <span class="im-switch-box"><i class="fa-solid fa-check"></i></span>
+                    <span>Notifier les destinataires par email</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="im-footer">
+            <button class="im-btn im-btn-cancel" type="button" (click)="closeModal()">Annuler</button>
+            <button class="im-btn im-btn-confirm" type="button" [disabled]="isSaving" (click)="submit()">
+                {{ isSaving ? 'Transfert…' : 'Transférer' }}
+            </button>
+        </div>
+
+    </div>
+</div>

@@ -1,5 +1,8 @@
 <div class="flex profile-media items-center">
-    <img class="-[10px]" src="{{photo}}" alt="profile">
+    <img class="rounded-full w-[35px] h-[35px] shrink-0 object-cover"
+         [src]="photo"
+         (error)="surErreurPhoto()"
+         alt="Photo de profil">
     <div class="grow w-[calc(100%_-_250px)]">
         <span style="font-size: 12px">{{nameUser}}</span>
         <p class="mb-0" style="font-size: 10px">

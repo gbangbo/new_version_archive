@@ -22,7 +22,7 @@ export const dashboard: Routes = [
         data: {
             pageTitle: "Tableau de bord",
             title: "Tableau de bord",
-            breadcrumb: ""
+            breadcrumb: "Tableau de bord"
         },
     },
     {

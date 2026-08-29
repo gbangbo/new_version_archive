@@ -4,7 +4,10 @@
             <img class="for-light" src="assets/images/logo/logo_apw_full.png" alt="logo">
             <img class="for-dark"  src="assets/images/logo/logo_apw_full.png" alt="logo">
         </span>
-        <b style="color: #ffffff; font-size: 13px; font-weight: 600; letter-spacing: 0.02em;">{{users?.datasociete?.raison_sociale}}</b>
+        <!-- font-weight 500 et non 600 : avec les deux faces Cocon (400 et 700),
+             600 est arrondi vers le haut et tape dans le gras, trop lourd ici.
+             500 retombe sur le Regular sans déclencher de gras synthétique. -->
+        <b style="color: #ffffff; font-size: 13px; font-weight: 500; letter-spacing: 0.02em;">{{users?.datasociete?.raison_sociale}}</b>
     </a>
     <ng-content></ng-content>
 </div>

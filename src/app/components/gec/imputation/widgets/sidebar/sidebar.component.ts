@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 import { AddLabelModalComponent } from '../../../../../shared/components/ui/modal/add-label-modal/add-label-modal.component';
 import { ComposeEmailModalComponent } from '../compose-email-modal/compose-email-modal.component';
@@ -15,6 +15,11 @@ import { emailSidebar, emailTags } from '../../../../../shared/data/email';
 export class SidebarComponent {
 
   @Output() currentTab = new EventEmitter<string>();
+  /** Remonte la création d'une imputation pour que la liste se rafraîchisse. */
+  @Output() imputationCreated = new EventEmitter<void>();
+
+  /** Chargement en cours : les compteurs cèdent la place à un indicateur. */
+  @Input() chargement: boolean = false;
 
   public emailSidebar = emailSidebar;
   public emailTags = emailTags;

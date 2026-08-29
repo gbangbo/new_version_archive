@@ -16,9 +16,13 @@ export class NoticeComponent {
 
   @ViewChild('swiperContainer', { static: false }) swiperContainer!: ElementRef;
 
+  // Le GIF animé « flamme » du template d'origine (42 images, 45 Ko, en boucle
+  // perpétuelle) a été retiré : registre grand public déplacé pour un outil
+  // métier, et une animation sans fin dans l'en-tête est une gêne visuelle.
+  // Le bandeau défile déjà tout seul toutes les 2 s.
   public notice = [
-    `<img src="assets/images/giftools.gif" alt="gif"/><h6 class="mb-0 font-normal"><span class="font-primary">Archivage numérique :&nbsp </span><span class="f-light">l'innovation au service de votre entreprise.</span></h6><i class="icon-arrow-top-right f-light"></i>`,
-    `<img src="assets/images/giftools.gif" alt="gif"/><h6 class="mb-0 font-normal"><span class="f-light">L'archivage simplifié, la gestion optimisée.</span></h6><i class="icon-arrow-top-right f-light"></i>`,
+    `<h6 class="mb-0 font-normal"><span class="font-primary">Archivage numérique :&nbsp;</span><span class="f-light">l'innovation au service de votre entreprise.</span></h6><i class="icon-arrow-top-right f-light"></i>`,
+    `<h6 class="mb-0 font-normal"><span class="f-light">L'archivage simplifié, la gestion optimisée.</span></h6><i class="icon-arrow-top-right f-light"></i>`,
   ];
 // `<!--<img src="assets/images/giftools.gif" alt="gif"/><h6 class="mb-0 font-normal"><span class="f-light">L'archivage simplifié, la gestion optimisée.</span></h6><a class="ms-1" href="javascript:void(0)" target="_blank">Build v4</a><i class="icon-arrow-top-right f-light"></i>-->`,
 

@@ -1,0 +1,60 @@
+
+/* Pagination du dossier, dans l'esprit d'un client de messagerie :
+   « 1–50 sur 1478 » suivi des deux flèches. */
+.mh-pagination {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+}
+
+.mh-pagination-compte {
+    margin-right: 6px;
+    font-size: 12.5px;
+    color: rgba(82, 82, 108, 0.75);
+}
+
+.mh-pagination-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border: none;
+    border-radius: 6px;
+    background: none;
+    color: rgba(82, 82, 108, 0.8);
+    cursor: pointer;
+
+    &:hover:not(:disabled) {
+        background-color: rgba(82, 82, 108, 0.08);
+    }
+
+    &:disabled {
+        opacity: 0.3;
+        cursor: default;
+    }
+}
+
+/* Icônes au trait (Feather) : elles n'ont pas de taille propre, contrairement
+   aux glyphes Font Awesome qu'elles remplacent. On les cale sur l'épaisseur
+   des icônes du gabarit pour que la barre soit homogène. */
+/* Le tracé circulaire de `refresh-cw` remplit davantage sa boîte qu'un glyphe
+   Font Awesome : à taille égale, il paraissait nettement plus gros que les
+   icônes voisines. */
+::ng-deep .light-square svg {
+    width: 15px;
+    height: 15px;
+    stroke-width: 1.9;
+}
+
+::ng-deep .mh-pagination-btn svg {
+    width: 15px;
+    height: 15px;
+    stroke-width: 2;
+}
+
+/* La loupe du champ de recherche reste celle du gabarit : sa position est
+   gérée par `.mail-search i { position: absolute }` côté template. Une icône
+   Feather y devient un <svg> et échappe à ce sélecteur — la repositionner à la
+   main s'est révélé plus coûteux que le gain d'uniformité. */

@@ -2,59 +2,228 @@
   <div class="email-wrap email-main-wrapper tabs">
     <div class="grid grid-cols-12 card-gap">
       <div class="col-span-3 xxl:col-span-4 xl:col-span-12 box-col-12">
-        <app-sidebar (currentTab)="handleCurrentTab($event)"></app-sidebar>
+        <app-sidebar [chargement]="isLoading"
+                     (currentTab)="handleCurrentTab($event)"
+                     (imputationCreated)="charger()"></app-sidebar>
       </div>
       <div class="col-span-9 xxl:col-span-8 xl:col-span-12 box-col-12">
         <div class="email-right-aside">
           <div class="card email-body email-list" [class.hide]="isOpenMail">
-              <app-mail-header (emailType)="handleEmailType($event)"></app-mail-header>
+              <app-mail-header (emailType)="handleEmailType($event)"
+                               (rechercheChange)="handleRecherche($event)"
+                               (rafraichir)="charger()"
+                               [debut]="debut" [fin]="fin" [total]="total"
+                               (pagePrecedente)="pagePrecedente()"
+                               (pageSuivante)="pageSuivante()"></app-mail-header>
             <div class="tab-content block-wrapper relative" id="email-pills-tabContent">
               <div class="tab-pane fade show active">
                 <div class="mail-body-wrapper">
-                  <ul class="mail-header-tabs">
+                  <!-- Attente du chargement des imputations reçues et envoyées. -->
+                  @if(isLoading) {
+                    <div class="imput-chargement">
+                      <i class="fas fa-spin fa-circle-notch imput-spinner"></i>
+                      <p class="imput-chargement-texte">Chargement de vos imputations…</p>
+                      <span class="imput-chargement-detail">Messages reçus et envoyés</span>
+                    </div>
+                  }
+                  <!-- Arrivées signalées par le parseur pendant la lecture. On
+                       ne réécrit jamais la liste sous les doigts : l'utilisateur
+                       décide du moment où il l'intègre. -->
+                  @if(nouvellesEnAttente > 0 && !isLoading) {
+                    <button type="button" class="imput-bandeau" (click)="afficherNouvelles()">
+                      <app-feather-icon [icon]="'arrow-up'" [class]="'imput-bandeau-ico'"></app-feather-icon>
+                      <span>
+                        {{ nouvellesEnAttente }}
+                        nouvelle{{ nouvellesEnAttente > 1 ? 's' : '' }}
+                        imputation{{ nouvellesEnAttente > 1 ? 's' : '' }}
+                      </span>
+                      <em>Afficher</em>
+                    </button>
+                  }
+
+                  <ul class="mail-header-tabs" [class.imput-masque]="isLoading">
                     @for(email of getFilteredEmails(); track email) {
-                      <li class="inbox-data project">
+                      <li class="inbox-data project imput-ligne"
+                          [class.imput-non-lu]="estNonLue(email) || email.nouveauxMessages > 0"
+                          (click)="openEmail(email)">
                         <div class="inbox-user">
-                          <div class="form-check form-check-inline m-0">
-                            <input class="form-check-input checkbox-primary" id="emailCheckbox1" type="checkbox" value="option1">
-                            <label class="form-check-label" for="emailCheckbox1"></label>
+                          <div class="form-check form-check-inline m-0" (click)="$event.stopPropagation()">
+                            <input class="form-check-input checkbox-primary" [id]="'emailCheckbox' + email.id" type="checkbox" value="option1">
+                            <label class="form-check-label" [for]="'emailCheckbox' + email.id"></label>
                           </div>
-                          <app-svg-icon [icon]="'fill-star'" [class]="'important-mail ' + (email.is_favorite ? 'active' : '')" (click)="addToFavorite(email)"></app-svg-icon>
+                          <app-svg-icon [icon]="'fill-star'" [class]="'important-mail ' + (email.is_favorite ? 'active' : '')" (click)="addToFavorite(email); $event.stopPropagation()"></app-svg-icon>
                           @if(this.currentTab == 'sent') {
-                            To:
+                            À :
                           }
                           <div class="rounded-border">
                             @if(email.user_profile) {
                               <img class="max-w-full h-auto" [src]="email.user_profile" [alt]="email.user_name">
                             } @else {
-                              <div class="circle-{{ getTextColor(getUserText(email.user_name)) }}">
-                                <p class="txt-{{ getTextColor(getUserText(email.user_name)) }}">{{ getUserText(email.user_name) }}</p>
-                              </div>
+                              <!-- Silhouette générique plutôt que des initiales :
+                                   la couleur, tirée de l'uid, identifie la personne. -->
+                              <span class="imput-avatar"
+                                    [style.background-color]="avatar(email).fond">
+                                <svg class="imput-avatar-svg" viewBox="0 0 24 24"
+                                     [attr.fill]="avatar(email).trait" aria-hidden="true">
+                                  <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm0 2c-2.67 0-8 1.34-8 4v1.5a.5.5 0 0 0 .5.5h15a.5.5 0 0 0 .5-.5V18c0-2.66-5.33-4-8-4z"/>
+                                </svg>
+                              </span>
                             }
                           </div>
                           <p>{{ email.user_name }}</p>
                         </div>
                         <div class="inbox-message">
-                          <div class="email-data" (click)="openEmail(email)">
-                            <span>{{ email.email_title }}
-                              <span>{{ email.description }}</span>
+                          <div class="email-data">
+                            <!-- Le marqueur est DANS le span : le gabarit force
+                                 `.email-data span { display: -webkit-box }`, un
+                                 élément placé avant partirait à la ligne. -->
+                            <span>
+                              @if(marqueurPriorite(email); as marqueur) {
+                                <i class="imput-priorite {{ marqueur.classe }}"
+                                   [style.color]="marqueur.couleur"
+                                   [title]="marqueur.titre"></i>
+                              }
+                              {{ email.email_title }}
                             </span>
-                            @if(email.tag) {
-                              <div class="badge badge-light-light inline-block">{{ email.tag }}</div>
+                            @if(email.aPiecesJointes) {
+                              <app-feather-icon [icon]="'paperclip'" [class]="'imput-clip'" title="Pièces jointes"></app-feather-icon>
+                            }
+                            <!-- Une réponse est arrivée pendant qu'on regardait
+                                 la liste. Sans ce marqueur il fallait ouvrir
+                                 l'imputation pour s'en apercevoir.
+
+                                 En <div>, PAS en <span> : le gabarit impose
+                                 `.email-data span { display: -webkit-box }`, ce
+                                 qui étirait la pastille sur toute la largeur. -->
+                            @if(email.nouveauxMessages > 0) {
+                              <div class="badge imput-nouveau inline-block"
+                                   [title]="infobulleReponse(email)">
+                                <app-feather-icon [icon]="'corner-down-left'" [class]="'imput-nouveau-ico'"></app-feather-icon>
+                                {{ email.nouveauxMessages > 1
+                                    ? email.nouveauxMessages + ' réponses'
+                                    : 'Réponse' }}
+                              </div>
+                            }
+                            @for(badge of email.badges; track badge.label) {
+                              <div class="badge {{ badge.classe }} inline-block">{{ badge.label }}</div>
                             }
                           </div>
                           <div class="email-timing">
                             <span>{{ email.time }}</span>
                           </div>
-                          <div class="email-options">
-                            <i class="fa-regular" [ngClass]="email.is_read ? 'fa-envelope-open envelope-2' : 'fa-envelope envelope-1'" (click)="email.is_read =! email.is_read"></i>
-                            <i class="fa-regular fa-trash-can trash-3" (click)="deleteMail(email)"></i>
-                          </div>
+                          <!-- Actions de la ligne. Elles diffèrent selon le rôle :
+                               le destinataire transfère ou déclare traité,
+                               l'émetteur valide puis clôture. Une imputation
+                               CLÔTURÉE est figée : il ne reste que le repère de
+                               clôture. La suppression, elle, n'existe que dans
+                               la corbeille. -->
+                          @if(actionsPossibles(email) || actionsEmetteur(email)
+                              || estCloturee(email) || actionsCorbeille(email)) {
+                            <div class="email-options" (click)="$event.stopPropagation()">
+                              @if(estCloturee(email)) {
+                                <app-feather-icon [icon]="'lock'" [class]="'imput-action imput-action-close'"
+                                                  [title]="email.imputation.dateCloture
+                                                      ? 'Clôturée le ' + email.imputation.dateCloture
+                                                      : 'Imputation clôturée'"></app-feather-icon>
+                              }
+                              @if(actionsCorbeille(email)) {
+                                <app-feather-icon [icon]="'trash-2'" [class]="'imput-action imput-action-danger'"
+                                                  title="Supprimer définitivement"
+                                                  (click)="deleteMail(email)"></app-feather-icon>
+                              }
+                              @if(actionsPossibles(email)) {
+                                <app-feather-icon [icon]="'corner-up-right'" [class]="'imput-action'"
+                                                  title="Transférer"
+                                                  (click)="ouvrirTransfert(email)"></app-feather-icon>
+                                @if(!email.imputation.dateTraitement) {
+                                  <app-feather-icon [icon]="'check-circle'" [class]="'imput-action imput-action-ok'"
+                                                    title="Marquer comme traitée"
+                                                    (click)="marquerTraitee(email)"></app-feather-icon>
+                                } @else {
+                                  <app-feather-icon [icon]="'check-circle'" [class]="'imput-action imput-action-faite'"
+                                                    [title]="'Traitée le ' + email.imputation.dateTraitement"></app-feather-icon>
+                                }
+                              }
+                              @if(actionsEmetteur(email)) {
+                                @if(!estValidee(email)) {
+                                  <app-feather-icon [icon]="'thumbs-up'" [class]="'imput-action imput-action-ok'"
+                                                    title="Valider l'imputation"
+                                                    (click)="valider(email)"></app-feather-icon>
+                                } @else {
+                                  <app-feather-icon [icon]="'thumbs-up'" [class]="'imput-action imput-action-faite'"
+                                                    title="Déjà validée"></app-feather-icon>
+                                }
+                                @if(!email.imputation.dateCloture) {
+                                  <app-feather-icon [icon]="'flag'" [class]="'imput-action'"
+                                                    title="Clôturer l'imputation"
+                                                    (click)="cloturer(email)"></app-feather-icon>
+                                } @else {
+                                  <app-feather-icon [icon]="'flag'" [class]="'imput-action imput-action-faite'"
+                                                    [title]="'Clôturée le ' + email.imputation.dateCloture"></app-feather-icon>
+                                }
+                              }
+                            </div>
+                          }
                         </div>
                       </li>
                     } @empty {
                       <li class="empty-box">
-                        No {{ currentTab }} mails are there in {{ emailType }}.
+                        <div class="imput-vide">
+                          <!-- Illustration propre au dossier : une image parle
+                               mieux qu'une icône, et différencie les dossiers
+                               au premier coup d'œil. -->
+                          <svg class="imput-vide-img" viewBox="0 0 160 130" aria-hidden="true">
+                            <ellipse class="ombre" cx="80" cy="118" rx="44" ry="7"/>
+
+                            @switch (etatVide.illustration) {
+                              @case ('recues') {
+                                <g transform="rotate(-6 80 66)">
+                                  <rect class="feuille" x="54" y="16" width="52" height="44" rx="6"/>
+                                  <path class="lignes" d="M66 32h28M66 44h18"/>
+                                  <path class="corps" d="M28 46h104a8 8 0 0 1 8 8v50a8 8 0 0 1-8 8H28a8 8 0 0 1-8-8V54a8 8 0 0 1 8-8z"/>
+                                  <path class="pli" d="M20 54l60 40 60-40"/>
+                                </g>
+                              }
+                              @case ('envoyees') {
+                                <g transform="rotate(-4 80 66)">
+                                  <path class="corps" d="M26 66L140 26l-32 84-24-32z"/>
+                                  <path class="pli" d="M140 26L84 78"/>
+                                  <path class="lignes" d="M16 88h22M10 104h30"/>
+                                </g>
+                              }
+                              @case ('favoris') {
+                                <g transform="rotate(-4 80 66)">
+                                  <path class="corps" d="M80 20l17 36 39 5-28 27 7 39-35-19-35 19 7-39-28-27 39-5z"/>
+                                  <path class="lignes" d="M132 22v10M127 27h10M30 34v8M26 38h8"/>
+                                </g>
+                              }
+                              @case ('brouillons') {
+                                <g transform="rotate(-5 80 66)">
+                                  <path class="corps" d="M40 18h48l24 24v66a8 8 0 0 1-8 8H40a8 8 0 0 1-8-8V26a8 8 0 0 1 8-8z"/>
+                                  <path class="pli" d="M88 18v24h24"/>
+                                  <path class="lignes" d="M48 60h44M48 76h44M48 92h26"/>
+                                </g>
+                              }
+                              @case ('corbeille') {
+                                <g transform="rotate(-4 80 68)">
+                                  <path class="pli" d="M30 38h100M66 38V26a6 6 0 0 1 6-6h16a6 6 0 0 1 6 6v12"/>
+                                  <path class="corps" d="M42 46h76l-7 62a8 8 0 0 1-8 7H57a8 8 0 0 1-8-7z"/>
+                                  <path class="lignes" d="M68 64v38M92 64v38"/>
+                                </g>
+                              }
+                              @default {
+                                <g transform="rotate(-6 80 62)">
+                                  <circle class="corps" cx="70" cy="56" r="34"/>
+                                  <path class="pli" d="M95 82l30 30"/>
+                                  <path class="lignes" d="M58 56h24"/>
+                                </g>
+                              }
+                            }
+                          </svg>
+
+                          <span>{{ etatVide.titre }}</span>
+                          <small>{{ etatVide.detail }}</small>
+                        </div>
                       </li>
                     }
                   </ul>
@@ -64,7 +233,20 @@
           </div>
           @if(isOpenMail) {
             <div class="card email-body email-read" [class.show]="isOpenMail">
-              <app-mail-details [mailDetails]="currentMailDetails" (isMailOpen)="handleMailDetails($event)"></app-mail-details>
+              <app-mail-details [mailDetails]="currentMailDetails"
+                                [imputation]="currentMailDetails.imputation"
+                                [moi]="monUid"
+                                [envoiEnCours]="envoiReponse"
+                                (repondre)="repondre($event)"
+                                [actionsPossibles]="actionsPossibles(currentMailDetails)"
+                                [actionsEmetteur]="actionsEmetteur(currentMailDetails)"
+                                [actionsCorbeille]="actionsCorbeille(currentMailDetails)"
+                                (supprimerDemande)="supprimerCourante()"
+                                (transfererDemande)="ouvrirTransfert(currentMailDetails)"
+                                (traiterDemande)="marquerTraitee(currentMailDetails)"
+                                (validerDemande)="valider(currentMailDetails)"
+                                (cloturerDemande)="cloturer(currentMailDetails)"
+                                (isMailOpen)="handleMailDetails($event)"></app-mail-details>
             </div>
           }
         </div>
@@ -72,3 +254,9 @@
     </div>
   </div>
 </div>
+
+@if(transfertOuvert && imputationATransferer) {
+  <app-transfert-modal [imputation]="imputationATransferer"
+                       (modalOpen)="transfertOuvert = $event"
+                       (transfere)="charger()"></app-transfert-modal>
+}

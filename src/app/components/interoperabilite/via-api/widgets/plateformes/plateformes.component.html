@@ -1,0 +1,188 @@
+<!-- Titre -->
+<div class="cx-title">
+    <span class="cx-title-ico"><i class="fa-solid fa-shield-halved"></i></span>
+    <h2>Plateformes</h2>
+</div>
+
+<!-- Bannière info -->
+<div class="cx-banner">
+    <span class="cx-banner-ico"><i class="fa-solid fa-key"></i></span>
+    <div class="cx-banner-txt">
+        <div class="cx-banner-title">Authentification de plateforme externe</div>
+        <div class="cx-banner-sub">Enregistrez, pour chaque partenaire, comment obtenir un jeton auprès de lui. Les accès sont chiffrés en base et ne sont jamais réaffichés.</div>
+    </div>
+</div>
+
+<!-- Toolbar -->
+<div class="cx-toolbar">
+    <div class="cx-search">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input placeholder="Rechercher une plateforme..."
+               [ngModel]="searchValue" (ngModelChange)="onSearch($event)"/>
+        <button *ngIf="searchValue" class="cx-search-clear" (click)="onSearch('')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <button class="cx-btn-new" (click)="openCreate()">
+        <i class="fa-solid fa-plus"></i> Nouvelle plateforme
+    </button>
+</div>
+
+<!-- Chargement -->
+<div class="cx-loading" *ngIf="isloading">
+    <div class="cx-spinner"></div>
+    <span>Chargement des plateformes...</span>
+</div>
+
+<!-- Liste -->
+<div class="cx-list" *ngIf="!isloading">
+    <div class="cx-card" *ngFor="let r of rows">
+        <span class="cx-db-ico"><i class="fa-solid fa-shield-halved"></i></span>
+
+        <div class="cx-info">
+            <div class="cx-info-top">
+                <span class="cx-name">{{ r.name || '—' }}</span>
+                <span class="cx-type-badge">{{ r.authentication_method }}</span>
+                <span class="cx-status" [class.on]="r.is_active" [class.off]="!r.is_active">
+                    <i class="fa-solid fa-circle"></i> {{ r.is_active ? 'Active' : 'Inactive' }}
+                </span>
+            </div>
+            <div class="cx-meta">
+                <span class="cx-mono" [title]="r.authentication_url">
+                    <i class="fa-solid fa-link"></i> {{ r.authentication_url || '—' }}
+                </span>
+            </div>
+            <!-- Ce qui distingue vraiment deux plateformes : où lire le jeton,
+                 et sous quelle forme le renvoyer ensuite. -->
+            <div class="cx-meta">
+                <span><i class="fa-solid fa-diagram-project"></i> Jeton : {{ r.token_path }}</span>
+                <span><i class="fa-solid fa-tag"></i> {{ r.token_header_name }}{{ r.token_prefix ? ' : ' + r.token_prefix + ' …' : '' }}</span>
+            </div>
+        </div>
+
+        <div class="cx-actions">
+            <button class="btn-round-edit" title="Modifier" (click)="openEdit(r)">
+                <app-feather-icon class="icon-small" [icon]="'edit-3'"></app-feather-icon>
+            </button>
+            <button class="btn-round-edit"
+                    [title]="r.is_active ? 'Désactiver' : 'Activer'"
+                    [disabled]="togglingUid === r.uid" (click)="toggleActive(r)">
+                <i *ngIf="togglingUid === r.uid" class="fa-solid fa-circle-notch fa-spin"></i>
+                <app-feather-icon *ngIf="togglingUid !== r.uid" class="icon-small"
+                                  [icon]="r.is_active ? 'toggle-right' : 'toggle-left'"></app-feather-icon>
+            </button>
+            <button class="btn-round-edit" title="Supprimer" (click)="remove(r)">
+                <app-feather-icon class="icon-small" [icon]="'trash-2'"></app-feather-icon>
+            </button>
+        </div>
+    </div>
+
+    <div class="cx-empty" *ngIf="rows.length === 0">
+        <i class="fa-solid fa-shield-halved"></i>
+        <span>Aucune plateforme</span>
+        <small *ngIf="searchValue">Aucun résultat pour « {{ searchValue }} »</small>
+    </div>
+</div>
+
+<!-- ═══ MODAL ═══════════════════════════════════════════════ -->
+<div class="cx-backdrop" *ngIf="showModal">
+    <div class="cx-panel">
+        <div class="cx-panel-head">
+            <span class="cx-panel-title">
+                <i class="fa-solid fa-shield-halved"></i>
+                {{ isEdit ? 'Modifier la plateforme' : 'Nouvelle plateforme' }}
+            </span>
+            <button class="cx-panel-close" (click)="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+
+        <div class="cx-panel-body">
+            <div class="cx-field">
+                <label>Nom de la plateforme <span class="req">*</span></label>
+                <input [(ngModel)]="form.name" name="name" placeholder="Plateforme partenaire"/>
+            </div>
+
+            <div class="io-url-row">
+                <div class="cx-field io-methode">
+                    <label>Méthode</label>
+                    <select2 class="cx-select2"
+                             [data]="methodes"
+                             [(ngModel)]="form.authentication_method"
+                             name="authmethod"
+                             [minCountForSearch]="6"
+                             placeholder="POST"></select2>
+                </div>
+                <div class="cx-field io-url">
+                    <label>URL d'authentification <span class="req">*</span></label>
+                    <input [(ngModel)]="form.authentication_url" name="authurl"
+                           placeholder="https://partenaire.exemple.com/api/login"/>
+                </div>
+            </div>
+
+            <!-- ══ ACCÈS : ÉCRITURE SEULE ═════════════════════════════════
+                 Le back les chiffre et ne les renvoie jamais. À la
+                 modification le champ est donc vide, et on ne l'envoie que si
+                 l'utilisateur demande explicitement à les remplacer — sinon on
+                 écraserait des accès qui fonctionnent. -->
+            <div class="cx-field" *ngIf="isEdit">
+                <label>Accès enregistrés</label>
+                <div class="io-acces-etat">
+                    <i class="fa-solid fa-lock"></i>
+                    <span>Conservés. Ils ne peuvent pas être réaffichés.</span>
+                    <button type="button" class="io-lien" (click)="changerAcces = !changerAcces">
+                        {{ changerAcces ? 'Ne pas les changer' : 'Les remplacer' }}
+                    </button>
+                </div>
+            </div>
+
+            <div class="cx-field" *ngIf="!isEdit || changerAcces">
+                <label>
+                    Accès transmis à la plateforme <span class="req">*</span>
+                    <button type="button" class="io-lien io-lien-droite" (click)="formaterPayload()">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Formater
+                    </button>
+                </label>
+                <textarea rows="4" class="io-code" [(ngModel)]="form.authentication_payload" name="authpayload"
+                          placeholder='&#123; "username": "mon_identifiant", "password": "mon_mot_de_passe" &#125;'></textarea>
+                <small class="io-aide">Objet JSON envoyé tel quel à l'URL d'authentification.</small>
+            </div>
+
+            <div class="cx-field">
+                <label>Chemin du jeton dans la réponse</label>
+                <input [(ngModel)]="form.token_path" name="tokenpath" placeholder="data.token"/>
+                <small class="io-aide">
+                    Chemin pointé. Si la plateforme répond
+                    <code>&#123;"data": &#123;"token": "…"&#125;&#125;</code>, écrire <code>data.token</code>.
+                </small>
+            </div>
+
+            <div class="cx-grid2">
+                <div class="cx-field">
+                    <label>En-tête à utiliser</label>
+                    <input [(ngModel)]="form.token_header_name" name="tokenheader" placeholder="Authorization"/>
+                </div>
+                <div class="cx-field">
+                    <label>Préfixe du jeton</label>
+                    <input [(ngModel)]="form.token_prefix" name="tokenprefix" placeholder="Bearer"/>
+                </div>
+            </div>
+
+            <div class="cx-field">
+                <label>État de la plateforme</label>
+                <nz-switch class="cx-switch2" [(ngModel)]="form.is_active" name="active"
+                           nzCheckedChildren="Active" nzUnCheckedChildren="Inactive"></nz-switch>
+            </div>
+        </div>
+
+        <!-- Toujours visible : l'utilisateur est en bas du formulaire quand il
+             valide, c'est là que le motif de l'échec doit apparaître. -->
+        <div class="cx-panel-alerte" *ngIf="modalError">
+            <div class="cx-alert"><i class="fa-solid fa-circle-exclamation"></i> {{ modalError }}</div>
+        </div>
+
+        <div class="cx-panel-foot">
+            <button class="cx-btn-cancel" (click)="closeModal()">Annuler</button>
+            <button class="cx-btn-confirm" [disabled]="saving" (click)="submit()">
+                <i class="fa-solid" [ngClass]="saving ? 'fa-circle-notch fa-spin' : 'fa-check'"></i>
+                {{ saving ? 'Enregistrement…' : (isEdit ? 'Modifier' : 'Créer') }}
+            </button>
+        </div>
+    </div>
+</div>

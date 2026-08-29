@@ -21,7 +21,14 @@
       "Bash(git checkout *)",
       "Read(//c/Users/pc/Desktop/**)",
       "Bash(git commit *)",
-      "Bash(awk 'NR>=2560 && NR<=2600' public/assets/scss/layout/_sidebar.scss)"
+      "Bash(awk 'NR>=2560 && NR<=2600' public/assets/scss/layout/_sidebar.scss)",
+      "Bash(./venv/Scripts/python.exe -m pip install -q --disable-pip-version-check pillow skia-pathops)",
+      "Bash(./venv/Scripts/python.exe -c ' *)",
+      "Bash(curl -sL -o nunito-var.ttf \"https://github.com/google/fonts/raw/main/ofl/nunito/Nunito%5Bwght%5D.ttf\" -w \"Nunito var: HTTP %{http_code}, %{size_download} octets\\\\n\")",
+      "Bash(PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe -)",
+      "Bash(grep -i -E \"^socket|^ws$|^engine\")",
+      "Bash(grep -i -E \"^socket|^ws$\")",
+      "Bash(timeout 15 npm view socket.io version)"
     ]
   }
 }

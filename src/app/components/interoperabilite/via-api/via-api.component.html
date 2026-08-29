@@ -2,32 +2,63 @@
     <div class="va-shell">
 
         <!-- ══ BARRE HAUTE ═══════════════════════════════════════════ -->
-        <div class="va-topbar">
-            <div class="va-breadcrumb">
-                <span class="va-bc-root">Communication via API</span>
-                <i class="fa-solid fa-chevron-right va-bc-sep"></i>
-                <span class="va-bc-current">{{ activeLabel }}</span>
-            </div>
+<!--        <div class="va-topbar">-->
+<!--            <div class="va-breadcrumb">-->
+<!--                <span class="va-bc-root">Communication via API</span>-->
+<!--                <i class="fa-solid fa-chevron-right va-bc-sep"></i>-->
+<!--                <span class="va-bc-current">{{ activeLabel }}</span>-->
+<!--            </div>-->
+<!--        </div>-->
+
+        <!-- ══ FAMILLES D'APPELS ═════════════════════════════════════
+             Au-dessus du menu, car le choix commande TOUT ce qui suit :
+             chaque famille a ses propres étapes. -->
+        <div class="va-tabs">
+            @for(g of groupes; track g.id) {
+                <button type="button" class="va-tab" [class.active]="groupeActif === g.id"
+                        (click)="choisirGroupe(g.id)">
+                    <i class="{{ g.icon }}"></i> {{ g.label }}
+                </button>
+            }
         </div>
 
         <!-- ══ CORPS (menu + contenu) ════════════════════════════════ -->
         <div class="va-body">
 
-            <!-- Menu latéral flottant -->
+            <!-- Menu latéral flottant, propre au groupe choisi -->
             <aside class="va-aside">
                 <app-steps-nav [steps]="steps" [(activeId)]="activeStep"></app-steps-nav>
             </aside>
 
             <!-- Contenu principal -->
             <main class="va-main">
-                <!-- ÉTAPE : Domaines autorisés -->
-                <app-domaines *ngIf="activeStep === 'domaines'"></app-domaines>
 
-                <!-- ÉTAPE : Clés API -->
-                <app-cles-api *ngIf="activeStep === 'cles'"></app-cles-api>
+                <!-- ══ GROUPE : avec clé API ═════════════════════════ -->
+                @if(groupeActif === 'cle') {
+                    <!-- ÉTAPE : Domaines autorisés -->
+                    <app-domaines *ngIf="activeStep === 'domaines'"></app-domaines>
 
-                <!-- ÉTAPE : Communication (proxy HTTP externe) -->
-                <app-proxy *ngIf="activeStep === 'proxy'"></app-proxy>
+                    <!-- ÉTAPE : Clés API -->
+                    <app-cles-api *ngIf="activeStep === 'cles'"></app-cles-api>
+
+                    <!-- ÉTAPE : Communication (proxy HTTP externe) -->
+                    <app-proxy *ngIf="activeStep === 'proxy'"></app-proxy>
+                }
+
+                <!-- ══ GROUPE : avec authentification de plateforme ═══
+                     Les trois étages se remplissent dans cet ordre : on dit
+                     qui l'on est chez le partenaire, ce qu'on lui demande,
+                     puis on exécute. -->
+                @if(groupeActif === 'auth') {
+                    <!-- ÉTAPE : qui nous sommes chez le partenaire -->
+                    <app-plateformes *ngIf="activeStep === 'plateformes'"></app-plateformes>
+
+                    <!-- ÉTAPE : ce qu'on lui demande -->
+                    <app-requetes-externes *ngIf="activeStep === 'requetes'"></app-requetes-externes>
+
+                    <!-- ÉTAPE : on joue l'appel -->
+                    <app-execution-externe *ngIf="activeStep === 'execution'"></app-execution-externe>
+                }
             </main>
         </div>
 

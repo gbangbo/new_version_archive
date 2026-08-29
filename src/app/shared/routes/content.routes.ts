@@ -6,7 +6,11 @@ export const content: Routes = [
         path: 'dashboard',
         loadChildren: () => import('../../components/dashboard/dashboard.routes').then(r => r.dashboard),
         data: {
-            breadcrumb: "Dashboard"
+            // Segment d'URL de regroupement, pas un niveau de navigation : dans le
+            // menu latéral « Accueil » et « Tableau de bord » sont deux entrées de
+            // même niveau. Afficher un parent ici rangerait Accueil sous Tableau de
+            // bord, ce qui est faux. Le libellé du niveau vient des routes enfants.
+            breadcrumb: ""
         },
     },
     {
@@ -337,7 +341,7 @@ export const content: Routes = [
         canActivate:[AdminGuard],
         loadChildren: () => import('../../components/rh/rh.routes').then(r => r.rh),
         data: {
-            breadcrumb: "Resources humaines"
+            breadcrumb: "Ressources humaines"
         }
     },
     {

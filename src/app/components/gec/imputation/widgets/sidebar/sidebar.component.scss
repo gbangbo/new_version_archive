@@ -1,0 +1,19 @@
+.imput-spin-mini {
+    margin-left: 8px;
+    font-size: 13px;
+    color: var(--theme-default, #5c61f2);
+}
+.emailbox {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+
+    ::ng-deep svg {
+        width: 19px;
+        height: 19px;
+        stroke: #fff;
+        fill: none;
+        flex-shrink: 0;
+    }
+}

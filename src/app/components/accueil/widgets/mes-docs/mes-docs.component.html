@@ -135,7 +135,7 @@
     <ng-template #emptyState>
         <div class="docs-empty">
             <i class="fa-regular fa-folder-open docs-empty-ico"></i>
-            <span>Aucun document pour {{ moisLabels[moisActif] }}</span>
+            <span>Aucun document pour {{ moisEnMinuscule(moisActif) }} {{ anneeEnCours }}</span>
             <small *ngIf="searchValue">correspondant à « {{ searchValue }} »</small>
         </div>
     </ng-template>

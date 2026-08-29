@@ -1,3 +1,13 @@
+/* La raison sociale fait partie du bloc de marque, au même titre que le logo :
+   elle suit donc la police de la sidebar (Cocon) et non celle du contenu.
+   Ce composant sert aussi de logo d'en-tête en dessous de 992px, là où la
+   sidebar est masquée ; on garde volontairement le même dessin dans les deux
+   cas pour que le bloc de marque soit identique partout. Pour réserver Cocon
+   à la seule sidebar, préfixer le sélecteur par :host-context(.sidebar-wrapper). */
+.logo-wrapper b {
+  font-family: "Cocon", "Nunito", sans-serif !important;
+}
+
 .logo-badge {
   display: inline-flex;
   align-items: center;

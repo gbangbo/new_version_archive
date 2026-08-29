@@ -8,7 +8,13 @@
         <app-header-logo [icon]="'align-center'" [type]="'header'" [logoIn]="logoIn1" [logoDark]="logoDark1"></app-header-logo>
     </div>
 
-    <div class="left-header col-span-2 xxl:col-span-6 xl:col-span-5 lg:col-span-4 md:col-span-3" style="display: flex; align-items: center; gap: 16px;">
+    <!-- Rappel : les breakpoints Tailwind du projet sont en max-width, donc la
+         classe sans préfixe vise les écrans LES PLUS LARGES (> 1399px). Elle
+         était à col-span-2 : deux colonnes sur douze pour loger le slogan, qui
+         se faisait couper en plein mot, pendant que .nav-right en occupait dix
+         pour quatre icônes collées à droite. On rééquilibre 6/6 ; les variantes
+         xxl/xl/lg/md ci-dessous restent inchangées. -->
+    <div class="left-header col-span-6 xxl:col-span-6 xl:col-span-5 lg:col-span-4 md:col-span-3" style="display: flex; align-items: center; gap: 16px;">
 
         <div (click)="toggleSidebar()" style="cursor: pointer;">
             <app-feather-icon *ngIf="isIcon === 'menu'"
@@ -29,7 +35,7 @@
 
     </div>
 
-    <div class="nav-right col-span-10 xxl:col-span-6 xl:col-span-7 lg:col-span-8 md:col-span-9 float-right right-header p-0 ms-auto">
+    <div class="nav-right col-span-6 xxl:col-span-6 xl:col-span-7 lg:col-span-8 md:col-span-9 float-right right-header p-0 ms-auto">
         <ul class="nav-menus">
             
 <!--            <li class="language-nav" (click)="toggleLanguage()" (clickOutside)="clickOutside()">-->

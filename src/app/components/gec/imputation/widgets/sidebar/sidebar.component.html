@@ -1,12 +1,14 @@
 <div class="md-sidebar">
-   <button class="btn btn-primary md-sidebar-toggle text-white" (click)="toggleSidebar()">email filter</button>
+   <button class="btn btn-primary md-sidebar-toggle text-white" (click)="toggleSidebar()">Dossiers</button>
   <div class="md-sidebar-aside job-left-aside custom-scrollbar" [class.open]="sidebarOpen">
     <div class="email-left-aside">
       <div class="card">
         <div class="card-body">
           <div class="email-app-sidebar">
             <button class="btn btn-primary emailbox text-white" type="button" (click)="composeEmail()">
-              <i class="fa-solid fa-plus"></i>Imputer
+              <!-- Même stylo que l'entrée « Absences » du menu latéral (sprite
+                   `editors`), pour parler le langage d'icônes de l'application. -->
+              <app-svg-icon [icon]="'editors'" [change]="true"></app-svg-icon>Nouveau
             </button>
             <ul class="tab-links main-menu email-category" id="email-pills-tab" role="tablist">
               @for(item of emailSidebar; track item) {
@@ -14,7 +16,12 @@
                   <a class="tab-link" [class.active]="activeTab == item.value" (click)="handleTabChange(item.value)">
                     <app-svg-icon [icon]="item.icon" [class]="'stroke-icon'"></app-svg-icon>
                     <div>{{ item.title }}
-                      @if(item.tag) {
+                      <!-- Pendant le chargement, les compteurs seraient ceux de
+                           l'affichage précédent : on montre l'attente à la place. -->
+                      @if(chargement) {
+                        <i class="fas fa-spin fa-circle-notch imput-spin-mini"
+                           aria-label="Chargement en cours"></i>
+                      } @else if(item.tag) {
                         <span class="badge badge-light-primary inline-block">{{ item.tag }}</span>
                       }
                     </div>
@@ -22,24 +29,24 @@
                 </li>
               }
 
-              <li>
-                <ul>
-                  @for(tag of emailTags; track tag) {
-                    <li>
-                      <a href="javascript:void(0)">
-                        <app-svg-icon [icon]="'pintag'" [class]="'stroke-icon stroke-' + tag.color"></app-svg-icon>
-                        {{ tag.title }}
-                      </a>
-                    </li>
-                  }
-                </ul>
-              </li>
-              <li>
-                <a class="btn" href="javascript:void(0)" (click)="openLabelModal()">
-                  <i class="fa-solid fa-plus"></i>
-                  Add Label
-                </a>
-              </li>
+<!--              <li>-->
+<!--                <ul>-->
+<!--                  @for(tag of emailTags; track tag) {-->
+<!--                    <li>-->
+<!--                      <a href="javascript:void(0)">-->
+<!--                        <app-svg-icon [icon]="'pintag'" [class]="'stroke-icon stroke-' + tag.color"></app-svg-icon>-->
+<!--                        {{ tag.title }}-->
+<!--                      </a>-->
+<!--                    </li>-->
+<!--                  }-->
+<!--                </ul>-->
+<!--              </li>-->
+<!--              <li>-->
+<!--                <a class="btn" href="javascript:void(0)" (click)="openLabelModal()">-->
+<!--                  <i class="fa-solid fa-plus"></i>-->
+<!--                  Ajouter un libellé-->
+<!--                </a>-->
+<!--              </li>-->
             </ul>
           </div>
         </div>
@@ -49,7 +56,8 @@
 </div>
 
 @if(emailModalOpen) {
-  <app-compose-email-modal (modalOpen)="handleModalOpen($event)"></app-compose-email-modal>
+  <app-compose-email-modal (modalOpen)="handleModalOpen($event)"
+                           (created)="imputationCreated.emit()"></app-compose-email-modal>
 }
 
 @if(labelModalOpen) {

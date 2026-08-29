@@ -306,6 +306,12 @@ $line: #EAECF0;
   padding: 16px 20px;
   background-color: rgba(0, 54, 110);
   color: #fff;
+  // Au-dessus du corps : le contenu qui défile passe DESSOUS l'en-tête au lieu
+  // d'affleurer son bord.
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 3px 10px rgba(0, 54, 110, 0.18);
+  flex-shrink: 0;
 }
 
 .cx-panel-title { font-size: 15px; font-weight: 700; i { margin-right: 8px; } }
@@ -321,7 +327,43 @@ $line: #EAECF0;
   &:hover { background: rgba(255, 255, 255, 0.32); }
 }
 
-.cx-panel-body { padding: 20px; overflow-y: auto; }
+// ── Corps du modal ───────────────────────────────────────
+//  L'ascenseur natif de Windows — large, gris, avec ses deux flèches — jurait
+//  avec le reste et donnait un aspect brut au formulaire. On le remplace par
+//  une barre fine, discrète au repos et qui se marque au survol.
+.cx-panel-body {
+  padding: 20px;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  // Empêche la page DERRIÈRE le modal de se mettre à défiler dès qu'on
+  // atteint le bas du formulaire.
+  overscroll-behavior: contain;
+
+  // Firefox
+  scrollbar-width: thin;
+  scrollbar-color: #CBD5E1 transparent;
+
+  // Chromium / WebKit
+  &::-webkit-scrollbar { width: 11px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #CBD5E1;
+    border-radius: 999px;
+    // La bordure transparente sert de marge : la barre paraît fine sans que la
+    // zone d'accroche à la souris ne le devienne.
+    border: 3px solid transparent;
+    background-clip: content-box;
+
+    &:hover {
+      background-color: #94A3B8;
+      background-clip: content-box;
+    }
+  }
+
+  // Les deux flèches d'extrémité, propres à Windows.
+  &::-webkit-scrollbar-button { display: none; }
+}
 
 .cx-alert {
   display: flex;
@@ -430,6 +472,26 @@ $line: #EAECF0;
   ::ng-deep .ant-switch-inner { font-size: 12px !important; font-weight: 600 !important; }
 }
 
+// ── Bandeau d'erreur du modal ────────────────────────────
+//  HORS de la zone qui défile, juste au-dessus des boutons.
+//  Placé en tête du formulaire, il restait invisible : au moment où l'on clique
+//  sur « Créer », on est en bas, et il fallait remonter pour savoir ce qui
+//  n'allait pas.
+.cx-panel-alerte {
+  flex-shrink: 0;
+  padding: 14px 20px 0;
+  background: #fff;
+  position: relative;
+  z-index: 1;
+
+  .cx-alert {
+    margin-bottom: 0;
+    align-items: flex-start;
+
+    i { margin-top: 2px; }
+  }
+}
+
 // ── Pied modal ───────────────────────────────────────────
 .cx-panel-foot {
   display: flex;
@@ -437,6 +499,13 @@ $line: #EAECF0;
   gap: 10px;
   padding: 16px 20px;
   border-top: 1px solid #EEF2F7;
+  // Fond opaque et ombre vers le haut : on voit que le formulaire continue
+  // derrière les boutons, plutôt que de croire qu'il s'arrête là.
+  background: #fff;
+  box-shadow: 0 -4px 12px rgba(15, 23, 42, 0.06);
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
 }
 
 .cx-btn-cancel {

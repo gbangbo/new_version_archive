@@ -1,0 +1,875 @@
+/* ══ Fil de discussion ══════════════════════════════════════════════════════
+   Les messages viennent de api/:imputations/message et se lisent du plus
+   ancien au plus récent.
+
+   ATTENTION : toutes les classes de ce fichier sont préfixées `imput-`. Le
+   gabarit définit globalement `.msg`, `.msg-info`, `.msg-img`… pour son module
+   de messagerie (pages/_chat.scss) ; sans préfixe, `.msg { display: flex }`
+   plaçait le corps du message à côté de son en-tête au lieu d'en dessous. */
+.imput-fil {
+    padding: 18px 24px;
+    border-top: 1px solid rgba(82, 82, 108, 0.12);
+}
+
+.imput-fil-titre {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: rgba(82, 82, 108, 0.6);
+    margin-bottom: 14px;
+}
+
+.imput-fil-barre {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 4px;
+}
+
+.imput-fil-tout {
+    border: none;
+    background: none;
+    padding: 0;
+    font-size: 12px;
+    color: var(--theme-default, #5c61f2);
+    cursor: pointer;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+/* ══ Un message du fil ══════════════════════════════════════════════════════
+   Présentation en lignes séparées par un filet, repliées par défaut : sur un
+   échange long, les bulles empilées devenaient illisibles. */
+.imput-msg {
+    border-top: 1px solid rgba(82, 82, 108, 0.12);
+
+    &:last-child {
+        border-bottom: 1px solid rgba(82, 82, 108, 0.12);
+    }
+}
+
+.imput-msg-tete {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 4px;
+    cursor: pointer;
+
+    &:hover {
+        background-color: rgba(82, 82, 108, 0.035);
+    }
+}
+
+/* Avatar générique : silhouette sur pastille colorée, à la façon d'une
+   messagerie. Les initiales étaient peu lisibles et souvent ambiguës. */
+.imput-msg-avatar,
+.imput-avatar-entete {
+    flex-shrink: 0;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.imput-avatar-entete {
+    width: 40px;
+    height: 40px;
+}
+
+.imput-avatar-svg {
+    width: 62%;
+    height: 62%;
+    display: block;
+}
+
+.imput-msg-info {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+}
+
+.imput-msg-auteur {
+    flex-shrink: 0;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #2b2b40;
+}
+
+/* Aperçu d'une seule ligne quand le message est replié. */
+.imput-msg-apercu {
+    min-width: 0;
+    font-size: 12.5px;
+    color: rgba(82, 82, 108, 0.7);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.imput-msg-meta {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 11.5px;
+    color: rgba(82, 82, 108, 0.6);
+}
+
+.imput-msg-chevron {
+    font-size: 10px;
+    opacity: 0.55;
+}
+
+.imput-msg-corps {
+    padding: 0 4px 16px 58px;
+
+    .imput-pieces {
+        margin-top: 12px;
+    }
+}
+
+/* ══ Pièces jointes de l'imputation ═════════════════════════════════════════
+   Les noms sont des empreintes très longues : chaque vignette est bornée et
+   tronquée, sinon les libellés se chevauchent d'une carte à l'autre. */
+.imput-pieces {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.imput-piece {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 300px;
+    max-width: 100%;
+    padding: 8px 12px;
+    border: 1px solid rgba(82, 82, 108, 0.15);
+    border-radius: 8px;
+    background-color: rgba(82, 82, 108, 0.04);
+
+}
+
+/* Icône typée du fichier : le gabarit d'origine affichait une image de PDF
+   quel que soit le format réel. */
+.imput-piece-icone {
+    flex-shrink: 0;
+    width: 27px;
+    height: 34px;
+    display: block;
+}
+
+.imput-piece-corps {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    flex: 1 1 auto;
+}
+
+.imput-piece-nom {
+    font-size: 12.5px;
+    color: rgba(82, 82, 108, 0.95);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.imput-piece-detail {
+    font-size: 11px;
+    color: rgba(82, 82, 108, 0.6);
+}
+
+/* Toute la carte ouvre la pièce ; l'œil n'est qu'un repère visuel. */
+.imput-piece-cliquable {
+    cursor: pointer;
+
+    &:hover {
+        border-color: var(--theme-default, #5c61f2);
+        background-color: rgba(92, 97, 242, 0.06);
+
+        .imput-piece-ouvrir {
+            color: var(--theme-default, #5c61f2);
+        }
+    }
+}
+
+.imput-piece-ouvrir {
+    flex-shrink: 0;
+    padding: 6px;
+    color: rgba(82, 82, 108, 0.5);
+}
+
+/* ══ Visionneuse plein écran ════════════════════════════════════════════════
+   Le fichier est consulté dans l'application : l'URL signée n'est jamais
+   ouverte dans un onglet, et le mot de passe d'un PDF protégé est fourni au
+   moteur de rendu sans jamais apparaître à l'écran. */
+.vis-overlay {
+    position: fixed;
+    inset: 0;
+    /* Au-dessus du menu latéral et de l'en-tête, qui montent haut dans le
+       gabarit ; on reste sous le loader global (2147483647). */
+    z-index: 2147483000;
+    display: flex;
+    flex-direction: column;
+    background-color: rgba(24, 24, 32, 0.92);
+}
+
+.vis-barre {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    background-color: rgba(0, 0, 0, 0.45);
+    color: #fff;
+    flex-shrink: 0;
+}
+
+.vis-nom {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-size: 13.5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.vis-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.vis-btn {
+    width: 34px;
+    height: 34px;
+    border: none;
+    border-radius: 6px;
+    background-color: transparent;
+    color: #fff;
+    cursor: pointer;
+
+    &:hover:not(:disabled) {
+        background-color: rgba(255, 255, 255, 0.16);
+    }
+
+    &:disabled {
+        opacity: 0.35;
+        cursor: default;
+    }
+}
+
+.vis-pagination {
+    min-width: 62px;
+    text-align: center;
+    font-size: 12.5px;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.vis-corps {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 20px;
+    overflow: auto;
+}
+
+.vis-canvas,
+.vis-image {
+    max-width: 100%;
+    background-color: #fff;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
+}
+
+.vis-cache {
+    display: none;
+}
+
+.vis-etat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    margin-top: 60px;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 14px;
+}
+
+.vis-etat small {
+    margin-top: -8px;
+    max-width: 380px;
+    color: rgba(255, 255, 255, 0.55);
+    font-size: 12px;
+    line-height: 1.6;
+    text-align: center;
+}
+
+.vis-etat-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Volontairement discret : l'action recommandée reste le téléchargement. */
+.vis-etat-lien {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 12px;
+    text-decoration: underline;
+    cursor: pointer;
+
+    &:hover {
+        color: rgba(255, 255, 255, 0.9);
+    }
+}
+
+.vis-etat-ico ::ng-deep svg {
+    width: 34px;
+    height: 34px;
+    stroke-width: 1.5;
+    opacity: 0.7;
+}
+
+/* La visionneuse Office rend sa propre barre d'outils : on lui laisse toute la
+   place disponible, sans marge, comme un lecteur plein écran. */
+.vis-office {
+    width: 100%;
+    /* `.vis-corps` aligne ses enfants en haut : sans `stretch`, l'iframe
+       s'effondrerait à zéro faute de contenu mesurable. */
+    align-self: stretch;
+    flex: 1 1 auto;
+    min-height: 70vh;
+    border: 0;
+    background: #fff;
+    border-radius: 6px;
+}
+
+/* Le corps de l'imputation garde ses retours à la ligne volontaires. */
+.imput-corps-texte {
+    white-space: pre-wrap;
+}
+
+/* Bloc des pièces du document, sous le corps de l'imputation. */
+.imput-bloc-pieces {
+    margin-top: 18px;
+}
+
+.imput-pieces-titre {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+    font-size: 13px;
+
+    i {
+        font-size: 14px;
+        color: rgba(82, 82, 108, 0.6);
+    }
+}
+
+
+/* Progression de la préparation d'impression (documents volumineux). */
+.vis-impression {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 18px;
+    background-color: rgba(0, 0, 0, 0.35);
+    color: #fff;
+    flex-shrink: 0;
+}
+
+.vis-impression-texte {
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.vis-impression-jauge {
+    flex: 1 1 auto;
+    height: 5px;
+    border-radius: 3px;
+    background-color: rgba(255, 255, 255, 0.2);
+    overflow: hidden;
+}
+
+.vis-impression-barre {
+    height: 100%;
+    background-color: #fff;
+    transition: width 0.15s linear;
+}
+
+.vis-impression-annuler {
+    padding: 5px 14px;
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    border-radius: 6px;
+    background: none;
+    color: #fff;
+    font-size: 12.5px;
+    cursor: pointer;
+
+    &:hover {
+        background-color: rgba(255, 255, 255, 0.15);
+    }
+}
+
+.imput-joindre {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+/* Fichier choisi mais pas encore envoyé. */
+.imput-fichier-choisi {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    max-width: 260px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid rgba(82, 82, 108, 0.18);
+    background-color: rgba(82, 82, 108, 0.06);
+    font-size: 11.5px;
+    color: rgba(82, 82, 108, 0.95);
+
+    > span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    i {
+        flex-shrink: 0;
+        opacity: 0.7;
+    }
+}
+
+.imput-joindre-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    border: 1px dashed rgba(82, 82, 108, 0.35);
+    font-size: 12px;
+    color: rgba(82, 82, 108, 0.9);
+    cursor: pointer;
+
+    &:hover {
+        border-color: var(--theme-default, #5c61f2);
+        color: var(--theme-default, #5c61f2);
+    }
+}
+
+.imput-retirer {
+    cursor: pointer;
+    opacity: 0.6;
+
+    &:hover {
+        opacity: 1;
+    }
+}
+
+.imput-fil-texte {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.55;
+    color: rgba(82, 82, 108, 0.95);
+    white-space: pre-wrap;
+}
+
+/* Message rédigé dans l'éditeur : le HTML porte déjà ses propres sauts de
+   ligne, `pre-wrap` doublerait les espacements. */
+.imput-fil-riche {
+    white-space: normal;
+
+    p {
+        margin: 0 0 6px;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+
+    ul,
+    ol {
+        margin: 0 0 6px;
+        padding-left: 22px;
+        list-style-position: outside;
+    }
+
+    ul { list-style-type: disc; }
+    ol { list-style-type: decimal; }
+    li { margin-bottom: 2px; }
+
+    b, strong { font-weight: 600; }
+    i, em { font-style: italic; }
+    u { text-decoration: underline; }
+    s, strike { text-decoration: line-through; }
+
+    a {
+        color: var(--theme-default, #5c61f2);
+        text-decoration: underline;
+    }
+
+    blockquote {
+        margin: 0 0 6px;
+        padding-left: 10px;
+        border-left: 3px solid rgba(82, 82, 108, 0.25);
+    }
+
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+}
+
+/* Marqueur d'urgence dans l'en-tête de lecture (même convention que la liste). */
+.imput-priorite {
+    margin-right: 8px;
+    font-size: 14px;
+    font-weight: 900;
+}
+
+/* Actions de l'en-tête de lecture, à la taille des icônes du gabarit. */
+.imput-outil {
+    font-size: 16px;
+    color: rgba(82, 82, 108, 0.75);
+}
+
+.imput-outil-faite {
+    color: #2e9e5b;
+}
+
+/* ══ Suivi de lecture des personnes en copie ════════════════════════════════
+   Chaque destinataire en copie a son propre `lu` / `date_lecture` dans la
+   réponse de l'API : on les affiche individuellement plutôt qu'en une phrase,
+   pour voir d'un coup d'œil qui a pris connaissance de l'imputation. */
+.imput-cc {
+    margin: 2px 0 8px;
+    padding: 0;
+    list-style: none;
+
+    li {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        padding: 2px 0;
+    }
+
+    app-feather-icon {
+        flex-shrink: 0;
+        line-height: 0;
+    }
+}
+
+/* Vert franc pour qui a pris connaissance de l'imputation, gris en attente :
+   c'est l'information que l'expéditeur vient chercher ici. */
+.imput-cc-lu,
+::ng-deep .imput-cc-lu svg {
+    color: #2e9e5b;
+    stroke: #2e9e5b;
+}
+
+.imput-cc-attente,
+::ng-deep .imput-cc-attente svg {
+    color: rgba(82, 82, 108, 0.38);
+    stroke: rgba(82, 82, 108, 0.38);
+}
+
+.imput-cc-nom {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.imput-cc-etat {
+    margin-left: auto;
+    padding-left: 10px;
+    font-size: 11px;
+    color: rgba(82, 82, 108, 0.55);
+    white-space: nowrap;
+}
+
+/* ══ Petits écrans ══════════════════════════════════════════════════════════
+   Le volet de lecture et la visionneuse supposent de la largeur : barre
+   d'outils sur une ligne, corps du message décalé sous l'avatar, cartes de
+   pièces côte à côte. Tout cela doit se replier sur un téléphone. */
+@media (max-width: 767px) {
+    /* Barre d'actions du volet : les boutons passent à la ligne au lieu de
+       déborder ou de se comprimer. */
+    .mail-header-wrapper {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    /* Le corps d'un message était décalé de 58px pour s'aligner sous l'avatar :
+       autant de largeur perdue sur un écran étroit. */
+    .imput-msg-corps {
+        padding: 0 2px 14px;
+    }
+
+    /* L'aperçu d'un message replié n'a plus la place de cohabiter avec le nom
+       et la date : on garde l'essentiel. */
+    .imput-msg-apercu {
+        display: none;
+    }
+
+    .imput-msg-info {
+        flex-wrap: wrap;
+        gap: 2px;
+    }
+
+    .imput-fil {
+        padding: 14px 12px;
+    }
+
+    .imput-piece {
+        width: 100%;
+    }
+
+    /* Visionneuse : la barre du haut se réorganise, le nom du fichier prend
+       toute la première ligne. */
+    .vis-barre {
+        flex-wrap: wrap;
+        padding: 8px 12px;
+    }
+
+    .vis-nom {
+        order: -1;
+        flex: 1 1 100%;
+    }
+
+    .vis-actions {
+        flex: 1 1 100%;
+        justify-content: space-between;
+    }
+
+    .vis-corps {
+        padding: 10px;
+    }
+
+    .vis-impression {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+}
+
+/* ══ Icônes au trait ════════════════════════════════════════════════════════
+   Tout le volet passe sur Feather, pour s'accorder aux icônes du gabarit
+   (dossiers, étoile, impression) qui sont des tracés et non des glyphes
+   pleins. Les SVG Feather n'ayant pas de taille propre, chaque emplacement
+   doit la fixer, sans quoi ils prennent la hauteur de leur ligne. */
+::ng-deep {
+    /* Barre d'actions du volet. */
+    .imput-outil {
+        width: 18px;
+        height: 18px;
+        stroke-width: 2;
+        color: rgba(82, 82, 108, 0.75);
+    }
+
+    .imput-outil-faite {
+        color: #2e9e5b;
+    }
+
+    /* Titre « Pièces jointes ». */
+    .imput-pieces-titre svg {
+        width: 15px;
+        height: 15px;
+        stroke-width: 2;
+        color: rgba(82, 82, 108, 0.6);
+    }
+
+    /* Œil de consultation sur une carte de pièce. */
+    .imput-piece-ouvrir svg {
+        width: 17px;
+        height: 17px;
+        stroke-width: 2;
+    }
+
+    /* Suivi de lecture des personnes en copie. */
+    .imput-cc svg {
+        width: 13px;
+        height: 13px;
+        stroke-width: 2.4;
+    }
+
+    /* Fil de discussion : chevron de pliage et trombone. */
+    .imput-msg-chevron {
+        width: 14px;
+        height: 14px;
+        stroke-width: 2.2;
+        opacity: 0.55;
+    }
+
+    .imput-msg-clip {
+        width: 13px;
+        height: 13px;
+        stroke-width: 2;
+    }
+
+    /* Zone de réponse : joindre un fichier, retirer, envoyer. */
+    .imput-joindre-btn svg,
+    .imput-fichier-choisi svg {
+        width: 13px;
+        height: 13px;
+        stroke-width: 2;
+    }
+
+    .imput-retirer {
+        width: 13px;
+        height: 13px;
+        cursor: pointer;
+    }
+
+    .send-btn svg {
+        width: 16px;
+        height: 16px;
+        stroke-width: 2;
+        margin-left: 6px;
+    }
+
+    /* Visionneuse plein écran. */
+    .vis-btn svg {
+        width: 17px;
+        height: 17px;
+        stroke-width: 2;
+    }
+}
+
+/* ══ Arrivée d'un message pendant la lecture ═══════════════════════════════
+   Le fil se complétait tout seul, mais sans un mot : un message inséré hors
+   de la zone visible passait inaperçu. */
+.imput-fil-arrivee {
+    /* Collé au bas du fil : reste visible quel que soit le défilement, sans
+       sortir du volet de lecture comme le ferait un position: fixed. */
+    position: sticky;
+    bottom: 10px;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: fit-content;
+    margin: 6px auto 2px;
+    padding: 7px 16px 7px 13px;
+    border: 0;
+    border-radius: 16px;
+    background-color: #123B66;
+    box-shadow: 0 8px 22px rgba(6, 24, 44, 0.26);
+    color: #FFFFFF;
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    animation: imput-arrivee-entree 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+
+    &:hover {
+        background-color: #17497D;
+    }
+}
+
+.imput-fil-arrivee-ico ::ng-deep svg {
+    width: 14px;
+    height: 14px;
+    stroke-width: 2.6;
+}
+
+@keyframes imput-arrivee-entree {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Le message lui-même : un filet et un fond très légers suffisent à le
+   retrouver après le défilement, sans dénaturer le fil. */
+.imput-msg-nouveau {
+    background-color: #F2FAF6;
+    box-shadow: inset 3px 0 0 0 #2E9E63;
+}
+
+.imput-msg-pastille {
+    flex-shrink: 0;
+    padding: 1px 8px;
+    border-radius: 10px;
+    background-color: #2E9E63;
+    color: #FFFFFF;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+
+/* ══ Conversation clôturée ═════════════════════════════════════════════════
+   Le composeur est retiré, pas grisé : un champ inerte se prend pour une
+   panne. On explique donc pourquoi il n'y a plus rien à écrire. */
+.imput-close-bandeau {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin: 4px 24px 22px;
+    padding: 14px 16px;
+    border: 1px solid rgba(82, 82, 108, 0.16);
+    //border-left: 3px solid #6B7280;
+    border-radius: 5px;
+    background-color: rgba(82, 82, 108, 0.045);
+}
+
+.imput-close-ico ::ng-deep svg {
+    width: 18px;
+    height: 18px;
+    stroke-width: 2;
+    color: #6B7280;
+    display: block;
+    margin-top: 1px;
+}
+
+.imput-close-texte {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+
+    strong {
+        font-size: 13.5px;
+        color: #2b2b40;
+    }
+
+    span {
+        font-size: 12.5px;
+        line-height: 1.6;
+        color: rgba(82, 82, 108, 0.8);
+    }
+}
+
+/* Repère de la barre d'outils : état, pas commande. */
+.imput-outil-close {
+    color: #6B7280;
+}
+
+.imput-outil-close-boite {
+    cursor: default;
+}
+
+.imput-outil-danger {
+    color: #c2352d;
+}

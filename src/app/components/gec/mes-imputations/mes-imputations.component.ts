@@ -13,6 +13,12 @@ import {FeatherIconComponent} from '../../../shared/components/ui/feather-icon/f
 import {Authorization} from '../../../protect/authorization.service';
 import {HttpService} from '../../../core/http.service';
 import {environment} from '../../../../environments/environment';
+import {
+    Imputation,
+    construireAnnuaire,
+    listeImputationsUrl,
+    mapImputation,
+} from '../imputation/imputation-api';
 
 interface ImputationRow {
     uid: string;
@@ -66,19 +72,22 @@ export class MesImputationsComponent implements OnInit {
         this.isloading = true;
         this.allRows = [];
         this.rows = [];
-        const idsociete = this.users?.datasociete?.uid || '';
         const iduser = this.users?.uid || '';
+        const token = this.users?.access_token || '';
 
-        this.httService.getData(
-            `${environment.api_url}api/:saveimputation?idimputation=&idsociete=${idsociete}&idsender=${iduser}`,
-            false,
-            this.users?.access_token || ''
-        ).toPromise()
-            .then((res: any) => {
+        // L'annuaire d'abord : l'API d'imputation ne renvoie que l'e-mail des
+        // personnes, le nom vient de la liste des comptes.
+        this.chargerAnnuaire(token)
+            .then(annuaire => this.httService.getData(
+                listeImputationsUrl({expediteur: iduser}),
+                false,
+                token
+            ).toPromise().then((res: any) => ({res, annuaire})))
+            .then(({res, annuaire}: any) => {
                 this.isloading = false;
-                console.log('saveimputation ===', res.body);
                 if (res.body.status || res.body.success) {
-                    this.allRows = (res.body.data || []).map((e: any) => this.mapRow(e));
+                    this.allRows = (res.body.data || [])
+                        .map((e: any) => this.mapRow(mapImputation(e, annuaire)));
                     this.applyFilter();
                 }
             })
@@ -87,36 +96,44 @@ export class MesImputationsComponent implements OnInit {
             });
     }
 
-    private mapRow(e: any): ImputationRow {
-        const doc = e?.datadocuments || e?.datadocument || {};
-        const dateVal = e?.created_at || e?.date_imputation || '';
+    private chargerAnnuaire(token: string): Promise<Map<string, string>> {
+        const idsociete = this.users?.datasociete?.uid || '';
+        return this.httService.getData(
+            `${environment.api_url}auth/:liste-des-comptes?idsociete=${idsociete}&idpersonnel=`,
+            false, token
+        ).toPromise()
+            .then((res: any) => {
+                if (!(res?.body?.status || res?.body?.success)) return new Map<string, string>();
+                return construireAnnuaire(res.body.data || []);
+            })
+            .catch(() => new Map<string, string>());
+    }
 
+    private mapRow(i: Imputation): ImputationRow {
         return {
-            uid: e?.uid || e?.idimputation || '',
-            document: doc?.lib_docs || doc?.lib_document || '',
-            code_docs: doc?.code_docs || '',
-            expediteur: this.personName(e?.datasender || e?.datauser_save),
-            destinataires: (e?.datapersonnels || e?.personnels || [])
-                .map((p: any) => this.personName(p?.datauser || p))
-                .filter((n: string) => n),
-            priorite: e?.datapriorite?.lib_priorites || e?.datapriorite?.libelle || '',
-            consigne: e?.dataconsigne?.lib_consigne || e?.dataconsigne?.libelle || '',
-            description: e?.desc_impute || '',
-            statut: e?.statut_imputation || e?.statut || '',
-            date: dateVal ? moment(dateVal).format('DD/MM/YYYY HH:mm') : '',
-            dateEcheance: e?.date_end_traitement
-                ? moment(e.date_end_traitement).format('DD/MM/YYYY')
-                : '',
-            ts: dateVal ? moment(dateVal).valueOf() : 0,
-            raw: e,
+            uid: i.uid,
+            // L'API renvoie une référence unique (« 00000020/…/gj INTITULÉ »),
+            // il n'y a plus de code séparé du libellé.
+            document: i.documentLabel,
+            code_docs: '',
+            expediteur: i.expediteur.nom,
+            destinataires: i.destinataire.nom ? [i.destinataire.nom] : [],
+            priorite: this.libelleLie(i.priorite),
+            consigne: this.libelleLie(i.consigne),
+            description: i.instruction,
+            statut: i.statutLibelle,
+            date: i.date,
+            dateEcheance: i.dateLimite,
+            ts: i.ts,
+            raw: i.raw,
         };
     }
 
-    private personName(u: any): string {
-        if (!u) return '';
-        const p = u?.datapersonnel || u;
-        const nom = `${p?.nom || ''} ${p?.prenom || ''}`.trim();
-        return nom || u?.email || u?.login || '';
+    /** Priorité et consigne arrivent en objet lié (ou null tant qu'absentes). */
+    private libelleLie(o: any): string {
+        if (!o) return '';
+        if (typeof o === 'string') return o;
+        return o.label || o.libelle || o.lib_priorite || o.libconsigne || '';
     }
 
     // ── Tri (nz-table) ────────────────────────────────────────────────

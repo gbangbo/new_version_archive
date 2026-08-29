@@ -333,3 +333,482 @@ nz-date-picker.w-full { width: 100%; }
   box-shadow: 0 2px 8px rgba(0, 54, 110, 0.25);
   &:hover:not(:disabled) { background: #003a75; }
 }
+
+/* ══ Pièces du document ═════════════════════════════════════════════════════
+   Mêmes cartes que dans le volet de lecture : icône typée, nom, état de
+   sélection. Aucune pièce n'est cochée à l'ouverture. */
+.im-files-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.im-files-tout {
+    border: none;
+    background: none;
+    padding: 0;
+    font-size: 11.5px;
+    font-weight: 500;
+    color: rgba(0, 54, 110, 1);
+    cursor: pointer;
+
+    &:hover { text-decoration: underline; }
+}
+
+.im-files-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.im-piece {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 250px;
+    max-width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #E2E8F0;
+    border-radius: 9px;
+    background-color: #fff;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+
+    &:hover {
+        border-color: rgba(0, 54, 110, 0.45);
+    }
+
+    /* Pièce retenue : liseré et pastille de validation. */
+    &.active {
+        border-color: rgba(0, 54, 110, 1);
+        background-color: rgba(0, 54, 110, 0.05);
+
+        .im-piece-coche {
+            background-color: rgba(0, 54, 110, 1);
+            border-color: rgba(0, 54, 110, 1);
+            color: #fff;
+        }
+    }
+}
+
+.im-piece-icone {
+    flex-shrink: 0;
+    width: 24px;
+    height: 30px;
+    display: block;
+}
+
+.im-piece-nom {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-size: 12.5px;
+    color: #1E293B;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.im-piece-coche {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 19px;
+    height: 19px;
+    border: 1px solid #CBD5E1;
+    border-radius: 5px;
+    background-color: #fff;
+    color: transparent;
+    font-size: 10px;
+}
+
+/* ══ Résultats en accordéon ═════════════════════════════════════════════════
+   Le document trouvé se déroule sur ses pièces, sans quitter la liste des
+   résultats : on garde le contexte de recherche sous les yeux. */
+.im-acc {
+    border: 1px solid #E2E8F0;
+    border-radius: 10px;
+    background-color: #fff;
+    overflow: hidden;
+
+    & + .im-acc {
+        margin-top: 8px;
+    }
+
+    &.ouvert {
+        border-color: rgba(0, 54, 110, 0.45);
+        box-shadow: 0 1px 3px rgba(0, 54, 110, 0.08);
+
+        .im-acc-chevron {
+            transform: rotate(90deg);
+        }
+    }
+}
+
+.im-acc-tete {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 12px 14px;
+    border: none;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+
+    &:hover {
+        background-color: #F8FAFC;
+    }
+}
+
+.im-acc-ico {
+    flex-shrink: 0;
+    font-size: 16px;
+    color: rgba(0, 54, 110, 0.75);
+}
+
+.im-acc-txt {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.im-acc-nom {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1E293B;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.im-acc-code {
+    font-size: 11.5px;
+    color: #94A3B8;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Compteur de pièces retenues, visible sans avoir à parcourir la liste. */
+.im-acc-etat {
+    flex-shrink: 0;
+    padding: 2px 9px;
+    border-radius: 20px;
+    background-color: rgba(0, 54, 110, 0.10);
+    color: rgba(0, 54, 110, 1);
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.im-acc-chevron {
+    flex-shrink: 0;
+    font-size: 12px;
+    color: #94A3B8;
+    transition: transform 0.2s ease;
+}
+
+.im-acc-corps {
+    padding: 4px 14px 14px;
+    border-top: 1px solid #EEF2F6;
+    animation: im-acc-ouvre 0.2s ease both;
+}
+
+@keyframes im-acc-ouvre {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ══ Uniformisation des champs ══════════════════════════════════════════════
+   Le formulaire mélange des champs natifs (input, textarea) et des composants
+   ng-zorro (select, date-picker) qui portent leur propre habillage. Sans ces
+   règles, hauteurs, bordures et arrondis diffèrent d'une ligne à l'autre.
+   Une seule série de valeurs pour tout le modal. */
+$champ-radius: 5px;
+$champ-hauteur: 40px;
+$champ-bordure: #E2E8F0;
+$champ-navy: rgba(0, 54, 110, 1);
+
+.im-panel,
+.im-header {
+    border-radius: $champ-radius;
+}
+
+.im-header {
+    border-radius: $champ-radius $champ-radius 0 0;
+}
+
+.im-input,
+.im-search-btn,
+.im-textarea,
+.im-acc,
+.im-piece,
+.im-alert,
+.im-btn {
+    border-radius: $champ-radius !important;
+}
+
+.im-input,
+.im-textarea {
+    border-width: 1px;
+    border-color: $champ-bordure;
+    background-color: #fff;
+    color: #1E293B;
+
+    &::placeholder {
+        color: #94A3B8;
+    }
+
+    &:focus {
+        outline: none;
+        border-color: rgba(0, 54, 110, 0.55);
+        box-shadow: 0 0 0 3px rgba(0, 54, 110, 0.10);
+    }
+}
+
+/* ── Composants ng-zorro ─────────────────────────────────────────────────
+   Leur habillage vient d'une feuille globale : ::ng-deep est nécessaire. */
+::ng-deep {
+    .im-body {
+        .ant-select .ant-select-selector,
+        .ant-picker {
+            min-height: $champ-hauteur !important;
+            border: 1px solid $champ-bordure !important;
+            border-radius: $champ-radius !important;
+            background-color: #fff !important;
+            box-shadow: none !important;
+            padding: 0 11px !important;
+            font-size: 13px !important;
+        }
+
+        .ant-select-single .ant-select-selector .ant-select-selection-item,
+        .ant-select-single .ant-select-selector .ant-select-selection-placeholder {
+            line-height: #{$champ-hauteur} !important;
+        }
+
+        /* Sélection multiple : les étiquettes doivent respirer sans faire
+           gonfler le champ à chaque ajout. */
+        .ant-select-multiple .ant-select-selector {
+            padding: 4px 8px !important;
+        }
+
+        .ant-select-multiple .ant-select-selection-item {
+            border-radius: 3px !important;
+            background-color: rgba(0, 54, 110, 0.08) !important;
+            border-color: rgba(0, 54, 110, 0.18) !important;
+            color: $champ-navy !important;
+        }
+
+        .ant-select-focused .ant-select-selector,
+        .ant-picker-focused {
+            border-color: rgba(0, 54, 110, 0.55) !important;
+            box-shadow: 0 0 0 3px rgba(0, 54, 110, 0.10) !important;
+        }
+
+        .ant-picker-input > input {
+            font-size: 13px !important;
+            color: #1E293B !important;
+        }
+
+        .ant-select-arrow,
+        .ant-picker-suffix {
+            color: #94A3B8 !important;
+        }
+    }
+}
+
+/* Boutons du pied : même arrondi que les champs. */
+.im-btn-confirm {
+    background-color: $champ-navy !important;
+}
+
+/* Pastille de sélection d'une pièce. */
+.im-piece-coche {
+    border-radius: 3px;
+}
+
+/* Icône Feather dans un titre de section : le SVG produit par feather.replace()
+   n'a pas de taille propre, il prendrait celle de la ligne. */
+.im-section-title {
+    ::ng-deep svg {
+        width: 15px;
+        height: 15px;
+        stroke-width: 2.2;
+        flex-shrink: 0;
+    }
+}
+
+/* ══ Petits écrans ══════════════════════════════════════════════════════════
+   Le panneau est déjà borné à 96vw, mais sa mise en page interne suppose deux
+   colonnes et des champs alignés : à 360px de large, tout doit s'empiler. */
+@media (max-width: 767px) {
+    .im-panel {
+        width: 100%;
+        max-width: 100%;
+        max-height: 100vh;
+        border-radius: 0;
+    }
+
+    .im-backdrop {
+        padding: 0;
+    }
+
+    .im-header {
+        border-radius: 0;
+        padding: 14px 16px;
+    }
+
+    .im-body {
+        padding: 16px;
+    }
+
+    /* Priorité / Consigne côte à côte deviennent illisibles. */
+    .im-grid2 {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    /* Le champ de recherche et son bouton passent l'un sous l'autre. */
+    .im-search {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+
+    .im-search-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* Les cartes de pièces prennent toute la largeur. */
+    .im-piece {
+        width: 100%;
+    }
+
+    /* Pied collé en bas, boutons également répartis. */
+    .im-footer {
+        padding: 12px 16px;
+    }
+
+    .im-btn {
+        flex: 1 1 0;
+        justify-content: center;
+    }
+}
+
+/* ══ Correctifs mobile ══════════════════════════════════════════════════════
+   1. Hauteur : sur iOS, `100vh` compte la zone recouverte par la barre
+      d'adresse et la barre d'outils du navigateur. Le pied du modal se
+      retrouvait sous l'écran et une partie du formulaire devenait
+      inatteignable. `100dvh` suit la hauteur réellement visible ; la
+      déclaration `100vh` qui précède sert de repli aux navigateurs anciens.
+   2. Le corps prend la place restante et défile seul : en-tête et pied
+      restent visibles en permanence. */
+@media (max-width: 767px) {
+    .im-panel {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        height: 100dvh;
+        max-height: none;
+    }
+
+    .im-header,
+    .im-footer {
+        flex: 0 0 auto;
+    }
+
+    .im-body {
+        flex: 1 1 auto;
+        min-height: 0;
+        max-height: none;
+        overflow-y: auto;
+    }
+
+    /* Champs : 16px minimum, sinon iOS zoome à la mise au point et décale
+       toute la page. Hauteur et contraste relevés pour le doigt. */
+    .im-input,
+    .im-textarea {
+        min-height: 46px;
+        font-size: 16px;
+        border-width: 1.5px;
+        border-color: #CBD5E1;
+
+        &::placeholder {
+            color: #64748B;
+        }
+    }
+
+    .im-search-btn {
+        min-height: 46px;
+        font-size: 15px;
+    }
+
+    ::ng-deep .im-body {
+        .ant-select .ant-select-selector,
+        .ant-picker {
+            min-height: 46px !important;
+            font-size: 16px !important;
+        }
+
+        .ant-select-single .ant-select-selector .ant-select-selection-item,
+        .ant-select-single .ant-select-selector .ant-select-selection-placeholder {
+            line-height: 44px !important;
+        }
+
+        .ant-picker-input > input {
+            font-size: 16px !important;
+        }
+    }
+
+    .im-btn {
+        min-height: 46px;
+    }
+}
+
+/* ══ Champ de recherche du document ═════════════════════════════════════════
+   C'est le point d'entrée du formulaire : rien ne peut être imputé sans lui.
+   Il était visuellement au même niveau qu'un champ ordinaire, alors qu'il
+   commande tout le reste. */
+.im-search-champ {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex: 1;
+    min-width: 0;
+
+    > i {
+        position: absolute;
+        left: 13px;
+        font-size: 13px;
+        color: #94A3B8;
+        pointer-events: none;
+    }
+
+    .im-input {
+        width: 100%;
+        padding-left: 36px;
+        background-color: #F8FAFC;
+        border-color: #CBD5E1;
+
+        &:focus {
+            background-color: #fff;
+        }
+    }
+}
+
+@media (max-width: 767px) {
+    .im-search-champ > i {
+        left: 15px;
+        font-size: 15px;
+    }
+
+    .im-search-champ .im-input {
+        padding-left: 42px;
+    }
+}

@@ -127,15 +127,67 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
 
+/* ══ COCON — auto-hébergée ══════════════════════════════════════════════════
+   Fichiers dans public/assets/fonts/, servis sur /assets/fonts/ : le dossier
+   public est copié à la racine par angular.json.
+
+   ATTENTION — ne pas remplacer ces fichiers par un Cocon récupéré ailleurs :
+   le fichier d'origine a le glyphe « 7 » (U+0037) et « ÷ » (U+00F7) VIDES,
+   mais quand même déclarés dans la table de caractères. Le navigateur croit
+   donc que la police sait les dessiner, ne bascule jamais sur la police
+   suivante, et affiche un blanc. On a retiré ces deux caractères du cmap :
+   ils tombent maintenant sur Nunito, qui est la police de repli ci-dessous.
+   C'est aussi pour ça que la pile doit garder une police de repli complète. */
+@font-face {
+  font-family: "Cocon";
+  src: url('/assets/fonts/cocon-regular.woff2') format('woff2'),
+       url('/assets/fonts/cocon-regular.woff') format('woff'),
+       url('/assets/fonts/cocon-regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Le Cocon d'origine n'existe qu'en 400 : sans cette face, le navigateur
+   fabriquait un faux-gras baveux qui bouchait les contreformes. Ce fichier est
+   un vrai gras généré hors ligne à partir du Regular (épaississement des
+   contours, stroke 56/1000 + union), donc il garde le dessin de la famille.
+   Avec 400 et 700 déclarés : font-weight 400/500 -> Regular, 600 et + -> Bold. */
+@font-face {
+  font-family: "Cocon";
+  src: url('/assets/fonts/cocon-bold.woff2') format('woff2'),
+       url('/assets/fonts/cocon-bold.woff') format('woff'),
+       url('/assets/fonts/cocon-bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Le contenu reste sur la police historique du template. */
 body {
   font-family: 'Roboto', sans-serif;
-  //font-family: "Cocon-Regular", Arial, sans-serif !important;
+}
+
+/* ══ COCON : RÉSERVÉE À LA SIDEBAR ══════════════════════════════════════════
+   Parti pris : la navigation porte la personnalité, le contenu reste neutre.
+   Pour que ça se lise comme un choix et pas comme un bug, il faut que TOUTE
+   la sidebar bascule — intitulés, titres de section, sous-menus. Si tu ajoutes
+   un nouvel élément textuel dans la sidebar, pense à l'ajouter ici.
+
+   Les icônes ne sont pas touchées : les <i class="fa-solid"> portent leur
+   propre font-family (Font Awesome), qui l'emporte sur l'héritage. */
+.page-wrapper .sidebar-wrapper {
+  .sidebar-main-title h6,
+  .sidebar-links li a,
+  .sidebar-links li a span,
+  .sidebar-submenu li a,
+  .mobile-back span {
+    font-family: "Cocon", "Nunito", sans-serif !important;
+  }
 }
 
 .page-wrapper.compact-wrapper .page-body-wrapper div.sidebar-wrapper .sidebar-main .sidebar-links li a span {
   text-transform: none !important;
-  font-family: 'Roboto', sans-serif;
-  //font-family: "Cocon-Regular", Arial, sans-serif !important;
 }
 
 body.dark-sidebar .page-wrapper.compact-wrapper .page-body-wrapper div.sidebar-wrapper .sidebar-main .sidebar-links > li .sidebar-submenu li a {
@@ -145,6 +197,29 @@ body.dark-sidebar .page-wrapper.compact-wrapper .page-body-wrapper div.sidebar-w
 /* Appliquez une police différente uniquement pour les inputs */
 input, textarea, select {
   font-family: "Nunito", sans-serif !important;
+}
+
+/* ══ EN-TÊTE : slogan tronqué ═══════════════════════════════════════════════
+   .notification-slider (base/_reset.scss) combine white-space: nowrap et
+   overflow: hidden SANS text-overflow : le texte était tranché net en plein
+   milieu d'un mot, sans rien qui signale la coupe.
+
+   La place est traitée dans header.component.html (répartition de la grille) ;
+   ici on ne met que le filet de sécurité pour les largeurs intermédiaires.
+   Le min-width: 0 est indispensable : sans lui un enfant flex refuse de
+   rétrécir sous sa largeur de contenu et l'ellipse ne se déclenche jamais. */
+.notification-slider {
+  .swiper-slide > div,
+  .swiper-slide > div > div {
+    min-width: 0;
+  }
+
+  h6 {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 }
 
 //Taille des menus
@@ -428,4 +503,285 @@ body.hide-app-footer .footer {
     max-width: 100% !important;       /* ne déborde jamais la largeur de la sidebar */
     object-fit: contain !important;
     display: block !important;
+}
+
+/* ══ POPUPS DU MODULE IMPUTATION (SweetAlert) ═══════════════════════════════
+   SweetAlert monte sa fenêtre dans <body> : ses styles ne peuvent pas venir
+   d'un composant encapsulé, d'où leur présence ici. On désactive le style de
+   boutons natif (buttonsStyling: false) pour reprendre la charte navy des
+   popups de l'application. */
+.imp-swal {
+  border-radius: 14px !important;
+  overflow: hidden;
+  text-align: left;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.28) !important;
+}
+
+.imp-swal-entree {
+  animation: imp-swal-in 0.22s ease-out;
+}
+
+@keyframes imp-swal-in {
+  from { opacity: 0; transform: translateY(10px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.imp-swal .imp-swal-html {
+  margin: 0 !important;
+  padding: 0 !important;
+  color: inherit;
+  font-size: inherit;
+}
+
+/* En-tête coloré : bandeau navy, ou rouge pour une action destructrice. */
+.imp-swal-tete {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 22px;
+  background: linear-gradient(135deg, rgba(0, 54, 110, 1), rgba(0, 78, 152, 1));
+  color: #fff;
+}
+
+.imp-swal-tete-danger {
+  background: linear-gradient(135deg, #b3261e, #d3423a);
+}
+
+.imp-swal-ico {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.18);
+  font-size: 17px;
+}
+
+.imp-swal-titres {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.imp-swal-titre {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.imp-swal-sous {
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.78);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.imp-swal-contenu {
+  padding: 20px 22px 4px;
+}
+
+/* Rappel du contexte : document concerné, expéditeur. */
+.imp-swal-rappel {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+  padding: 12px 14px;
+  border-radius: 9px;
+  background-color: #F1F5F9;
+  font-size: 12px;
+  color: #475569;
+
+  i {
+    width: 15px;
+    margin-right: 6px;
+    color: #94A3B8;
+  }
+
+  span {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.imp-swal-label {
+  display: block;
+  margin-bottom: 7px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #334155;
+
+  em {
+    margin-left: 5px;
+    font-style: normal;
+    font-weight: 400;
+    color: #94A3B8;
+  }
+}
+
+.imp-swal-textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #E2E8F0;
+  border-radius: 9px;
+  font-family: inherit;
+  font-size: 13px;
+  color: #1E293B;
+  resize: vertical;
+
+  &:focus {
+    outline: none;
+    border-color: rgba(0, 54, 110, 0.55);
+    box-shadow: 0 0 0 3px rgba(0, 54, 110, 0.10);
+  }
+}
+
+.imp-swal-texte {
+  margin: 0 0 12px;
+  font-size: 13px;
+  line-height: 1.65;
+  color: #475569;
+  text-align: left;
+}
+
+.imp-swal-avertissement {
+  margin: 0;
+  font-size: 13px;
+  color: #475569;
+}
+
+/* Mise en garde à lire avant de décider : encadrée pour qu'elle ne se lise pas
+   comme du texte courant. */
+.imp-swal-contenu .imp-swal-texte + .imp-swal-avertissement {
+  padding: 11px 13px;
+  border: 1px solid #FDE2C2;
+  border-left: 3px solid #E8912D;
+  border-radius: 5px;
+  background-color: #FFF9F1;
+  color: #7C4A11;
+  line-height: 1.6;
+  text-align: left;
+}
+
+.imp-swal .imp-swal-actions {
+  justify-content: flex-end !important;
+  gap: 10px;
+  margin: 20px 0 0 !important;
+  padding: 14px 22px;
+  border-top: 1px solid #EEF2F6;
+  background-color: #FAFBFC;
+}
+
+.imp-swal-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 18px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: filter 0.15s ease, background-color 0.15s ease;
+
+  &:hover { filter: brightness(0.95); }
+}
+
+.imp-swal-btn-cancel {
+  border-color: #E2E8F0;
+  background-color: #fff;
+  color: #475569;
+
+  &:hover { background-color: #F1F5F9; }
+}
+
+.imp-swal-btn-primary {
+  background-color: rgba(0, 54, 110, 1);
+  color: #fff;
+}
+
+.imp-swal-btn-danger {
+  background-color: #d3423a;
+  color: #fff;
+}
+
+/* ══ TOAST DE CONVERSATION (module imputation) ══════════════════════════════
+   Le toast par défaut de ngx-toastr — grand bloc coloré en haut à droite —
+   passe par-dessus l'en-tête et coupe la lecture. Pendant un échange, la
+   confirmation doit se remarquer sans interrompre : bandeau sobre en bas de
+   l'écran, comme dans une messagerie, qui s'efface de lui-même.
+
+   Ces styles sont GLOBAUX : ngx-toastr monte ses toasts à la racine du
+   document, hors de portée d'une feuille de composant. */
+.imp-toast {
+  display: flex !important;
+  align-items: center;
+  gap: 12px;
+  width: auto !important;
+  max-width: 420px;
+  margin: 0 auto 14px !important;
+  padding: 13px 18px 13px 15px !important;
+  border-radius: 5px;
+  /* Le thème par défaut place une icône en image de fond : on la retire. */
+  background-image: none !important;
+  background-color: #123B66;
+  box-shadow: 0 10px 30px rgba(6, 24, 44, 0.28), 0 2px 6px rgba(6, 24, 44, 0.18);
+  color: #FFFFFF;
+  font-size: 13.5px;
+  line-height: 1.5;
+  opacity: 1 !important;
+  animation: imp-toast-entree 0.26s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.imp-toast:hover {
+  box-shadow: 0 14px 36px rgba(6, 24, 44, 0.34), 0 2px 6px rgba(6, 24, 44, 0.2);
+}
+
+/* Pastille de gauche : la couleur porte le sens, le fond reste sobre. */
+.imp-toast::before {
+  content: '';
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background-color: #2E9E63;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 13px;
+}
+
+.imp-toast-erreur {
+  background-color: #7A1F1A;
+}
+
+.imp-toast-erreur::before {
+  background-color: #D3423A;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='18' y1='6' x2='6' y2='18'/%3E%3Cline x1='6' y1='6' x2='18' y2='18'/%3E%3C/svg%3E");
+  background-size: 12px;
+}
+
+.imp-toast .toast-title:empty {
+  display: none;
+}
+
+.imp-toast .toast-message {
+  padding: 0;
+  font-weight: 500;
+}
+
+@keyframes imp-toast-entree {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }

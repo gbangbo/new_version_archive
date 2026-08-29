@@ -14,27 +14,26 @@
   </div>
   <div class="mail-body">
     <div class="mail-search flex-items-center">
-      <input class="form-control" type="search" placeholder="Search...">
+      <input class="form-control" type="search" placeholder="Rechercher une imputation…"
+             [ngModel]="recherche" (ngModelChange)="handleRecherche($event)">
       <i class="fa-solid fa-magnifying-glass"></i>
     </div>
-    <div class="light-square block-btn-1">
-      <i class="fa-solid fa-arrows-rotate"></i>
+    <div class="light-square block-btn-1" title="Actualiser" (click)="rafraichir.emit()">
+      <app-feather-icon [icon]="'refresh-cw'"></app-feather-icon>
     </div>
-    <div class="light-square bg-light-danger"> 
-      <i class="fa-solid fa-trash-can txt-danger"></i>
-    </div>
-    <div class="dropdown" (clickOutside)="clickOutside()">
-      <button class="light-square dropdown-toggle" (click)="toggleDropdown()">
-        <i class="fa-solid fa-ellipsis-vertical"></i>
-      </button>
-      <ul class="dropdown-menu dropdown-block dropdown-menu-end" [class.show]="dropdownOpen">
-        <li> <a class="dropdown-item" href="javascript:void(0)">All</a></li>
-        <li> <a class="dropdown-item" href="javascript:void(0)">None</a></li>
-        <li> <a class="dropdown-item" href="javascript:void(0)">Read</a></li>
-        <li> <a class="dropdown-item" href="javascript:void(0)">Unread</a></li>
-        <li> <a class="dropdown-item" href="javascript:void(0)">Starred</a></li>
-        <li> <a class="dropdown-item" href="javascript:void(0)">Unstarred</a></li>
-      </ul>
-    </div>
+    <!-- Pagination du dossier consulté, à la manière d'une messagerie. -->
+    @if(total > 0) {
+      <div class="mh-pagination">
+        <span class="mh-pagination-compte">{{ debut }}–{{ fin }} sur {{ total }}</span>
+        <button type="button" class="mh-pagination-btn" title="Page précédente"
+                [disabled]="debut <= 1" (click)="pagePrecedente.emit()">
+          <app-feather-icon [icon]="'chevron-left'"></app-feather-icon>
+        </button>
+        <button type="button" class="mh-pagination-btn" title="Page suivante"
+                [disabled]="fin >= total" (click)="pageSuivante.emit()">
+          <app-feather-icon [icon]="'chevron-right'"></app-feather-icon>
+        </button>
+      </div>
+    }
   </div>
 </div>

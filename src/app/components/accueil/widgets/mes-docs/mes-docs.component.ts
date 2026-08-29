@@ -49,11 +49,19 @@ export interface DocSimule {
     auteur: string;
 }
 
+/**
+ * Libellés capitalisés : ils servent d'étiquettes autonomes dans le sélecteur
+ * de mois. Dans une phrase, passer par moisEnMinuscule() — en français les noms
+ * de mois ne prennent pas de majuscule.
+ */
 const MOIS_LABELS: Record<number, string> = {
     1: 'Janvier', 2: 'Février', 3: 'Mars', 4: 'Avril',
     5: 'Mai', 6: 'Juin', 7: 'Juillet', 8: 'Août',
     9: 'Septembre', 10: 'Octobre', 11: 'Novembre', 12: 'Décembre',
 };
+
+/** Mois à initiale vocalique : « de » s'y élide en « d' » (d'avril, d'août, d'octobre). */
+const MOIS_INITIALE_VOYELLE = new Set([4, 8, 10]);
 
 const PAGE_SIZE = 4;
 
@@ -75,7 +83,6 @@ export class MesDocsComponent implements OnInit {
 
     // Filtre mois
     moisActif: number = new Date().getMonth() + 1;
-    moisLabels = MOIS_LABELS;
     moisOptions: { label: string; value: number }[] = [];
     readonly anneeEnCours = new Date().getFullYear();
 
@@ -112,7 +119,13 @@ export class MesDocsComponent implements OnInit {
         if (this.modeIntervalle && this.dateDebut && this.dateFin) {
             return `Mes documents du ${this.formatDateAffichage(this.dateDebut)} au ${this.formatDateAffichage(this.dateFin)}`;
         }
-        return `Mes documents de ${MOIS_LABELS[this.moisActif]} ${this.anneeEnCours}`;
+        const article = MOIS_INITIALE_VOYELLE.has(this.moisActif) ? "d'" : 'de ';
+        return `Mes documents ${article}${this.moisEnMinuscule(this.moisActif)} ${this.anneeEnCours}`;
+    }
+
+    /** Nom du mois tel qu'il doit apparaître à l'intérieur d'une phrase. */
+    moisEnMinuscule(mois: number): string {
+        return (MOIS_LABELS[mois] || '').toLowerCase();
     }
 
     get totalPages(): number {

@@ -4,29 +4,67 @@
       <div class="light-square" (click)="goPrevious()">
         <app-svg-icon [icon]="'back-arrow'" [class]="'btn-email'"></app-svg-icon>
       </div>
-      <span>{{ mailDetails && mailDetails.email_title ? mailDetails.email_title : 'No Subject' }}</span>
+      @if(marqueurPriorite; as marqueur) {
+        <i class="imput-priorite {{ marqueur.classe }}"
+           [style.color]="marqueur.couleur" [title]="marqueur.titre"></i>
+      }
+      <span>{{ mailDetails && mailDetails.email_title ? mailDetails.email_title : 'Imputation' }}</span>
     </div>
+    <!-- Mêmes actions que sur la ligne de la liste, et selon le même partage
+         des rôles : le destinataire transfère ou déclare traité, l'émetteur
+         valide puis clôture. -->
     <div class="mail-body1">
-      <div class="light-square relative group">
-        <app-svg-icon [icon]="'sms'"></app-svg-icon>
-        <app-tooltip [title]="'Achieve'"></app-tooltip>
-      </div>
-      <div class="light-square relative group">
-        <app-svg-icon [icon]="'bookmark'" [class]="'bookmark-box'"></app-svg-icon>
-        <app-tooltip [title]="'Bookmark'"></app-tooltip>
-      </div>
-      <div class="light-square relative group">
-        <app-svg-icon [icon]="'spam'"></app-svg-icon>
-        <app-tooltip [title]="'Spam'"></app-tooltip>
-      </div>
-      <div class="light-square bg-light-danger relative group">
-        <app-svg-icon [icon]="'mail-trash'" [class]="'stroke-danger'"></app-svg-icon>
-        <app-tooltip [title]="'Trash'"></app-tooltip>
-      </div>
-      <div class="light-square relative group">
-        <app-svg-icon [icon]="'setting'"></app-svg-icon>
-        <app-tooltip [title]="'Settings'"></app-tooltip>
-      </div>
+      @if(conversationCloturee) {
+        <div class="light-square relative group imput-outil-close-boite">
+          <app-feather-icon [icon]="'lock'" [class]="'imput-outil imput-outil-close'"></app-feather-icon>
+          <app-tooltip [title]="imputation?.dateCloture
+                          ? 'Clôturée le ' + imputation?.dateCloture
+                          : 'Imputation clôturée'"></app-tooltip>
+        </div>
+      }
+      @if(actionsPossibles) {
+        <div class="light-square relative group" (click)="transfererDemande.emit()">
+          <app-feather-icon [icon]="'corner-up-right'" [class]="'imput-outil'"></app-feather-icon>
+          <app-tooltip [title]="'Transférer'"></app-tooltip>
+        </div>
+        @if(!imputation?.dateTraitement) {
+          <div class="light-square relative group" (click)="traiterDemande.emit()">
+            <app-feather-icon [icon]="'check-circle'" [class]="'imput-outil'"></app-feather-icon>
+            <app-tooltip [title]="'Marquer comme traitée'"></app-tooltip>
+          </div>
+        } @else {
+          <div class="light-square relative group">
+            <app-feather-icon [icon]="'check-circle'" [class]="'imput-outil imput-outil-faite'"></app-feather-icon>
+            <app-tooltip [title]="'Traitée le ' + imputation?.dateTraitement"></app-tooltip>
+          </div>
+        }
+      }
+      @if(actionsEmetteur) {
+        @if(!dejaValidee) {
+          <div class="light-square relative group" (click)="validerDemande.emit()">
+            <app-feather-icon [icon]="'thumbs-up'" [class]="'imput-outil'"></app-feather-icon>
+            <app-tooltip [title]="'Valider l\'imputation'"></app-tooltip>
+          </div>
+        } @else {
+          <div class="light-square relative group">
+            <app-feather-icon [icon]="'thumbs-up'" [class]="'imput-outil imput-outil-faite'"></app-feather-icon>
+            <app-tooltip [title]="'Déjà validée'"></app-tooltip>
+          </div>
+        }
+        <!-- Le cas « déjà clôturée » ne peut plus survenir ici :
+             `actionsEmetteur` exclut les dossiers clos, signalés par le
+             cadenas en tête de barre. -->
+        <div class="light-square relative group" (click)="cloturerDemande.emit()">
+          <app-feather-icon [icon]="'flag'" [class]="'imput-outil'"></app-feather-icon>
+          <app-tooltip [title]="'Clôturer l\'imputation'"></app-tooltip>
+        </div>
+      }
+      @if(actionsCorbeille) {
+        <div class="light-square bg-light-danger relative group" (click)="supprimerDemande.emit()">
+          <app-feather-icon [icon]="'trash-2'" [class]="'imput-outil imput-outil-danger'"></app-feather-icon>
+          <app-tooltip [title]="'Supprimer définitivement'"></app-tooltip>
+        </div>
+      }
     </div>
   </div>
   <div class="mail-body-wrapper" id="DivIdToPrint">
@@ -37,26 +75,53 @@
             @if(mailDetails.user_profile) {
               <img class="max-w-full h-auto" [src]="mailDetails.user_profile" [alt]="mailDetails.user_name">
             } @else {
-              <div class="circle-{{ getTextColor(getUserText(mailDetails.user_name)) }}">
-                <p class="txt-{{ getTextColor(getUserText(mailDetails.user_name)) }}">{{ getUserText(mailDetails.user_name) }}
-                </p>
-              </div>
+              <span class="imput-avatar-entete"
+                    [style.background-color]="avatarExpediteur.fond">
+                <ng-container *ngTemplateOutlet="silhouette; context: {$implicit: avatarExpediteur.trait}"></ng-container>
+              </span>
             }
           </div>
           <div class="dropdown-subtitle">
             <p>{{ mailDetails.user_name }}</p>
             <div class="onhover-dropdown">
               <button class="btn p-0 dropdown-button">
-                To me 
+                À : {{ imputation?.destinataire?.nom }}
                 <app-feather-icon [icon]="'chevron-down'"></app-feather-icon>
               </button>
               <div class="inbox-security onhover-show-div">
-                <p>From: <span>{{ mailDetails.email }}</span></p>
-                <p>to: <span>Me</span></p>
-                <p>reply-to:<span>{{ mailDetails.email }}</span></p>
-                <p>date: <span>{{ mailDetails.time }}</span></p>
-                <p>subject: <span>{{ mailDetails.email_title }}</span></p>
-                <p>security: <span>standard encryption (TLS)</span></p>
+                <p>De : <span>{{ imputation?.expediteur?.email }}</span></p>
+                <p>À : <span>{{ imputation?.destinataire?.email }}</span></p>
+                @if(imputation && imputation.cc.length) {
+                  <p>Copie :</p>
+                  <ul class="imput-cc">
+                    @for(personne of imputation.cc; track personne.uid) {
+                      <li [title]="personne.lu ? 'Lu le ' + personne.dateLecture : 'Pas encore ouvert'">
+                        <app-feather-icon [icon]="personne.lu ? 'check-circle' : 'circle'"
+                                          [class]="personne.lu ? 'imput-cc-lu' : 'imput-cc-attente'"></app-feather-icon>
+                        <span class="imput-cc-nom">{{ personne.nom }}</span>
+                        <span class="imput-cc-etat">
+                          {{ personne.lu ? personne.dateLecture : 'non lu' }}
+                        </span>
+                      </li>
+                    }
+                  </ul>
+                }
+                <p>Date : <span>{{ mailDetails.time }}</span></p>
+                @if(imputation?.prioriteLibelle) {
+                  <p>Priorité : <span>{{ imputation?.prioriteLibelle }}</span></p>
+                }
+                @if(imputation?.consigneLibelle) {
+                  <p>Consigne : <span>{{ imputation?.consigneLibelle }}</span></p>
+                }
+                @if(imputation?.dateLimite) {
+                  <p>Échéance : <span>{{ imputation?.dateLimite }}</span></p>
+                }
+                @if(imputation?.statutLibelle) {
+                  <p>Statut : <span>{{ imputation?.statutLibelle }}</span></p>
+                }
+                @if(imputation?.dateLecture) {
+                  <p>Lue le : <span>{{ imputation?.dateLecture }}</span></p>
+                }
               </div>
             </div>
           </div>
@@ -68,66 +133,310 @@
             {{ mailDetails.time }}
           }
         </span>
-          <div class="light-square">
-            <app-svg-icon [icon]="'fill-star'" [class]="'important-mail ' + (mailDetails.is_favorite ? 'active' : '')" ></app-svg-icon>
-          </div>
-          <button type="" class="light-square" (click)="print()">
-            <app-svg-icon [icon]="'print'"></app-svg-icon>
-          </button>
-          <div class="light-square dropdown" (clickOutside)="clickOutside()">
-            <button (click)="toggleDropdown()">
-              <app-svg-icon [icon]="'menubar'"></app-svg-icon>
-            </button>
-            <div class="dropdown-menu dropdown-block" [class.show]="dropdownOpen">
-              <a class="dropdown-item" href="javascript:void(0)" (click)="toggleDropdown()">
-                <i class="fa fa-mail-reply"></i>
-                Reply
-              </a>
-              <a class="dropdown-item" href="javascript:void(0)" (click)="toggleDropdown()"> 
-                <i class="fa fa-mail-forward"></i>
-                Forward
-              </a>
-            </div>
-          </div>
         </div>
       </div>
       <div class="user-body">
-        <p>Dear Customer,</p>
-        <p>{{ mailDetails.description }}</p>
+        <p><strong>{{ imputation?.instruction }}</strong></p>
+        @if(imputation?.messageInitial) {
+          <p class="imput-corps-texte">{{ texteMessage(imputation!.messageInitial) }}</p>
+        }
         <div class="mail-subcontent">
-          <p>Yours faithfully,</p>
-          <p>Account Security Team</p>
+          @if(imputation?.documentLabel) {
+            <p>Document : {{ imputation?.documentLabel }}</p>
+          }
+          @if(imputation?.dateLimite) {
+            <p>À traiter avant le {{ imputation?.dateLimite }}.</p>
+          }
+          @if(imputation?.estConfidentiel) {
+            <p class="txt-danger">Imputation confidentielle.</p>
+          }
+          <p>{{ imputation?.expediteur?.nom }}</p>
         </div>
-      </div>
-      <div class="user-footer">
-        <div>
-          <app-svg-icon [icon]="'attchment'"></app-svg-icon>
-          <span class="f-light">Attachments</span>
-        </div>
-        <div class="d-inline-block">
-          <div class="attachment-file common-flex">
-            <div class="common-flex items-center">
-              <img src="assets/images/email-template/pdfs.png" alt="pdf">
-              <div class="block">
-                <p>Offer_Letter.pdf</p>
-                <p>200KB</p>
-              </div>
+
+        <!-- Pièces du document, rattachées au message d'origine : elles sont
+             jointes à la création, pas à la conversation qui suit. -->
+        @if(imputation && imputation.piecesJointes.length) {
+          <div class="imput-bloc-pieces">
+            <div class="imput-pieces-titre">
+              <app-feather-icon [icon]="'paperclip'"></app-feather-icon>
+              <span class="f-light">Pièces jointes</span>
             </div>
-            <a href="assets/pug/pages/template/text_file.pdf" download> 
-              <i class="fa fa-download f-light"></i>
-            </a>
+            <ng-container *ngTemplateOutlet="cartesFichiers; context: {$implicit: imputation.piecesJointes}"></ng-container>
+          </div>
+        }
+      </div>
+      <!-- Fil de discussion, présenté comme un fil de messagerie : une ligne
+           par message, séparées par un filet, repliées par défaut pour rester
+           lisibles quand l'échange s'allonge. -->
+      @if(messages.length) {
+        <div class="imput-fil">
+          <div class="imput-fil-barre">
+            <span class="imput-fil-titre">
+              {{ messages.length }} message{{ messages.length > 1 ? 's' : '' }}
+            </span>
+            @if(messages.length > 1) {
+              <button type="button" class="imput-fil-tout" (click)="basculerTout()">
+                {{ toutEstOuvert ? 'Tout replier' : 'Tout déplier' }}
+              </button>
+            }
+          </div>
+
+          <!-- Arrivée pendant la lecture. Le fil se complète tout seul, mais
+               rien ne le signalait : un message ajouté plus haut, hors de
+               l'écran, passait totalement inaperçu. -->
+          @if(nbNouveaux > 0) {
+            <button type="button" class="imput-fil-arrivee" (click)="allerAuxNouveaux()">
+              <app-feather-icon [icon]="'arrow-down'" [class]="'imput-fil-arrivee-ico'"></app-feather-icon>
+              <span>
+                {{ nbNouveaux > 1
+                    ? nbNouveaux + ' nouveaux messages'
+                    : 'Nouveau message' }}
+              </span>
+            </button>
+          }
+
+          @for(message of messages; track message.id) {
+            <div class="imput-msg" [class.imput-msg-ouvert]="estOuvert(message)"
+                 [class.imput-msg-nouveau]="estNouveau(message)"
+                 [id]="'imput-msg-' + message.id">
+              <div class="imput-msg-tete" (click)="basculerMessage(message)">
+                <span class="imput-msg-avatar"
+                      [style.background-color]="avatar(message.auteur).fond">
+                  <ng-container *ngTemplateOutlet="silhouette; context: {$implicit: avatar(message.auteur).trait}"></ng-container>
+                </span>
+                <div class="imput-msg-info">
+                  <span class="imput-msg-auteur">{{ message.auteur.nom }}</span>
+                  @if(!estOuvert(message)) {
+                    <span class="imput-msg-apercu">{{ apercu(message.contenu) }}</span>
+                  }
+                </div>
+                <div class="imput-msg-meta">
+                  @if(message.fichiers.length) {
+                    <app-feather-icon [icon]="'paperclip'" [class]="'imput-msg-clip'" title="Contient des pièces jointes"></app-feather-icon>
+                  }
+                  @if(estNouveau(message)) {
+                    <span class="imput-msg-pastille">Nouveau</span>
+                  }
+                  <span class="msg-date">{{ message.date }}</span>
+                  <app-feather-icon [icon]="estOuvert(message) ? 'chevron-up' : 'chevron-down'"
+                                    [class]="'imput-msg-chevron'"></app-feather-icon>
+                </div>
+              </div>
+
+              @if(estOuvert(message)) {
+                <div class="imput-msg-corps">
+                  @if(estHtml(message.contenu)) {
+                    <div class="imput-fil-texte imput-fil-riche" [innerHTML]="message.contenu"></div>
+                  } @else {
+                    <p class="imput-fil-texte">{{ texteMessage(message.contenu) }}</p>
+                  }
+                  @if(message.fichiers.length) {
+                    <ng-container *ngTemplateOutlet="cartesFichiers; context: {$implicit: message.fichiers}"></ng-container>
+                  }
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+      <!-- Dossier clos : on le DIT, plutôt que de laisser un composeur grisé
+           qu'on prendrait pour une panne. -->
+      @if(conversationCloturee) {
+        <div class="imput-close-bandeau">
+          <app-feather-icon [icon]="'lock'" [class]="'imput-close-ico'"></app-feather-icon>
+          <div class="imput-close-texte">
+            <strong>Conversation clôturée</strong>
+            <span>
+              @if(imputation?.dateCloture) {
+              Fermée le {{ imputation?.dateCloture }}.
+              }
+              Plus aucun message ne peut être ajouté, et les actions de suivi
+              sont désormais fermées.
+            </span>
           </div>
         </div>
+      } @else {
+      <div class="user-footer">
         <div class="toolbar-box">
-          <angular-editor></angular-editor>
+          <angular-editor [(ngModel)]="reponseTexte" [config]="editeurConfig"></angular-editor>
+
+          <div class="imput-joindre">
+            <label class="imput-joindre-btn">
+              <app-feather-icon [icon]="'paperclip'"></app-feather-icon> Joindre un fichier
+              <input type="file" multiple hidden (change)="ajouterFichiers($event)">
+            </label>
+            @for(f of fichiers; track f; let i = $index) {
+              <span class="imput-fichier-choisi" [title]="f.name">
+                <app-feather-icon [icon]="'paperclip'"></app-feather-icon>
+                <span>{{ f.name }}</span>
+                <app-feather-icon [icon]="'x'" [class]="'imput-retirer'" title="Retirer"
+                                  (click)="retirerFichier(i)"></app-feather-icon>
+              </span>
+            }
+          </div>
         </div>
       </div>
       <div class="send-btn">
-        <button class="btn btn-primary text-white">
-          Send
-          <i class="fa-solid fa-paper-plane"></i>
+        <button class="btn btn-primary text-white" type="button"
+                [disabled]="envoiEnCours" (click)="envoyerReponse()">
+          {{ envoiEnCours ? 'Envoi…' : 'Envoyer' }}
+          <app-feather-icon [icon]="'send'"></app-feather-icon>
         </button>
       </div>
+      }
     </div>
   </div>
 }
+
+<!-- Silhouette générique : l'API ne fournit pas de photo pour les comptes.
+     La couleur, tirée de l'uid, distingue les interlocuteurs. -->
+<ng-template #silhouette let-couleur>
+  <svg class="imput-avatar-svg" viewBox="0 0 24 24" [attr.fill]="couleur" aria-hidden="true">
+    <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm0 2c-2.67 0-8 1.34-8 4v1.5a.5.5 0 0 0 .5.5h15a.5.5 0 0 0 .5-.5V18c0-2.66-5.33-4-8-4z"/>
+  </svg>
+</ng-template>
+
+<!-- ══ Carte de fichier, partagée par l'imputation et par chaque message ══ -->
+<ng-template #cartesFichiers let-liste>
+  <div class="imput-pieces">
+    @for(piece of liste; track piece.id) {
+      <div class="imput-piece" [class.imput-piece-cliquable]="piece.url"
+           [title]="piece.url ? 'Consulter la pièce' : ''"
+           (click)="ouvrirVisionneuse(piece)">
+        <!-- Feuille avec coin replié et pastille portant l'extension réelle,
+             dans l'esprit de l'icône PDF du gabarit d'origine. -->
+        <svg class="imput-piece-icone" viewBox="0 0 32 40" aria-hidden="true">
+          <path d="M5 1.5h13.5L28 11v25.5a2.5 2.5 0 0 1-2.5 2.5H5a2.5 2.5 0 0 1-2.5-2.5V4A2.5 2.5 0 0 1 5 1.5z"
+                fill="#ffffff" [attr.stroke]="couleurFichier(piece)" stroke-width="2"/>
+          <path d="M18.5 1.5L28 11h-9.5z" [attr.fill]="couleurFichier(piece)" opacity="0.35"/>
+          <rect x="0" y="20" width="24" height="13" rx="2.5" [attr.fill]="couleurFichier(piece)"/>
+          <text x="12" y="29.2" text-anchor="middle" fill="#ffffff"
+                font-family="Arial, Helvetica, sans-serif" font-weight="700"
+                [attr.font-size]="tailleTexteIcone(piece)">{{ libelleFichier(piece) }}</text>
+        </svg>
+        <div class="imput-piece-corps">
+          <span class="imput-piece-nom" [title]="piece.nom">{{ piece.nom }}</span>
+          @if(detailFichier(piece)) {
+            <span class="imput-piece-detail">{{ detailFichier(piece) }}</span>
+          }
+        </div>
+        @if(piece.url) {
+          <span class="imput-piece-ouvrir" aria-hidden="true">
+            <app-feather-icon [icon]="'eye'"></app-feather-icon>
+          </span>
+        }
+      </div>
+    }
+  </div>
+</ng-template>
+
+<!-- ══ Visionneuse intégrée ══════════════════════════════════════════════
+     Le fichier est rendu dans l'application ; pour un PDF protégé, le mot de
+     passe est fourni à pdf.js sans jamais transiter par l'interface.
+
+     Ce bloc est déplacé sous <body> à l'initialisation : le gabarit applique
+     des `transform` sur les conteneurs de page, ce qui en fait le référentiel
+     des éléments `position: fixed` — la surcouche restait alors cantonnée à la
+     zone de contenu, sans couvrir le menu latéral. -->
+<div #visHote>
+@if(visionneuse) {
+  <div class="vis-overlay" (click)="fermerVisionneuse()">
+    <div class="vis-barre" (click)="$event.stopPropagation()">
+      <button type="button" class="vis-btn" title="Fermer" (click)="fermerVisionneuse()">
+        <app-feather-icon [icon]="'x'"></app-feather-icon>
+      </button>
+      <span class="vis-nom">{{ visionneuse.nom }}</span>
+
+      <div class="vis-actions">
+        @if(visEstPdf && visTotalPages > 1) {
+          <button type="button" class="vis-btn" title="Page précédente"
+                  [disabled]="visPage <= 1" (click)="visPagePrecedente()">
+            <app-feather-icon [icon]="'chevron-left'"></app-feather-icon>
+          </button>
+          <span class="vis-pagination">{{ visPage }} / {{ visTotalPages }}</span>
+          <button type="button" class="vis-btn" title="Page suivante"
+                  [disabled]="visPage >= visTotalPages" (click)="visPageSuivante()">
+            <app-feather-icon [icon]="'chevron-right'"></app-feather-icon>
+          </button>
+        }
+        @if(visEstPdf) {
+          <button type="button" class="vis-btn" title="Réduire" (click)="visZoom(-0.25)">
+            <app-feather-icon [icon]="'zoom-out'"></app-feather-icon>
+          </button>
+          <button type="button" class="vis-btn" title="Agrandir" (click)="visZoom(0.25)">
+            <app-feather-icon [icon]="'zoom-in'"></app-feather-icon>
+          </button>
+        }
+        @if(visEstPdf || visEstImage) {
+          <button type="button" class="vis-btn" title="Imprimer"
+                  [disabled]="visChargement || impressionEnCours" (click)="imprimer()">
+            <app-feather-icon [icon]="'printer'"></app-feather-icon>
+          </button>
+        }
+        <button type="button" class="vis-btn" title="Télécharger" (click)="telecharger()">
+          <app-feather-icon [icon]="'download'"></app-feather-icon>
+        </button>
+      </div>
+    </div>
+
+    @if(impressionEnCours) {
+      <div class="vis-impression" (click)="$event.stopPropagation()">
+        <div class="vis-impression-texte">
+          Préparation de l'impression — page {{ impressionPage }} sur {{ impressionTotal }}
+        </div>
+        <div class="vis-impression-jauge">
+          <div class="vis-impression-barre" [style.width.%]="impressionPourcent"></div>
+        </div>
+        <button type="button" class="vis-impression-annuler" (click)="annulerImpression()">
+          Annuler
+        </button>
+      </div>
+    }
+
+    <div class="vis-corps" (click)="$event.stopPropagation()">
+      @if(visChargement) {
+        <div class="vis-etat">Chargement…</div>
+      }
+      @if(visErreur) {
+        <div class="vis-etat">{{ visErreur }}</div>
+      }
+      @if(visEstPdf) {
+        <canvas id="vis-canvas" class="vis-canvas" [class.vis-cache]="visChargement || visErreur"></canvas>
+      } @else if(visEstImage) {
+        <img class="vis-image" [src]="visionneuse.url" [alt]="visionneuse.nom" (load)="visChargement = false">
+      } @else if(visUrlOffice) {
+        <!-- Word, Excel, PowerPoint : aucun navigateur ne sait les rendre.
+             La conversion est faite par la visionneuse en ligne de Microsoft,
+             déjà employée par « classer-document ». -->
+        <iframe class="vis-office" [src]="visUrlOffice" [title]="visionneuse.nom"
+                frameborder="0" (load)="officeCharge()"></iframe>
+      } @else if(visOfficeBloque && !visChargement) {
+        <!-- Imputation confidentielle : l'aperçu passe par un service tiers,
+             l'utilisateur doit le décider en connaissance de cause. -->
+        <div class="vis-etat">
+          <app-feather-icon [icon]="'shield'" [class]="'vis-etat-ico'"></app-feather-icon>
+          <span>Imputation confidentielle</span>
+          <small>
+            L'aperçu de ce format demande de transmettre le fichier à un service
+            externe. Le téléchargement, lui, reste sur votre poste.
+          </small>
+          <div class="vis-etat-actions">
+            <button type="button" class="btn btn-primary text-white" (click)="telecharger()">
+              Télécharger le fichier
+            </button>
+            <button type="button" class="vis-etat-lien" (click)="demanderAccordApercu()">
+              Afficher l'aperçu malgré tout
+            </button>
+          </div>
+        </div>
+      } @else if(!visChargement) {
+        <div class="vis-etat">
+          Aperçu indisponible pour ce format.
+          <button type="button" class="btn btn-primary text-white" (click)="telecharger()">
+            Télécharger le fichier
+          </button>
+        </div>
+      }
+    </div>
+  </div>
+}</div>

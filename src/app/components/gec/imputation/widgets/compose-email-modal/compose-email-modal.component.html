@@ -21,84 +21,114 @@
 
             <!-- ═══ Document ═══ -->
             <div class="im-section">
-                <div class="im-section-title"><i class="fa-regular fa-file-lines"></i> Document</div>
+                <div class="im-section-title">  <app-feather-icon [icon]="'folder'"></app-feather-icon> Document</div>
 
-                <!-- Recherche par numéro (tant qu'aucun document sélectionné) -->
-                <ng-container *ngIf="!selectedDoc">
-                    <div class="im-search">
+                <div class="im-search">
+                    <!-- La loupe dans le champ signale la fonction avant même
+                         de lire l'invite : c'est le point d'entrée de tout le
+                         formulaire, il doit se voir. -->
+                    <span class="im-search-champ">
+                        <i class="fa-solid fa-magnifying-glass"></i>
                         <input class="im-input" type="text"
                                placeholder="Numéro du document (ex : DOC-2025-001)"
                                [(ngModel)]="docNumero" name="docNumero"
                                (keydown.enter)="searchDocument()"/>
-                        <button class="im-search-btn" type="button"
-                                [disabled]="!docNumero.trim() || searchingDoc" (click)="searchDocument()">
-                            <i class="fa-solid" [ngClass]="searchingDoc ? 'fa-circle-notch fa-spin' : 'fa-magnifying-glass'"></i>
-                            Rechercher
+                    </span>
+                    <button class="im-search-btn" type="button"
+                            [disabled]="!docNumero.trim() || searchingDoc" (click)="searchDocument()">
+                        <i class="fa-solid" [ngClass]="searchingDoc ? 'fa-circle-notch fa-spin' : 'fa-magnifying-glass'"></i>
+                        Rechercher
+                    </button>
+                </div>
+
+                <!-- Résultats en accordéon : chaque document se déroule sur ses
+                     pièces. Un résultat unique s'ouvre de lui-même. -->
+                <div class="im-results" *ngIf="docResults.length">
+                    <div class="im-acc" *ngFor="let d of docResults" [class.ouvert]="estOuvert(d)">
+                        <button class="im-acc-tete" type="button" (click)="basculerDocument(d)">
+                            <i class="fa-regular fa-file-lines im-acc-ico"></i>
+                            <span class="im-acc-txt">
+                                <span class="im-acc-nom">{{ d.lib_docs || '—' }}</span>
+                                <span class="im-acc-code" *ngIf="d.code_docs">N° {{ d.code_docs }}</span>
+                            </span>
+                            <span class="im-acc-etat" *ngIf="estOuvert(d) && selectedFileUids.length">
+                                {{ selectedFileUids.length }} pièce{{ selectedFileUids.length > 1 ? 's' : '' }}
+                            </span>
+                            <i class="fa-solid fa-chevron-right im-acc-chevron"></i>
                         </button>
-                    </div>
 
-                    <!-- Résultats -->
-                    <div class="im-results" *ngIf="docResults.length">
-                        <div class="im-result-row" *ngFor="let d of docResults" (click)="selectDocument(d)">
-                            <i class="fa-regular fa-file-lines"></i>
-                            <div class="im-result-txt">
-                                <span class="im-result-name">{{ d.lib_docs || '—' }}</span>
-                                <span class="im-result-code" *ngIf="d.code_docs">N° {{ d.code_docs }}</span>
+                        <div class="im-acc-corps" *ngIf="estOuvert(d)">
+                            <div class="im-files-loading" *ngIf="loadingFiles">
+                                <i class="fa-solid fa-circle-notch fa-spin"></i> Chargement des pièces…
                             </div>
-                            <i class="fa-solid fa-chevron-right"></i>
+
+                            <div class="im-files" *ngIf="!loadingFiles && files.length">
+                                <div class="im-files-head">
+                                    <span>Pièces à joindre</span>
+                                    <button type="button" class="im-files-tout" (click)="basculerToutesLesPieces()">
+                                        {{ toutesPiecesChoisies ? 'Tout décocher' : 'Tout sélectionner' }}
+                                    </button>
+                                </div>
+
+                                <div class="im-files-grid">
+                                    <button type="button" class="im-piece" *ngFor="let f of files"
+                                            [class.active]="f.checked" [title]="f.name"
+                                            (click)="toggleFile(f)">
+                                        <svg class="im-piece-icone" viewBox="0 0 32 40" aria-hidden="true">
+                                            <path d="M5 1.5h13.5L28 11v25.5a2.5 2.5 0 0 1-2.5 2.5H5a2.5 2.5 0 0 1-2.5-2.5V4A2.5 2.5 0 0 1 5 1.5z"
+                                                  fill="#ffffff" [attr.stroke]="couleurFichier(f)" stroke-width="2"/>
+                                            <path d="M18.5 1.5L28 11h-9.5z" [attr.fill]="couleurFichier(f)" opacity="0.35"/>
+                                            <rect x="0" y="20" width="24" height="13" rx="2.5" [attr.fill]="couleurFichier(f)"/>
+                                            <text x="12" y="29.2" text-anchor="middle" fill="#ffffff"
+                                                  font-family="Arial, Helvetica, sans-serif" font-weight="700"
+                                                  [attr.font-size]="tailleTexteIcone(f)">{{ libelleFichier(f) }}</text>
+                                        </svg>
+                                        <span class="im-piece-nom">{{ f.name }}</span>
+                                        <span class="im-piece-coche"><i class="fa-solid fa-check"></i></span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="im-empty" *ngIf="!loadingFiles && !files.length">
+                                Aucune pièce jointe à ce document.
+                            </div>
                         </div>
                     </div>
+                </div>
 
-                    <div class="im-empty" *ngIf="docSearched && !searchingDoc && !docResults.length">
-                        Aucun document trouvé pour ce numéro.
-                    </div>
-                </ng-container>
-
-                <!-- Document sélectionné + fichiers -->
-                <ng-container *ngIf="selectedDoc">
-                    <div class="im-doc-selected">
-                        <i class="fa-regular fa-file-lines"></i>
-                        <div class="im-doc-txt">
-                            <span class="im-doc-name">{{ selectedDoc.lib_docs || '—' }}</span>
-                            <span class="im-doc-code" *ngIf="selectedDoc.code_docs">N° {{ selectedDoc.code_docs }}</span>
-                        </div>
-                        <button class="im-doc-change" type="button" (click)="clearDocument()">Changer</button>
-                    </div>
-
-                    <div class="im-files-loading" *ngIf="loadingFiles">
-                        <i class="fa-solid fa-circle-notch fa-spin"></i> Chargement des fichiers…
-                    </div>
-
-                    <div class="im-files" *ngIf="!loadingFiles && files.length">
-                        <div class="im-files-head">Fichiers à joindre</div>
-                        <label class="im-file-row" *ngFor="let f of files" [class.active]="f.checked">
-                            <input type="checkbox" [checked]="f.checked" (change)="toggleFile(f)"/>
-                            <span class="im-file-check"><i class="fa-solid fa-check"></i></span>
-                            <i class="fa-regular im-file-ico" [ngClass]="fileIcon(f.extension)"></i>
-                            <span class="im-file-name">{{ f.name }}<ng-container *ngIf="f.extension">.{{ f.extension }}</ng-container></span>
-                        </label>
-                    </div>
-
-                    <div class="im-empty" *ngIf="!loadingFiles && !files.length">
-                        Aucun fichier joint à ce document.
-                    </div>
-                </ng-container>
+                <div class="im-empty" *ngIf="docSearched && !searchingDoc && !docResults.length">
+                    Aucun document trouvé pour ce numéro.
+                </div>
             </div>
 
             <!-- ═══ Destinataires ═══ -->
             <div class="im-section">
-                <div class="im-section-title"><i class="fa-solid fa-users"></i> Destinataires</div>
+                <div class="im-section-title">
+                    <app-feather-icon [icon]="'users'"></app-feather-icon> Destinataires
+                </div>
                 <div class="im-field">
-                    <label class="form-label">Utilisateur(s) <span class="txt-danger">*</span></label>
+                    <label class="form-label">Destinataire principal <span class="txt-danger">*</span></label>
+                    <nz-select class="w-full"
+                               nzShowSearch
+                               nzAllowClear
+                               nzPlaceHolder="Personne chargée du traitement"
+                               [nzLoading]="loadingPersonnels"
+                               [(ngModel)]="selectedPrincipal" name="principal">
+                        <nz-option *ngFor="let p of dataPersonnels" [nzLabel]="p.label" [nzValue]="p.value"></nz-option>
+                    </nz-select>
+                </div>
+
+                <div class="im-field">
+                    <label class="form-label">En copie</label>
                     <nz-select class="w-full"
                                nzMode="multiple"
                                nzShowSearch
                                nzAllowClear
                                [nzMaxTagCount]="4"
-                               nzPlaceHolder="Sélectionnez un ou plusieurs utilisateurs"
+                               nzPlaceHolder="Personnes informées, sans action attendue"
                                [nzLoading]="loadingPersonnels"
-                               [(ngModel)]="selectedPersonnels" name="personnels">
-                        <nz-option *ngFor="let p of dataPersonnels" [nzLabel]="p.label" [nzValue]="p.value"></nz-option>
+                               [(ngModel)]="selectedCopies" name="copies">
+                        <nz-option *ngFor="let p of personnelsEnCopie" [nzLabel]="p.label" [nzValue]="p.value"></nz-option>
                     </nz-select>
                 </div>
 
@@ -132,24 +162,32 @@
 
             <!-- ═══ Consigne / message ═══ -->
             <div class="im-section">
-                <div class="im-section-title"><i class="fa-regular fa-comment-dots"></i> Consigne & message</div>
+                <div class="im-section-title">
+                    <app-feather-icon [icon]="'message-circle'"></app-feather-icon> Consigne & message
+                </div>
                 <div class="im-field">
-                    <label class="form-label">Description / consigne</label>
+                    <label class="form-label">Observation <span class="txt-danger">*</span></label>
                     <textarea class="im-textarea" rows="2"
                               [(ngModel)]="descImpute" name="descImpute"
-                              placeholder="Objet ou consigne de l'imputation…"></textarea>
+                              placeholder="Décrire brièvement la tâche à effectuer…"></textarea>
                 </div>
-                <div class="im-field">
-                    <label class="form-label">Message</label>
-                    <textarea class="im-textarea" rows="3"
-                              [(ngModel)]="message" name="message"
-                              placeholder="Message adressé aux destinataires…"></textarea>
-                </div>
+<!--                <div class="im-field">-->
+<!--                    <label class="form-label">Message</label>-->
+<!--                    <textarea class="im-textarea" rows="3"-->
+<!--                              [(ngModel)]="message" name="message"-->
+<!--                              placeholder="Message adressé aux destinataires…"></textarea>-->
+<!--                </div>-->
 
                 <label class="im-switch">
                     <input type="checkbox" [(ngModel)]="notifyEmail" name="notifyEmail"/>
                     <span class="im-switch-box"><i class="fa-solid fa-check"></i></span>
                     <span>Notifier les destinataires par email</span>
+                </label>
+
+                <label class="im-switch">
+                    <input type="checkbox" [(ngModel)]="estConfidentiel" name="estConfidentiel"/>
+                    <span class="im-switch-box"><i class="fa-solid fa-check"></i></span>
+                    <span>Imputation confidentielle</span>
                 </label>
             </div>
         </div>

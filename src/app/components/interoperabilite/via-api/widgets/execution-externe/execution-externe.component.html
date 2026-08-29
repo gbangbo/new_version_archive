@@ -1,0 +1,249 @@
+<!-- Titre -->
+<div class="cx-title">
+    <span class="cx-title-ico"><i class="fa-solid fa-play"></i></span>
+    <h2>Exécution</h2>
+</div>
+
+<!-- Bannière info -->
+<div class="cx-banner">
+    <span class="cx-banner-ico"><i class="fa-solid fa-arrow-right-arrow-left"></i></span>
+    <div class="cx-banner-txt">
+        <div class="cx-banner-title">Proxy de requête HTTP externe</div>
+        <div class="cx-banner-sub">Le jeton est obtenu auprès de la plateforme choisie, puis ajouté à la requête. Les valeurs saisies ici remplacent celles enregistrées portant le même nom.</div>
+    </div>
+</div>
+
+<!-- Les deux listes de tête : tant qu'elles arrivent, on le dit plutôt que
+     d'afficher des sélecteurs vides qu'on croirait sans données. -->
+<div class="cx-loading" *ngIf="chargementPlateformes || chargementRequetes">
+    <div class="cx-spinner"></div>
+    <span>Chargement des plateformes et des requêtes enregistrées...</span>
+</div>
+
+<div class="cx-alert" *ngIf="erreurChargement">
+    <i class="fa-solid fa-circle-exclamation"></i>
+    {{ erreurChargement }}
+    <button type="button" class="io-lien" (click)="rechargerListes()">
+        <i class="fa-solid fa-rotate-right"></i> Réessayer
+    </button>
+</div>
+
+<div class="cx-alert" *ngIf="!chargementPlateformes && !erreurChargement && plateformes.length === 0">
+    <i class="fa-solid fa-circle-exclamation"></i>
+    Aucune plateforme active. Créez-en une dans l'étape « Plateformes » avant d'exécuter une requête.
+</div>
+
+<!-- ══ CE QU'ON APPELLE ══════════════════════════════════════════════════ -->
+<div class="cx-grid2">
+    <div class="cx-field">
+        <label>Plateforme <span class="req">*</span></label>
+        <select2 class="cx-select2"
+                 [data]="plateformeOptions"
+                 [ngModel]="form.platform_auth_uid"
+                 (ngModelChange)="surChangementPlateforme($event)"
+                 [disabled]="chargementPlateformes"
+                 [minCountForSearch]="0"
+                 [placeholder]="placeholderPlateforme"
+                 noResultMessage="Aucune plateforme"></select2>
+    </div>
+    <div class="cx-field">
+        <label>Requête enregistrée</label>
+        <select2 class="cx-select2"
+                 [data]="requeteOptions"
+                 [ngModel]="form.platform_request_uid"
+                 (ngModelChange)="surChangementRequete($event)"
+                 [disabled]="!form.platform_auth_uid || chargementRequetes"
+                 [minCountForSearch]="0"
+                 [placeholder]="placeholderRequete"
+                 noResultMessage="Aucune requête"></select2>
+        <small class="io-aide" *ngIf="aideRequetes">{{ aideRequetes }}</small>
+        <small class="io-aide" *ngIf="requeteSansPlateforme">
+            Cette requête n'indique aucune plateforme : c'est celle choisie à gauche
+            qui fournira le jeton.
+        </small>
+    </div>
+</div>
+
+<!-- URL de la requête retenue : affichée, pas modifiable ici. -->
+<div class="cx-field" *ngIf="requeteChoisie">
+    <label>URL appelée</label>
+    <div class="io-acces-etat">
+        <i class="fa-solid fa-link"></i>
+        <span class="cx-mono">{{ requeteChoisie.method }} &nbsp; {{ requeteChoisie.target_url }}</span>
+    </div>
+    <small class="io-aide" *ngIf="requeteChoisie.response_data_path">
+        Données extraites depuis <code>{{ requeteChoisie.response_data_path }}</code>.
+    </small>
+</div>
+
+<!-- Sans requête enregistrée, l'URL devient obligatoire. -->
+<div class="io-url-row" *ngIf="!requeteChoisie">
+    <div class="cx-field io-methode">
+        <label>Méthode</label>
+        <select2 class="cx-select2"
+                 [data]="methodes"
+                 [(ngModel)]="form.method"
+                 name="method"
+                 [minCountForSearch]="6"
+                 placeholder="GET"></select2>
+    </div>
+    <div class="cx-field io-url">
+        <label>URL cible <span class="req">*</span></label>
+        <input [(ngModel)]="form.url" name="url"
+               placeholder="https://partenaire.exemple.com/api/users/&#123;user_id&#125;"/>
+    </div>
+</div>
+
+<!-- ══ CE QUI CHANGE D'UN APPEL À L'AUTRE ════════════════════════════════ -->
+<div class="cx-field" *ngIf="emplacements.length">
+    <label>Emplacements à renseigner</label>
+    <div class="io-jetons">
+        <span class="io-jeton" *ngFor="let e of emplacements">{{ e }}</span>
+    </div>
+    <small class="io-aide">L'URL les attend en paramètres de chemin.</small>
+</div>
+
+<div class="cx-grid2">
+    <div class="cx-field">
+        <label>
+            Paramètres
+            <button type="button" class="io-lien io-lien-droite" (click)="formater('params')">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Formater
+            </button>
+        </label>
+        <textarea rows="4" class="io-code" [(ngModel)]="form.params" name="params"
+                  placeholder='&#123; "page": "1", "limit": "20" &#125;'></textarea>
+    </div>
+    <div class="cx-field">
+        <label>
+            Paramètres de chemin
+            <button type="button" class="io-lien io-lien-droite" (click)="formater('path_params')">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Formater
+            </button>
+        </label>
+        <textarea rows="4" class="io-code" [(ngModel)]="form.path_params" name="pathparams"
+                  placeholder='&#123; "user_id": "123" &#125;'></textarea>
+    </div>
+</div>
+
+<div class="cx-field">
+    <label>Fichier à transmettre</label>
+    <div class="io-fichier">
+        <label class="io-fichier-btn">
+            <i class="fa-solid fa-paperclip"></i> Choisir un fichier
+            <input type="file" (change)="surFichier($event)"/>
+        </label>
+        <span class="io-fichier-nom" *ngIf="fichier">
+            <i class="fa-regular fa-file"></i>
+            <span [title]="fichier.name">{{ fichier.name }}</span>
+            <em>({{ tailleLisible(fichier.size) }})</em>
+            <button type="button" title="Retirer" (click)="retirerFichier()">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </span>
+    </div>
+    <small class="io-aide">Envoyé en multipart, sous le nom <code>lib_file</code>.</small>
+</div>
+
+<!-- ══ CLASSEMENT DANS LA GED ════════════════════════════════════════════
+     Replié par défaut : tous les appels ne débouchent pas sur un
+     classement, et les listes ne sont chargées qu'à l'ouverture. -->
+<div class="io-repli">
+    <button type="button" class="io-repli-tete" (click)="basculerClassement()">
+        <i class="fa-solid fa-folder-open"></i>
+        Classement dans la GED
+        <span class="io-repli-sous">facultatif</span>
+        <i class="fa-solid" [ngClass]="classementOuvert ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+    </button>
+
+    <div class="io-repli-corps" *ngIf="classementOuvert">
+        <div class="cx-loading" *ngIf="chargementListes">
+            <div class="cx-spinner"></div>
+            <span>Chargement du plan de classement...</span>
+        </div>
+
+        <div *ngIf="!chargementListes">
+            <div class="io-grid3">
+                <!-- Site → rayon → boîte : on ne propose les boîtes qu'une fois
+                     le rayon connu, sinon la liste mêle des codes de rayons
+                     différents, impossibles à distinguer. -->
+                <div class="cx-field">
+                    <label>Rayon</label>
+                    <select2 class="cx-select2"
+                             [data]="rayons"
+                             [ngModel]="form.rayon_uid"
+                             (ngModelChange)="surChangementRayon($event)"
+                             [minCountForSearch]="0"
+                             placeholder="Choisir un rayon"
+                             noResultMessage="Aucun rayon"></select2>
+                </div>
+                <div class="cx-field">
+                    <label>Boîte</label>
+                    <select2 class="cx-select2"
+                             [data]="boites"
+                             [(ngModel)]="form.boite_uid"
+                             name="boite"
+                             [disabled]="!form.rayon_uid || chargementBoites"
+                             [minCountForSearch]="0"
+                             [placeholder]="placeholderBoite"
+                             noResultMessage="Aucune boîte dans ce rayon"></select2>
+                </div>
+                <!-- Catégorie → type de document : même cascade que
+                     rayon → boîte, et pour la même raison. -->
+                <div class="cx-field">
+                    <label>Catégorie</label>
+                    <select2 class="cx-select2"
+                             [data]="categories"
+                             [ngModel]="form.categorie_uid"
+                             (ngModelChange)="surChangementCategorie($event)"
+                             [minCountForSearch]="0"
+                             placeholder="Choisir une catégorie"
+                             noResultMessage="Aucune catégorie"></select2>
+                </div>
+                <div class="cx-field">
+                    <label>Type de document</label>
+                    <select2 class="cx-select2"
+                             [data]="typesDocument"
+                             [(ngModel)]="form.type_document_uid"
+                             name="typedoc"
+                             [disabled]="!form.categorie_uid || chargementTypes"
+                             [minCountForSearch]="0"
+                             [placeholder]="placeholderType"
+                             noResultMessage="Aucun type dans cette catégorie"></select2>
+                </div>
+                <div class="cx-field">
+                    <label>Publication</label>
+                    <select2 class="cx-select2"
+                             [data]="publications"
+                             [(ngModel)]="form.publishe"
+                             name="publishe"
+                             [minCountForSearch]="6"
+                             placeholder="Privé"></select2>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="cx-alert" *ngIf="execError"><i class="fa-solid fa-circle-exclamation"></i> {{ execError }}</div>
+
+<div class="io-envoi">
+    <button class="cx-btn-confirm" [disabled]="executing" (click)="execute()">
+        <i class="fa-solid" [ngClass]="executing ? 'fa-circle-notch fa-spin' : 'fa-paper-plane'"></i>
+        {{ executing ? 'Exécution…' : 'Exécuter la requête' }}
+    </button>
+</div>
+
+<!-- ══ RÉPONSE ═══════════════════════════════════════════════════════════ -->
+<div class="io-reponse" *ngIf="hasResponse">
+    <div class="io-reponse-tete">
+        <span class="io-reponse-titre"><i class="fa-solid fa-inbox"></i> Réponse</span>
+        <span class="cx-type-badge" *ngIf="statusCode !== null">HTTP {{ statusCode }}</span>
+        <span class="io-reponse-msg" *ngIf="responseMessage">{{ responseMessage }}</span>
+        <button type="button" class="io-lien" (click)="copierReponse()">
+            <i class="fa-regular fa-copy"></i> Copier
+        </button>
+    </div>
+    <pre class="io-reponse-corps">{{ responseText }}</pre>
+</div>

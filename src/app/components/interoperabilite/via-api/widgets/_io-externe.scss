@@ -1,0 +1,272 @@
+// ══ ÉCRANS « AVEC AUTHENTIFICATION » ════════════════════════════════════════
+//  Complément à widget-base : ce que les trois écrans de cette famille ont en
+//  propre — zones JSON, aides de saisie, état des accès chiffrés.
+
+$navy: #00366E;
+$ink: #0F172A;
+$muted: #64748B;
+
+// Zone de saisie JSON. Sombre et à chasse fixe : on y lit une structure, pas
+// une phrase, et l'œil doit repérer une accolade manquante.
+.io-code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace !important;
+  font-size: 12.5px !important;
+  line-height: 1.6 !important;
+  background: #1E293B !important;
+  border-color: #334155 !important;
+  color: #E2E8F0 !important;
+
+  &::placeholder { color: #64748B !important; }
+  &:focus { border-color: #475569 !important; }
+}
+
+.io-aide {
+  display: block;
+  margin-top: 6px;
+  font-size: 11.5px;
+  line-height: 1.6;
+  color: $muted;
+
+  code {
+    padding: 1px 5px;
+    border-radius: 4px;
+    background: #F1F3F7;
+    color: #334155;
+    font-size: 11px;
+  }
+}
+
+.io-lien {
+  padding: 0;
+  border: none;
+  background: none;
+  color: $navy;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover { text-decoration: underline; }
+  i { margin-right: 4px; font-size: 10.5px; }
+}
+
+.io-lien-droite { float: right; }
+
+// Les accès sont chiffrés en base : on affiche leur ÉTAT, jamais leur valeur.
+.io-acces-etat {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 10px 13px;
+  border: 1px solid #E6E9EF;
+  border-radius: 9px;
+  background: #F8FAFC;
+  font-size: 12.5px;
+  color: #475569;
+
+  i { color: $muted; font-size: 12px; }
+  span { flex: 1 1 auto; min-width: 0; }
+}
+
+// Étiquettes des emplacements nommés repérés dans une URL.
+.io-jetons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.io-jeton {
+  padding: 2px 9px;
+  border-radius: 11px;
+  background: #EEF2FF;
+  color: #3730A3;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+// Fichier joint à une exécution.
+.io-fichier {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.io-fichier-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 15px;
+  border: 1px dashed #CBD5E1;
+  border-radius: 9px;
+  background: #fff;
+  color: #475569;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover { border-color: $navy; color: $navy; }
+  input { display: none; }
+}
+
+.io-fichier-nom {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  font-size: 12.5px;
+  color: #334155;
+
+  span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 260px;
+  }
+
+  button {
+    border: none;
+    background: none;
+    color: #C2352D;
+    cursor: pointer;
+    padding: 0;
+  }
+}
+
+// Bloc replié : le classement dans la GED ne concerne pas tous les appels.
+//
+//  PAS d'`overflow: hidden` ici, malgré la tentation d'arrondir d'un coup :
+//  les panneaux déroulants des `select2` s'affichent DANS le flux, ils étaient
+//  donc tranchés net au bord du bloc et l'on ne voyait que leur champ de
+//  recherche. Chaque partie porte donc ses propres arrondis.
+.io-repli {
+  border: 1px solid #E6E9EF;
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+
+.io-repli-tete {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 13px 16px;
+  border: none;
+  border-radius: 11px 11px 0 0;
+  background: #F8FAFC;
+  color: $ink;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: left;
+
+  .io-repli-sous {
+    flex: 1 1 auto;
+    font-size: 12px;
+    font-weight: 500;
+    color: $muted;
+  }
+}
+
+// Le panneau d'un `select2` ouvert sur la dernière ligne doit pouvoir dépasser
+// vers le bas : on lui laisse la place plutôt que de le rogner.
+.io-repli-corps {
+  padding: 16px;
+  border-radius: 0 0 11px 11px;
+}
+
+// Fermé, l'en-tête redevient à lui seul tout le bloc.
+.io-repli-tete:only-child { border-radius: 11px; }
+
+.io-grid3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+@media (max-width: 900px) {
+  .io-grid3 { grid-template-columns: 1fr; }
+}
+
+// ── Envoi et réponse ─────────────────────────────────────
+.io-envoi {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 18px;
+}
+
+.io-reponse {
+  border: 1px solid #E6E9EF;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.io-reponse-tete {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 12px 16px;
+  background: #F8FAFC;
+  border-bottom: 1px solid #E6E9EF;
+}
+
+.io-reponse-titre {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #0F172A;
+
+  i { margin-right: 7px; opacity: 0.6; }
+}
+
+.io-reponse-msg {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 12.5px;
+  color: #64748B;
+}
+
+// Fond sombre : on y lit une structure, et une longue réponse doit défiler
+// dans son propre cadre plutôt que d'allonger la page sans fin.
+.io-reponse-corps {
+  margin: 0;
+  padding: 16px;
+  max-height: 420px;
+  overflow: auto;
+  background: #1E293B;
+  color: #E2E8F0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12.5px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.io-fichier-nom em {
+  font-style: normal;
+  color: #94A3B8;
+  font-size: 11.5px;
+}
+
+// ── Ligne « méthode + URL » ──────────────────────────────
+//  Deux colonnes égales donnaient à un sélecteur de trois lettres la même place
+//  qu'à une URL complète. Même répartition que l'écran « Avec clé API ».
+.io-url-row {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.io-methode {
+  width: 130px;
+  flex-shrink: 0;
+}
+
+.io-url { flex: 1; min-width: 0; }
+
+@media (max-width: 640px) {
+  .io-url-row { flex-direction: column; align-items: stretch; }
+  .io-methode, .io-url { width: 100%; }
+}

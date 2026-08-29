@@ -1,0 +1,601 @@
+/* ══ Cadres ═════════════════════════════════════════════════════════════════
+   Disposition d'un client de messagerie : la colonne des dossiers est posée à
+   plat, sans cadre, et le panneau de liste vient coller contre elle.
+
+   ATTENTION aux points de rupture : ceux du projet sont en max-width, et le
+   gabarit passe les deux colonnes en pleine largeur dès 1199px
+   (`xl:col-span-12`). Tout ce qui suppose les panneaux CÔTE À CÔTE est donc
+   réservé au bureau — empilés, deux panneaux de 100vh donneraient deux écrans
+   à faire défiler l'un après l'autre. */
+
+
+/* Panneau de liste : surface unique, arrondie, accolée aux dossiers. */
+:host ::ng-deep .email-right-aside > .email-body {
+    border: 1px solid rgba(82, 82, 108, 0.10) !important;
+    border-radius: 12px !important;
+    box-shadow: none !important;
+
+    &:hover {
+        box-shadow: none !important;
+    }
+}
+
+/* La barre d'outils n'a plus besoin de son ombre : le filet de la première
+   ligne suffit à la séparer de la liste. */
+:host ::ng-deep .email-body .mail-header-wrapper {
+    box-shadow: none !important;
+    border-bottom: 1px solid rgba(82, 82, 108, 0.10) !important;
+}
+
+/* ── Panneaux côte à côte (bureau) ─────────────────────────────────────── */
+@media (min-width: 1200px) {
+    :host ::ng-deep .card-gap {
+        column-gap: 0 !important;
+    }
+
+    /* Colonne des dossiers posée à plat, sans carte : elle fait corps avec le
+       fond de page. Réservé au bureau — voir le bloc mobile plus bas. */
+    :host ::ng-deep .email-left-aside > .card {
+        border: none !important;
+        box-shadow: none !important;
+        background-color: transparent !important;
+        border-radius: 0 !important;
+        margin-bottom: 0 !important;
+    }
+
+    /* Les deux panneaux occupent la hauteur disponible : sans cela, ils
+       s'arrêtent à la fin de leur contenu et laissent une grande zone vide.
+       136px = hauteur d'en-tête du gabarit, +58px pour le fil d'Ariane. */
+    :host ::ng-deep .email-left-aside > .card,
+    :host ::ng-deep .email-right-aside > .email-body {
+        min-height: calc(100vh - 194px);
+    }
+
+    /* La colonne des dossiers n'a plus de fond : sa marge intérieure droite
+       fait la respiration avec le panneau accolé. */
+    :host ::ng-deep .email-left-aside .card-body {
+        padding: 0 18px 0 0 !important;
+    }
+
+    /* La liste défile dans son propre cadre, la barre d'outils reste visible. */
+    :host ::ng-deep .email-right-aside > .email-body {
+        display: flex;
+        flex-direction: column;
+
+        .tab-content {
+            flex: 1 1 auto;
+            min-height: 0;
+            overflow-y: auto;
+        }
+    }
+}
+
+/* ── Panneaux empilés (tablette et mobile) ─────────────────────────────── */
+@media (max-width: 1199px) {
+    /* Le gabarit transforme ici la colonne en panneau flottant au-dessus du
+       contenu (`.md-sidebar-aside` en position absolue, masqué tant que le
+       bouton « Dossiers » n'a pas été pressé). Il lui faut donc un fond opaque
+       et une ombre : sans eux, la liste se voyait par transparence. */
+    :host ::ng-deep .email-left-aside > .card {
+        background-color: #fff !important;
+        border: 1px solid rgba(82, 82, 108, 0.10) !important;
+        border-radius: 8px !important;
+        box-shadow: 0 12px 28px rgba(15, 23, 42, 0.14) !important;
+        margin-bottom: 0 !important;
+    }
+
+    :host ::ng-deep .email-left-aside .card-body {
+        padding: 12px !important;
+    }
+
+    /* Pas de hauteur imposée : la page défile normalement, sans ascenseur
+       interne au panneau. */
+    :host ::ng-deep .email-right-aside > .email-body {
+        min-height: 420px;
+    }
+}
+
+/* ══ Densité de la liste ════════════════════════════════════════════════════
+   Le gabarit prévoit 16px de marge intérieure partout (barre d'outils comme
+   lignes), ce qui donne des lignes hautes et peu de contenu à l'écran. On
+   resserre légèrement, sans toucher à la structure : une boîte de réception
+   se parcourt du regard, la densité y est utile.
+   `!important` face à la spécificité des sélecteurs imbriqués du gabarit. */
+:host ::ng-deep .email-body .mail-header-wrapper {
+    padding: 9px 14px !important;
+}
+
+/* Le gabarit pose un filet sous chaque ligne mais le retire sur la dernière
+   (`&:last-child`) : avec une seule imputation, aucun trait n'apparaissait.
+   On le rétablit partout — c'est le filet qui structure la lecture d'une liste
+   — sauf sur l'état vide, où il n'y a rien à séparer. */
+:host ::ng-deep .mail-body-wrapper ul li:not(.empty-box) {
+    padding: 9px 14px !important;
+    border-bottom: 1px solid rgba(82, 82, 108, 0.13) !important;
+}
+
+/* L'avatar du gabarit fait 50px : à lui seul il impose la hauteur de ligne. */
+:host ::ng-deep .inbox-user .rounded-border {
+    width: 36px !important;
+    height: 36px !important;
+}
+
+/* Toute la ligne ouvre l'imputation : la zone de texte seule était trop
+   étroite depuis que la ligne n'affiche plus que l'instruction. Les contrôles
+   (case, étoile, enveloppe, corbeille) stoppent la propagation du clic. */
+.imput-ligne {
+    cursor: pointer;
+}
+
+/* ══ Chargement de la liste ═════════════════════════════════════════════════
+   Les trois vues (reçues, envoyées, corbeille) sont chargées en parallèle ;
+   tant qu'elles ne sont pas revenues, la liste afficherait le contenu du
+   chargement précédent — on la masque au profit de cet indicateur. */
+.imput-chargement {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 70px 20px;
+}
+
+/* Même icône animée que dans le reste de l'application. */
+.imput-spinner {
+    font-size: 30px;
+    color: var(--theme-default, #5c61f2);
+}
+
+.imput-chargement-texte {
+    margin: 4px 0 0;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: rgba(82, 82, 108, 0.9);
+}
+
+.imput-chargement-detail {
+    font-size: 12px;
+    color: rgba(82, 82, 108, 0.55);
+}
+
+.imput-masque {
+    display: none;
+}
+
+/* ══ Dossier vide ═══════════════════════════════════════════════════════════
+   L'icône illustre le dossier consulté (enveloppe ouverte, avion, corbeille…)
+   et la phrase explique ce qui viendra s'y afficher, plutôt qu'un simple
+   constat d'absence. */
+/* Le gabarit applique `cursor: pointer` et un filet bas à toutes les <li> de
+   la liste ; sur un état vide, rien n'est cliquable. !important est nécessaire
+   face à la spécificité du sélecteur imbriqué du gabarit. */
+li.empty-box {
+    cursor: default !important;
+    border-bottom: 0 !important;
+}
+
+/* Même présentation que l'état vide de l'accueil (widget « Mes documents ») :
+   icône seule en gris clair, légèrement flottante, sans pastille. */
+.imput-vide {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 26px 24px 30px;
+    gap: 10px;
+    text-align: center;
+    animation: imput-vide-in 0.4s ease both;
+
+    /* ── Illustration ────────────────────────────────────────────────
+       Deux tons seulement : un aplat clair pour les volumes, le violet du
+       thème pour les contours. Les tracés portent des classes plutôt que des
+       attributs pour rester pilotables depuis la feuille. */
+    .imput-vide-img {
+        width: 150px;
+        height: 122px;
+        animation: imput-vide-float 3.2s ease-in-out infinite;
+        transform-origin: center;
+
+        .ombre {
+            fill: #0F172A;
+            opacity: 0.06;
+        }
+
+        .corps {
+            fill: #EEF0FE;
+            stroke: #5C61F2;
+            stroke-width: 3.6;
+            stroke-linejoin: round;
+        }
+
+        .feuille {
+            fill: #FFFFFF;
+            stroke: #5C61F2;
+            stroke-width: 3.6;
+            stroke-linejoin: round;
+        }
+
+        .pli {
+            fill: none;
+            stroke: #5C61F2;
+            stroke-width: 3.6;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .lignes {
+            fill: none;
+            stroke: #A9AEFA;
+            stroke-width: 4;
+            stroke-linecap: round;
+        }
+    }
+
+    /* Le titre porte le message : il doit s'affirmer, l'explication reste
+       en retrait. */
+    span {
+        margin-top: 6px;
+        font-size: 15.5px;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        color: #475569;
+    }
+
+    small {
+        max-width: 320px;
+        font-size: 12px;
+        line-height: 1.5;
+        color: #94A3B8;
+    }
+}
+
+@keyframes imput-vide-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes imput-vide-float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50%      { transform: translateY(-7px) rotate(-1.5deg); }
+}
+
+/* Marqueur d'urgence, placé avant l'objet comme dans un client de messagerie.
+   Rien n'est affiché en priorité normale : un marqueur systématique ne
+   signalerait plus rien. */
+.imput-priorite {
+    margin-right: 7px;
+    font-size: 13px;
+    font-weight: 900;
+    vertical-align: middle;
+}
+
+/* Avatar générique : silhouette sur pastille colorée, comme dans une
+   messagerie. La couleur est tirée de l'uid, donc stable par personne. */
+.imput-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+}
+
+.imput-avatar-svg {
+    width: 62%;
+    height: 62%;
+    display: block;
+}
+
+/* Trombone : simple indice de présence de pièces jointes, comme dans un
+   client de messagerie — le détail des fichiers est dans le volet de lecture.
+   Icône au trait (Feather) comme celles du gabarit, et non un glyphe plein :
+   les SVG Feather n'ont pas de taille propre, il faut la fixer. */
+:host ::ng-deep .imput-clip {
+    width: 14px;
+    height: 14px;
+    margin-left: 8px;
+    color: rgba(82, 82, 108, 0.6);
+    stroke-width: 2;
+    vertical-align: middle;
+}
+
+.email-data .badge {
+    margin-left: 6px;
+    vertical-align: middle;
+}
+
+/* ══ Lu / non lu ═══════════════════════════════════════════════════════════
+   Convention des messageries : une imputation non lue ressort (fond blanc,
+   texte foncé et gras, filet de couleur à gauche) ; une fois lue elle
+   s'efface pour laisser la place à ce qui reste à traiter. */
+.inbox-data {
+    &.imput-non-lu {
+        background-color: #fff;
+        box-shadow: inset 3px 0 0 0 var(--theme-default, #5c61f2);
+
+        .inbox-user p,
+        .email-data > span {
+            font-weight: 600;
+            color: #2b2b40;
+        }
+
+        .email-timing span {
+            font-weight: 600;
+            color: #2b2b40;
+        }
+
+        .imput-clip {
+            color: #2b2b40;
+        }
+    }
+
+    &:not(.imput-non-lu) {
+        .inbox-user p,
+        .email-data > span {
+            font-weight: 400;
+            color: rgba(82, 82, 108, 0.85);
+        }
+
+        .email-timing span {
+            font-weight: 400;
+        }
+    }
+}
+
+/* Actions de ligne : transférer, marquer traitée. Tracés au trait, à la même
+   épaisseur que les icônes de dossiers du gabarit. */
+:host ::ng-deep .imput-action {
+    width: 17px;
+    height: 17px;
+    cursor: pointer;
+    color: rgba(82, 82, 108, 0.55);
+    stroke-width: 2;
+
+    &:hover {
+        color: var(--theme-default, #5c61f2);
+    }
+}
+
+:host ::ng-deep .imput-action-ok:hover {
+    color: #2e9e5b;
+}
+
+/* Déjà traitée : repère, pas une commande. */
+:host ::ng-deep .imput-action-faite {
+    color: #2e9e5b;
+    cursor: default;
+
+    &:hover {
+        color: #2e9e5b;
+    }
+}
+
+/* Dossier clos : repère seul, aucune action ne subsiste sur la ligne. */
+:host ::ng-deep .imput-action-close {
+    color: rgba(82, 82, 108, 0.55);
+    cursor: default;
+
+    &:hover {
+        color: rgba(82, 82, 108, 0.55);
+    }
+}
+
+/* Suppression définitive : proposée uniquement depuis la corbeille. */
+:host ::ng-deep .imput-action-danger {
+    color: #c2352d;
+
+    &:hover {
+        color: #8f221c;
+    }
+}
+
+/* ══ Petits écrans ══════════════════════════════════════════════════════════
+   Le gabarit passe la ligne en `display: block` sous 768px (le bloc
+   correspondant et le bloc message s'empilent), mais conserve une largeur
+   minimale de 260px sur la zone du correspondant : sur un téléphone de 360px,
+   la ligne déborde alors horizontalement. */
+@media (max-width: 767px) {
+    :host ::ng-deep .inbox-user {
+        min-width: 0 !important;
+        flex-wrap: wrap;
+    }
+
+    :host ::ng-deep .mail-body-wrapper ul li:not(.empty-box) {
+        padding: 10px 12px !important;
+    }
+
+    /* Objet et pastilles ne doivent jamais pousser la ligne au-delà de
+       l'écran : elles passent à la ligne plutôt que de déborder. */
+    :host ::ng-deep .email-data {
+        min-width: 0;
+
+        > span {
+            white-space: normal !important;
+        }
+    }
+
+    .email-data .badge {
+        margin: 3px 6px 0 0;
+    }
+
+    /* La date reprend sa place sous l'objet plutôt qu'en colonne étroite. */
+    :host ::ng-deep .email-timing {
+        justify-content: flex-start !important;
+    }
+
+    /* Barre d'outils : recherche et pagination se répartissent sur deux
+       lignes au lieu de se comprimer. */
+    :host ::ng-deep .email-body .mail-header-wrapper {
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 10px 12px !important;
+    }
+
+    :host ::ng-deep .mail-header-wrapper .mail-body {
+        flex: 1 1 100%;
+        justify-content: space-between;
+    }
+
+    .imput-vide-img {
+        width: 120px;
+        height: 98px;
+    }
+}
+
+/* Sous 576px, les actions de ligne (transférer, marquer traitée) restent
+   accessibles mais la case à cocher n'apporte rien : elle prend une place
+   utile au contenu. */
+@media (max-width: 575px) {
+    :host ::ng-deep .inbox-user .form-check {
+        display: none !important;
+    }
+
+    :host ::ng-deep .email-body .mail-header-wrapper .mail-header {
+        display: none !important;
+    }
+}
+
+/* ══ Outils de la barre : rétablis sur petits écrans ════════════════════════
+   Le gabarit masque `.mail-search` sous 768px (et aussi entre 1200 et 1399px),
+   puis toute la zone `.mail-body` sous 480px. Résultat : ni recherche, ni
+   bouton d'actualisation, ni pagination sur mobile — or ce sont les seules
+   commandes de l'écran. On les rétablit et on les réorganise. */
+:host ::ng-deep .email-body .mail-header-wrapper {
+    .mail-search {
+        display: block !important;
+    }
+
+    .mail-body {
+        display: flex !important;
+    }
+}
+
+@media (max-width: 991px) {
+    :host ::ng-deep .email-body .mail-header-wrapper {
+        /* La zone d'outils passe sous les filtres et occupe toute la largeur. */
+        .mail-body {
+            flex: 1 1 100%;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: flex-start;
+        }
+
+        /* La recherche prend la ligne, les commandes se rangent en dessous.
+           Le gabarit plafonne le champ à 165px sous 1504px (`max-width`) :
+           sans le lever, une largeur de 100% reste sans effet. */
+        .mail-search {
+            flex: 1 1 100%;
+            width: 100%;
+
+            .form-control {
+                width: 100% !important;
+                max-width: none !important;
+                height: 44px;
+            }
+
+            /* La loupe du gabarit est calée sur 20px avec un décalage de 50% :
+               on la repositionne pour un champ pleine largeur. */
+            i {
+                left: 16px;
+                transform: translateY(-50%);
+            }
+        }
+
+        /* Pagination rejetée à droite, actualisation à gauche. */
+        .mh-pagination {
+            margin-left: auto;
+        }
+    }
+}
+
+@media (max-width: 575px) {
+    :host ::ng-deep .mh-pagination-compte {
+        font-size: 11.5px;
+    }
+}
+
+/* ══ Bandeau des arrivées ═══════════════════════════════════════════════════
+   Procédé des messageries : les nouveautés sont annoncées, pas insérées. Sans
+   ce délai, la liste se réordonnerait au moment où l'utilisateur clique sur
+   une ligne — et il ouvrirait la mauvaise imputation. */
+.imput-bandeau {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    width: 100%;
+    padding: 9px 14px;
+    border: none;
+    border-bottom: 1px solid rgba(92, 97, 242, 0.22);
+    background-color: rgba(92, 97, 242, 0.08);
+    color: var(--theme-default, #5c61f2);
+    font-size: 12.5px;
+    font-weight: 500;
+    cursor: pointer;
+    animation: imput-bandeau-in 0.25s ease both;
+
+    &:hover {
+        background-color: rgba(92, 97, 242, 0.14);
+    }
+
+    em {
+        font-style: normal;
+        font-weight: 600;
+        text-decoration: underline;
+    }
+}
+
+:host ::ng-deep .imput-bandeau-ico {
+    width: 14px;
+    height: 14px;
+    stroke-width: 2.2;
+}
+
+@keyframes imput-bandeau-in {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ══ Marqueur « nouvelle réponse » ═════════════════════════════════════════
+   Une imputation ENVOYÉE n'est jamais « non lue » au sens de l'API : on peut
+   pourtant y recevoir une réponse. Sans repère, il fallait ouvrir chaque
+   imputation pour le découvrir — et donc rater des messages.
+
+   Pastille PLEINE, là où les autres badges sont pâles : c'est le seul élément
+   de la ligne qui appelle une action, il doit se distinguer du statut et de la
+   priorité sans pour autant crier. */
+.badge.imput-nouveau {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 4px;
+    /* Le gabarit étire les enfants de `.email-data` : sans cette largeur
+       automatique, la pastille occupait toute la ligne. */
+    width: auto !important;
+    padding: 3px 9px 3px 7px !important;
+    border-radius: 10px !important;
+    background-color: #1E7A4C !important;
+    color: #FFFFFF !important;
+    font-size: 10.5px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.01em;
+    vertical-align: middle;
+    /* Trois battements, le temps d'attirer l'œil : une animation perpétuelle
+       finirait par gêner la lecture de la liste. */
+    animation: imput-nouveau-signal 1.15s ease-out 3;
+}
+
+.imput-nouveau-ico ::ng-deep svg {
+    width: 11px;
+    height: 11px;
+    stroke-width: 2.6;
+    display: block;
+}
+
+@keyframes imput-nouveau-signal {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(30, 122, 76, 0);
+    }
+    45% {
+        box-shadow: 0 0 0 4px rgba(30, 122, 76, 0.22);
+    }
+}

@@ -11,7 +11,11 @@
   <!-- Google font-->
   <link href="https://fonts.googleapis.com/css?family=Rubik:400,400i,500,500i,700,700i&amp;display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i,900&amp;display=swap" rel="stylesheet" />
-  <link href="https://db.onlinewebfonts.com/c/7147aad6f91d29367144753601a8328b?family=Cocon-Regular" rel="stylesheet">
+
+  <!-- Cocon : auto-hebergee (voir @font-face dans src/styles.scss).
+       Preload pour eviter le flash de police au 1er rendu, c'est la police du body. -->
+  <link rel="preload" href="/assets/fonts/cocon-regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/assets/fonts/cocon-bold.woff2" as="font" type="font/woff2" crossorigin>
    <!-- Google Map -->
 <!--   <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAP_API_KEY_HERE" async defer></script>-->
   
