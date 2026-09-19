@@ -46,15 +46,19 @@
                 }
 
                 <!-- ══ GROUPE : avec authentification de plateforme ═══
-                     Les trois étages se remplissent dans cet ordre : on dit
-                     qui l'on est chez le partenaire, ce qu'on lui demande,
-                     puis on exécute. -->
+                     Les étages se remplissent dans cet ordre : on dit qui l'on
+                     est chez le partenaire, ce qu'on lui demande, comment
+                     traduire ce qu'il répond, puis on exécute. -->
                 @if(groupeActif === 'auth') {
                     <!-- ÉTAPE : qui nous sommes chez le partenaire -->
                     <app-plateformes *ngIf="activeStep === 'plateformes'"></app-plateformes>
 
                     <!-- ÉTAPE : ce qu'on lui demande -->
                     <app-requetes-externes *ngIf="activeStep === 'requetes'"></app-requetes-externes>
+
+                    <!-- ÉTAPE : à quoi correspondent, chez nous, les champs
+                         relevés dans ses réponses -->
+                    <app-correspondances *ngIf="activeStep === 'correspondances'"></app-correspondances>
 
                     <!-- ÉTAPE : on joue l'appel -->
                     <app-execution-externe *ngIf="activeStep === 'execution'"></app-execution-externe>

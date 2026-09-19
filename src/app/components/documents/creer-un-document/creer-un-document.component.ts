@@ -1,4 +1,4 @@
-import {Component, ViewChild, AfterViewInit, OnInit, OnDestroy, ChangeDetectorRef, ElementRef} from '@angular/core';
+import {Component, ViewChild, AfterViewInit, OnInit, OnDestroy, ChangeDetectorRef, ElementRef, HostListener} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {Select2Data, Select2Module} from "ng-select2-component";
 import {DropzoneConfigInterface, DropzoneModule, DropzoneDirective} from "ngx-dropzone-wrapper";
@@ -320,6 +320,7 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
 
     dataSource = new NzTreeFlatDataSource(this.treeControl, this.treeFlattener);
     selectedFile: any = null;
+    previewFullscreen: boolean = false;
 
     // ── Prévisualisation Office ───────────────────────────────────
     officePreviewUrl: SafeResourceUrl | null = null;
@@ -402,7 +403,8 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
                 private httService: HttpService,
                 private router: Router,
                 private toast: ToastrService, private cdr: ChangeDetectorRef, private sanitizer: DomSanitizer,
-                private histoLog: HistoLogService) {
+                private histoLog: HistoLogService,
+                private hostRef: ElementRef<HTMLElement>) {
         //  this.dataSource.setData(TREE_DATA);
 
     }
@@ -622,9 +624,43 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
     }
 
 
+    // ══ Hauteur de la carte ═══════════════════════════════════════════════
+    // La carte doit s'arrêter exactement au bas de la fenêtre : la barre
+    // d'actions (Annuler / Enregistrer) reste ainsi toujours visible et seules
+    // les deux colonnes défilent. On mesure la position réelle du composant au
+    // lieu de coder en dur header + fil d'Ariane : ces hauteurs varient selon
+    // le zoom, la largeur et le retour à la ligne du fil d'Ariane.
+    private resizeObs?: ResizeObserver;
+
+    private ajusterHauteurCarte = (): void => {
+        const host = this.hostRef.nativeElement;
+
+        // ≤ 991px : la mise en page passe en colonne et la page reprend le
+        // scroll (cf. media query du SCSS) → on ne force aucune hauteur.
+        if (window.innerWidth <= 991) {
+            host.style.removeProperty('height');
+            return;
+        }
+
+        // getBoundingClientRect().top est relatif à la fenêtre ; on y rajoute
+        // le défilement pour obtenir la distance depuis le haut du document.
+        const offsetHaut = host.getBoundingClientRect().top + window.scrollY;
+        host.style.height = `calc(100vh - ${Math.round(offsetHaut)}px - 14px)`;
+    };
+
     ngAfterViewInit(): void {
         // 1. Désactiver l'auto-découverte de Dropzone (à faire UNE SEULE FOIS au début de votre app)
         Dropzone.autoDiscover = false;
+
+        // Le fil d'Ariane est rendu par le layout parent : on attend un tour de
+        // boucle pour le mesurer, puis on suit ses changements de hauteur.
+        setTimeout(() => this.ajusterHauteurCarte(), 0);
+        window.addEventListener('resize', this.ajusterHauteurCarte);
+        const filAriane = document.querySelector('.page-title');
+        if (filAriane && typeof ResizeObserver !== 'undefined') {
+            this.resizeObs = new ResizeObserver(() => this.ajusterHauteurCarte());
+            this.resizeObs.observe(filAriane);
+        }
 
 // Attendre que la vue soit complètement chargée
         setTimeout(() => {
@@ -669,6 +705,8 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
     ngOnDestroy(): void {
         // Rétablit le pied de page global en quittant l'écran
         document.body.classList.remove('hide-app-footer');
+        window.removeEventListener('resize', this.ajusterHauteurCarte);
+        this.resizeObs?.disconnect();
         this.editor.destroy();
         this.editor2.destroy();
         // ou componentWillUnmount() ou onUnmounted()
@@ -984,34 +1022,35 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
         this.dropzoneInstance = dropzoneRef?.dropzone ? dropzoneRef.dropzone() : (dropzoneRef as Dropzone);
     }
 
-    getFileType(filename: string): string {
-        if (!filename) return 'other';
+    /** Bascule l'aperçu en plein écran (et retour). */
+    togglePreviewFullscreen(): void {
+        this.previewFullscreen = !this.previewFullscreen;
+    }
 
-        const extension = filename.toLowerCase().split('.').pop();
-        // const extension = filename.toLowerCase().split('.').pop();
-
-        switch (extension) {
-            case 'pdf':
-                return 'pdf';
-            case 'jpg':
-            case 'jpeg':
-            case 'png':
-            case 'gif':
-            case 'svg':
-            case 'webp':
-                return 'image';
-            case 'doc':
-            case 'docx':
-                return 'word';
-            case 'xls':
-            case 'xlsx':
-                return 'excel';
-            case 'ppt':
-            case 'pptx':
-                return 'ppt';
-            default:
-                return 'other';
+    @HostListener('document:keydown.escape')
+    onEscapePreview(): void {
+        if (this.previewFullscreen) {
+            this.previewFullscreen = false;
+            this.cdr.detectChanges();
         }
+    }
+
+    /**
+     * Type de prévisualisation d'un fichier, déduit de son extension.
+     *
+     * Remplaçait getFileType(), qui lisait l'extension dans `name`. Or les nœuds
+     * de l'arbre stockent le nom SANS extension (elle vit dans `extension`) :
+     * la fonction renvoyait donc 'other' pour tous les fichiers et le message
+     * « Prévisualisation non disponible » s'affichait sous l'aperçu, même quand
+     * celui-ci fonctionnait. Les quatre branches du gabarit s'appuient
+     * désormais sur cette seule source, elles ne peuvent plus diverger.
+     */
+    previewKind(file: any): 'image' | 'pdf' | 'office' | 'other' {
+        const ext = (file?.extension || '').toString().toLowerCase();
+        if (ext === 'pdf') return 'pdf';
+        if (['jpg', 'jpeg', 'png'].includes(ext)) return 'image';
+        if (['doc', 'docx', 'xls', 'xlsx'].includes(ext)) return 'office';
+        return 'other';
     }
 
     getFileExtension(url: string): string {
@@ -1571,6 +1610,7 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
         this.cleanTreeData = [];
         this.dataSource.setData([]);
         this.selectedFile = null;
+        this.previewFullscreen = false;
         this.isLoadingPreview = false;
         this.fileAssignments.clear();
         this.draggedFileNode = null;

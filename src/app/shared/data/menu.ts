@@ -167,6 +167,11 @@ export const menuItems: Menu[] =
                     type: 'link'
                 },
                 {
+                    path: '/gec/a-imputer',
+                    title: 'Documents à imputer',
+                    type: 'link'
+                },
+                {
                     path: '/gec/mes-imputations',
                     title: 'Mes imputations',
                     type: 'link'

@@ -1,1 +1,1061 @@
-<p>scanner works!</p>
+
+
+<div class="container job-apply-wrapper">
+
+    <!-- Overlay bloquant pendant l'enregistrement -->
+    <div class="save-overlay" *ngIf="isSaving">
+        <div class="save-overlay-card">
+            <div class="save-spinner"></div>
+            <p class="save-overlay-msg">Enregistrement en cours...</p>
+            <p class="save-overlay-sub">Veuillez patienter, ne fermez pas cette page.</p>
+        </div>
+    </div>
+
+    <!-- Overlay bloquant pendant la suppression d'un fichier -->
+    <div class="save-overlay" *ngIf="isDeleting">
+        <div class="save-overlay-card">
+            <div class="save-spinner"></div>
+            <p class="save-overlay-msg">Suppression en cours...</p>
+            <p class="save-overlay-sub">Veuillez patienter, ne fermez pas cette page.</p>
+        </div>
+    </div>
+
+
+    <nz-splitter>
+        <nz-splitter-panel nzDefaultSize="45%" nzMin="20%" nzMax="70%">
+            <div class="box">
+
+                <form class="form-panel" [formGroup]="validationForm" (ngSubmit)="submitForm()">
+
+                    <!-- Zone défilante : tout le contenu au-dessus de la barre d'actions -->
+                    <div class="form-scroll">
+
+                    <!-- Section : Informations générales -->
+                    <div class="form-section">
+                        <div class="form-section-label">
+                            <i class="fa-solid fa-circle-info"></i>
+                            Informations générales
+                        </div>
+                        <div class="grid grid-cols-12 gap-x-4 gap-y-4 form-section-body">
+
+
+                            <!-- Archives -->
+                            <div class="field-half">
+                                <label class="form-label section-label">
+                                    Archives
+                                </label>
+                                <div class="statut-pills statut-pills--mono" role="radiogroup" aria-label="Type d'archives">
+                                    <button type="button"
+                                            class="statut-pill"
+                                            [class.active]="validationForm.get('typeArchivage')?.value === 'courante'"
+                                            role="radio" [attr.aria-checked]="validationForm.get('typeArchivage')?.value === 'courante'"
+                                            (click)="setArchive('courante')">
+                                        <span class="statut-pill-dot"><i class="fa-solid fa-check"></i></span>
+                                        <span class="statut-pill-label">Courante</span>
+                                    </button>
+                                    <button type="button"
+                                            class="statut-pill"
+                                            [class.active]="validationForm.get('typeArchivage')?.value === 'definitive'"
+                                            role="radio" [attr.aria-checked]="validationForm.get('typeArchivage')?.value === 'definitive'"
+                                            (click)="setArchive('definitive')">
+                                        <span class="statut-pill-dot"><i class="fa-solid fa-check"></i></span>
+                                        <span class="statut-pill-label">Définitive</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Statut du document -->
+                            <div class="field-half">
+                                <label class="form-label section-label">
+                                    Statut du document
+                                </label>
+                                <div class="statut-pills" role="radiogroup" aria-label="Statut du document">
+                                    <button type="button"
+                                            class="statut-pill statut-pill--privee"
+                                            [class.active]="documentStatus === 'privee'"
+                                            role="radio" [attr.aria-checked]="documentStatus === 'privee'"
+                                            (click)="setStatut('privee')">
+                                        <span class="statut-pill-dot"><i class="fa-solid fa-check"></i></span>
+                                        <span class="statut-pill-label">Privée</span>
+                                    </button>
+                                    <button type="button"
+                                            class="statut-pill statut-pill--public"
+                                            [class.active]="documentStatus === 'public'"
+                                            role="radio" [attr.aria-checked]="documentStatus === 'public'"
+                                            (click)="setStatut('public')">
+                                        <span class="statut-pill-dot"><i class="fa-solid fa-check"></i></span>
+                                        <span class="statut-pill-label">Public</span>
+                                    </button>
+                                    <button type="button"
+                                            class="statut-pill statut-pill--confidentiel"
+                                            [class.active]="documentStatus === 'confidentiel'"
+                                            role="radio" [attr.aria-checked]="documentStatus === 'confidentiel'"
+                                            (click)="setStatut('confidentiel')">
+                                        <span class="statut-pill-dot"><i class="fa-solid fa-check"></i></span>
+                                        <span class="statut-pill-label">Confidentiel</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Site -->
+                            <div class="field-half position-relative" *ngIf="validationForm.value.typeArchivage=='definitive'">
+                                <label class="form-label" for="idsite">
+                                    Site <span class="txt-danger">*</span>
+                                </label>
+                                <select2
+                                        [data]="dataSites"
+                                        placeholder="Sélectionnez le site"
+                                        id="idsite"
+                                        formControlName="idsite"
+                                        [overlay]="true"
+                                        [resettable]="true"
+                                        [listPosition]="'below'"
+                                        (update)="changeSite($event)"
+                                        [minCountForSearch]="1"
+                                        [resultMaxHeight]="'300'"
+                                        noResultMessage="Aucune donnée trouvée"
+                                        class="raise-input-select"
+                                        [ngClass]="{
+                                  'is-invalid': validationForm.controls['idsite'].touched && validationForm.controls['idsite'].errors?.['required'],
+                                  'is-valid':   validationForm.controls['idsite'].valid
+                                }">
+                                </select2>
+                                <div class="select-loader" *ngIf="loadingType">
+                                    <i class="fas fa-spin fa-circle-notch"></i>
+                                </div>
+                                @if(validationForm.controls['idsite'].touched && validationForm.controls['idsite'].errors?.['required']) {
+                                <div class="invalid-feedback">Veuillez sélectionner le site svp.</div>
+                                }
+                            </div>
+
+                            <!-- Rayon -->
+                            <div class="field-half position-relative" *ngIf="validationForm.value.typeArchivage=='definitive'">
+                                <label class="form-label" for="idrayon">
+                                    Rayon <span class="txt-danger">*</span>
+                                </label>
+                                <select2
+                                        [data]="dataRayon"
+                                        placeholder="Sélectionnez le rayon"
+                                        id="idrayon"
+                                        formControlName="idrayon"
+                                        [overlay]="true"
+                                        [resettable]="true"
+                                        [listPosition]="'below'"
+                                        (update)="changeRayon($event)"
+                                        [minCountForSearch]="1"
+                                        [resultMaxHeight]="'300'"
+                                        noResultMessage="Aucune donnée trouvée"
+                                        class="raise-input-select"
+                                        [ngClass]="{
+                                  'is-invalid': validationForm.controls['idrayon'].touched && validationForm.controls['idrayon'].errors?.['required'],
+                                  'is-valid':   validationForm.controls['idrayon'].valid
+                                }">
+                                </select2>
+                                <div class="select-loader" *ngIf="loadingType">
+                                    <i class="fas fa-spin fa-circle-notch"></i>
+                                </div>
+                                @if(validationForm.controls['idrayon'].touched && validationForm.controls['idrayon'].errors?.['required']) {
+                                <div class="invalid-feedback">Veuillez sélectionner le rayon svp.</div>
+                                }
+                            </div>
+                            <!-- Boite arch -->
+                            <div class="col-span-12 position-relative"  *ngIf="validationForm.value.typeArchivage=='definitive'">
+                                <label class="form-label" for="idboites">
+                                    Boîte d'archivage <span class="txt-danger">*</span>
+                                </label>
+                                <select2
+                                        [data]="dataBoites"
+                                        placeholder="Sélectionnez la boîte d'archivage"
+                                        id="idboites"
+                                        formControlName="idboites"
+                                        [overlay]="true"
+                                        [resettable]="true"
+                                        [listPosition]="'below'"
+                                        [minCountForSearch]="1"
+                                        [resultMaxHeight]="'300'"
+                                        noResultMessage="Aucune donnée trouvée"
+                                        class="raise-input-select"
+                                        [ngClass]="{
+                                  'is-invalid': validationForm.controls['idboites'].touched && validationForm.controls['idboites'].errors?.['required'],
+                                  'is-valid':   validationForm.controls['idboites'].valid
+                                }">
+                                </select2>
+                                <div class="select-loader" *ngIf="loadingBoite">
+                                    <i class="fas fa-spin fa-circle-notch"></i>
+                                </div>
+                                @if(validationForm.controls['idboites'].touched && validationForm.controls['idboites'].errors?.['required']) {
+                                <div class="invalid-feedback">Veuillez sélectionner la boîte d'archivage svp.</div>
+                                }
+                            </div>
+
+
+
+                            <!-- Service bénéficiaire -->
+                        <div class="col-span-12 position-relative">
+                            <label class="form-label" for="dataservices">
+                                Service bénéficiaire <span class="txt-danger">*</span>
+                            </label>
+                            <nz-tree-select
+                                    id="dataservices"
+                                    style="width: 100%"
+                                    formControlName="dataservices"
+                                    [nzNodes]="dataOrg"
+                                    (ngModelChange)="onChange($event)"
+                                    nzShowSearch
+                                    nzMultiple
+                                    [nzMaxTagCount]="2"
+                                    nzPlaceHolder="Sélectionnez le service bénéficiaire"
+                                    [nzDropdownStyle]="{ 'max-height': '300px', 'overflow': 'auto' }"
+                            />
+                            <div class="select-loader" *ngIf="loadingService">
+                                <i class="fas fa-spin fa-circle-notch"></i>
+                            </div>
+                            @if(validationForm.controls['dataservices'].touched && validationForm.controls['dataservices'].errors?.['required']) {
+                            <div class="invalid-feedback">Veuillez sélectionner le service bénéficiaire.</div>
+                            }
+                        </div>
+
+                            <!-- Notification mail — interrupteur booléen -->
+                            <div class="col-span-12 mt-2">
+                                <button type="button" class="toggle-row"
+                                        [class.active]="validationForm.get('sendmail')?.value"
+                                        role="switch" [attr.aria-checked]="validationForm.get('sendmail')?.value"
+                                        (click)="validationForm.patchValue({sendmail: !validationForm.value.sendmail})">
+                                    <span class="toggle-track"><span class="toggle-knob"></span></span>
+<!--                                    <i class="fa-regular fa-envelope toggle-ico"></i>-->
+                                    <span class="toggle-label">Informer les services bénéficiaires par mail</span>
+                                </button>
+                            </div>
+
+                            <!-- Propriétaires du document (accordéon) -->
+                            <div class="col-span-12 mt-2">
+                                <div class="assign-accordion"
+                                     [class.active]="assignProprietaires"
+                                     [class.open]="assignProprietaires && !proprietairesCollapsed">
+                                    <div class="assign-acc-header"
+                                         [class.active]="assignProprietaires"
+                                         role="button" tabindex="0"
+                                         (click)="onAssignHeader()"
+                                         (keydown.enter)="onAssignHeader()" (keydown.space)="onAssignHeader()">
+                                        <span class="toggle-track"
+                                              role="switch" [attr.aria-checked]="assignProprietaires"
+                                              title="Activer / désactiver"
+                                              (click)="onAssignDot($event)"><span class="toggle-knob"></span></span>
+<!--                                        <i class="fa-solid fa-users toggle-ico"></i>-->
+                                        <span class="toggle-label">Attribuer le document à des utilisateurs</span>
+                                        <span class="assign-acc-toggle" *ngIf="assignProprietaires"
+                                              [attr.aria-label]="proprietairesCollapsed ? 'Déplier' : 'Replier'">
+                                            <i class="fa-solid fa-chevron-down"
+                                               [class.assign-acc-chevron-open]="!proprietairesCollapsed" style="font-size: 10px;"></i>
+                                        </span>
+                                    </div>
+
+                                    <div class="assign-acc-body" *ngIf="assignProprietaires && !proprietairesCollapsed">
+                                        <div class="position-relative">
+                                            <label class="form-label" for="datasociete">
+                                                Société
+                                            </label>
+                                            <nz-select id="datasociete"
+                                                       style="width: 100%"
+                                                       nzShowSearch
+                                                       nzAllowClear
+                                                       nzPlaceHolder="Sélectionnez une société"
+                                                       [nzLoading]="loadingSocietes"
+                                                       [nzDropdownStyle]="{ 'max-height': '300px', 'overflow': 'auto' }"
+                                                       [ngModel]="selectedSociete"
+                                                       (ngModelChange)="onSocieteChange($event)"
+                                                       [ngModelOptions]="{standalone: true}">
+                                                <nz-option *ngFor="let societe of dataSocietes"
+                                                           [nzLabel]="societe.label"
+                                                           [nzValue]="societe.value"></nz-option>
+                                            </nz-select>
+                                            <div class="select-loader" *ngIf="loadingSocietes">
+                                                <i class="fas fa-spin fa-circle-notch"></i>
+                                            </div>
+                                        </div>
+
+                                        <div class="position-relative">
+                                            <label class="form-label" for="dataproprietaire">
+                                                Utilisateurs propriétaires
+                                            </label>
+                                            <nz-select id="dataproprietaire"
+                                                       class="proprietaire-select"
+                                                       style="width: 100%"
+                                                       nzMode="multiple"
+                                                       nzShowSearch
+                                                       [nzMaxTagCount]="2"
+                                                       [nzDisabled]="!selectedSociete"
+                                                       [nzPlaceHolder]="selectedSociete ? 'Sélectionnez les utilisateurs' : 'Sélectionnez d’abord une société'"
+                                                       [nzLoading]="loadingComptes"
+                                                       [nzDropdownStyle]="{ 'max-height': '300px', 'overflow': 'auto' }"
+                                                       [(ngModel)]="selectedProprietaires"
+                                                       [ngModelOptions]="{standalone: true}">
+                                                <nz-option *ngFor="let compte of dataComptes"
+                                                           [nzLabel]="compte.label"
+                                                           [nzValue]="compte.value"></nz-option>
+                                            </nz-select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="field-half">
+                                <label class="form-label" for="idcategories">Série
+                                    <span class="txt-danger">*</span>
+                                </label>
+                                <select2 [data]="dataSeries"
+                                         placeholder="Selectionnez la série"
+                                         id="idcategories"
+                                         formControlName="idcategories"
+                                         [disabled]="isloadSerie"
+                                         [overlay]="true"
+                                         [resettable]="true"
+                                         [listPosition]="'below'"
+                                         (update)="selectSerie($event)"
+                                         [minCountForSearch]="1"
+                                         [resultMaxHeight]="'300'"
+                                         noResultMessage="Aucune donnée trouvée"
+                                         class="raise-input-select" [ngClass]="{ 'is-invalid' : validationForm.controls['idcategories'].touched &&  validationForm.controls['idcategories'].errors?.['required'] , 'is-valid' : validationForm.controls['idcategories'].valid}">
+
+                                </select2>
+                                <div class="select-loader" *ngIf="isloadSerie">
+                                    <i class="fas fa-spin fa-circle-notch"></i>
+                                </div>
+                                @if(validationForm.controls['idcategories'].valid) {
+                                <!--<div class="valid-feedback">Looks's Good!</div>-->
+                                } @else if(validationForm.controls['idcategories'].touched
+                                && validationForm.controls['idcategories'].errors?.['required']) {
+                                <div class="invalid-feedback"> Veuillez selectionner la série svp.</div>
+                                }
+                            </div>
+                            
+                    <!-- Type de document -->
+                    <div class="field-half position-relative">
+                        <label class="form-label" for="idtype_docs">
+                            Type de document <span class="txt-danger">*</span>
+                        </label>
+                        <select2
+                                [data]="dataTypeDocument"
+                                placeholder="Sélectionnez le type"
+                                id="idtype_docs"
+                                formControlName="idtype_docs"
+                                [overlay]="true"
+                                [resettable]="true"
+                                [listPosition]="'below'"
+                                (update)="changeType($event)"
+                                [minCountForSearch]="1"
+                                [resultMaxHeight]="'300'"
+                                noResultMessage="Aucune donnée trouvée"
+                                class="raise-input-select"
+                                [ngClass]="{
+                                  'is-invalid': validationForm.controls['idtype_docs'].touched && validationForm.controls['idtype_docs'].errors?.['required'],
+                                  'is-valid':   validationForm.controls['idtype_docs'].valid
+                                }">
+                        </select2>
+                        <div class="select-loader" *ngIf="loadingType">
+                            <i class="fas fa-spin fa-circle-notch"></i>
+                        </div>
+                        @if(validationForm.controls['idtype_docs'].touched && validationForm.controls['idtype_docs'].errors?.['required']) {
+                        <div class="invalid-feedback">Veuillez sélectionner le type de document.</div>
+                        }
+                    </div>
+
+                            <div class="field-half">
+                                <label class="form-label" for="code_docs">Numéro du document
+                                    <span class="txt-danger">*</span>
+                                </label>
+                                <div class="code-input-wrap">
+                                    <input class="form-control code-text-input" id="code_docs" type="text"
+                                           placeholder="Entrez le Numéro du document"
+                                           formControlName="code_docs"
+                                           [ngClass]="{
+                                               'is-invalid': validationForm.controls['code_docs'].touched && validationForm.controls['code_docs'].errors?.['required'],
+                                               'is-valid':   validationForm.controls['code_docs'].valid,
+                                               'input-generating': isGeneratingCode
+                                           }">
+                                    <button type="button" class="generate-num-btn"
+                                            [class.generate-num-btn--loading]="isGeneratingCode"
+                                            [disabled]="isGeneratingCode"
+                                            (click)="generateDocumentNumber()"
+                                            nz-tooltip
+                                            [nzTooltipTitle]="isGeneratingCode ? 'Génération en cours…' : 'Générer un numéro automatique'"
+                                            nzTooltipPlacement="top"
+                                            aria-label="Générer un numéro automatique">
+                                        <span class="gen-spinner" *ngIf="isGeneratingCode"></span>
+                                        <i class="fa-solid fa-arrows-rotate" *ngIf="!isGeneratingCode"></i>
+                                    </button>
+                                    <div class="code-input-overlay" *ngIf="isGeneratingCode">
+                                        <span class="code-gen-spin"></span>
+                                        <span class="code-gen-text">Génération du numéro...</span>
+                                    </div>
+                                </div>
+                                @if(validationForm.controls['code_docs'].valid) {
+                                <!--<div class="valid-feedback">Looks's Good!</div>-->
+                                } @else if(validationForm.controls['code_docs'].touched &&
+                                validationForm.controls['code_docs'].errors?.['required']) {
+                                <div class="invalid-feedback"> Veuillez saisir le Numéro du document svp.</div>
+                                }
+                            </div>
+                            <div class="field-half">
+                                <label class="form-label" for="date_docs_text">Date du document
+                                    <span class="txt-danger">*</span>
+                                </label>
+                                <div class="date-combo-wrap">
+                                    <input
+                                        #dateInput
+                                        class="form-control date-text-input"
+                                        id="date_docs_text"
+                                        type="text"
+                                        autocomplete="off"
+                                        placeholder="jj/mm/aaaa ou jj-mm-aaaa"
+                                        [value]="dateInputDisplay"
+                                        (blur)="parseDateInput(dateInput.value)"
+                                        [ngClass]="{
+                                            'is-invalid': validationForm.controls['date_docs'].touched && validationForm.controls['date_docs'].errors?.['required'],
+                                            'is-valid': validationForm.controls['date_docs'].valid
+                                        }">
+                                    <div class="date-cal-trigger-wrap">
+                                        <i class="fa-regular fa-calendar date-cal-icon"></i>
+                                        <nz-date-picker
+                                            class="date-picker-ghost"
+                                            formControlName="date_docs"
+                                            [nzDisabledDate]="disableFutureDates"
+                                            [nzFormat]="'dd/MM/yyyy'"
+                                            (ngModelChange)="onDateSelected($event)">
+                                        </nz-date-picker>
+                                    </div>
+                                </div>
+                                @if(validationForm.controls['date_docs'].valid) {
+                                } @else if(validationForm.controls['date_docs'].touched &&
+                                validationForm.controls['date_docs'].errors?.['required']) {
+                                <div class="invalid-feedback"> Veuillez saisir ou sélectionner la date du document svp.</div>
+                                }
+                            </div>
+                            <div class="col-span-12">
+                                <label class="form-label" for="lib_docs">Objet du document
+                                    <span class="txt-danger">*</span>
+                                </label>
+                                <input class="form-control" id="lib_docs" type="text"
+                                       placeholder="Entrez l'objet du document" formControlName="lib_docs"
+                                       [ngClass]="{ 'is-invalid' : validationForm.controls['lib_docs'].touched &&  validationForm.controls['lib_docs'].errors?.['required'] , 'is-valid' : validationForm.controls['lib_docs'].valid}">
+                                @if(validationForm.controls['lib_docs'].valid) {
+                                <!--<div class="valid-feedback">Looks's Good!</div>-->
+                                } @else if(validationForm.controls['lib_docs'].touched &&
+                                validationForm.controls['lib_docs'].errors?.['required']) {
+                                <div class="invalid-feedback"> Veuillez saisir l'objet du document svp.</div>
+                                }
+                            </div>
+
+
+                        </div>
+                    </div>
+
+                    <!-- Section : Métadonnées (dynamique) -->
+                    <div class="form-section" *ngIf="ligneTypeOfDoc?.dataPro?.length">
+                        <div class="form-section-label">
+                            <i class="fa-solid fa-list-ul"></i> Métadonnées
+<!--                            <nz-tag class="type-badge" [nzColor]="'rgba(115, 102, 255, 0.1)'">{{ ligneTypeOfDoc?.libelle_type_docs }}</nz-tag>-->
+                        </div>
+                        <div class="grid grid-cols-12 gap-x-4 gap-y-4 form-section-body">
+                            <ng-container *ngFor="let item of ligneTypeOfDoc?.dataPro">
+
+                                <!-- Champ date   <span class="txt-danger">*</span>-->
+                                @if (item.type_proprietes_docs === 'date') {
+                                <div class="field-half">
+                                    <label class="form-label">
+                                        {{ item.lib_proprietes_docs }}
+                                    </label>
+                                    <nz-date-picker
+                                        [(ngModel)]="item.value_proprietes_docs"
+                                        [ngModelOptions]="{standalone: true}"
+                                        [nzPlaceHolder]="'Sélectionner la date'"
+                                        style="width: 100%;">
+                                    </nz-date-picker>
+                                </div>
+
+
+                               <!-- Champ select (liste de valeurs prédéfinies) -->
+                                } @else if (item.define_proprietes_docs == 1) {
+                                <div class="field-half">
+                                    <label class="form-label">
+                                        {{ item.lib_proprietes_docs }}
+                                    </label>
+                                    <nz-select
+                                        nzShowSearch
+                                        nzAllowClear
+                                        [nzPlaceHolder]="'Sélectionner ' + item.lib_proprietes_docs"
+                                        [(ngModel)]="item.value_proprietes_docs"
+                                        [ngModelOptions]="{standalone: true}"
+                                        style="width: 100%;">
+                                        <nz-option
+                                            *ngFor="let data of item.dataValueSelectPro"
+                                            [nzLabel]="data.value_proprietes_docs"
+                                            [nzValue]="data.uid">
+                                        </nz-option>
+                                    </nz-select>
+                                </div>
+
+                                <!-- Champ texte / nombre -->
+                                } @else {
+                                <div class="field-half">
+                                    <label class="form-label">
+                                        {{ item.lib_proprietes_docs }}
+                                    </label>
+                                    <input class="form-control"
+                                           [type]="item.type_proprietes_docs"
+                                           [placeholder]="'Saisir ' + item.lib_proprietes_docs"
+                                           [(ngModel)]="item.value_proprietes_docs"
+                                           [ngModelOptions]="{standalone: true}">
+                                </div>
+                                }
+
+                            </ng-container>
+                        </div>
+                    </div>
+
+                    <!-- État vide: aucun type sélectionné -->
+                    <div class="form-empty-meta mt-10" *ngIf="!ligneTypeOfDoc?.dataPro?.length">
+                        <i class="fa-regular fa-rectangle-list"></i>
+                        <span>Sélectionnez un type de document pour afficher les champs spécifiques</span>
+                    </div>
+
+                    </div><!-- /.form-scroll -->
+
+                    <!-- Barre d'actions ancrée en bas de la colonne « Informations générales » -->
+                    <div class="form-footer-bar">
+                        <div class="form-footer-left">
+                            <span class="footer-hint">
+                                Remplissez tous les champs obligatoires <span class="txt-danger">*</span>
+                            </span>
+                        </div>
+                        <div class="form-footer-right">
+                            <button class="btn btn-light" type="button" (click)="resetAfterSave()">
+                                Annuler
+                            </button>
+                            <button class="btn newBtn" type="button" (click)="submitForm()">
+                                <i class="fa-solid fa-check-circle mr-1"></i>
+                                {{ isEdit ? 'Modifier' : 'Enregistrer' }}
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </nz-splitter-panel>
+        <nz-splitter-panel>
+            <div class="box">
+                <div class="upload-panel">
+
+                    <!-- Section : Numériser -->
+                    <div class="upload-section">
+                        <div class="upload-section-label">
+                            <i class="fa-solid fa-print"></i> Numériser un document
+                        </div>
+                        <div class="upload-section-body">
+
+                            <div class="blog-dropzone">
+
+                                <!-- Blocage si aucun type de document sélectionné -->
+                                <div class="dropzone-blocked-overlay"
+                                     *ngIf="!validationForm.controls['idtype_docs'].value">
+                                    <i class="fa-solid fa-lock"></i>
+                                    <span>Veuillez sélectionner un type de document avant de numériser.</span>
+                                </div>
+
+                                <!-- OCR miniature superposé en haut à gauche -->
+                                <label class="ocr-mini-overlay" [class.ocr-mini-active]="applyOCR">
+                                    <input type="checkbox"
+                                           [(ngModel)]="applyOCR"
+                                           [ngModelOptions]="{standalone: true}"
+                                           class="ocr-mini-checkbox">
+                                    <i class="fa-solid fa-print"></i>
+                                    <span>Appliquer l'OCR</span>
+                                </label>
+
+                                <!-- Zone de numérisation -->
+                                <div class="custom-dropzone">
+                                    <div class="scan-zone">
+
+                                        <!-- État du pont vers le poste de scan -->
+                                        <div class="scan-etat"
+                                             [class.scan-ok]="pontVerifie && pontDisponible"
+                                             [class.scan-ko]="pontVerifie && !pontDisponible"
+                                             [class.scan-attente]="!pontVerifie">
+                                            <span class="scan-pastille"></span>
+                                            <span class="scan-etat-texte">
+                                                <ng-container *ngIf="!pontVerifie">Connexion au poste de scan...</ng-container>
+                                                <ng-container *ngIf="pontVerifie && pontDisponible">Scanner connecté</ng-container>
+                                                <ng-container *ngIf="pontVerifie && !pontDisponible">Scanner indisponible</ng-container>
+                                            </span>
+                                            <button type="button" class="scan-btn-refresh"
+                                                    (click)="verifierPont()"
+                                                    [disabled]="scanEnCours"
+                                                    title="Revérifier la connexion">
+                                                <i class="fa-solid fa-arrows-rotate"></i>
+                                            </button>
+                                        </div>
+
+                                        <i class="fa-solid fa-print scan-icone"></i>
+
+                                        <p class="scan-message">{{ messagePont }}</p>
+
+                                        <button type="button" class="scan-bouton"
+                                                (click)="numeriser()"
+                                                [disabled]="!pontDisponible || scanEnCours || isUploading">
+                                            <span class="scan-spinner" *ngIf="scanEnCours || isUploading"></span>
+                                            <i class="fa-solid fa-print" *ngIf="!scanEnCours && !isUploading"></i>
+                                            {{ scanEnCours ? 'Numérisation en cours...' : (isUploading ? 'Import en cours...' : 'Numériser') }}
+                                        </button>
+
+                                        <small class="scan-aide" *ngIf="pontVerifie && pontDisponible">
+                                            Cliquez sur « Numériser » : NAPS2 s'ouvre pour régler et ajuster
+                                            vos pages. Enregistrez depuis NAPS2 en donnant un nom à votre
+                                            document — sans changer de dossier — et il revient ici
+                                            automatiquement.
+                                        </small>
+
+                                        <!-- Progression de l'import vers la zone temporaire -->
+                                        <div class="upload-progress" *ngIf="isUploading">
+                                            <div class="progress-bar">
+                                                <div class="progress-fill" [style.width.%]="uploadProgress"></div>
+                                            </div>
+                                            <div class="progress-text">
+                                                {{ uploadProgress }}% - {{ currentFileName }}
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Section : Fichiers importés -->
+                    <div class="upload-section tree-section" *ngIf="treeData?.length">
+                        <div class="upload-section-label">
+                            <i class="fa-solid fa-sitemap"></i> Plan de classement + fichiers importés
+                            <span class="drag-hint" *ngIf="dataFileTemps?.length">
+                                <i class="fa-solid fa-hand-pointer"></i> Glissez un fichier vers un dossier
+                            </span>
+                        </div>
+                        <div class="upload-section-body tree-body">
+                            <nz-tree-view [nzTreeControl]="treeControl" [nzDataSource]="dataSource" [nzDirectoryTree]="true">
+
+                                <!-- ══ 1. DOSSIER avec enfants (expandable) — drop zone ══ -->
+                                <nz-tree-node *nzTreeNodeDef="let node; when: hasChild" nzTreeNodePadding
+                                              (dragover)="onFolderDragOver($event, node.key)"
+                                              (dragleave)="onFolderDragLeave($event)"
+                                              (drop)="onFolderDrop($event, node.key)"
+                                              [class.folder-drop-active]="dropTargetKey === node.key"
+                                              [class.folder-selected-target]="node.key === idcategorie">
+                                    <nz-tree-node-toggle>
+                                        <nz-icon nzType="caret-down" nzTreeNodeToggleRotateIcon/>
+                                    </nz-tree-node-toggle>
+                                    <nz-tree-node-option
+                                            [nzDisabled]="node.disabled"
+                                            [nzSelected]="selectListSelection.isSelected(node) || node.key === idcategorie"
+                                            (nzClick)="onFolderClick(node)">
+                                        <i [class]="(treeControl.isExpanded(node) || dropTargetKey === node.key)
+                                                    ? 'fa-regular fa-folder-open' : 'fa-regular fa-folder'"></i>
+                                        {{ node.name }}
+                                        <span class="folder-drop-badge" *ngIf="dropTargetKey === node.key">
+                                            <i class="fa-solid fa-plus"></i> Déposer ici
+                                        </span>
+                                    </nz-tree-node-option>
+                                </nz-tree-node>
+
+                                <!-- ══ 2. FICHIER (feuille avec extension) — draggable ══ -->
+                                <nz-tree-node *nzTreeNodeDef="let node; when: isFile" nzTreeNodePadding>
+                                    <nz-tree-node-toggle nzTreeNodeNoopToggle></nz-tree-node-toggle>
+                                    <nz-tree-node-option
+                                            [nzDisabled]="node.disabled"
+                                            [nzSelected]="selectListSelection.isSelected(node)"
+                                            (nzClick)="onNodeClick(node)">
+                                        <span class="file-drag-zone"
+                                              draggable="true"
+                                              (dragstart)="onFileDragStart($event, node)"
+                                              (dragend)="onDragEnd()"
+                                              [class.file-is-dragging]="draggedFileNode?.uid === node.uid"
+                                              title="Glisser vers un dossier">
+                                            <i class="drag-handle-icon fa-solid fa-grip-vertical"></i>
+                                            <nz-icon *ngIf="node.extension === 'pdf'" nzType="file-pdf" nzTheme="twotone" [nzTwotoneColor]="'#ff4d4f'" class="file-icon"/>
+                                            <nz-icon *ngIf="['jpg','JPG','jpeg','JPEG','png','PNG'].includes(node.extension)" nzType="file-image" nzTheme="twotone" [nzTwotoneColor]="'#52c41a'" class="file-icon"/>
+                                            <nz-icon *ngIf="['doc','docx'].includes(node.extension)" nzType="file-word" nzTheme="twotone" [nzTwotoneColor]="'#1890ff'" class="file-icon"/>
+                                            <nz-icon *ngIf="['xls','xlsx'].includes(node.extension)" nzType="file-excel" nzTheme="twotone" [nzTwotoneColor]="'#52c41a'" class="file-icon"/>
+                                            <nz-icon *ngIf="['ppt','pptx'].includes(node.extension)" nzType="file-ppt" nzTheme="twotone" [nzTwotoneColor]="'#fa8c16'" class="file-icon"/>
+                                            <nz-icon *ngIf="node.extension && !['pdf','jpg','JPG','jpeg','JPEG','png','PNG','doc','docx','xls','xlsx','ppt','pptx'].includes(node.extension)"
+                                                     nzType="file" nzTheme="outline" class="file-icon"/>
+                                            <span class="file-name">{{ node.name }}{{ node.extension ? ('.' + node.extension) : '' }}</span>
+                                        </span>
+                                    </nz-tree-node-option>
+                                    <span class="file-delete-btn"
+                                          (click)="deleteFile(node, $event); $event.stopPropagation()">
+                                        <i class="fas fa-trash-alt" style="font-size:12px; color:#EF4444;"></i>
+                                    </span>
+                                </nz-tree-node>
+
+                                <!-- ══ 3. DOSSIER VIDE (feuille sans extension) — drop zone ══ -->
+                                <nz-tree-node *nzTreeNodeDef="let node" nzTreeNodePadding
+                                              (dragover)="onFolderDragOver($event, node.key)"
+                                              (dragleave)="onFolderDragLeave($event)"
+                                              (drop)="onFolderDrop($event, node.key)"
+                                              [class.folder-drop-active]="dropTargetKey === node.key"
+                                              [class.folder-selected-target]="node.key === idcategorie">
+                                    <nz-tree-node-toggle nzTreeNodeNoopToggle></nz-tree-node-toggle>
+                                    <nz-tree-node-option
+                                            [nzDisabled]="node.disabled"
+                                            [nzSelected]="selectListSelection.isSelected(node) || node.key === idcategorie"
+                                            (nzClick)="onFolderClick(node)">
+                                        <i [class]="dropTargetKey === node.key
+                                                    ? 'fa-regular fa-folder-open folder-icon-empty'
+                                                    : 'fa-regular fa-folder folder-icon-empty'"></i>
+                                        {{ node.name }}
+                                        <span class="folder-drop-badge" *ngIf="dropTargetKey === node.key">
+                                            <i class="fa-solid fa-plus"></i> Déposer ici
+                                        </span>
+                                    </nz-tree-node-option>
+                                </nz-tree-node>
+
+                            </nz-tree-view>
+                        </div>
+                    </div>
+
+                    <!-- Section : Prévisualisation -->
+                    <div class="upload-section preview-section"
+                         [class.preview-fullscreen]="previewFullscreen">
+                        <div class="upload-section-label" *ngIf="selectedFile">
+<!--                            <i class="fa-regular fa-eye"></i> Prévisualisation-->
+                            <nz-tag class="preview-filename" *ngIf="selectedFile" [nzColor]="'rgba(115, 102, 255, 0.1)'">
+                                {{ selectedFile.name }}.{{ selectedFile.extension }}
+                            </nz-tag>
+                            <ng-container *ngIf="selectedFile">
+                                <ng-template #ocrContent>
+                                    <div class="ocr-popover-body">
+                                        <span *ngIf="selectedFile?.desc_ocr_text; else noOcr">
+                                            {{ selectedFile.desc_ocr_text }}
+                                        </span>
+                                        <ng-template #noOcr>
+                                            <span class="ocr-empty">Aucun texte OCR disponible pour ce fichier.</span>
+                                        </ng-template>
+                                    </div>
+                                </ng-template>
+                                <button class="ocr-text-btn"
+                                        nz-popover
+                                        nzPopoverTitle="Texte OCR"
+                                        [nzPopoverContent]="ocrContent"
+                                        nzPopoverTrigger="click"
+                                        nzPopoverPlacement="bottomRight">
+                                    <i class="far fa-file-alt mr-1"></i> voir l'OCR
+                                </button>
+                            </ng-container>
+                        </div>
+                        <div class="upload-section-body preview-body">
+
+                            <!-- Loader de prévisualisation -->
+                            <div *ngIf="isLoadingPreview" class="preview-loader">
+                                <span class="preview-spinner"></span>
+                                <span class="preview-loader-text">Chargement en cours...</span>
+                            </div>
+
+                            <!-- Images -->
+                            <div *ngIf="selectedFile && previewKind(selectedFile) === 'image'"
+                                 class="preview-content pdf-viewer-container">
+
+                                <!-- ── Toolbar Image ───────────────────────────── -->
+                                <div class="pdf-toolbar-inner">
+
+                                    <!-- Zoom -->
+                                    <div class="pdf-ctrl-group">
+                                        <button class="pdf-ctrl-btn"
+                                                (click)="imageZoomOut()"
+                                                [disabled]="imageZoom <= 0.25"
+                                                title="Réduire (−25%)">
+                                            <i class="fa-solid fa-magnifying-glass-minus"></i>
+                                        </button>
+                                        <span class="pdf-zoom-badge">{{ imageZoomLabel }}</span>
+                                        <button class="pdf-ctrl-btn"
+                                                (click)="imageZoomIn()"
+                                                [disabled]="imageZoom >= 4"
+                                                title="Agrandir (+25%)">
+                                            <i class="fa-solid fa-magnifying-glass-plus"></i>
+                                        </button>
+                                        <button class="pdf-ctrl-btn"
+                                                (click)="imageZoomReset()"
+                                                title="Réinitialiser zoom et rotation">
+                                            <i class="fa-solid fa-compress"></i>
+                                        </button>
+                                    </div>
+
+                                    <div class="pdf-ctrl-divider"></div>
+
+                                    <!-- Rotation -->
+                                    <div class="pdf-ctrl-group">
+                                        <button class="pdf-ctrl-btn"
+                                                (click)="imageRotateLeft()"
+                                                title="Rotation gauche (−90°)">
+                                            <i class="fa-solid fa-rotate-left"></i>
+                                        </button>
+                                        <button class="pdf-ctrl-btn"
+                                                (click)="imageRotateRight()"
+                                                title="Rotation droite (+90°)">
+                                            <i class="fa-solid fa-rotate-right"></i>
+                                        </button>
+                                    </div>
+
+                                    <div class="pdf-ctrl-divider"></div>
+
+                                    <!-- Actions -->
+                                    <div class="pdf-ctrl-group">
+                                        <button class="pdf-ctrl-btn"
+                                                (click)="openFileNewTab()"
+                                                title="Ouvrir dans un nouvel onglet">
+                                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                                        </button>
+                                        <button class="pdf-ctrl-btn pdf-ctrl-btn-dl"
+                                                (click)="downloadSelectedFile()"
+                                                title="Télécharger l'image">
+                                            <i class="fa-solid fa-download"></i>
+                                        </button>
+                                        <button class="pdf-ctrl-btn"
+                                                type="button"
+                                                (click)="togglePreviewFullscreen()"
+                                                [title]="previewFullscreen ? 'Quitter le plein écran (Échap)' : 'Afficher en plein écran'">
+                                            <i class="fa-solid"
+                                               [class.fa-expand]="!previewFullscreen"
+                                               [class.fa-compress]="previewFullscreen"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- ── Image zoomable / rotatable ──────────────── -->
+                                <div class="image-scroll-wrapper">
+                                    <img [src]="selectedFile.url_file"
+                                         [alt]="selectedFile.name"
+                                         class="image-preview"
+                                         (load)="onPreviewLoaded()"
+                                         (error)="onPreviewLoaded()"
+                                         [style.transform]="'scale(' + imageZoom + ') rotate(' + imageRotation + 'deg)'"
+                                         [style.transform-origin]="'center center'"/>
+                                </div>
+                            </div>
+
+                            <!-- PDF -->
+                            <div *ngIf="selectedFile && previewKind(selectedFile) === 'pdf'" class="preview-content pdf-viewer-container">
+
+                                <!-- ── Barre de contrôles ─────────────────────── -->
+                                <div class="pdf-toolbar-inner" *ngIf="pdfDoc">
+
+                                    <!-- Navigation pages -->
+                                    <div class="pdf-ctrl-group">
+                                        <button class="pdf-ctrl-btn"
+                                                (click)="prevPage()"
+                                                [disabled]="currentPage <= 1 || isRenderingPdf"
+                                                title="Page précédente">
+                                            <i class="fa-solid fa-chevron-left"></i>
+                                        </button>
+                                        <div class="pdf-page-wrap">
+                                            <input class="pdf-page-input"
+                                                   type="number"
+                                                   [(ngModel)]="currentPageInput"
+                                                   [ngModelOptions]="{standalone: true}"
+                                                   (change)="goToPage()"
+                                                   (keydown.enter)="goToPage()"
+                                                   [min]="1" [max]="totalPages">
+                                            <span class="pdf-page-sep">/ {{ totalPages }}</span>
+                                        </div>
+                                        <button class="pdf-ctrl-btn"
+                                                (click)="nextPage()"
+                                                [disabled]="currentPage >= totalPages || isRenderingPdf"
+                                                title="Page suivante">
+                                            <i class="fa-solid fa-chevron-right"></i>
+                                        </button>
+                                    </div>
+
+                                    <div class="pdf-ctrl-divider"></div>
+
+                                    <!-- Zoom -->
+                                    <div class="pdf-ctrl-group">
+                                        <button class="pdf-ctrl-btn"
+                                                (click)="zoomOutPdf()"
+                                                [disabled]="pdfScale <= 0.25 || isRenderingPdf"
+                                                title="Réduire (−25%)">
+                                            <i class="fa-solid fa-magnifying-glass-minus"></i>
+                                        </button>
+                                        <span class="pdf-zoom-badge">{{ pdfZoomLabel }}</span>
+                                        <button class="pdf-ctrl-btn"
+                                                (click)="zoomInPdf()"
+                                                [disabled]="pdfScale >= 3 || isRenderingPdf"
+                                                title="Agrandir (+25%)">
+                                            <i class="fa-solid fa-magnifying-glass-plus"></i>
+                                        </button>
+                                    </div>
+
+                                    <div class="pdf-ctrl-divider"></div>
+
+                                    <!-- Ajustements -->
+                                    <div class="pdf-ctrl-group">
+                                        <button class="pdf-ctrl-btn"
+                                                (click)="fitWidthPdf()"
+                                                [disabled]="isRenderingPdf"
+                                                title="Ajuster à la largeur">
+                                            <i class="fa-solid fa-arrows-left-right"></i>
+                                        </button>
+                                        <button class="pdf-ctrl-btn"
+                                                (click)="resetZoomPdf()"
+                                                [disabled]="isRenderingPdf"
+                                                title="Zoom par défaut (100%)">
+                                            <i class="fa-solid fa-compress"></i>
+                                        </button>
+                                    </div>
+
+                                    <div class="pdf-ctrl-divider"></div>
+
+                                    <!-- Rotation -->
+                                    <div class="pdf-ctrl-group">
+                                        <button class="pdf-ctrl-btn"
+                                                (click)="rotatePdf('left')"
+                                                [disabled]="isRenderingPdf"
+                                                title="Rotation gauche (−90°)">
+                                            <i class="fa-solid fa-rotate-left"></i>
+                                        </button>
+                                        <button class="pdf-ctrl-btn"
+                                                (click)="rotatePdf('right')"
+                                                [disabled]="isRenderingPdf"
+                                                title="Rotation droite (+90°)">
+                                            <i class="fa-solid fa-rotate-right"></i>
+                                        </button>
+                                    </div>
+
+                                    <div class="pdf-ctrl-divider"></div>
+
+                                    <!-- Actions fichier -->
+                                    <div class="pdf-ctrl-group">
+                                        <button class="pdf-ctrl-btn"
+                                                (click)="openPdfNewTab()"
+                                                title="Ouvrir dans un nouvel onglet">
+                                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                                        </button>
+                                        <button class="pdf-ctrl-btn pdf-ctrl-btn-dl"
+                                                (click)="downloadCurrentPdf()"
+                                                title="Télécharger le PDF">
+                                            <i class="fa-solid fa-download"></i>
+                                        </button>
+                                        <button class="pdf-ctrl-btn"
+                                                type="button"
+                                                (click)="togglePreviewFullscreen()"
+                                                [title]="previewFullscreen ? 'Quitter le plein écran (Échap)' : 'Afficher en plein écran'">
+                                            <i class="fa-solid"
+                                               [class.fa-expand]="!previewFullscreen"
+                                               [class.fa-compress]="previewFullscreen"></i>
+                                        </button>
+                                    </div>
+
+                                    <!-- Spinner de rendu -->
+                                    <div class="pdf-render-spinner" *ngIf="isRenderingPdf">
+                                        <span class="pdf-mini-spin"></span>
+                                    </div>
+                                </div>
+
+                                <!-- ── Canvas scrollable ──────────────────────── -->
+                                <div class="pdf-canvas-wrapper" #pdfWrapper>
+                                    <canvas id="pdf-canvas"></canvas>
+                                </div>
+
+                            </div>
+
+                            <!-- Word / Excel -->
+                            <div *ngIf="selectedFile && previewKind(selectedFile) === 'office'"
+                                 class="preview-content pdf-viewer-container">
+
+                                <!-- ── Toolbar Office ──────────────────────────── -->
+                                <div class="pdf-toolbar-inner" *ngIf="officePreviewUrl">
+
+                                    <!-- Zoom -->
+                                    <div class="pdf-ctrl-group">
+                                        <button class="pdf-ctrl-btn"
+                                                (click)="officeZoomOut()"
+                                                [disabled]="officeZoom <= 0.5"
+                                                title="Réduire (−25%)">
+                                            <i class="fa-solid fa-magnifying-glass-minus"></i>
+                                        </button>
+                                        <span class="pdf-zoom-badge">{{ officeZoomLabel }}</span>
+                                        <button class="pdf-ctrl-btn"
+                                                (click)="officeZoomIn()"
+                                                [disabled]="officeZoom >= 2"
+                                                title="Agrandir (+25%)">
+                                            <i class="fa-solid fa-magnifying-glass-plus"></i>
+                                        </button>
+                                        <button class="pdf-ctrl-btn"
+                                                (click)="officeZoomReset()"
+                                                title="Zoom par défaut (100%)">
+                                            <i class="fa-solid fa-compress"></i>
+                                        </button>
+                                    </div>
+
+                                    <div class="pdf-ctrl-divider"></div>
+
+                                    <!-- Actions -->
+                                    <div class="pdf-ctrl-group">
+                                        <button class="pdf-ctrl-btn"
+                                                (click)="openFileNewTab()"
+                                                title="Ouvrir dans un nouvel onglet">
+                                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                                        </button>
+                                        <button class="pdf-ctrl-btn pdf-ctrl-btn-dl"
+                                                (click)="downloadSelectedFile()"
+                                                title="Télécharger le fichier">
+                                            <i class="fa-solid fa-download"></i>
+                                        </button>
+                                        <button class="pdf-ctrl-btn"
+                                                type="button"
+                                                (click)="togglePreviewFullscreen()"
+                                                [title]="previewFullscreen ? 'Quitter le plein écran (Échap)' : 'Afficher en plein écran'">
+                                            <i class="fa-solid"
+                                               [class.fa-expand]="!previewFullscreen"
+                                               [class.fa-compress]="previewFullscreen"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- ── Iframe zoomable ────────────────────────── -->
+                                <div class="office-zoom-wrapper">
+                                    <iframe *ngIf="officePreviewUrl"
+                                            [src]="officePreviewUrl"
+                                            class="document-preview"
+                                            frameborder="0"
+                                            (load)="onOfficePreviewLoaded()"
+                                            [style.transform]="'scale(' + officeZoom + ')'"
+                                            [style.transform-origin]="'top left'"
+                                            [style.width]="(100 / officeZoom) + '%'"
+                                            [style.height]="(100 / officeZoom) + '%'">
+                                    </iframe>
+                                </div>
+                            </div>
+
+                            <!-- Aucun fichier sélectionné -->
+                            <div *ngIf="!selectedFile" class="preview-placeholder">
+                                <nz-icon nzType="file-search" nzTheme="outline"></nz-icon>
+                                <p>Sélectionnez un fichier pour le prévisualiser</p>
+                            </div>
+
+                            <!-- Type non supporté -->
+                            <div *ngIf="selectedFile && previewKind(selectedFile) === 'other'" class="preview-placeholder">
+                                <nz-icon nzType="file-unknown" nzTheme="outline"></nz-icon>
+                                <p>Prévisualisation non disponible pour ce type de fichier</p>
+<!--                                <a [href]="selectedFile.url" download class="download-link">-->
+<!--                                    <nz-icon nzType="download"></nz-icon> Télécharger le fichier-->
+<!--                                </a>-->
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </nz-splitter-panel>
+    </nz-splitter>
+
+
+</div>

@@ -1,0 +1,214 @@
+<!-- Titre -->
+<div class="cx-title">
+    <span class="cx-title-ico"><i class="fa-solid fa-right-left"></i></span>
+    <h2>Correspondances</h2>
+</div>
+
+<!-- Bannière info -->
+<div class="cx-banner">
+    <span class="cx-banner-ico"><i class="fa-solid fa-arrows-left-right-to-line"></i></span>
+    <div class="cx-banner-txt">
+        <div class="cx-banner-title">Traduction des champs du partenaire</div>
+        <div class="cx-banner-sub">Pour chaque champ relevé dans les réponses d'une requête, indiquez le champ de ARCHIVE WEB PRO auquel il correspond. Sans cette traduction, les données rapatriées n'ont pas de destination.</div>
+    </div>
+</div>
+
+<!-- Erreur de chargement -->
+<div class="cx-alert" *ngIf="erreur">
+    <i class="fa-solid fa-circle-exclamation"></i> {{ erreur }}
+</div>
+
+<!-- Chargement -->
+<div class="cx-loading" *ngIf="isloading">
+    <div class="cx-spinner"></div>
+    <span>Chargement des correspondances...</span>
+</div>
+
+<ng-container *ngIf="!isloading">
+
+    <!-- Aucune requête : les étapes précédentes n'ont pas été franchies. -->
+    <div class="cx-alert" *ngIf="!erreur && requetes.length === 0">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        Aucun champ relevé pour l'instant. Enregistrez une requête puis jouez-la depuis l'étape « Exécution » : les champs de la réponse apparaîtront ici.
+    </div>
+
+    <ng-container *ngIf="requetes.length">
+
+        <!-- ══ CHOIX DU PARTENAIRE, PUIS DE LA REQUÊTE ═══════════════════
+             On désigne d'abord la plateforme : c'est elle qui donne son sens au
+             vocabulaire, et les requêtes proposées ensuite sont les siennes.
+             Les correspondances, elles, valent POUR UNE REQUÊTE — un même nom
+             de champ peut désigner autre chose d'un appel à l'autre. -->
+        <div class="co-entete">
+            <div class="cx-field co-choix">
+                <label>Plateforme</label>
+                <select2 class="cx-select2"
+                         [data]="plateformeOptions"
+                         [ngModel]="plateformeUid"
+                         (ngModelChange)="choisirPlateforme($event)"
+                         name="plateforme"
+                         [minCountForSearch]="0"
+                         placeholder="Choisir une plateforme"
+                         noResultMessage="Aucune plateforme"></select2>
+            </div>
+
+            <!-- Fermé tant qu'aucun partenaire n'est désigné : ce sont SES
+                 requêtes qu'on choisit ici, pas celles de tout le monde. -->
+            <div class="cx-field co-choix">
+                <label>Requête concernée</label>
+                <select2 class="cx-select2"
+                         [data]="requeteOptions"
+                         [ngModel]="requeteUid"
+                         (ngModelChange)="choisirRequete($event)"
+                         name="requete"
+                         [disabled]="!plateformeUid"
+                         [minCountForSearch]="0"
+                         [placeholder]="plateformeUid ? 'Choisir une requête' : 'Choisissez d\'abord une plateforme'"
+                         noResultMessage="Aucune requête"></select2>
+            </div>
+
+            <!-- Avancement : ce qui reste à traduire, d'un coup d'œil. -->
+            <div class="co-avancement" *ngIf="requete">
+                <div class="co-avancement-txt">
+                    <strong>{{ associes }}</strong> / {{ total }} champs associés
+                </div>
+                <div class="co-jauge"><span [style.width.%]="progression"></span></div>
+            </div>
+        </div>
+
+        <!-- Rappel de ce que fait la requête choisie -->
+        <div class="co-rappel" *ngIf="requete">
+            <span class="cx-type-badge">{{ requete.method }}</span>
+            <span class="co-rappel-url" [title]="requete.target_url">
+                <i class="fa-solid fa-link"></i> {{ requete.target_url || '—' }}
+            </span>
+            <span class="co-rappel-plateforme" *ngIf="requete.plateforme_nom">
+                <i class="fa-solid fa-shield-halved"></i> {{ requete.plateforme_nom }}
+            </span>
+        </div>
+
+        <!-- Barre d'outils : recherche + remplissage automatique -->
+        <div class="cx-toolbar" *ngIf="total">
+            <div class="cx-search">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input placeholder="Rechercher un champ..."
+                       [ngModel]="searchValue" (ngModelChange)="onSearch($event)"/>
+                <button *ngIf="searchValue" class="cx-search-clear" (click)="onSearch('')">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <button class="co-btn-auto" (click)="remplirIdentiques()"
+                    title="Associer les champs qui portent déjà le même nom chez nous">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Noms identiques
+            </button>
+        </div>
+
+        <!-- Objets externes : n'apparaît que s'il y en a plusieurs à distinguer -->
+        <div class="co-remotes" *ngIf="remoteIds.length > 1">
+            <span class="co-remotes-label">Objet externe :</span>
+            <button type="button" class="co-remote" [class.active]="!remoteId"
+                    (click)="choisirRemoteId('')">Tous</button>
+            <button type="button" class="co-remote" *ngFor="let r of remoteIds"
+                    [class.active]="remoteId === r" (click)="choisirRemoteId(r)">{{ r }}</button>
+        </div>
+
+        <!-- ══ TABLE DES CORRESPONDANCES ═════════════════════════════════ -->
+        <div class="co-table" *ngIf="champs.length">
+            <div class="co-head">
+                <span class="co-col-ext">Champ du partenaire</span>
+                <span class="co-col-fleche"></span>
+                <span class="co-col-int">Champ ARCHIVE WEB PRO</span>
+            </div>
+
+            <div class="co-ligne" *ngFor="let c of champs; trackBy: suivreChamp"
+                 [class.associe]="c.payload_interne.trim()"
+                 [class.modifie]="c.payload_interne.trim() !== c.initial.trim()">
+
+                <div class="co-col-ext">
+                    <code class="co-ext">{{ c.payload_externe }}</code>
+                </div>
+
+                <div class="co-col-fleche"><i class="fa-solid fa-arrow-right-long"></i></div>
+
+                <div class="co-col-int">
+                    <div class="co-saisie">
+                        <!-- Champ LIBRE : la liste n'est qu'une aide, un partenaire
+                             pouvant alimenter une propriété hors du modèle standard. -->
+                        <input [(ngModel)]="c.payload_interne"
+                               [name]="'interne-' + c.id"
+                               list="co-champs-internes"
+                               autocomplete="off"
+                               spellcheck="false"
+                               placeholder="Non associé — tapez ou choisissez"/>
+                        <button type="button" class="co-mini" *ngIf="!c.payload_interne.trim()"
+                                (click)="reprendreNom(c)" title="Reprendre le même nom">
+                            <i class="fa-solid fa-equals"></i>
+                        </button>
+                        <button type="button" class="co-mini" *ngIf="c.payload_interne.trim()"
+                                (click)="vider(c)" title="Retirer l'association">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Liste unique, partagée par toutes les lignes. -->
+        <datalist id="co-champs-internes">
+            <option *ngFor="let s of suggestions" [value]="s"></option>
+        </datalist>
+
+        <!-- Point de départ : rien n'est choisi -->
+        <div class="cx-empty" *ngIf="!plateformeUid">
+            <i class="fa-solid fa-shield-halved"></i>
+            <span>Choisissez une plateforme</span>
+            <small>Ses requêtes vous seront alors proposées, avec les champs relevés dans leurs réponses.</small>
+        </div>
+
+        <!-- Plateforme sans aucune requête relevée -->
+        <div class="cx-empty" *ngIf="plateformeUid && !requeteOptions.length">
+            <i class="fa-solid fa-bookmark"></i>
+            <span>Aucune requête relevée pour cette plateforme</span>
+            <small>Jouez une de ses requêtes depuis l'étape « Exécution » : les champs de la réponse apparaîtront ici.</small>
+        </div>
+
+        <!-- Plateforme choisie, requêtes disponibles, mais aucune désignée -->
+        <div class="cx-empty" *ngIf="plateformeUid && requeteOptions.length && !requete">
+            <i class="fa-solid fa-hand-pointer"></i>
+            <span>Choisissez une requête</span>
+            <small>Les correspondances se déclarent requête par requête : un même nom de champ peut désigner autre chose d'un appel à l'autre.</small>
+        </div>
+
+        <!-- Requête sans champ relevé -->
+        <div class="cx-empty" *ngIf="requete && !total">
+            <i class="fa-solid fa-inbox"></i>
+            <span>Aucun champ relevé pour cette requête</span>
+            <small>Jouez-la depuis l'étape « Exécution » : les champs de sa réponse seront enregistrés ici.</small>
+        </div>
+
+        <!-- Recherche sans résultat -->
+        <div class="cx-empty" *ngIf="total && !champs.length">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <span>Aucun champ ne correspond</span>
+            <small>Modifiez la recherche ou le filtre d'objet externe.</small>
+        </div>
+
+        <!-- ══ BARRE D'ENREGISTREMENT ════════════════════════════════════
+             Collée en bas et affichée SEULEMENT s'il y a quelque chose à
+             enregistrer : sur une longue liste, un bouton en fin de page se
+             perd, et un bouton toujours visible laisse croire à un travail en
+             attente alors qu'il n'y a rien à envoyer. -->
+        <div class="co-barre" *ngIf="modifies.length">
+            <span class="co-barre-txt">
+                <i class="fa-solid fa-pen"></i>
+                {{ modifies.length }} correspondance{{ modifies.length > 1 ? 's' : '' }} modifiée{{ modifies.length > 1 ? 's' : '' }}
+            </span>
+            <button class="cx-btn-cancel" (click)="reinitialiser()" [disabled]="saving">Annuler</button>
+            <button class="cx-btn-confirm" (click)="enregistrer()" [disabled]="saving">
+                <i class="fa-solid" [ngClass]="saving ? 'fa-spinner fa-spin' : 'fa-check'"></i>
+                {{ saving ? 'Enregistrement...' : 'Enregistrer' }}
+            </button>
+        </div>
+
+    </ng-container>
+</ng-container>

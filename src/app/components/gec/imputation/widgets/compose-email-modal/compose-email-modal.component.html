@@ -23,7 +23,9 @@
             <div class="im-section">
                 <div class="im-section-title">  <app-feather-icon [icon]="'folder'"></app-feather-icon> Document</div>
 
-                <div class="im-search">
+                <!-- Masquée quand le document vient de l'écran appelant :
+                     chercher ce qu'on a déjà sous les yeux n'a pas de sens. -->
+                <div class="im-search" *ngIf="!documentImpose">
                     <!-- La loupe dans le champ signale la fonction avant même
                          de lire l'invite : c'est le point d'entrée de tout le
                          formulaire, il doit se voir. -->
@@ -96,7 +98,7 @@
                     </div>
                 </div>
 
-                <div class="im-empty" *ngIf="docSearched && !searchingDoc && !docResults.length">
+                <div class="im-empty" *ngIf="!documentImpose && docSearched && !searchingDoc && !docResults.length">
                     Aucun document trouvé pour ce numéro.
                 </div>
             </div>

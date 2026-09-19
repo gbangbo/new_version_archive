@@ -68,14 +68,14 @@
   height: auto;
 }
 
-// Le composant remplit exactement la zone de contenu (page-body = 100vh - header)
+// Le composant remplit exactement la zone de contenu restante
 // → pas de vide blanc sous la carte, scroll délégué aux colonnes internes.
 :host {
   display: block;
-  // La zone de contenu du template = calc(100vh - 136px) (header 135px).
-  // Le footer global étant masqué, on occupe presque toute cette hauteur
-  // pour maximiser la partie visible du formulaire → scroll au dernier moment.
-  height: calc(100vh - 136px);
+  // Valeur de repli avant la mesure JS : header (136px) + fil d'Ariane (~56px).
+  // ajusterHauteurCarte() dans le .ts remplace ensuite cette hauteur par la
+  // valeur exacte mesurée, car le fil d'Ariane n'a pas de hauteur fixe.
+  height: calc(100vh - 192px);
 }
 
 .container.job-apply-wrapper {
@@ -116,7 +116,32 @@ nz-splitter {
 }
 
 .custom-dropzone {
-  margin: 20px 0;
+  margin: 0;
+}
+
+// Dropzone compacte : l'illustration prenait plus de place que l'arbre en dessous.
+:host ::ng-deep .dropzone-secondary {
+  min-height: 0 !important;
+  padding: 12px !important;
+  margin-bottom: 0 !important;
+
+  .dz-message {
+    margin: 0 !important;
+    padding: 4px 0 !important;
+
+    i {
+      font-size: 34px !important;
+    }
+
+    h6 {
+      font-size: 13px !important;
+      margin: 6px 0 2px !important;
+    }
+
+    .note {
+      font-size: 11px !important;
+    }
+  }
 }
 
 /* Progress Bar Global - Version Élégante */
@@ -456,14 +481,20 @@ nz-splitter {
 // ── Canvas scrollable ───────────────────
 .pdf-canvas-wrapper {
   flex: 1;
+  min-height: 0;
   overflow: auto;
   display: flex;
+  align-items: flex-start; // sans ça, le canvas est étiré sur la hauteur du cadre
   justify-content: center;
   padding: 16px;
   background: #E5E7EB;
 
   canvas {
     display: block;
+    // Le canvas porte ses dimensions en attributs (viewport pdf.js) : le flex
+    // ne doit ni le réduire ni l'étirer, sinon la page s'affiche en vignette.
+    flex: 0 0 auto;
+    margin: auto;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
     background: #fff;
     max-width: none !important;
@@ -497,7 +528,7 @@ input[type="checkbox"]:checked {
 
     // Boîte du select
     .ant-select-selector {
-      min-height: 40px !important;
+      min-height: 36px !important;
       border: 1px solid #E2E8F0 !important;
       border-radius: 4px !important;
       background: #fff !important;
@@ -507,11 +538,11 @@ input[type="checkbox"]:checked {
 
     // Select simple : hauteur fixe + centrage vertical
     &.ant-select-single .ant-select-selector {
-      height: 40px !important;
+      height: 36px !important;
 
       .ant-select-selection-item,
       .ant-select-selection-placeholder {
-        line-height: 38px !important;
+        line-height: 34px !important;
       }
     }
 
@@ -536,20 +567,67 @@ input[type="checkbox"]:checked {
       color: #94A3B8 !important;
     }
 
-    // Tags (mode multiple)
-    .ant-select-selection-item {
-      border-radius: 5px !important;
+    // Mode multiple : le champ garde sa hauteur, quoi qu'il contienne.
+    // Les étiquettes rétrécissent avec des points de suspension au lieu de
+    // passer à la ligne et de faire grandir la boîte.
+    &.ant-select-multiple .ant-select-selector {
+      height: 36px !important;
+      padding: 2px 6px !important;
+      flex-wrap: nowrap !important;
+      overflow: hidden !important;
+    }
+
+    &.ant-select-multiple .ant-select-selection-overflow {
+      flex-wrap: nowrap !important;
+      overflow: hidden !important;
+    }
+
+    &.ant-select-multiple .ant-select-selection-overflow-item {
+      min-width: 0 !important;
+      flex-shrink: 1 !important;
+    }
+
+    // Le compteur « +N » reste toujours lisible en entier
+    &.ant-select-multiple .ant-select-selection-overflow-item-rest,
+    &.ant-select-multiple .ant-select-selection-overflow-item-suffix {
+      flex-shrink: 0 !important;
+    }
+
+    &.ant-select-multiple .ant-select-selection-item {
+      height: 22px !important;
+      line-height: 20px !important;
+      font-size: 12px !important;
+      max-width: 100% !important;
+    }
+
+    .ant-select-selection-item-content {
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+      white-space: nowrap !important;
+    }
+
+    // Étiquettes — mode multiple UNIQUEMENT
+    &.ant-select-multiple .ant-select-selection-item {
+      border-radius: 4px !important;
       background: #EEF3F8 !important;
       border-color: #DBE6F0 !important;
       color: #0F2F52 !important;
       font-weight: 600 !important;
+    }
+
+    // Mode simple : la valeur se lit comme le texte d'un input, sans fond
+    &.ant-select-single .ant-select-selection-item {
+      background: transparent !important;
+      color: #0F172A !important;
+      font-size: 13px !important;
+      font-weight: 400 !important;
     }
   }
 
   // Date picker aligné sur le même style
   .ant-picker {
     width: 100% !important;
-    height: 40px !important;
+    height: 36px !important;
     border: 1px solid #E2E8F0 !important;
     border-radius: 4px !important;
     transition: border-color 0.2s, box-shadow 0.2s !important;
@@ -566,18 +644,42 @@ input[type="checkbox"]:checked {
 
   // Select2 (Série, Type, Site, Rayon, Boîte) aligné sur le même style
   .raise-input-select {
+    // Le thème par défaut de select2 retombe sinon sur ses propres couleurs
+    // (bordure #aaa, flèche #888), nettement plus sombres que les selects ng-zorro.
+    --select2-selection-background: #fff;
+    --select2-selection-border-color: #E2E8F0;
+    --select2-selection-border-radius: 4px;
+    --select2-selection-text-color: #0F172A;
+    --select2-arrow-color: #bfbfbf;
+    --select2-placeholder-color: #CBD5E1;
+
     display: block !important;
     width: 100% !important;
 
+    // Aucune bordure ni ombre ne doit venir des enveloppes de select2
     .select2,
     .select2-container,
-    .selection { width: 100% !important; display: block !important; }
+    .selection {
+      width: 100% !important;
+      display: block !important;
+      border: none !important;
+      background: transparent !important;
+      box-shadow: none !important;
+    }
 
-    // Boîte : hauteur fixe 40px, bordure fine, pas d'ombre parasite
+    // Boîte : hauteur fixe 36px, bordure fine, pas d'ombre parasite.
+    // Sélecteur volontairement long : deux règles du thème global visent ces
+    // éléments avec !important et une spécificité supérieure à un simple
+    // `.raise-input-select .select2-selection` —
+    //   .raise-input-select .select2-selection--single (ombre violette, _job-search.scss)
+    //   .is-invalid .select2 .selection .select2-selection (bordure #fc564a, _reset.scss)
+    // Il faut passer au-dessus des deux pour que ces champs se lisent comme les autres.
+    .select2 .selection .select2-selection,
+    .select2-selection--single,
     .select2-selection {
-      height: 40px !important;
-      min-height: 40px !important;
-      max-height: 40px !important;
+      height: 36px !important;
+      min-height: 36px !important;
+      max-height: 36px !important;
       border: 1px solid #E2E8F0 !important;
       border-radius: 4px !important;
       background: #fff !important;
@@ -591,26 +693,64 @@ input[type="checkbox"]:checked {
       &:hover { border-color: #CBD5E1 !important; }
     }
 
+    // .select2-selection est en flex : la flèche est un frère, pas un calque.
+    // Les 30px de padding à droite ne servaient donc qu'à créer un trou.
     .select2-selection__rendered {
       color: #0F172A !important;
       font-size: 13px !important;
-      line-height: 40px !important;
-      padding: 0 32px 0 12px !important;
+      line-height: 34px !important;
+      padding: 0 4px 0 11px !important;
       margin: 0 !important;
     }
 
     .select2-selection__placeholder { color: #CBD5E1 !important; }
 
-    .select2-selection__arrow {
-      height: 40px !important;
-      top: 0 !important;
-      right: 8px !important;
+    // Bouton d'effacement : discret, comme celui d'ng-zorro
+    .select2-selection__clear {
+      margin-right: 2px !important;
+      padding: 0 4px !important;
+      color: #CBD5E1 !important;
+      font-size: 15px !important;
+      font-weight: 400 !important;
+      transition: color 0.15s ease !important;
+
+      &:hover { color: #94A3B8 !important; }
     }
 
-    .select2-container--focus .select2-selection,
-    .select2-container--open .select2-selection {
+    .select2-selection__arrow {
+      height: 36px !important;
+      width: 26px !important;
+      top: 0 !important;
+      right: 2px !important;
+
+      // select2 dessine un triangle plein ; ng-zorro un chevron fin. On reprend
+      // le chevron pour que les deux familles de champs se ressemblent.
+      &::before {
+        content: "" !important;
+        width: 7px !important;
+        height: 7px !important;
+        border: solid #bfbfbf !important;
+        border-width: 0 1.5px 1.5px 0 !important;
+        border-radius: 0 !important;
+        transform: translateY(-2px) rotate(45deg) !important;
+      }
+    }
+
+    // Ouvert : le chevron pointe vers le haut, comme ng-zorro
+    .select2-container--open .select2-selection__arrow::before {
+      transform: translateY(2px) rotate(-135deg) !important;
+    }
+
+    .select2.select2-container--focus .selection .select2-selection,
+    .select2.select2-container--open .selection .select2-selection {
       border-color: #94A3B8 !important;
       box-shadow: none !important;
+    }
+
+    // État invalide aligné sur celui des inputs (#EF4444), pas sur le #fc564a
+    // du thème : les deux rouges cohabitaient dans le même formulaire.
+    &.is-invalid .select2 .selection .select2-selection {
+      border-color: #EF4444 !important;
     }
   }
 }
@@ -623,11 +763,12 @@ input[type="checkbox"]:checked {
 // FORM LABELS
 // ═══════════════════════════════════════
 .form-label {
-  font-size: 12.5px !important;
+  font-size: 12px !important;
   font-weight: 600 !important;
+  line-height: 18px !important;
   color: #64748B !important;
   letter-spacing: 0 !important;
-  margin-bottom: 7px !important;
+  margin-bottom: 6px !important;
 }
 
 .section-label {
@@ -647,7 +788,7 @@ input[type="checkbox"]:checked {
 // FORM CONTROLS
 // ═══════════════════════════════════════
 .form-control {
-  height: 40px !important;
+  height: 36px !important;
   border: 1px solid #E2E8F0 !important;
   border-radius: 4px !important;
   font-size: 13px !important;
@@ -714,33 +855,37 @@ input[type="checkbox"]:checked {
 .statut-pills {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
+  gap: 6px;
 }
 
+// Choix exclusif : rond + fond plein sur l'option retenue. Se distingue à l'œil
+// des interrupteurs booléens (.toggle-row) qui, eux, ont un rail et un curseur.
 .statut-pill {
   --c: #64748b;       // couleur d'accent
   --c-bg: #f1f5f9;    // fond pill active
+  --c-br: #cbd5e1;    // bordure pill active
 
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 3px 9px 3px 4px;
-  border: none;
-  border-radius: 999px;
+  padding: 3px 10px 3px 5px;
+  border: 1px solid transparent;
+  border-radius: 5px;
   background: transparent;
   cursor: pointer;
-  transition: background 0.15s ease;
+  transition: background 0.15s ease, border-color 0.15s ease;
 
-  &--public { --c: #10b981; --c-bg: #ecfdf5; }
-  &--confidentiel { --c: #ef4444; --c-bg: #fef2f2; }
+  &--public { --c: #10b981; --c-bg: #ecfdf5; --c-br: #a7f3d0; }
+  &--confidentiel { --c: #ef4444; --c-bg: #fef2f2; --c-br: #fecaca; }
 
   // Groupe couleur unique (Archives : Courante / Définitive)
-  .statut-pills--mono & { --c: #00366e; --c-bg: #eaf1f8; }
+  .statut-pills--mono & { --c: #00366e; --c-bg: #eaf1f8; --c-br: #b6cbe0; }
 
   &:hover:not(.active) { background: #f5f7fa; }
 
   &.active {
-    //background: var(--c-bg);
+    background: var(--c-bg);
+    border-color: var(--c-br);
 
     .statut-pill-dot {
       background: var(--c);
@@ -776,34 +921,98 @@ input[type="checkbox"]:checked {
   transition: color 0.15s ease;
 }
 
-// Icône optionnelle dans la pastille (interrupteurs mail / utilisateurs)
-.statut-pill-ico {
+// ══ Interrupteur booléen (oui / non) ══════════════════════════════════
+// Rail + curseur : forme volontairement différente des ronds de choix
+// exclusif ci-dessus, pour qu'on voie tout de suite lequel est lequel.
+.toggle-row {
+  --c: #00366e;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 7px 12px 7px 6px;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+
+  &:hover:not(.active) { background: #f8fafc; }
+
+  &.active {
+    background: #f4f8fc;
+    border-color: #d7e3ee;
+  }
+}
+
+.toggle-track {
+  position: relative;
+  width: 34px;
+  height: 19px;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background: #CBD5E1;
+  cursor: pointer;
+  transition: background 0.18s ease;
+}
+
+.toggle-knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.28);
+  transition: transform 0.18s ease;
+}
+
+.toggle-row.active .toggle-track,
+.assign-acc-header.active .toggle-track {
+  background: var(--c);
+}
+
+.toggle-row.active .toggle-knob,
+.assign-acc-header.active .toggle-knob {
+  transform: translateX(15px);
+}
+
+.toggle-ico {
   font-size: 15px;
   line-height: 1;
+  flex-shrink: 0;
   color: #94a3b8;
   transition: color 0.15s ease;
 }
 
-.statut-pill.active .statut-pill-ico { color: var(--c); }
+.toggle-label {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #475569;
+  transition: color 0.15s ease;
+}
 
-// Variante « large » : interrupteur booléen avec libellé long
-.statut-pill--wide {
-  padding: 6px 14px 6px 6px;
-
-  .statut-pill-label { white-space: normal; }
+.toggle-row.active .toggle-ico,
+.toggle-row.active .toggle-label,
+.assign-acc-header.active .toggle-ico,
+.assign-acc-header.active .toggle-label {
+  color: var(--c);
 }
 
 // ══ Accordéon « Attribuer le document à des utilisateurs » ══════
 .assign-accordion {
   --c: #00366e;
-  //border: 1px solid #EDF1F5;
-  border-radius: 8px;
+  border: 1px solid #EDF1F5;
+  border-radius: 6px;
   background: #fff;
   overflow: hidden;
   transition: border-color 0.18s ease;
 
   &.active {
-    //border-color: rgba(0, 54, 110, 0.28);
+    border-color: #d7e3ee;
   }
 }
 
@@ -812,7 +1021,7 @@ input[type="checkbox"]:checked {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 9px 12px;
+  padding: 7px 12px;
   border: none;
   background: transparent;
   cursor: pointer;
@@ -820,23 +1029,10 @@ input[type="checkbox"]:checked {
 
   &:hover { background: #f8fafc; }
 
-  .statut-pill-dot { cursor: pointer; }
-
-  .statut-pill-label {
+  .toggle-label {
     flex: 1;
     text-align: left;
-    font-size: 12.5px;
     white-space: normal;
-  }
-
-  &.active {
-    .statut-pill-dot {
-      background: var(--c);
-      border-color: var(--c);
-      i { opacity: 1; }
-    }
-    .statut-pill-label,
-    .statut-pill-ico { color: var(--c); }
   }
 }
 
@@ -852,21 +1048,40 @@ input[type="checkbox"]:checked {
   color: #94a3b8;
   transition: background 0.15s ease, color 0.15s ease;
 
-  i { font-size: 15px; line-height: 1; }
+  i {
+    font-size: 15px;
+    line-height: 1;
+    transition: transform 0.18s ease;
+  }
 
   &:hover {
     background: rgba(0, 54, 110, 0.1);
     color: var(--c);
   }
 
-  // En mode déplié (icône ×) : bien visible
   .assign-accordion.open & { color: var(--c); }
+
+  // Déplié : le chevron pointe vers le haut
+  .assign-acc-chevron-open {
+    transform: rotate(180deg);
+  }
 }
 
+// Société / Utilisateurs propriétaires suivent la même bascule 1 → 2 colonnes
+// que le reste du formulaire (même conteneur de requête, même seuil).
 .assign-acc-body {
-  padding: 4px 14px 14px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  padding: 10px 14px 14px;
   border-top: 1px solid #F1F5F9;
   animation: assignAccIn 0.22s ease;
+}
+
+@container form-col (min-width: 560px) {
+  .assign-acc-body {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 // Spinner de chargement interne au select « Utilisateurs propriétaires »
@@ -1039,27 +1254,48 @@ input[type="checkbox"]:checked {
   flex-shrink: 0; // ne pas comprimer dans la colonne défilante (sinon champs clippés)
 }
 
-.form-section-label {
+// Titre de section — style commun aux deux colonnes : les sections de gauche
+// (Informations générales, Métadonnées) et de droite (Téléverser, Plan de
+// classement, Prévisualisation) sont de même rang, elles doivent se lire pareil.
+.form-section-label,
+.upload-section-label {
   display: flex;
   align-items: center;
   gap: 9px;
-  padding: 0 2px 16px;
+  padding: 0 2px 9px;
+  margin-bottom: 12px;
   background: transparent;
-  font-size: 17px;
+  font-size: 15px;
   font-weight: 700;
   color: #1E293B;
   text-transform: none;
   letter-spacing: 0;
-  border-bottom: none;
+  border-bottom: 1px solid #EEF2F7;
+  flex-shrink: 0; // les zones de droite sont à hauteur contrainte : pas d'écrasement
 
   i {
-    font-size: 18px;
+    font-size: 16px;
     color: #00366e;
   }
 }
 
+// Le panneau de gauche est redimensionnable (nz-splitter, 20% → 70%) : la
+// bascule 1 → 2 colonnes doit suivre la largeur du PANNEAU, pas celle de la
+// fenêtre — d'où une container query plutôt qu'une media query.
 .form-section-body {
-  //padding: 14px;
+  container-type: inline-size;
+  container-name: form-col;
+}
+
+// Repli : pleine largeur (panneau étroit, ou navigateur sans @container)
+.field-half {
+  grid-column: span 12;
+}
+
+@container form-col (min-width: 560px) {
+  .field-half {
+    grid-column: span 6;
+  }
 }
 
 // ═══════════════════════════════════════
@@ -1108,13 +1344,16 @@ input[type="checkbox"]:checked {
 // ═══════════════════════════════════════
 // UPLOAD PANEL (panneau droit)
 // ═══════════════════════════════════════
+// Trois zones empilées : le téléversement garde sa taille, l'arbre et l'aperçu
+// se partagent le reste et défilent chacun de leur côté — la colonne elle-même
+// ne défile plus, donc les trois titres restent toujours visibles.
 .upload-panel {
   display: flex;
   flex-direction: column;
   gap: 14px;
   width: 100%;
   height: 100%;
-  overflow-y: auto;
+  overflow: hidden;
   padding: 14px;
   box-sizing: border-box;
 }
@@ -1123,33 +1362,44 @@ input[type="checkbox"]:checked {
   border-radius: 1px;
   overflow: hidden;
   width: 100%;
-}
-
-.preview-section {
-  flex: 1;
   display: flex;
   flex-direction: column;
+  min-height: 0;
+}
+
+// Zone 1 — téléversement : hauteur dictée par son contenu
+.upload-section--fixe {
+  flex: 0 0 auto;
+}
+
+// Zone 2 — plan de classement : hauteur de son contenu, plafonnée à un tiers de
+// la colonne. flex-shrink à 0, sinon il cède sa place à l'aperçu.
+.tree-section {
+  flex: 0 0 auto;
+  max-height: 32%;
+}
+
+// Zone 3 — aperçu : tout le reste. La base à 0 est essentielle : avec `auto`,
+// la hauteur naturelle du canvas PDF (une page entière) entre dans le calcul du
+// flex, l'aperçu réclame toute la colonne et écrase le plan de classement.
+.preview-section {
+  flex: 1 1 0;
   min-height: 200px;
 }
 
-.upload-section-label {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  padding: 8px 14px;
-  background: #F1F5F9;
-  font-size: 11px;
-  font-weight: 700;
-  color: #475569;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  border-bottom: 1px solid #E2E8F0;
-
-  i {
-    font-size: 14px;
-    color: rgba(0, 54, 110);
-  }
+// ── Aperçu en plein écran ───────────────────────────────────────────
+.preview-section.preview-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 1050;
+  max-height: none;
+  padding: 12px 16px 16px;
+  background: #fff;
+  box-shadow: 0 0 40px rgba(15, 23, 42, 0.25);
 }
+
+
+
 
 .preview-filename {
   margin-left: auto;
@@ -1159,13 +1409,6 @@ input[type="checkbox"]:checked {
   letter-spacing: 0;
   padding: 2px 10px;
   color: #67615a !important;
-}
-
-.label-with-action {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 5px;
 }
 
 .generate-num-link {
@@ -1236,11 +1479,14 @@ input[type="checkbox"]:checked {
 }
 
 .upload-section-body {
-  padding: 12px 14px;
+  padding: 0 2px;
 }
 
 .tree-body {
-  padding: 8px 6px;
+  flex: 1;
+  min-height: 0;
+  padding: 0;
+  overflow: auto;
 }
 
 // ═══════════════════════════════════════
@@ -1253,13 +1499,13 @@ input[type="checkbox"]:checked {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 500;
-  color: #94A3B8;
+  color: #64748B;
   white-space: nowrap;
 
   i {
-    font-size: 11px;
+    font-size: 12px;
   }
 }
 
@@ -1395,7 +1641,9 @@ input[type="checkbox"]:checked {
 
 .preview-body {
   flex: 1;
+  min-height: 0;
   padding: 0;
+  overflow: auto;
 
   .preview-content {
     width: 100%;
@@ -1587,40 +1835,51 @@ input[type="checkbox"]:checked {
 }
 
 
-::ng-deep nz-tree-select .ant-select-selector {
-  height: auto !important; // ← hauteur automatique
-  min-height: 40px !important;
-  padding: 4px 8px !important;
-  flex-wrap: wrap !important;
-}
+:host ::ng-deep nz-tree-select {
+  .ant-select-selector {
+    height: 36px !important;
+    min-height: 36px !important;
+    padding: 2px 6px !important;
+    flex-wrap: nowrap !important;
+    overflow: hidden !important;
+  }
 
-::ng-deep nz-tree-select .ant-select-selection-overflow {
-  flex-wrap: wrap !important;
-  gap: 4px !important;
-}
+  .ant-select-selection-overflow {
+    flex-wrap: nowrap !important;
+    overflow: hidden !important;
+    gap: 4px !important;
+  }
 
-::ng-deep nz-tree-select .ant-select-selection-overflow-item {
-  max-width: 100% !important;
-}
+  .ant-select-selection-overflow-item {
+    max-width: 100% !important;
+    min-width: 0 !important;
+    flex-shrink: 1 !important;
+  }
 
-::ng-deep nz-tree-select .ant-select-selection-item {
-  max-width: 200px !important;
-  white-space: nowrap !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-  font-size: 12px !important;
-  height: 24px !important;
-  line-height: 22px !important;
-  border-radius: 2px !important;
-  background: #EFF6FF !important;
-  border-color: #BFDBFE !important;
-  color: #1e3a5f !important;
+  .ant-select-selection-overflow-item-rest,
+  .ant-select-selection-overflow-item-suffix {
+    flex-shrink: 0 !important;
+  }
+
+  .ant-select-selection-item {
+    max-width: 100% !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    font-size: 12px !important;
+    height: 22px !important;
+    line-height: 20px !important;
+    border-radius: 4px !important;
+    background: #EFF6FF !important;
+    border-color: #BFDBFE !important;
+    color: #1e3a5f !important;
+  }
 }
 
 
 .form-footer-bar {
   flex-shrink: 0; // toujours visible, ancrée en bas de la colonne
-  height: 60px;
+  min-height: 60px;
   background: #FAFBFC;
   border-top: 1px solid #EEF2F7;
   box-shadow: 0 -2px 6px rgba(15, 23, 42, 0.04);
@@ -1628,15 +1887,38 @@ input[type="checkbox"]:checked {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 20px;
+  gap: 12px;
+  padding: 10px 20px;
 }
 
+// Le panneau est redimensionnable : quand il devient étroit, c'est la phrase
+// d'aide qui cède (troncature), jamais les boutons.
 .form-footer-left {
+  flex: 1 1 auto;
   min-width: 0;
 
   .footer-hint {
+    display: block;
     font-size: 12px;
     color: #94A3B8;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.form-footer-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0; // les deux boutons ne passent jamais à la ligne
+
+  .btn {
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
   }
 }
 
@@ -1740,7 +2022,21 @@ input[type="checkbox"]:checked {
   .form-panel,
   .upload-panel {
     height: auto !important;
-    overflow-y: visible !important;
+    // overflow (et pas overflow-y) : sinon overflow-x:hidden hérité du raccourci
+    // force overflow-y à auto et on récupère une barre de défilement interne.
+    overflow: visible !important;
+  }
+
+  // Plus de partage 40/60 : chaque zone prend la hauteur de son contenu
+  .upload-section,
+  .tree-section,
+  .preview-section {
+    flex: none !important;
+  }
+
+  .tree-body,
+  .preview-body {
+    overflow: visible !important;
   }
 
   .preview-section {
@@ -1760,9 +2056,14 @@ input[type="checkbox"]:checked {
     padding-right: 8px !important;
   }
 
-  // Archives + Statut → chacun pleine largeur
-  .col-span-6 {
+  // Un seul champ par ligne sur téléphone, même si le conteneur reste large
+  .col-span-6,
+  .field-half {
     grid-column: span 12 !important;
+  }
+
+  .assign-acc-body {
+    grid-template-columns: 1fr !important;
   }
 
   .form-section-body {
@@ -1775,14 +2076,11 @@ input[type="checkbox"]:checked {
     gap: 10px !important;
   }
 
-  .form-section-label {
-    padding: 0 2px 12px;
-    font-size: 15px;
-  }
-
+  .form-section-label,
   .upload-section-label {
-    padding: 7px 10px;
-    font-size: 10px;
+    padding: 0 2px 8px;
+    margin-bottom: 10px;
+    font-size: 14px;
   }
 
   .upload-section-label {
@@ -1887,7 +2185,7 @@ input[type="checkbox"]:checked {
 // Bouton Suivant/Valider — garde ton #00141e
 .newBtn {
   justify-content: center;
-  height: 38px !important;
+  height: 36px !important;
   padding: 0 20px !important;
   border-radius: 8px !important;
   background-color: #00141e !important;
@@ -1919,26 +2217,36 @@ input[type="checkbox"]:checked {
 // ═══════════════════════════════════════
 // Bouton icône « Générer un numéro automatique » (avec tooltip)
 .generate-num-btn {
-  display: inline-flex;
+  // À l'intérieur du champ, à droite — même géométrie et même couleur que le
+  // déclencheur du calendrier de « Date du document », juste à côté.
+  position: absolute;
+  right: 1px;
+  top: 1px;
+  bottom: 1px;
+  width: 36px;
+  display: flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
-  //border: 1px solid rgba(0, 54, 110, 0.2);
-  border-radius: 7px;
-  //background: rgba(0, 54, 110, 0.06);
-  color: #00366e;
+  border: none;
+  border-radius: 0 3px 3px 0;
+  background: transparent;
+  color: #8c8c8c;
   cursor: pointer;
-  transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+  z-index: 3;
+  transition: background 0.15s ease, color 0.15s ease;
 
-  i { font-size: 15px; line-height: 1; }
-
-  &:hover:not(:disabled) {
-    background: rgba(0, 54, 110, 0.12);
-    border-color: rgba(0, 54, 110, 0.4);
+  i {
+    font-size: 15px;
+    line-height: 1;
+    transition: transform 0.1s ease;
   }
 
-  &:active:not(:disabled) { transform: scale(0.93); }
+  &:hover:not(:disabled) {
+    background: rgba(0, 54, 110, 0.06);
+    color: #00366e;
+  }
+
+  &:active:not(:disabled) i { transform: scale(0.9); }
 
   &:disabled,
   &.generate-num-btn--loading {
@@ -2033,6 +2341,11 @@ input[type="checkbox"]:checked {
 
 .code-input-wrap {
   position: relative;
+
+  .code-text-input {
+    width: 100%;
+    padding-right: 38px;
+  }
 }
 
 .input-generating {
@@ -2048,10 +2361,10 @@ input[type="checkbox"]:checked {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  border-radius: 8px;
+  border-radius: 4px;
   background: rgba(241, 245, 249, 0.9);
   pointer-events: none;
-  z-index: 2;
+  z-index: 4; // au-dessus du bouton, qui est désactivé pendant la génération
 }
 
 .code-gen-spin {
@@ -2070,13 +2383,4 @@ input[type="checkbox"]:checked {
   font-weight: 600;
   color: rgba(0, 54, 110);
   letter-spacing: 0.01em;
-}
-
-// La hauteur doit descendre jusqu'aux panneaux, sinon .box height:100% retombe sur auto
-:host ::ng-deep .ant-splitter {
-  height: 140% !important;
-}
-
-::ng-deep .page-wrapper.compact-wrapper .page-body-wrapper .page-body {
-  min-height: calc(143vh - 80px) !important;
 }

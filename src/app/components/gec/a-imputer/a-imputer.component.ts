@@ -2,16 +2,17 @@ import {Component, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {NzTableModule, NzTableQueryParams} from 'ng-zorro-antd/table';
-import {NzTagModule} from 'ng-zorro-antd/tag';
-import {NzToolTipModule} from 'ng-zorro-antd/tooltip';
+import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
 import * as XLSX from 'xlsx';
 import moment from 'moment';
-import 'moment/locale/fr';
 
-import {CardComponent} from '../../../shared/components/ui/card/card.component';
-import {FeatherIconComponent} from '../../../shared/components/ui/feather-icon/feather-icon.component';
 import {Authorization} from '../../../protect/authorization.service';
 import {HttpService} from '../../../core/http.service';
+import {CardComponent} from '../../../shared/components/ui/card/card.component';
+import {FeatherIconComponent} from '../../../shared/components/ui/feather-icon/feather-icon.component';
+import {
+    ComposeEmailModalComponent, DocResult,
+} from '../imputation/widgets/compose-email-modal/compose-email-modal.component';
 import {
     DocumentRow,
     lignesDeReponse,
@@ -22,22 +23,24 @@ import {
 } from '../documents-imputation-api';
 
 /**
- * ══ MES IMPUTATIONS ═════════════════════════════════════════════════════════
+ * ══ DOCUMENTS À IMPUTER ═════════════════════════════════════════════════════
  *
- * Le pendant de « Documents à imputer » : les documents qui ont déjà été
- * adressés à quelqu'un. Même source, même pagination serveur, seul is_imputed
- * change — d'où le fichier commun documents-imputation-api.ts.
+ * La liste de travail de l'utilisateur : les documents qui attendent d'être
+ * adressés à quelqu'un. On en désigne un, on l'impute, et il sort de la liste —
+ * la sortie étant décidée par le back, l'écran recharge après un envoi réussi.
+ *
+ * Source : api/:recherche-documents-non-imputes avec is_imputed=false.
+ * La pagination est faite par le serveur : le tableau ne détient jamais qu'une
+ * page, et c'est `total` qui alimente le pied de pagination.
  */
 @Component({
-    selector: 'app-mes-imputations',
-    imports: [
-        CommonModule, FormsModule, NzTableModule, NzTagModule, NzToolTipModule,
-        CardComponent, FeatherIconComponent,
-    ],
-    templateUrl: './mes-imputations.component.html',
-    styleUrl: './mes-imputations.component.scss',
+    selector: 'app-a-imputer',
+    imports: [CommonModule, FormsModule, NzTableModule, NzTooltipDirective,
+        CardComponent, FeatherIconComponent, ComposeEmailModalComponent],
+    templateUrl: './a-imputer.component.html',
+    styleUrl: './a-imputer.component.scss',
 })
-export class MesImputationsComponent implements OnInit {
+export class AImputerComponent implements OnInit {
 
     private users: any = {};
     isloading = false;
@@ -55,7 +58,13 @@ export class MesImputationsComponent implements OnInit {
     pageSize = 10;
     total = 0;
 
-    constructor(private autor: Authorization, private httService: HttpService) {
+    /** Document en cours d'imputation ; ouvre le modal quand il est renseigné. */
+    docAImputer: DocResult | null = null;
+
+    constructor(
+        private autor: Authorization,
+        private httService: HttpService,
+    ) {
     }
 
     ngOnInit(): void {
@@ -71,7 +80,7 @@ export class MesImputationsComponent implements OnInit {
             page,
             pageSize,
             idsociete: this.users?.datasociete?.uid || '',
-            isImputed: true,
+            isImputed: false,
             search: this.searchValue,
         });
     }
@@ -121,7 +130,11 @@ export class MesImputationsComponent implements OnInit {
 
     // ── Recherche ────────────────────────────────────────────
 
-    /** Déléguée au serveur : filtrer localement ne porterait que sur la page. */
+    /**
+     * La recherche est déléguée au serveur : filtrer localement ne porterait
+     * que sur les lignes affichées, ce qui donnerait des résultats faux. On
+     * repart de la page 1 et on temporise pour ne pas appeler à chaque frappe.
+     */
     onSearch(): void {
         clearTimeout(this.rechercheTimer);
         this.rechercheTimer = setTimeout(() => {
@@ -135,9 +148,38 @@ export class MesImputationsComponent implements OnInit {
         this.onSearch();
     }
 
+    // ── Imputation ───────────────────────────────────────────
+    imputer(row: DocumentRow): void {
+        this.docAImputer = {uid: row.uid, code_docs: row.code_docs, lib_docs: row.lib_docs};
+    }
+
+    fermerModal(): void {
+        this.docAImputer = null;
+    }
+
+    /**
+     * Le document quitte la liste parce que le back ne le renvoie plus — d'où
+     * un rechargement plutôt qu'un retrait local, qui donnerait un écran en
+     * désaccord avec le serveur si l'envoi n'avait pas abouti.
+     *
+     * Si c'était le dernier de la page, cette page n'existe plus : on recule
+     * d'un cran pour ne pas afficher un tableau vide.
+     */
+    onImpute(): void {
+        this.docAImputer = null;
+        if (this.rows.length === 1 && this.pageIndex > 1) {
+            this.pageIndex--;
+        }
+        this.charger();
+    }
+
     // ── Export ───────────────────────────────────────────────
 
-    /** Comme ailleurs : l'export porte sur la liste entière, pas sur la page. */
+    /**
+     * L'export porte sur la liste entière, pas sur la page affichée : on
+     * redemande tout au serveur en une fois. Sans ça, le fichier ne
+     * contiendrait que les lignes sous les yeux de l'utilisateur.
+     */
     exportToExcel(): void {
         if (this.isExporting) return;
         this.isExporting = true;
@@ -155,6 +197,7 @@ export class MesImputationsComponent implements OnInit {
             })
             .catch(() => {
                 this.isExporting = false;
+                // Au pire, on exporte ce qui est déjà à l'écran.
                 this.ecrireClasseur(this.rows);
             });
     }
@@ -171,12 +214,12 @@ export class MesImputationsComponent implements OnInit {
 
         const ws = XLSX.utils.json_to_sheet(rows);
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'Mes imputations');
+        XLSX.utils.book_append_sheet(wb, ws, 'Documents à imputer');
 
         ws['!cols'] = Object.keys(rows[0] || {}).map(key => ({
             wch: Math.max(key.length, ...rows.map((r: any) => String(r[key] || '').length)) + 2,
         }));
 
-        XLSX.writeFile(wb, `mes_imputations_${moment().format('YYYYMMDD_HHmmss')}.xlsx`);
+        XLSX.writeFile(wb, `documents_a_imputer_${moment().format('YYYYMMDD_HHmmss')}.xlsx`);
     }
 }

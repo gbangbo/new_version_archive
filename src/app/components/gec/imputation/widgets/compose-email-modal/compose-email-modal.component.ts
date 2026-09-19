@@ -1,4 +1,4 @@
-import {Component, EventEmitter, HostListener, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, HostListener, Input, OnInit, Output} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {NzSelectModule} from 'ng-zorro-antd/select';
@@ -11,7 +11,8 @@ import {HttpService} from '../../../../../core/http.service';
 import {couleurTypeFichier, libelleTypeFichier} from '../../imputation-api';
 import {FeatherIconComponent} from '../../../../../shared/components/ui/feather-icon/feather-icon.component';
 
-interface DocResult {
+/** Exportée : les écrans qui imposent un document au modal la réutilisent. */
+export interface DocResult {
     uid: string;
     code_docs: string;
     lib_docs: string;
@@ -39,6 +40,15 @@ const ACTION_CREATION = 1;
     styleUrl: './compose-email-modal.component.scss'
 })
 export class ComposeEmailModalComponent implements OnInit {
+
+    /**
+     * Document imposé par l'écran appelant (liste des documents à imputer).
+     *
+     * Quand il est fourni, la recherche par numéro n'a plus lieu d'être : le
+     * document est déjà désigné, et le formulaire s'ouvre directement sur ses
+     * pièces. Laissé vide, le modal garde son fonctionnement d'origine.
+     */
+    @Input() documentImpose: DocResult | null = null;
 
     @Output() modalOpen = new EventEmitter<boolean>();
     @Output() created = new EventEmitter<void>();
@@ -109,6 +119,13 @@ export class ComposeEmailModalComponent implements OnInit {
 
     ngOnInit(): void {
         this.users = this.autor.getInfosUsers();
+        if (this.documentImpose) {
+            // On passe par le même chemin qu'une sélection manuelle : les
+            // pièces se chargent, et rien d'autre dans l'écran n'a à savoir
+            // d'où vient le document.
+            this.docResults = [this.documentImpose];
+            this.basculerDocument(this.documentImpose);
+        }
         this.loadPersonnels();
         this.loadPriorites();
         this.loadConsignes();
@@ -172,6 +189,9 @@ export class ComposeEmailModalComponent implements OnInit {
     }
 
     basculerDocument(doc: DocResult): void {
+        // Un document imposé ne se referme pas : il n'y a rien d'autre à
+        // choisir, et le refermer laisserait un formulaire sans document.
+        if (this.documentImpose && this.estOuvert(doc)) return;
         if (this.estOuvert(doc)) {
             this.selectedDoc = null;
             this.files = [];

@@ -33,15 +33,16 @@
                     <!-- Section : Informations générales -->
                     <div class="form-section">
                         <div class="form-section-label">
-                            <i class="ti ti-settings"></i> Informations générales
+                            <i class="fa-solid fa-circle-info"></i>
+                            Informations générales
                         </div>
-                        <div class="grid grid-cols-12 gap-x-4 gap-y-5 form-section-body">
+                        <div class="grid grid-cols-12 gap-x-4 gap-y-4 form-section-body">
 
 
                             <!-- Archives -->
-                            <div class="col-span-6">
+                            <div class="field-half">
                                 <label class="form-label section-label">
-                                    <i class="ti ti-archive"></i> Archives
+                                    Archives
                                 </label>
                                 <div class="statut-pills statut-pills--mono" role="radiogroup" aria-label="Type d'archives">
                                     <button type="button"
@@ -49,7 +50,7 @@
                                             [class.active]="validationForm.get('typeArchivage')?.value === 'courante'"
                                             role="radio" [attr.aria-checked]="validationForm.get('typeArchivage')?.value === 'courante'"
                                             (click)="setArchive('courante')">
-                                        <span class="statut-pill-dot"><i class="ti ti-check"></i></span>
+                                        <span class="statut-pill-dot"><i class="fa-solid fa-check"></i></span>
                                         <span class="statut-pill-label">Courante</span>
                                     </button>
                                     <button type="button"
@@ -57,16 +58,16 @@
                                             [class.active]="validationForm.get('typeArchivage')?.value === 'definitive'"
                                             role="radio" [attr.aria-checked]="validationForm.get('typeArchivage')?.value === 'definitive'"
                                             (click)="setArchive('definitive')">
-                                        <span class="statut-pill-dot"><i class="ti ti-check"></i></span>
+                                        <span class="statut-pill-dot"><i class="fa-solid fa-check"></i></span>
                                         <span class="statut-pill-label">Définitive</span>
                                     </button>
                                 </div>
                             </div>
 
                             <!-- Statut du document -->
-                            <div class="col-span-6">
+                            <div class="field-half">
                                 <label class="form-label section-label">
-                                    <i class="ti ti-shield"></i> Statut du document
+                                    Statut du document
                                 </label>
                                 <div class="statut-pills" role="radiogroup" aria-label="Statut du document">
                                     <button type="button"
@@ -74,7 +75,7 @@
                                             [class.active]="documentStatus === 'privee'"
                                             role="radio" [attr.aria-checked]="documentStatus === 'privee'"
                                             (click)="setStatut('privee')">
-                                        <span class="statut-pill-dot"><i class="ti ti-check"></i></span>
+                                        <span class="statut-pill-dot"><i class="fa-solid fa-check"></i></span>
                                         <span class="statut-pill-label">Privée</span>
                                     </button>
                                     <button type="button"
@@ -82,7 +83,7 @@
                                             [class.active]="documentStatus === 'public'"
                                             role="radio" [attr.aria-checked]="documentStatus === 'public'"
                                             (click)="setStatut('public')">
-                                        <span class="statut-pill-dot"><i class="ti ti-check"></i></span>
+                                        <span class="statut-pill-dot"><i class="fa-solid fa-check"></i></span>
                                         <span class="statut-pill-label">Public</span>
                                     </button>
                                     <button type="button"
@@ -90,14 +91,14 @@
                                             [class.active]="documentStatus === 'confidentiel'"
                                             role="radio" [attr.aria-checked]="documentStatus === 'confidentiel'"
                                             (click)="setStatut('confidentiel')">
-                                        <span class="statut-pill-dot"><i class="ti ti-check"></i></span>
+                                        <span class="statut-pill-dot"><i class="fa-solid fa-check"></i></span>
                                         <span class="statut-pill-label">Confidentiel</span>
                                     </button>
                                 </div>
                             </div>
 
                             <!-- Site -->
-                            <div class="col-span-12 position-relative" *ngIf="validationForm.value.typeArchivage=='definitive'">
+                            <div class="field-half position-relative" *ngIf="validationForm.value.typeArchivage=='definitive'">
                                 <label class="form-label" for="idsite">
                                     Site <span class="txt-danger">*</span>
                                 </label>
@@ -128,7 +129,7 @@
                             </div>
 
                             <!-- Rayon -->
-                            <div class="col-span-12 position-relative" *ngIf="validationForm.value.typeArchivage=='definitive'">
+                            <div class="field-half position-relative" *ngIf="validationForm.value.typeArchivage=='definitive'">
                                 <label class="form-label" for="idrayon">
                                     Rayon <span class="txt-danger">*</span>
                                 </label>
@@ -214,18 +215,16 @@
                             }
                         </div>
 
-                            <!-- Notification mail -->
+                            <!-- Notification mail — interrupteur booléen -->
                             <div class="col-span-12 mt-2">
-                                <div class="statut-pills statut-pills--mono">
-                                    <button type="button" class="statut-pill statut-pill--wide"
-                                            [class.active]="validationForm.get('sendmail')?.value"
-                                            role="switch" [attr.aria-checked]="validationForm.get('sendmail')?.value"
-                                            (click)="validationForm.patchValue({sendmail: !validationForm.value.sendmail})">
-                                        <span class="statut-pill-dot"><i class="ti ti-check"></i></span>
-                                        <i class="ti ti-mail statut-pill-ico"></i>
-                                        <span class="statut-pill-label">Informer les services bénéficiaires par mail</span>
-                                    </button>
-                                </div>
+                                <button type="button" class="toggle-row"
+                                        [class.active]="validationForm.get('sendmail')?.value"
+                                        role="switch" [attr.aria-checked]="validationForm.get('sendmail')?.value"
+                                        (click)="validationForm.patchValue({sendmail: !validationForm.value.sendmail})">
+                                    <span class="toggle-track"><span class="toggle-knob"></span></span>
+<!--                                    <i class="fa-regular fa-envelope toggle-ico"></i>-->
+                                    <span class="toggle-label">Informer les services bénéficiaires par mail</span>
+                                </button>
                             </div>
 
                             <!-- Propriétaires du document (accordéon) -->
@@ -238,12 +237,17 @@
                                          role="button" tabindex="0"
                                          (click)="onAssignHeader()"
                                          (keydown.enter)="onAssignHeader()" (keydown.space)="onAssignHeader()">
-                                        <span class="statut-pill-dot"
+                                        <span class="toggle-track"
                                               role="switch" [attr.aria-checked]="assignProprietaires"
                                               title="Activer / désactiver"
-                                              (click)="onAssignDot($event)"><i class="ti ti-check"></i></span>
-                                        <i class="ti ti-users statut-pill-ico"></i>
-                                        <span class="statut-pill-label">Attribuer le document à des utilisateurs</span>
+                                              (click)="onAssignDot($event)"><span class="toggle-knob"></span></span>
+<!--                                        <i class="fa-solid fa-users toggle-ico"></i>-->
+                                        <span class="toggle-label">Attribuer le document à des utilisateurs</span>
+                                        <span class="assign-acc-toggle" *ngIf="assignProprietaires"
+                                              [attr.aria-label]="proprietairesCollapsed ? 'Déplier' : 'Replier'">
+                                            <i class="fa-solid fa-chevron-down"
+                                               [class.assign-acc-chevron-open]="!proprietairesCollapsed" style="font-size: 10px;"></i>
+                                        </span>
                                     </div>
 
                                     <div class="assign-acc-body" *ngIf="assignProprietaires && !proprietairesCollapsed">
@@ -270,7 +274,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="position-relative mt-3">
+                                        <div class="position-relative">
                                             <label class="form-label" for="dataproprietaire">
                                                 Utilisateurs propriétaires
                                             </label>
@@ -295,7 +299,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-span-12">
+                            <div class="field-half">
                                 <label class="form-label" for="idcategories">Série
                                     <span class="txt-danger">*</span>
                                 </label>
@@ -304,11 +308,12 @@
                                          id="idcategories"
                                          formControlName="idcategories"
                                          [disabled]="isloadSerie"
-                                         [overlay]="false"
+                                         [overlay]="true"
                                          [resettable]="true"
                                          [listPosition]="'below'"
                                          (update)="selectSerie($event)"
                                          [minCountForSearch]="1"
+                                         [resultMaxHeight]="'300'"
                                          noResultMessage="Aucune donnée trouvée"
                                          class="raise-input-select" [ngClass]="{ 'is-invalid' : validationForm.controls['idcategories'].touched &&  validationForm.controls['idcategories'].errors?.['required'] , 'is-valid' : validationForm.controls['idcategories'].valid}">
 
@@ -325,7 +330,7 @@
                             </div>
                             
                     <!-- Type de document -->
-                    <div class="col-span-12 position-relative">
+                    <div class="field-half position-relative">
                         <label class="form-label" for="idtype_docs">
                             Type de document <span class="txt-danger">*</span>
                         </label>
@@ -355,11 +360,19 @@
                         }
                     </div>
 
-                            <div class="col-span-12">
-                                <div class="label-with-action">
-                                    <label class="form-label mb-0" for="code_docs">Numéro du document
-                                        <span class="txt-danger">*</span>
-                                    </label>
+                            <div class="field-half">
+                                <label class="form-label" for="code_docs">Numéro du document
+                                    <span class="txt-danger">*</span>
+                                </label>
+                                <div class="code-input-wrap">
+                                    <input class="form-control code-text-input" id="code_docs" type="text"
+                                           placeholder="Entrez le Numéro du document"
+                                           formControlName="code_docs"
+                                           [ngClass]="{
+                                               'is-invalid': validationForm.controls['code_docs'].touched && validationForm.controls['code_docs'].errors?.['required'],
+                                               'is-valid':   validationForm.controls['code_docs'].valid,
+                                               'input-generating': isGeneratingCode
+                                           }">
                                     <button type="button" class="generate-num-btn"
                                             [class.generate-num-btn--loading]="isGeneratingCode"
                                             [disabled]="isGeneratingCode"
@@ -371,16 +384,6 @@
                                         <span class="gen-spinner" *ngIf="isGeneratingCode"></span>
                                         <i class="fa-solid fa-arrows-rotate" *ngIf="!isGeneratingCode"></i>
                                     </button>
-                                </div>
-                                <div class="code-input-wrap">
-                                    <input class="form-control" id="code_docs" type="text"
-                                           placeholder="Entrez le Numéro du document"
-                                           formControlName="code_docs"
-                                           [ngClass]="{
-                                               'is-invalid': validationForm.controls['code_docs'].touched && validationForm.controls['code_docs'].errors?.['required'],
-                                               'is-valid':   validationForm.controls['code_docs'].valid,
-                                               'input-generating': isGeneratingCode
-                                           }">
                                     <div class="code-input-overlay" *ngIf="isGeneratingCode">
                                         <span class="code-gen-spin"></span>
                                         <span class="code-gen-text">Génération du numéro...</span>
@@ -393,21 +396,7 @@
                                 <div class="invalid-feedback"> Veuillez saisir le Numéro du document svp.</div>
                                 }
                             </div>
-                            <div class="col-span-12">
-                                <label class="form-label" for="lib_docs">Objet du document
-                                    <span class="txt-danger">*</span>
-                                </label>
-                                <input class="form-control" id="lib_docs" type="text"
-                                       placeholder="Entrez l'objet du document" formControlName="lib_docs"
-                                       [ngClass]="{ 'is-invalid' : validationForm.controls['lib_docs'].touched &&  validationForm.controls['lib_docs'].errors?.['required'] , 'is-valid' : validationForm.controls['lib_docs'].valid}">
-                                @if(validationForm.controls['lib_docs'].valid) {
-                                <!--<div class="valid-feedback">Looks's Good!</div>-->
-                                } @else if(validationForm.controls['lib_docs'].touched &&
-                                validationForm.controls['lib_docs'].errors?.['required']) {
-                                <div class="invalid-feedback"> Veuillez saisir l'objet du document svp.</div>
-                                }
-                            </div>
-                            <div class="col-span-12">
+                            <div class="field-half">
                                 <label class="form-label" for="date_docs_text">Date du document
                                     <span class="txt-danger">*</span>
                                 </label>
@@ -426,7 +415,7 @@
                                             'is-valid': validationForm.controls['date_docs'].valid
                                         }">
                                     <div class="date-cal-trigger-wrap">
-                                        <i class="fa-regular fa-calendar"></i>
+                                        <i class="fa-regular fa-calendar date-cal-icon"></i>
                                         <nz-date-picker
                                             class="date-picker-ghost"
                                             formControlName="date_docs"
@@ -442,6 +431,20 @@
                                 <div class="invalid-feedback"> Veuillez saisir ou sélectionner la date du document svp.</div>
                                 }
                             </div>
+                            <div class="col-span-12">
+                                <label class="form-label" for="lib_docs">Objet du document
+                                    <span class="txt-danger">*</span>
+                                </label>
+                                <input class="form-control" id="lib_docs" type="text"
+                                       placeholder="Entrez l'objet du document" formControlName="lib_docs"
+                                       [ngClass]="{ 'is-invalid' : validationForm.controls['lib_docs'].touched &&  validationForm.controls['lib_docs'].errors?.['required'] , 'is-valid' : validationForm.controls['lib_docs'].valid}">
+                                @if(validationForm.controls['lib_docs'].valid) {
+                                <!--<div class="valid-feedback">Looks's Good!</div>-->
+                                } @else if(validationForm.controls['lib_docs'].touched &&
+                                validationForm.controls['lib_docs'].errors?.['required']) {
+                                <div class="invalid-feedback"> Veuillez saisir l'objet du document svp.</div>
+                                }
+                            </div>
 
 
                         </div>
@@ -450,17 +453,17 @@
                     <!-- Section : Métadonnées (dynamique) -->
                     <div class="form-section" *ngIf="ligneTypeOfDoc?.dataPro?.length">
                         <div class="form-section-label">
-                            <i class="ti ti-list-details"></i> Métadonnées
-                            <nz-tag class="type-badge" [nzColor]="'rgba(115, 102, 255, 0.1)'">{{ ligneTypeOfDoc?.libelle_type_docs }}</nz-tag>
+                            <i class="fa-solid fa-list-ul"></i> Métadonnées
+<!--                            <nz-tag class="type-badge" [nzColor]="'rgba(115, 102, 255, 0.1)'">{{ ligneTypeOfDoc?.libelle_type_docs }}</nz-tag>-->
                         </div>
-                        <div class="grid grid-cols-12 gap-x-4 gap-y-5 form-section-body">
+                        <div class="grid grid-cols-12 gap-x-4 gap-y-4 form-section-body">
                             <ng-container *ngFor="let item of ligneTypeOfDoc?.dataPro">
 
-                                <!-- Champ date -->
+                                <!-- Champ date   <span class="txt-danger">*</span>-->
                                 @if (item.type_proprietes_docs === 'date') {
-                                <div class="col-span-12">
+                                <div class="field-half">
                                     <label class="form-label">
-                                        {{ item.lib_proprietes_docs }} <span class="txt-danger">*</span>
+                                        {{ item.lib_proprietes_docs }}
                                     </label>
                                     <nz-date-picker
                                         [(ngModel)]="item.value_proprietes_docs"
@@ -473,9 +476,9 @@
 
                                <!-- Champ select (liste de valeurs prédéfinies) -->
                                 } @else if (item.define_proprietes_docs == 1) {
-                                <div class="col-span-12">
+                                <div class="field-half">
                                     <label class="form-label">
-                                        {{ item.lib_proprietes_docs }} <span class="txt-danger">*</span>
+                                        {{ item.lib_proprietes_docs }}
                                     </label>
                                     <nz-select
                                         nzShowSearch
@@ -494,9 +497,9 @@
 
                                 <!-- Champ texte / nombre -->
                                 } @else {
-                                <div class="col-span-12">
+                                <div class="field-half">
                                     <label class="form-label">
-                                        {{ item.lib_proprietes_docs }} <span class="txt-danger">*</span>
+                                        {{ item.lib_proprietes_docs }}
                                     </label>
                                     <input class="form-control"
                                            [type]="item.type_proprietes_docs"
@@ -512,7 +515,7 @@
 
                     <!-- État vide: aucun type sélectionné -->
                     <div class="form-empty-meta mt-10" *ngIf="!ligneTypeOfDoc?.dataPro?.length">
-                        <i class="ti ti-forms"></i>
+                        <i class="fa-regular fa-rectangle-list"></i>
                         <span>Sélectionnez un type de document pour afficher les champs spécifiques</span>
                     </div>
 
@@ -526,7 +529,7 @@
                             </span>
                         </div>
                         <div class="form-footer-right">
-                            <button class="btn btn-light me-2" type="button" (click)="resetAfterSave()">
+                            <button class="btn btn-light" type="button" (click)="resetAfterSave()">
                                 Annuler
                             </button>
                             <button class="btn newBtn" type="button" (click)="submitForm()">
@@ -544,9 +547,9 @@
                 <div class="upload-panel">
 
                     <!-- Section : Téléverser -->
-                    <div class="upload-section">
+                    <div class="upload-section upload-section--fixe">
                         <div class="upload-section-label">
-                            <i class="ti ti-upload"></i> Téléverser un fichier
+                            <i class="fa-solid fa-cloud-arrow-up"></i> Téléverser un fichier
                         </div>
                         <div class="upload-section-body">
 
@@ -556,7 +559,7 @@
                                 <!-- Blocage si aucun type de document sélectionné -->
                                 <div class="dropzone-blocked-overlay"
                                      *ngIf="!validationForm.controls['idtype_docs'].value">
-                                    <i class="ti ti-lock"></i>
+                                    <i class="fa-solid fa-lock"></i>
                                     <span>Veuillez sélectionner un type de document avant de téléverser un fichier.</span>
                                 </div>
 
@@ -566,7 +569,7 @@
                                            [(ngModel)]="applyOCR"
                                            [ngModelOptions]="{standalone: true}"
                                            class="ocr-mini-checkbox">
-                                    <i class="ti ti-scan"></i>
+                                    <i class="fa-solid fa-wand-magic-sparkles"></i>
                                     <span>Appliquer l'OCR</span>
                                 </label>
 
@@ -598,11 +601,11 @@
                     </div>
 
                     <!-- Section : Fichiers importés -->
-                    <div class="upload-section">
+                    <div class="upload-section tree-section" *ngIf="treeData?.length">
                         <div class="upload-section-label">
-                            <i class="ti ti-files"></i> Plan de classement + fichiers importés
+                            <i class="fa-solid fa-sitemap"></i> Plan de classement + fichiers importés
                             <span class="drag-hint" *ngIf="dataFileTemps?.length">
-                                <i class="ti ti-drag-drop"></i> Glissez un fichier vers un dossier
+                                <i class="fa-solid fa-hand-pointer"></i> Glissez un fichier vers un dossier
                             </span>
                         </div>
                         <div class="upload-section-body tree-body">
@@ -626,7 +629,7 @@
                                                     ? 'fa-regular fa-folder-open' : 'fa-regular fa-folder'"></i>
                                         {{ node.name }}
                                         <span class="folder-drop-badge" *ngIf="dropTargetKey === node.key">
-                                            <i class="ti ti-plus"></i> Déposer ici
+                                            <i class="fa-solid fa-plus"></i> Déposer ici
                                         </span>
                                     </nz-tree-node-option>
                                 </nz-tree-node>
@@ -644,7 +647,7 @@
                                               (dragend)="onDragEnd()"
                                               [class.file-is-dragging]="draggedFileNode?.uid === node.uid"
                                               title="Glisser vers un dossier">
-                                            <i class="drag-handle-icon ti ti-grip-vertical"></i>
+                                            <i class="drag-handle-icon fa-solid fa-grip-vertical"></i>
                                             <nz-icon *ngIf="node.extension === 'pdf'" nzType="file-pdf" nzTheme="twotone" [nzTwotoneColor]="'#ff4d4f'" class="file-icon"/>
                                             <nz-icon *ngIf="['jpg','JPG','jpeg','JPEG','png','PNG'].includes(node.extension)" nzType="file-image" nzTheme="twotone" [nzTwotoneColor]="'#52c41a'" class="file-icon"/>
                                             <nz-icon *ngIf="['doc','docx'].includes(node.extension)" nzType="file-word" nzTheme="twotone" [nzTwotoneColor]="'#1890ff'" class="file-icon"/>
@@ -678,7 +681,7 @@
                                                     : 'fa-regular fa-folder folder-icon-empty'"></i>
                                         {{ node.name }}
                                         <span class="folder-drop-badge" *ngIf="dropTargetKey === node.key">
-                                            <i class="ti ti-plus"></i> Déposer ici
+                                            <i class="fa-solid fa-plus"></i> Déposer ici
                                         </span>
                                     </nz-tree-node-option>
                                 </nz-tree-node>
@@ -688,9 +691,10 @@
                     </div>
 
                     <!-- Section : Prévisualisation -->
-                    <div class="upload-section preview-section">
-                        <div class="upload-section-label">
-                            <i class="ti ti-eye"></i> Prévisualisation
+                    <div class="upload-section preview-section"
+                         [class.preview-fullscreen]="previewFullscreen">
+                        <div class="upload-section-label" *ngIf="selectedFile">
+<!--                            <i class="fa-regular fa-eye"></i> Prévisualisation-->
                             <nz-tag class="preview-filename" *ngIf="selectedFile" [nzColor]="'rgba(115, 102, 255, 0.1)'">
                                 {{ selectedFile.name }}.{{ selectedFile.extension }}
                             </nz-tag>
@@ -724,7 +728,7 @@
                             </div>
 
                             <!-- Images -->
-                            <div *ngIf="selectedFile && ['jpg','JPG','jpeg','JPEG','png','PNG'].includes(selectedFile?.extension)"
+                            <div *ngIf="selectedFile && previewKind(selectedFile) === 'image'"
                                  class="preview-content pdf-viewer-container">
 
                                 <!-- ── Toolbar Image ───────────────────────────── -->
@@ -782,6 +786,14 @@
                                                 title="Télécharger l'image">
                                             <i class="fa-solid fa-download"></i>
                                         </button>
+                                        <button class="pdf-ctrl-btn"
+                                                type="button"
+                                                (click)="togglePreviewFullscreen()"
+                                                [title]="previewFullscreen ? 'Quitter le plein écran (Échap)' : 'Afficher en plein écran'">
+                                            <i class="fa-solid"
+                                               [class.fa-expand]="!previewFullscreen"
+                                               [class.fa-compress]="previewFullscreen"></i>
+                                        </button>
                                     </div>
                                 </div>
 
@@ -798,7 +810,7 @@
                             </div>
 
                             <!-- PDF -->
-                            <div *ngIf="selectedFile && selectedFile.extension === 'pdf'" class="preview-content pdf-viewer-container">
+                            <div *ngIf="selectedFile && previewKind(selectedFile) === 'pdf'" class="preview-content pdf-viewer-container">
 
                                 <!-- ── Barre de contrôles ─────────────────────── -->
                                 <div class="pdf-toolbar-inner" *ngIf="pdfDoc">
@@ -898,6 +910,14 @@
                                                 title="Télécharger le PDF">
                                             <i class="fa-solid fa-download"></i>
                                         </button>
+                                        <button class="pdf-ctrl-btn"
+                                                type="button"
+                                                (click)="togglePreviewFullscreen()"
+                                                [title]="previewFullscreen ? 'Quitter le plein écran (Échap)' : 'Afficher en plein écran'">
+                                            <i class="fa-solid"
+                                               [class.fa-expand]="!previewFullscreen"
+                                               [class.fa-compress]="previewFullscreen"></i>
+                                        </button>
                                     </div>
 
                                     <!-- Spinner de rendu -->
@@ -914,7 +934,7 @@
                             </div>
 
                             <!-- Word / Excel -->
-                            <div *ngIf="selectedFile && ['doc','docx','xls','xlsx'].includes(selectedFile?.extension)"
+                            <div *ngIf="selectedFile && previewKind(selectedFile) === 'office'"
                                  class="preview-content pdf-viewer-container">
 
                                 <!-- ── Toolbar Office ──────────────────────────── -->
@@ -956,6 +976,14 @@
                                                 title="Télécharger le fichier">
                                             <i class="fa-solid fa-download"></i>
                                         </button>
+                                        <button class="pdf-ctrl-btn"
+                                                type="button"
+                                                (click)="togglePreviewFullscreen()"
+                                                [title]="previewFullscreen ? 'Quitter le plein écran (Échap)' : 'Afficher en plein écran'">
+                                            <i class="fa-solid"
+                                               [class.fa-expand]="!previewFullscreen"
+                                               [class.fa-compress]="previewFullscreen"></i>
+                                        </button>
                                     </div>
                                 </div>
 
@@ -981,7 +1009,7 @@
                             </div>
 
                             <!-- Type non supporté -->
-                            <div *ngIf="selectedFile && getFileType(selectedFile.name) === 'other'" class="preview-placeholder">
+                            <div *ngIf="selectedFile && previewKind(selectedFile) === 'other'" class="preview-placeholder">
                                 <nz-icon nzType="file-unknown" nzTheme="outline"></nz-icon>
                                 <p>Prévisualisation non disponible pour ce type de fichier</p>
 <!--                                <a [href]="selectedFile.url" download class="download-link">-->

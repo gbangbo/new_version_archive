@@ -3,16 +3,19 @@ import {environment} from '../../../../../environments/environment';
 /**
  * ══ APPELS SORTANTS AVEC AUTHENTIFICATION DE PLATEFORME ══════════════════════
  *
- * Point de contact unique des trois écrans « Avec authentification ». Ils
- * forment une chaîne, et se lisent dans cet ordre :
+ * Point de contact unique des écrans « Avec authentification ». Ils forment
+ * une chaîne, et se lisent dans cet ordre :
  *
  *   1. PLATEFORMES  — qui nous sommes chez le partenaire : où demander un jeton,
  *                     avec quels accès, où le lire dans sa réponse, et sous quel
  *                     en-tête le renvoyer ensuite.
  *   2. REQUÊTES     — ce qu'on lui demande : une URL à emplacements nommés, une
  *                     méthode, des valeurs par défaut.
- *   3. EXÉCUTION    — on désigne les deux, on fournit ce qui change, et le back
- *                     s'occupe d'obtenir le jeton puis de jouer la requête.
+ *   3. CORRESPONDANCES — à quel champ de chez nous répond chaque champ relevé
+ *                     dans ses réponses (voir plus bas).
+ *   4. EXÉCUTION    — on désigne plateforme et requête, on fournit ce qui
+ *                     change, et le back s'occupe d'obtenir le jeton puis de
+ *                     jouer la requête.
  *
  * ATTENTION AUX NOMS D'UID : ils ne suivent pas la même convention d'un
  * endpoint à l'autre. Les authentifications s'identifient par `uid`, les
@@ -204,3 +207,123 @@ export function emplacementsDe(url: string): string[] {
     const trouves = (url || '').match(/\{([a-zA-Z0-9_]+)\}/g) || [];
     return [...new Set(trouves.map(t => t.slice(1, -1)))];
 }
+
+// ══ CORRESPONDANCES DE CHAMPS ═══════════════════════════════════════════════
+//
+//  Quatrième étape de la chaîne. Une fois qu'une requête a été jouée, le back
+//  garde trace des champs rencontrés dans la réponse du partenaire : c'est le
+//  `payload` de chaque requête ci-dessous. Cet écran sert à dire, pour chacun,
+//  à quel champ de ARCHIVE WEB PRO il correspond.
+//
+//    payload_externe  = le nom du champ CHEZ LE PARTENAIRE (lecture seule).
+//    payload_interne  = le nom du champ CHEZ NOUS (ce qu'on renseigne ici).
+//
+//  Le GET accepte deux filtres facultatifs : `platform_request` (uid de la
+//  requête) et `remote_id` (identifiant de l'objet externe). Sans eux, il
+//  renvoie toutes les requêtes avec leur payload complet.
+
+export const RECORDS_URL = `${environment.api_url}api/:io-external-platform-response-records`;
+
+/**
+ * Endpoint d'enregistrement des associations.
+ *
+ * PROVISOIRE — l'endpoint dédié n'a pas encore été communiqué ; on écrit pour
+ * l'instant sur celui de lecture, qui suit la convention `action` du projet.
+ * Le jour où le bon est connu, c'est la SEULE ligne à changer : la forme du
+ * corps envoyé est isolée dans `corpsAssociation` ci-dessous.
+ */
+export const ASSOCIATION_URL = RECORDS_URL;
+
+/** Un champ rencontré dans la réponse du partenaire. */
+export interface ChampExterne {
+    /** Identifiant de la ligne côté back — c'est lui qu'on renvoie à l'écriture. */
+    id: number | string;
+    /** Identifiant de l'objet externe auquel ce champ appartient. */
+    remote_id: string;
+    payload_externe: string;
+    payload_interne: string;
+    /** Valeur au chargement : sert à savoir ce qui a réellement été modifié. */
+    initial: string;
+}
+
+/** Une requête et les champs relevés dans ses réponses. */
+export interface RecordRequeteRow {
+    uid: string;
+    name: string;
+    target_url: string;
+    method: string;
+    response_data_path: string;
+    is_active: boolean;
+    plateforme_uid: string;
+    plateforme_nom: string;
+    champs: ChampExterne[];
+    raw: any;
+}
+
+export function mapRecordRequete(e: any): RecordRequeteRow {
+    // Ici la requête s'identifie par `id`, alors que l'endpoint des requêtes
+    // l'appelle `platform_request_uid` : trois noms pour la même chose selon
+    // l'endroit, d'où cette normalisation.
+    return {
+        uid: premierUid(e, 'id', 'platform_request_uid', 'uid'),
+        name: e?.name || '',
+        target_url: e?.target_url || '',
+        method: (e?.method || 'GET').toUpperCase(),
+        response_data_path: e?.response_data_path || '',
+        is_active: e?.is_active ?? true,
+        // La plateforme arrive imbriquée et complète : inutile d'aller la
+        // rechercher sur son propre endpoint pour nommer le partenaire.
+        plateforme_uid: premierUid(e?.authentication, 'uid', 'platform_auth_uid'),
+        plateforme_nom: e?.authentication?.name || '',
+        champs: (e?.payload || []).map((c: any) => mapChampExterne(c)),
+        raw: e,
+    };
+}
+
+export function mapChampExterne(c: any): ChampExterne {
+    const interne = typeof c?.payload_interne === 'string' ? c.payload_interne : '';
+    return {
+        id: c?.id ?? '',
+        remote_id: c?.remote_id != null ? String(c.remote_id) : '',
+        payload_externe: c?.payload_externe || '',
+        payload_interne: interne,
+        initial: interne,
+    };
+}
+
+/**
+ * Corps envoyé pour enregistrer les associations d'une requête.
+ *
+ * Regroupé ici parce que c'est la partie la plus susceptible de bouger quand
+ * l'endpoint définitif sera fourni : l'écran, lui, n'a pas à changer.
+ * On n'envoie QUE les lignes modifiées — réécrire tout le payload à chaque
+ * enregistrement ferait porter au back des mises à jour inutiles.
+ */
+export function corpsAssociation(requeteUid: string, modifies: ChampExterne[]): any {
+    return {
+        action: ACTION_MODIFICATION,
+        platform_request: requeteUid,
+        payload: modifies.map(c => ({
+            id: c.id,
+            remote_id: c.remote_id,
+            payload_externe: c.payload_externe,
+            payload_interne: c.payload_interne.trim(),
+        })),
+    };
+}
+
+/**
+ * Champs internes proposés à la saisie.
+ *
+ * Ce sont ceux du corps envoyé à `api/:savedocuments` (voir
+ * `creer-un-document`) : c'est là que finissent les données rapatriées. La
+ * liste est une AIDE, pas une contrainte — le champ reste libre, un partenaire
+ * pouvant alimenter une propriété qui n'y figure pas.
+ */
+export const CHAMPS_INTERNES: string[] = [
+    'iddocuments', 'code_docs', 'lib_docs', 'desc_docs', 'date_docs', 'date_sig',
+    'idtype_docs', 'idcategories', 'idboites', 'idrayons', 'idsites',
+    'idproprietaire', 'dataservices', 'proprietes_docs', 'fulltexts_docs',
+    'etat_docs', 'statut_docs', 'active_docs', 'publishe',
+    'region', 'departement', 'idsociete', 'iduser',
+];

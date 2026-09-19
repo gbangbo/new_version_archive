@@ -7,6 +7,7 @@ import {ProxyComponent} from './widgets/proxy/proxy.component';
 import {PlateformesComponent} from './widgets/plateformes/plateformes.component';
 import {RequetesExternesComponent} from './widgets/requetes-externes/requetes-externes.component';
 import {ExecutionExterneComponent} from './widgets/execution-externe/execution-externe.component';
+import {CorrespondancesComponent} from './widgets/correspondances/correspondances.component';
 
 /** Une famille d'appels sortants, avec son propre menu d'étapes. */
 interface Groupe {
@@ -20,7 +21,7 @@ interface Groupe {
     selector: 'app-via-api',
     imports: [CommonModule, StepsNavComponent, DomainesComponent, ClesApiComponent,
         ProxyComponent, PlateformesComponent, RequetesExternesComponent,
-        ExecutionExterneComponent],
+        CorrespondancesComponent, ExecutionExterneComponent],
     templateUrl: './via-api.component.html',
     styleUrl: './via-api.component.scss',
 })
@@ -52,6 +53,7 @@ export class ViaApiComponent {
             steps: [
                 {id: 'plateformes', label: 'Plateformes', icon: 'fa-solid fa-shield-halved'},
                 {id: 'requetes', label: 'Requêtes', icon: 'fa-solid fa-bookmark'},
+                {id: 'correspondances', label: 'Correspondances', icon: 'fa-solid fa-right-left'},
                 {id: 'execution', label: 'Exécution', icon: 'fa-solid fa-play'},
             ],
         },

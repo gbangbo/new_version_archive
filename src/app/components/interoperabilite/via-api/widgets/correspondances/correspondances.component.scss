@@ -1,0 +1,308 @@
+@use '../widget-base';
+@use '../io-externe';
+
+$navy: #00366E;
+$ink: #0F172A;
+$muted: #64748B;
+
+// ── Entête : requête choisie + avancement ────────────────
+.co-entete {
+  display: flex;
+  align-items: flex-end;
+  gap: 18px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+// Les deux sélecteurs se partagent la ligne à égalité, l'avancement garde sa
+// largeur. En dessous de ~800px l'ensemble se replie proprement.
+.co-choix {
+  flex: 1 1 260px;
+  min-width: 0;
+  margin-bottom: 0;
+}
+
+// Sélecteur fermé tant que sa condition n'est pas remplie : il doit se voir
+// hors service, sinon on clique dessus sans comprendre pourquoi rien ne s'ouvre.
+.co-choix ::ng-deep .select2-container--disabled .select2-selection {
+  background: #F1F5F9 !important;
+  border-color: #E9EDF3 !important;
+  cursor: not-allowed !important;
+
+  .select2-selection__placeholder { color: #A3AFBF !important; font-style: italic; }
+}
+
+.co-avancement {
+  flex: 0 0 220px;
+  padding-bottom: 4px;
+}
+
+.co-avancement-txt {
+  font-size: 12.5px;
+  color: $muted;
+  margin-bottom: 6px;
+
+  strong { color: $navy; font-size: 15px; font-weight: 800; }
+}
+
+.co-jauge {
+  height: 6px;
+  border-radius: 999px;
+  background: #E9EDF3;
+  overflow: hidden;
+
+  span {
+    display: block;
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #1e5f9e, $navy);
+    transition: width 0.25s;
+  }
+}
+
+// ── Rappel de la requête ─────────────────────────────────
+.co-rappel {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  border: 1px solid #E6E9EF;
+  border-radius: 10px;
+  background: #F8FAFC;
+  font-size: 12.5px;
+  color: #475569;
+
+  i { color: #94A3B8; font-size: 11.5px; margin-right: 5px; }
+}
+
+.co-rappel-url {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 11.5px;
+}
+
+.co-rappel-plateforme { font-weight: 600; color: #334155; }
+
+// ── Remplissage automatique ──────────────────────────────
+.co-btn-auto {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 42px;
+  padding: 0 16px;
+  border: 1px solid #E5E7EB;
+  border-radius: 11px;
+  background: #fff;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+
+  i { color: $navy; }
+  &:hover { border-color: $navy; color: $navy; }
+}
+
+// ── Filtre par objet externe ─────────────────────────────
+.co-remotes {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.co-remotes-label { font-size: 12px; font-weight: 700; color: $muted; }
+
+.co-remote {
+  padding: 4px 12px;
+  border: 1px solid #E5E7EB;
+  border-radius: 999px;
+  background: #fff;
+  color: #475569;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+
+  &:hover { border-color: #CBD5E1; }
+  &.active { background: $navy; border-color: $navy; color: #fff; }
+}
+
+// ══ TABLE DES CORRESPONDANCES ═══════════════════════════
+//  Trois colonnes fixes plutôt qu'un tableau : la flèche centrale porte tout le
+//  sens de l'écran (« ceci devient cela »), et doit rester alignée d'une ligne
+//  à l'autre quelle que soit la longueur des noms.
+.co-table {
+  border: 1px solid #EAECF0;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.co-head,
+.co-ligne {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 46px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+}
+
+.co-head {
+  padding: 11px 16px;
+  background: #F6F7F9;
+  border-bottom: 1px solid #EAECF0;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: $muted;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.co-ligne {
+  padding: 9px 16px;
+  border-bottom: 1px solid #F2F4F7;
+  transition: background 0.12s;
+
+  &:last-child { border-bottom: none; }
+  &:hover { background: #FAFBFC; }
+
+  // Modifiée mais pas encore enregistrée : liseré à gauche, pour retrouver
+  // d'un coup d'œil ce qui part au prochain enregistrement.
+  &.modifie {
+    background: #FFFBEB;
+    box-shadow: inset 3px 0 0 #F59E0B;
+  }
+}
+
+.co-col-fleche {
+  display: flex;
+  justify-content: center;
+  color: #CBD5E1;
+  font-size: 13px;
+}
+
+.co-ligne.associe .co-col-fleche { color: $navy; }
+
+.co-ext {
+  display: inline-block;
+  max-width: 100%;
+  padding: 4px 10px;
+  border-radius: 7px;
+  background: #F1F3F7;
+  color: #334155;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// ── Saisie du champ interne ──────────────────────────────
+.co-saisie {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  input {
+    flex: 1;
+    min-width: 0;
+    height: 36px;
+    padding: 0 11px;
+    border: 1px solid #E5E7EB;
+    border-radius: 9px;
+    background: #F8FAFC;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 12px;
+    color: #1e293b;
+    outline: none;
+    transition: all 0.15s;
+
+    &::placeholder { color: #B0BAC7; font-family: inherit; }
+    &:focus {
+      border-color: rgba(0, 54, 110, 0.7);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(0, 54, 110, 0.1);
+    }
+  }
+}
+
+.co-ligne.associe .co-saisie input {
+  border-color: #BBD9C8;
+  background: #F3FBF6;
+  color: #14532D;
+  font-weight: 600;
+}
+
+.co-mini {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+  background: #fff;
+  color: #94A3B8;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.15s;
+
+  &:hover { border-color: $navy; color: $navy; }
+}
+
+// ══ BARRE D'ENREGISTREMENT ══════════════════════════════
+//  Collante en bas de la zone de contenu : sur trente champs, un bouton en fin
+//  de page obligerait à redescendre après chaque saisie.
+.co-barre {
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 16px;
+  padding: 14px 16px;
+  border: 1px solid #EAECF0;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 -6px 18px rgba(15, 23, 42, 0.08);
+}
+
+.co-barre-txt {
+  flex: 1;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #92400E;
+
+  i { margin-right: 7px; font-size: 11px; }
+}
+
+// ── Mobile (breakpoints inversés : lg = ≤991px) ──────────
+//  La flèche latérale n'a plus la place : les deux champs passent l'un sous
+//  l'autre, la flèche pivote pour continuer à dire « ceci devient cela ».
+@media (max-width: 767px) {
+  .co-head { display: none; }
+
+  .co-ligne {
+    grid-template-columns: 1fr;
+    gap: 6px;
+    padding: 12px 14px;
+  }
+
+  .co-col-fleche {
+    justify-content: flex-start;
+    transform: rotate(90deg);
+    transform-origin: left center;
+    margin-left: 12px;
+  }
+
+  .co-avancement { flex: 1 1 100%; }
+}
