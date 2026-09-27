@@ -1,4 +1,13 @@
-import {Component, ViewChild, AfterViewInit, OnInit, OnDestroy, ChangeDetectorRef, ElementRef, HostListener} from '@angular/core';
+import {
+    Component,
+    ViewChild,
+    AfterViewInit,
+    OnInit,
+    OnDestroy,
+    ChangeDetectorRef,
+    ElementRef,
+    HostListener
+} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {Select2Data, Select2Module} from "ng-select2-component";
 import {DropzoneConfigInterface, DropzoneModule, DropzoneDirective} from "ngx-dropzone-wrapper";
@@ -908,6 +917,7 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
             .toPromise()
             .then((res: any) => {
                 this.isDeleting = false;
+                console.log("Suppression ===", res.body)
                 if (res.body.status || res.body.success) {
                     this.toast.success('Fichier supprimé avec succès.', 'Succès');
                     if (this.selectedFile?.uid === node.uid) {

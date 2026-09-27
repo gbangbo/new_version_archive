@@ -67,59 +67,83 @@
                         </div>
 
                         <!-- ══ TABLE ════════════════════════════════════ -->
-                        <div class="overflow-x-auto custom-scrollbar">
-                            <nz-table
-                                #nzTable
-                                [nzData]="rows"
-                                [nzFrontPagination]="false"
-                                [nzTotal]="total"
-                                [nzPageIndex]="pageIndex"
-                                [nzPageSize]="pageSize"
-                                [nzLoading]="isloading"
-                                [nzShowPagination]="true"
-                                [nzShowTotal]="totalTemplate"
-                                [nzPageSizeOptions]="[10, 20, 50, 100]"
-                                nzShowSizeChanger
-                                nzBordered
-                                nzSize="small"
-                                (nzQueryParams)="onQueryParams($event)"
-                                [nzScroll]="rows.length > 0 ? { x: '1000px' } : {}"
-                                [nzNoResult]="emptyTpl">
-                                <thead>
-                                <tr>
-                                    <th nzWidth="110px">Numéro doc.</th>
-                                    <th nzWidth="180px">Objet</th>
-                                    <th nzWidth="180px">Type doc.</th>
-                                    <th nzWidth="60px">Date</th>
-                                    <th nzWidth="110px">Service</th>
-                                    <th nzWidth="100px">Auteur</th>
-                                </tr>
-                                </thead>
+                        <div class="tt-scroll-shell" [class.tt-more-right]="hScrollMore">
+                        <div class="tree-table-wrap" #tableWrap (scroll)="syncHScroll()">
 
-                                <tbody>
-                                <tr *ngFor="let row of rows" class="op-table-row">
-                                    <td>{{ row.code_docs }}</td>
-                                    <td><span class="cell-text cell-wrap">{{ row.lib_docs }}</span></td>
-                                    <td><span class="cell-text cell-wrap">{{ row.libelle_type_docs }}</span></td>
-                                    <td><span class="cell-text cell-wrap">{{ row.date_docs }}</span></td>
-                                    <td><span class="cell-text cell-wrap">{{ row.libelle_service }}</span></td>
-                                    <td><span class="cell-text cell-wrap">{{ row.auteur }}</span></td>
-                                </tr>
-                                </tbody>
-                            </nz-table>
+                            <!-- Entête colonnes -->
+                            <div class="tree-table-header">
+                                <div class="ttc-code">Numéro doc.</div>
+                                <div class="ttc-name">Objet</div>
+                                <div class="ttc-type">Type doc.</div>
+                                <div class="ttc-date">Date</div>
+                                <div class="ttc-service">Service</div>
+                                <div class="ttc-auteur">Auteur</div>
+                            </div>
+
+                            <!-- Lignes -->
+                            <div class="tree-table-body">
+                                <div class="tt-row" *ngFor="let row of rows">
+                                    <div class="ttc-code">{{ row.code_docs || '—' }}</div>
+                                    <div class="ttc-name">
+                                        <i class="fa-regular fa-file-lines tt-row-icon"></i>
+                                        <span class="tt-name-text tt-parent">{{ row.lib_docs }}</span>
+                                    </div>
+                                    <div class="ttc-type">{{ row.libelle_type_docs || '—' }}</div>
+                                    <div class="ttc-date">{{ row.date_docs || '—' }}</div>
+                                    <div class="ttc-service">{{ row.libelle_service || '—' }}</div>
+                                    <div class="ttc-auteur">{{ row.auteur || '—' }}</div>
+                                </div>
+
+                                <!-- Empty state -->
+                                <div *ngIf="!isloading && !rows.length" class="op-empty-state">
+                                    <app-feather-icon class="icon-inbox" [icon]="'inbox'"></app-feather-icon>
+                                    <span>{{ erreur || 'Aucun document imputé !' }}</span>
+                                    <small *ngIf="searchValue">Aucun résultat pour « {{ searchValue }} »</small>
+                                </div>
+                            </div>
+                        </div>
                         </div>
 
-                        <ng-template #totalTemplate let-total>
-                            Total : <strong>{{ total }}</strong> enregistrement(s)
-                        </ng-template>
+                        <!-- Ascenseur horizontal dessiné (visible en permanence) -->
+                        <div class="tt-hscroll" *ngIf="hScrollVisible" #hBar
+                             (pointerdown)="onBarPointerDown($event)">
+                            <div class="tt-hscroll-thumb"
+                                 [style.width.px]="thumbWidth"
+                                 [style.left.px]="thumbLeft"></div>
+                        </div>
 
-                        <ng-template #emptyTpl>
-                            <div class="op-empty-state">
-                                <app-feather-icon class="icon-inbox" [icon]="'inbox'"></app-feather-icon>
-                                <span>{{ erreur || 'Aucun document imputé !' }}</span>
-                                <small *ngIf="searchValue">Aucun résultat pour « {{ searchValue }} »</small>
+                        <!-- Pied : total + pagination serveur (les données arrivent page
+                             par page, on ne peut pas s'en passer) -->
+                        <div class="tree-table-footer">
+                            <span class="tt-total">
+                                Total : <strong>{{ total }}</strong> enregistrement(s)
+                            </span>
+
+                            <div class="tt-pager" *ngIf="total > 0">
+                                <select class="tt-pager-taille"
+                                        [ngModel]="pageSize"
+                                        (ngModelChange)="changerTaille($event)"
+                                        title="Lignes par page">
+                                    <option *ngFor="let t of taillesPage" [ngValue]="t">{{ t }} / page</option>
+                                </select>
+
+                                <button class="tt-pager-btn" type="button"
+                                        [disabled]="pageIndex <= 1"
+                                        (click)="allerPage(pageIndex - 1)"
+                                        title="Page précédente">
+                                    <i class="fa-solid fa-chevron-left"></i>
+                                </button>
+
+                                <span class="tt-pager-page">{{ pageIndex }} / {{ nbPages }}</span>
+
+                                <button class="tt-pager-btn" type="button"
+                                        [disabled]="pageIndex >= nbPages"
+                                        (click)="allerPage(pageIndex + 1)"
+                                        title="Page suivante">
+                                    <i class="fa-solid fa-chevron-right"></i>
+                                </button>
                             </div>
-                        </ng-template>
+                        </div>
 
                     </div>
                 </div>

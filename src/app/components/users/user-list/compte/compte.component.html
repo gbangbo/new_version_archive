@@ -81,114 +81,118 @@
 
                                 <!-- ══ TABLE ════════════════════════════════════ -->
 
-                                <div class="overflow-x-auto support-ticket-table custom-scrollbar">
-                                    <nz-table
-                                        #nzTable
-                                        [nzData]="filteredData"
-                                        [nzPageSize]="10"
-                                        [nzShowPagination]="true"
-                                        [nzShowTotal]="totalTemplate"
-                                        nzShowSizeChanger
-                                        nzBordered
-                                        nzSize="small"
-                                        [nzScroll]="filteredData.length > 0 ? { x: '1200px' } : {}"
-                                    >
-                                        <thead>
-                                        <tr>
-                                            <th nzWidth="45px"
-                                                nzColumnKey="source_fin">
-                                                Visuel
-                                            </th>
-                                            <th nzWidth="160px"
-                                                nzColumnKey="name"
-                                                [nzSortFn]="sortFns.name"
-                                                [nzSortDirections]="['ascend','descend',null]"
-                                                [nzFilterFn]="filterFns.name"
-                                                [nzFilters]="filters.name">
-                                                Nom & prénoms
-                                            </th>
-                                            <th nzWidth="130px">
-                                                Service
-                                            </th>
-                                            <th nzWidth="90px"
-                                                nzColumnKey="emailAgent"
-                                                [nzSortFn]="sortFns.emailAgent"
-                                                [nzSortDirections]="['ascend','descend',null]"
-                                                [nzFilterFn]="filterFns.emailAgent"
-                                                [nzFilters]="filters.emailAgent">
-                                                Email
-                                            </th>
+                                <div class="tt-scroll-shell" [class.tt-more-right]="hScrollMore">
+                                <div class="tree-table-wrap" #tableWrap (scroll)="syncHScroll()">
 
-                                            <th nzWidth="40px">
-                                                Etat
-                                            </th>
-                                            <th nzWidth="100px">
-                                                Créé le
-                                            </th>
-                                            <th nzWidth="50px" nzColumnKey="action" nzAlign="center">
-                                                Actions
-                                            </th>
-                                        </tr>
-                                        </thead>
+                                    <!-- Entête colonnes -->
+                                    <div class="tree-table-header">
+                                        <div class="ttc-logo">Visuel</div>
+                                        <div class="ttc-name" (click)="sortBy('name')">
+                                            Nom &amp; prénoms
+                                            <span class="tt-sort-icons">
+                                                <span class="tt-sort-up"
+                                                      [class.tt-sort-active]="sortKey === 'name' && sortOrder === 'asc'">↑</span>
+                                                <span class="tt-sort-down"
+                                                      [class.tt-sort-active]="sortKey === 'name' && sortOrder === 'desc'">↓</span>
+                                            </span>
+                                        </div>
+                                        <div class="ttc-service" (click)="sortBy('libelle_service')">
+                                            Service
+                                            <span class="tt-sort-icons">
+                                                <span class="tt-sort-up"
+                                                      [class.tt-sort-active]="sortKey === 'libelle_service' && sortOrder === 'asc'">↑</span>
+                                                <span class="tt-sort-down"
+                                                      [class.tt-sort-active]="sortKey === 'libelle_service' && sortOrder === 'desc'">↓</span>
+                                            </span>
+                                        </div>
+                                        <div class="ttc-email" (click)="sortBy('emailAgent')">
+                                            Email
+                                            <span class="tt-sort-icons">
+                                                <span class="tt-sort-up"
+                                                      [class.tt-sort-active]="sortKey === 'emailAgent' && sortOrder === 'asc'">↑</span>
+                                                <span class="tt-sort-down"
+                                                      [class.tt-sort-active]="sortKey === 'emailAgent' && sortOrder === 'desc'">↓</span>
+                                            </span>
+                                        </div>
+                                        <div class="ttc-etat">Etat</div>
+                                        <div class="ttc-cree" (click)="sortBy('created_at')">
+                                            Créé le
+                                            <span class="tt-sort-icons">
+                                                <span class="tt-sort-up"
+                                                      [class.tt-sort-active]="sortKey === 'created_at' && sortOrder === 'asc'">↑</span>
+                                                <span class="tt-sort-down"
+                                                      [class.tt-sort-active]="sortKey === 'created_at' && sortOrder === 'desc'">↓</span>
+                                            </span>
+                                        </div>
+                                        <div class="ttc-actions">Actions</div>
+                                    </div>
 
-                                        <tbody>
-                                        <tr *ngFor="let row of nzTable.data; let i = index"
-                                            class="op-table-row">
-                                            <td>
-                                                <img style="border-radius: 100%;width: 30px;height: 30px;" src="{{row.photo || 'assets/images/avatar/anonyme.jpg'}}" alt="visuel">
-                                            </td>
-                                            <td>
-                                                <span class="cell-text">{{ row.name }}</span>
-                                            </td>
-                                            <td>
-                                                <span class="cell-text">{{ row.libelle_service }}</span>
-                                            </td>
-                                            <td>
-                                                <span class="cell-text">{{ row.emailAgent }}</span>
-                                            </td>
-                                            <td>
+                                    <!-- Lignes -->
+                                    <div class="tree-table-body">
+                                        <div class="tt-row" *ngFor="let row of filteredData">
+                                            <div class="ttc-logo">
+                                                <img style="border-radius:100%; width:30px; height:30px;"
+                                                     [src]="row.photo || 'assets/images/avatar/anonyme.jpg'"
+                                                     alt="visuel">
+                                            </div>
+                                            <div class="ttc-name">
+                                                <span class="tt-name-text tt-parent"
+                                                      [innerHTML]="highlightMatch(row.name, searchValue)">
+                                                </span>
+                                            </div>
+                                            <div class="ttc-service">
+                                                <span [innerHTML]="highlightMatch(row.libelle_service, searchValue)"></span>
+                                            </div>
+                                            <div class="ttc-email">
+                                                <span [innerHTML]="highlightMatch(row.emailAgent, searchValue)"></span>
+                                            </div>
+                                            <div class="ttc-etat">
                                                 <nz-tag [nzColor]="row.color">{{ row.libcolor }}</nz-tag>
-                                            </td>
+                                            </div>
+                                            <div class="ttc-cree">{{ row.created_at || '—' }}</div>
+                                            <div class="ttc-actions">
+                                                <button class="btn-round-edit tt-action-btn mr-2"
+                                                        nz-tooltip nzTooltipTitle="Modifier le personnel"
+                                                        nzTooltipPlacement="top"
+                                                        (click)="openModal(row)">
+                                                    <app-feather-icon class="icon-small" [icon]="'edit-3'"></app-feather-icon>
+                                                </button>
+                                                <button class="btn-round-edit tt-action-btn"
+                                                        nz-tooltip nzTooltipTitle="Desactiver le compte"
+                                                        nzTooltipPlacement="top"
+                                                        (click)="openModalCarriere(row)">
+                                                    <app-feather-icon class="icon-small" [icon]="'user-x'"></app-feather-icon>
+                                                </button>
+                                            </div>
+                                        </div>
 
-                                            <td>
-                                                <span class="cell-text">{{ row.created_at }}</span>
-                                            </td>
-                                            <td nzAlign="center">
-                                                <div class="op-actions">
-                                                    <button class="btn-round-edit mr-2"
-                                                            nz-tooltip
-                                                            [nzTooltipTitle]="'Modifier le personnel'"
-                                                            nzTooltipPlacement="top"
-                                                            (click)="openModal(row)">
-                                                        <app-feather-icon class="icon-small" [icon]="'edit-3'"></app-feather-icon>
-                                                    </button>
-                                                    <button class="btn-round-edit"
-                                                            nz-tooltip
-                                                            [nzTooltipTitle]="'Desactiver le compte'"
-                                                            nzTooltipPlacement="top"
-                                                            (click)="openModalCarriere(row)">
-                                                        <app-feather-icon class="icon-small" [icon]="'user-x'"></app-feather-icon>
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr *ngIf="!isloading && filteredData?.length === 0">
-                                            <td colspan="9">
-                                                <div class="op-empty-state">
-                                                    <app-feather-icon  class="icon-inbox" [icon]="'inbox'"></app-feather-icon>
-                                                    <span>Aucun donnée trouvé !</span>
-                                                    <small *ngIf="searchValue">
-                                                        Aucun résultat pour « {{ searchValue }} »
-                                                    </small>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        </tbody>
-                                    </nz-table>
+                                        <!-- Empty state -->
+                                        <div *ngIf="!isloading && filteredData?.length === 0"
+                                             class="op-empty-state">
+                                            <app-feather-icon class="icon-inbox" [icon]="'inbox'"></app-feather-icon>
+                                            <span>Aucune donnée trouvée !</span>
+                                            <small *ngIf="searchValue">
+                                                Aucun résultat pour « {{ searchValue }} »
+                                            </small>
+                                        </div>
+                                    </div>
                                 </div>
-                                <ng-template #totalTemplate let-total>
-                                    Total : <strong>{{ total }}</strong> enregistrement(s)
-                                </ng-template>
+                                </div>
+
+                                <!-- Ascenseur horizontal dessiné (visible en permanence) -->
+                                <div class="tt-hscroll" *ngIf="hScrollVisible" #hBar
+                                     (pointerdown)="onBarPointerDown($event)">
+                                    <div class="tt-hscroll-thumb"
+                                         [style.width.px]="thumbWidth"
+                                         [style.left.px]="thumbLeft"></div>
+                                </div>
+
+                                <!-- Footer : hors de la zone de défilement -->
+                                <div class="tree-table-footer">
+                                    <span class="tt-total">
+                                        Total : <strong>{{ filteredData.length || 0 }}</strong> enregistrement(s)
+                                    </span>
+                                </div>
 
                             </div>
                         </div>

@@ -3,20 +3,21 @@
     <nz-splitter>
 
         <!-- ══ PANNEAU GAUCHE : FORMULAIRE ══════════════════════════ -->
-        <nz-splitter-panel nzDefaultSize="30%" nzMin="28%" nzMax="65%">
+        <nz-splitter-panel nzDefaultSize="32%" nzMin="28%" nzMax="65%">
             <div class="box">
                 <form class="form-panel" [formGroup]="validationForm" (ngSubmit)="submitForm()">
 
-                    <!-- ─ Section : Localisation (Site → Rayon → Boîte) ─────── -->
+                    <!-- ─ 1. Classement : Série → Type de document ─────────── -->
                     <div class="form-section">
-                        <div class="form-section-label">
-                            <i class="ti ti-archive"></i> Localisation d'archivage
+                        <div class="section-label">
+                            <span class="section-num">1</span>
+                            <i class="ti ti-folders"></i>
+                            <span class="section-titre">Classement du document</span>
                         </div>
-                        <div class="grid grid-cols-12 gap-x-4 gap-y-4 form-section-body">
-
+                        <div class="form-section-body form-grid">
 
                             <!-- Série -->
-                            <div class="col-span-12 position-relative">
+                            <div class="champ champ-demi position-relative">
                                 <label class="form-label" for="idcategories">
                                     Série <span class="txt-danger">*</span>
                                 </label>
@@ -25,7 +26,7 @@
                                         placeholder="Sélectionnez la série"
                                         id="idcategories"
                                         formControlName="idcategories"
-                                        [overlay]="false"
+                                        [overlay]="true"
                                         [resettable]="true"
                                         [listPosition]="'below'"
                                         [minCountForSearch]="1"
@@ -41,7 +42,7 @@
                             </div>
 
                             <!-- Type de document (activé après sélection de la série) -->
-                            <div class="col-span-12 position-relative">
+                            <div class="champ champ-demi position-relative">
                                 <label class="form-label" for="idtype_docs">
                                     Type de document <span class="txt-danger">*</span>
                                 </label>
@@ -75,9 +76,8 @@
                                 }
                             </div>
 
-
                             <!-- Service bénéficiaire -->
-                            <div class="col-span-12 position-relative">
+                            <div class="champ position-relative">
                                 <label class="form-label" for="dataservices">
                                     Service bénéficiaire <span class="txt-danger">*</span>
                                 </label>
@@ -100,9 +100,20 @@
                                 }
                             </div>
 
+                        </div>
+                    </div>
+
+                    <!-- ─ 2. Emplacement : Site → Rayon → Boîte ───────────── -->
+                    <div class="form-section">
+                        <div class="section-label">
+                            <span class="section-num">2</span>
+                            <i class="ti ti-archive"></i>
+                            <span class="section-titre">Emplacement d'archivage</span>
+                        </div>
+                        <div class="form-section-body form-grid">
 
                             <!-- Site -->
-                            <div class="col-span-12 position-relative">
+                            <div class="champ champ-demi position-relative">
                                 <label class="form-label" for="idsite">
                                     Site <span class="txt-danger">*</span>
                                 </label>
@@ -126,7 +137,7 @@
                             </div>
 
                             <!-- Rayon (activé après sélection du site) -->
-                            <div class="col-span-12 position-relative">
+                            <div class="champ champ-demi position-relative">
                                 <label class="form-label" for="idrayon">
                                     Rayon <span class="txt-danger">*</span>
                                 </label>
@@ -154,7 +165,7 @@
                             </div>
 
                             <!-- Boîte d'archivage (activé après sélection du rayon) -->
-                            <div class="col-span-12 position-relative">
+                            <div class="champ position-relative">
                                 <label class="form-label" for="idboites">
                                     Boîte d'archivage <span class="txt-danger">*</span>
                                 </label>
@@ -188,43 +199,58 @@
                                 }
                             </div>
 
-
-                            <!-- Statut OCR -->
-                            <div class="col-span-12">
-                                <div class="switch-group">
-                                    <div class="switch-item">
-                                        <div class="form-check form-switch form-check-inline mb-0">
-                                            <input class="form-check-input switch-primary check-size"
-                                                   type="checkbox" role="switch"
-                                                   [checked]="validationForm.get('statut_ocr')?.value === 1"
-                                                   (change)="toggleOcr($event)">
-                                        </div>
-                                        <div class="switch-mail-label">
-                                            <i class="ti ti-scan"></i>
-                                            <span class="switch-label">Appliquer l'OCR au fichier importé</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
                         </div>
                     </div>
 
+                    <!-- ─ 3. Options ──────────────────────────────────────── -->
+                    <div class="form-section">
+                        <div class="section-label">
+                            <span class="section-num">3</span>
+                            <i class="ti ti-adjustments-horizontal"></i>
+                            <span class="section-titre">Options</span>
+                        </div>
+                        <div class="form-section-body">
+                            <label class="switch-item" for="statut_ocr">
+                                <span class="switch-mail-label">
+                                    <i class="ti ti-scan"></i>
+                                    <span class="switch-texte">
+                                        <span class="switch-label">Appliquer l'OCR au fichier importé</span>
+                                        <small>Rend le contenu des pièces recherchable en plein texte.</small>
+                                    </span>
+                                </span>
+                                <span class="form-check form-switch form-check-inline mb-0">
+                                    <input id="statut_ocr"
+                                           class="form-check-input switch-primary check-size"
+                                           type="checkbox" role="switch"
+                                           [checked]="validationForm.get('statut_ocr')?.value === 1"
+                                           (change)="toggleOcr($event)">
+                                </span>
+                            </label>
+                        </div>
+                    </div>
 
                     <!-- Footer -->
                     <div class="form-footer-bar">
-<!--                        <div class="form-footer-left">-->
-<!--                            <span style="font-size:12px; color:#94A3B8;">-->
-<!--                                Remplissez tous les champs obligatoires <span class="txt-danger">*</span>-->
-<!--                            </span>-->
-<!--                        </div>-->
+                        <div class="form-footer-left">
+                            <span class="footer-etat pret" *ngIf="!champsManquants.length">
+                                <i class="fa-solid fa-circle-check"></i> Prêt à importer
+                            </span>
+                            <span class="footer-etat" *ngIf="champsManquants.length"
+                                  [attr.title]="champsManquants.join(', ')">
+                                <i class="fa-solid fa-circle-exclamation"></i>
+                                {{ champsManquants.length }} élément(s) à renseigner
+                            </span>
+                        </div>
                         <div class="form-footer-right">
-                            <button class="btn btn-light me-2" type="button" (click)="resetForm()">
+                            <button class="btn btn-light me-2" type="button"
+                                    [disabled]="isSaving" (click)="resetForm()">
                                 Annuler
                             </button>
-                            <button class="btn newBtn" type="button" (click)="submitForm()">
-                                <i class="fa-solid fa-file-import mr-1"></i>
-                                Importer
+                            <button class="btn newBtn" type="button"
+                                    [disabled]="isSaving" (click)="submitForm()">
+                                <i class="fa-solid"
+                                   [ngClass]="isSaving ? 'fa-circle-notch fa-spin' : 'fa-file-import'"></i>
+                                {{ isSaving ? 'Importation…' : 'Importer' }}
                             </button>
                         </div>
                     </div>
@@ -233,14 +259,18 @@
             </div>
         </nz-splitter-panel>
 
-        <!-- ══ PANNEAU DROIT : DROPZONE ══════════════════════════════ -->
+        <!-- ══ PANNEAU DROIT : DROPZONE + APERÇU ═════════════════════ -->
         <nz-splitter-panel>
             <div class="box">
                 <div class="upload-panel">
 
                     <div class="upload-section">
-                        <div class="upload-section-label">
-                            <i class="ti ti-upload"></i> Importer un fichier Excel
+                        <div class="section-label">
+                            <i class="ti ti-file-spreadsheet"></i>
+                            <span class="section-titre">Importer un fichier Excel</span>
+                            <span class="section-badge" *ngIf="selectedFile">
+                                {{ excelRows.length }} ligne(s)
+                            </span>
                         </div>
                         <div class="upload-section-body">
 
@@ -276,17 +306,21 @@
                                     </div>
                                     <div class="dz-file-details">
                                         <span class="dz-filename">{{ selectedFile.name }}</span>
-                                        <span class="dz-filesize">
-                                            {{ (selectedFile.size / 1024).toFixed(1) }} Ko
-                                        </span>
-                                        <span class="dz-sheets" *ngIf="excelSheets.length">
-                                            <i class="ti ti-table"></i>
-                                            {{ excelSheets.length }} feuille(s) &nbsp;·&nbsp;
-                                            {{ excelRows.length }} ligne(s)
+                                        <span class="dz-meta">
+                                            <span><i class="ti ti-weight"></i>
+                                                {{ (selectedFile.size / 1024).toFixed(1) }} Ko</span>
+                                            <span *ngIf="excelSheets.length"><i class="ti ti-table"></i>
+                                                {{ excelSheets.length }} feuille(s)</span>
+                                            <span *ngIf="excelSheets.length"><i class="ti ti-list-numbers"></i>
+                                                {{ excelRows.length }} ligne(s)</span>
                                         </span>
                                     </div>
-                                    <button class="dz-remove-btn" type="button"
-                                            (click)="removeFile()" title="Supprimer">
+                                    <button class="dz-btn dz-replace-btn" type="button"
+                                            (click)="fileInput.click()" title="Remplacer le fichier">
+                                        <i class="fa-solid fa-arrows-rotate"></i>
+                                    </button>
+                                    <button class="dz-btn dz-remove-btn" type="button"
+                                            (click)="removeFile()" title="Retirer le fichier">
                                         <i class="fas fa-times"></i>
                                     </button>
                                 </div>
@@ -300,14 +334,15 @@
                             </div>
 
                         </div>
+
+                        <!-- ─ Aperçu des données ──────────────────────── -->
                         <div class="excel-preview-wrap" *ngIf="excelHeaders.length || excelRows.length">
 
                             <div class="excel-preview-header">
-<!--                                <div class="excel-preview-title">-->
-<!--                                    <nz-tag [nzColor]="'var(&#45;&#45;balance-profile-bg)'" *ngIf="selectedFile">-->
-<!--                                        {{ selectedFile.name }}-->
-<!--                                    </nz-tag>-->
-<!--                                </div>-->
+                                <span class="excel-preview-title">
+                                    <i class="ti ti-eye"></i> Aperçu des données
+                                </span>
+
                                 <!-- Onglets feuilles si plusieurs -->
                                 <div class="excel-sheets-tabs" *ngIf="excelSheets.length > 1">
                                     <button *ngFor="let sheet of excelSheets"
@@ -318,6 +353,13 @@
                                         <i class="ti ti-table"></i> {{ sheet }}
                                     </button>
                                 </div>
+
+                                <span class="excel-preview-meta">
+                                    <strong>{{ excelHeaders.length }}</strong> colonne(s)
+                                    <ng-container *ngIf="excelSheets.length === 1">
+                                        &nbsp;·&nbsp; Feuille <strong>{{ activeSheet }}</strong>
+                                    </ng-container>
+                                </span>
                             </div>
 
                             <div class="excel-preview-body">
@@ -335,44 +377,72 @@
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        <tr *ngFor="let row of excelRows; let i = index">
-                                            <td class="row-num">{{ i + 1 }}</td>
-                                            <td *ngFor="let h of excelHeaders; let j = index">
+                                        <tr *ngFor="let row of lignesPage; let i = index">
+                                            <td class="row-num">{{ premiereLigne + i + 1 }}</td>
+                                            <td *ngFor="let h of excelHeaders; let j = index"
+                                                [attr.title]="row[j]">
                                                 {{ row[j] !== undefined && row[j] !== null ? row[j] : '' }}
                                             </td>
                                         </tr>
                                         </tbody>
                                     </table>
-                                    <div class="excel-row-count">
-                                        <i class="ti ti-database"></i>
-                                        {{ excelRows.length }} ligne(s) &nbsp;·&nbsp; {{ excelHeaders.length }} colonne(s)
-                                        <span *ngIf="excelSheets.length === 1" style="margin-left:8px; color:#94a3b8">
-                        · Feuille : <strong>{{ activeSheet }}</strong>
-                    </span>
-                                    </div>
                                 </div>
 
                                 <div *ngIf="!isReadingFile && !excelHeaders.length" class="excel-empty">
-                                    <nz-icon nzType="table" nzTheme="outline"></nz-icon>
+                                    <i class="ti ti-table-off"></i>
                                     <p>Aucune donnée dans cette feuille</p>
                                 </div>
 
                             </div>
+                            <!-- Pagination de l'aperçu : 50 lignes par page.
+                                 Le décompte reste affiché même sur une seule
+                                 page : les commandes restent visibles, grisées
+                                 quand il n'y a pas de page à atteindre — les
+                                 masquer laissait croire qu'il n'y avait aucun
+                                 moyen de naviguer.
+                                 L'import porte toujours sur la feuille entière. -->
+                            <div class="excel-pager" *ngIf="!isReadingFile && excelRows.length">
+                                <span class="pager-info">
+                                    Lignes <strong>{{ premiereLigne + 1 }}</strong>
+                                    à <strong>{{ premiereLigne + lignesPage.length }}</strong>
+                                    sur <strong>{{ excelRows.length }}</strong>
+                                </span>
+
+                                <div class="pager-boutons">
+                                    <button type="button" class="pager-btn"
+                                            [disabled]="pageCourante === 1"
+                                            title="Page précédente"
+                                            (click)="allerPage(pageCourante - 1)">
+                                        <i class="fa-solid fa-chevron-left"></i>
+                                    </button>
+
+                                    <ng-container *ngFor="let p of pagesAffichees">
+                                        <span class="pager-ellipse" *ngIf="p === '…'">…</span>
+                                        <button type="button" class="pager-btn pager-num"
+                                                *ngIf="p !== '…'"
+                                                [class.active]="p === pageCourante"
+                                                (click)="allerPage($any(p))">{{ p }}</button>
+                                    </ng-container>
+
+                                    <button type="button" class="pager-btn"
+                                            [disabled]="pageCourante === nbPages"
+                                            title="Page suivante"
+                                            (click)="allerPage(pageCourante + 1)">
+                                        <i class="fa-solid fa-chevron-right"></i>
+                                    </button>
+
+                                    <span class="pager-taille">{{ taillePage }} / page</span>
+                                </div>
+                            </div>
+
                         </div>
 
-
-
                     </div>
-
-
 
                 </div>
             </div>
         </nz-splitter-panel>
 
     </nz-splitter>
-
-    <!-- ══ APERÇU EXCEL (pleine largeur en bas) ══════════════════════ -->
-
 
 </div>

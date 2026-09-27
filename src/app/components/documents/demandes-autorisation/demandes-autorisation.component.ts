@@ -1,13 +1,12 @@
-import {Component, OnInit} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, HostListener, OnInit, ViewChild} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
-import {NzTableModule} from 'ng-zorro-antd/table';
 import {NzTagModule} from 'ng-zorro-antd/tag';
-import {NzSelectModule} from 'ng-zorro-antd/select';
 import {NzToolTipModule} from 'ng-zorro-antd/tooltip';
 import {NzDatePickerModule} from 'ng-zorro-antd/date-picker';
 import {ToastrService} from 'ngx-toastr';
 import moment from 'moment';
+import * as XLSX from 'xlsx';
 import {CardComponent} from '../../../shared/components/ui/card/card.component';
 import {FeatherIconComponent} from '../../../shared/components/ui/feather-icon/feather-icon.component';
 import {Authorization} from '../../../protect/authorization.service';
@@ -33,20 +32,36 @@ interface DemandeRow {
 
 @Component({
     selector: 'app-demandes-autorisation',
-    imports: [CommonModule, FormsModule, NzTableModule, NzTagModule, NzSelectModule, NzToolTipModule, NzDatePickerModule, CardComponent, FeatherIconComponent],
+    imports: [CommonModule, FormsModule, NzTagModule, NzToolTipModule, NzDatePickerModule, CardComponent, FeatherIconComponent],
     templateUrl: './demandes-autorisation.component.html',
     styleUrl: './demandes-autorisation.component.scss',
 })
-export class DemandesAutorisationComponent implements OnInit {
+export class DemandesAutorisationComponent implements OnInit, AfterViewInit {
 
     private users: any = [];
     isloading: boolean = false;
     searchValue: string = '';
-    selectedStatut: string = '';
+    isExporting = false;
+
+    // ── Pagination (les demandes sont chargées en une fois) ──
+    pageIndex = 1;
+    pageSize = 10;
+    readonly taillesPage = [10, 20, 50, 100];
 
     private allRows: DemandeRow[] = [];
+    /** Les demandes retenues par la recherche. */
     rows: DemandeRow[] = [];
-    statuts: string[] = [];
+
+    // ── Ascenseur horizontal dessiné (les barres natives sont masquées sur iOS) ──
+    @ViewChild('tableWrap') tableWrap?: ElementRef<HTMLDivElement>;
+    @ViewChild('hBar') hBar?: ElementRef<HTMLDivElement>;
+    hScrollVisible = false;
+    hScrollMore = false;
+    thumbWidth = 0;
+    thumbLeft = 0;
+    private dragging = false;
+    private dragStartX = 0;
+    private dragStartScroll = 0;
 
     // ── Décision (validation / rejet) ─────────────────────────────────
     showDecision: boolean = false;
@@ -108,7 +123,6 @@ export class DemandesAutorisationComponent implements OnInit {
                 console.log('save-demande-authorisation ===', res.body);
                 if (res.body.status || res.body.success) {
                     this.allRows = (res.body.data || []).map((e: any) => this.mapRow(e));
-                    this.statuts = [...new Set(this.allRows.map(r => r.statut).filter(Boolean))];
                     this.applyFilter();
                 }
             })
@@ -163,23 +177,19 @@ export class DemandesAutorisationComponent implements OnInit {
         this.applyFilter();
     }
 
-    onStatutChange(value: string): void {
-        this.selectedStatut = value || '';
-        this.applyFilter();
-    }
-
     private applyFilter(): void {
         const q = this.searchValue.trim().toLowerCase();
         this.rows = this.allRows.filter(r => {
-            const matchStatut = !this.selectedStatut || r.statut === this.selectedStatut;
             const matchSearch = !q ||
                 r.demandeur.toLowerCase().includes(q) ||
                 r.beneficiaire.toLowerCase().includes(q) ||
                 r.document.toLowerCase().includes(q) ||
                 r.motif.toLowerCase().includes(q) ||
                 (r.code_docs || '').toLowerCase().includes(q);
-            return matchStatut && matchSearch;
+            return matchSearch;
         });
+        this.pageIndex = 1;               // un nouveau filtre repart de la première page
+        setTimeout(() => this.syncHScroll());
     }
 
     // ── Helpers d'affichage ───────────────────────────────────────────
@@ -308,5 +318,141 @@ export class DemandesAutorisationComponent implements OnInit {
 
     private fmtDate(d: Date | null | undefined): string {
         return d ? moment(d).format('YYYY-MM-DD') : '';
+    }
+
+    // ── Pagination ───────────────────────────────────────────
+    // Les demandes arrivent toutes en une fois : la pagination est donc locale,
+    // elle ne fait que découper `rows`.
+
+    get nbPages(): number {
+        return Math.max(1, Math.ceil(this.rows.length / this.pageSize));
+    }
+
+    get rowsPage(): DemandeRow[] {
+        const debut = (this.pageIndex - 1) * this.pageSize;
+        return this.rows.slice(debut, debut + this.pageSize);
+    }
+
+    allerPage(page: number): void {
+        const cible = Math.min(Math.max(page, 1), this.nbPages);
+        if (cible === this.pageIndex) return;
+        this.pageIndex = cible;
+        setTimeout(() => this.syncHScroll());
+    }
+
+    changerTaille(taille: number): void {
+        if (taille === this.pageSize) return;
+        this.pageSize = taille;
+        this.pageIndex = 1;
+        setTimeout(() => this.syncHScroll());
+    }
+
+    // ── Export Excel ─────────────────────────────────────────
+
+    /**
+     * L'export porte sur la sélection courante (recherche comprise) et non sur
+     * la seule page affichée : un fichier qui ne contiendrait que 10 lignes
+     * surprendrait plus qu'il n'aiderait.
+     */
+    exportToExcel(): void {
+        if (this.isExporting || !this.rows.length) return;
+        this.isExporting = true;
+
+        const lignes = this.rows.map(r => ({
+            'Bénéficiaire': r.beneficiaire,
+            'Demandeur': r.demandeur,
+            'Document': r.document,
+            'Code doc.': r.code_docs || '',
+            'Action(s)': (r.actions || []).join(', '),
+            'Statut': this.statutLabel(r.statut),
+            'Période': r.periode,
+            'Date demande': r.date || '',
+            'Motif': r.motif || '',
+        }));
+
+        const ws = XLSX.utils.json_to_sheet(lignes);
+        ws['!cols'] = Object.keys(lignes[0] || {}).map(key => ({
+            wch: Math.max(key.length, ...lignes.map((l: any) => String(l[key] || '').length)) + 2,
+        }));
+
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Demandes d'autorisation");
+        XLSX.writeFile(wb, `demandes_autorisation_${moment().format('YYYYMMDD_HHmmss')}.xlsx`);
+
+        this.isExporting = false;
+    }
+
+    // ══ Ascenseur horizontal personnalisé ═══════════════════════════════
+    ngAfterViewInit(): void {
+        setTimeout(() => this.syncHScroll());
+    }
+
+    @HostListener('window:resize')
+    syncHScroll(): void {
+        const el = this.tableWrap?.nativeElement;
+        if (!el) {
+            return;
+        }
+        const maxScroll = el.scrollWidth - el.clientWidth;
+        this.hScrollVisible = maxScroll > 2;
+        this.hScrollMore = el.scrollLeft < maxScroll - 2;
+
+        const barEl = this.hBar?.nativeElement;
+        if (this.hScrollVisible && !barEl) {
+            // la barre vient d'apparaître : on recalcule une fois qu'elle est rendue
+            setTimeout(() => this.syncHScroll());
+        }
+
+        const track = barEl?.clientWidth || el.clientWidth;
+        this.thumbWidth = Math.max(40, Math.round(track * (el.clientWidth / el.scrollWidth)));
+        const maxX = track - this.thumbWidth;
+        this.thumbLeft = maxScroll > 0 ? Math.round((el.scrollLeft / maxScroll) * maxX) : 0;
+    }
+
+    onBarPointerDown(ev: PointerEvent): void {
+        const el = this.tableWrap?.nativeElement;
+        const bar = this.hBar?.nativeElement;
+        if (!el || !bar) {
+            return;
+        }
+        const rect = bar.getBoundingClientRect();
+        const maxScroll = el.scrollWidth - el.clientWidth;
+        const maxX = rect.width - this.thumbWidth;
+        const pointerX = ev.clientX - rect.left;
+
+        // clic hors du pouce : on saute directement à cette position
+        if (pointerX < this.thumbLeft || pointerX > this.thumbLeft + this.thumbWidth) {
+            const x = Math.min(Math.max(pointerX - this.thumbWidth / 2, 0), maxX);
+            el.scrollLeft = maxX > 0 ? (x / maxX) * maxScroll : 0;
+        }
+
+        this.dragging = true;
+        this.dragStartX = ev.clientX;
+        this.dragStartScroll = el.scrollLeft;
+        bar.setPointerCapture(ev.pointerId);
+        ev.preventDefault();
+        this.syncHScroll();
+    }
+
+    @HostListener('document:pointermove', ['$event'])
+    onBarPointerMove(ev: PointerEvent): void {
+        if (!this.dragging) {
+            return;
+        }
+        const el = this.tableWrap?.nativeElement;
+        const bar = this.hBar?.nativeElement;
+        if (!el || !bar) {
+            return;
+        }
+        const maxScroll = el.scrollWidth - el.clientWidth;
+        const maxX = bar.clientWidth - this.thumbWidth;
+        const dx = ev.clientX - this.dragStartX;
+        el.scrollLeft = this.dragStartScroll + (maxX > 0 ? dx * (maxScroll / maxX) : 0);
+    }
+
+    @HostListener('document:pointerup')
+    @HostListener('document:pointercancel')
+    onBarPointerUp(): void {
+        this.dragging = false;
     }
 }

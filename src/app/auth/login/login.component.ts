@@ -72,7 +72,7 @@ export class LoginComponent implements OnInit, OnDestroy {
                 "password": this.loginForm.value.password
             }, '')
                 .toPromise()
-                .then((res: any) => {
+                .then(async (res: any) => {
 
 
                     if (res.body.status) {
@@ -93,10 +93,18 @@ export class LoginComponent implements OnInit, OnDestroy {
                             return;
                         }
 
+
+                        try {
+                            const res: any = await this.httService.getData(`${environment.api_url}auth/:rolemenu?idrole=${response?.dataroles?.uid}&idsociete=${response?.datasociete?.uid}`,
+                                false, response?.access_token).toPromise();
+                            if (res?.body.success && res?.body.data.length) {
+                                response._menu = res?.body?.data?.flatMap((e: any) => e.datamenu).sort((a: any, b: any) => a.rang - b.rang);
+                            }
+                        } catch {
+
+                        }
                         const mapData = {
-                            ...response,
-                            _menu: [],
-                            dataUsers: []
+                            ...response
                         };
 
                         const mapSession = cryptSession(JSON.stringify(mapData), decode64(environment.CONFIG.APP_PASS));

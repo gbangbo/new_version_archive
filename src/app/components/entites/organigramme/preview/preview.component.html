@@ -41,7 +41,19 @@
         <app-feather-icon class="icon-inbox" [icon]="'inbox'"></app-feather-icon>
         <span>Aucune donnée à afficher</span>
     </div>
-    <div class="canvas-scroll" *ngIf="treeData?.length" [style.zoom]="zoomLevel">
-        <canvas #orgCanvas></canvas>
+    <div class="tt-scroll-shell" [class.tt-more-right]="hScrollMore" *ngIf="treeData?.length">
+        <div class="canvas-scroll" #canvasScroll
+             (scroll)="syncHScroll()"
+             (pointerdown)="onPanStart($event)">
+            <canvas #orgCanvas [style.zoom]="zoomLevel"></canvas>
+        </div>
+
+        <!-- Ascenseur horizontal dessine (visible en permanence) -->
+        <div class="tt-hscroll" *ngIf="hScrollVisible" #hBar
+             (pointerdown)="onBarPointerDown($event)">
+            <div class="tt-hscroll-thumb"
+                 [style.width.px]="thumbWidth"
+                 [style.left.px]="thumbLeft"></div>
+        </div>
     </div>
 </div>

@@ -1,0 +1,948 @@
+// ══ IMPORTATION EXCEL → PDF DEPUIS DOSSIERS ════════════════════════════════════════════════
+// Deux volets redimensionnables : à gauche la destination d'archivage, à
+// droite le fichier Excel et son aperçu.
+//
+// Deux couleurs seulement : le marine de l'application pour tout ce qui relève
+// du formulaire, le vert Excel pour tout ce qui relève du fichier. Le violet
+// du gabarit d'origine (#7366ff) n'appartient à aucune des deux.
+
+$marine: #00141e;
+$marine-clair: #00366e;
+$vert-excel: #107C41;
+$vert-excel2: rgba(63, 61, 61, 0.25);
+$vert-excel-clair: #0a0a0a42;
+
+$bord: #E2E8F0;
+$bord-doux: #F1F5F9;
+$texte: #1E293B;
+$texte-doux: #64748B;
+$texte-faible: #94A3B8;
+
+// ── Layout splitter ──────────────────────────────────────────────
+// La hauteur est posée par le composant (ajusterHauteurVolets) à partir de la
+// distance réelle au haut de la fenêtre : le calc ci-dessous n''est qu''un
+// repli le temps du premier rendu. Le 110vh d''origine débordait sous le pli
+// et faisait défiler la page entière au lieu du seul volet concerné.
+nz-splitter {
+  height: calc(100vh - 0px) !important;
+  min-height: 460px;
+  border: 1px solid $bord;
+  border-radius: 5px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06), 0 8px 24px rgba(15, 23, 42, 0.05);
+}
+
+.box {
+  height: 100%;
+  overflow-y: auto;
+  display: flex;
+  justify-content: center;
+
+  scrollbar-width: thin;
+  scrollbar-color: #CBD5E1 transparent;
+
+  &::-webkit-scrollbar { width: 9px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb {
+    background: #CBD5E1;
+    border-radius: 9px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+}
+
+// ── En-tête de section (commun aux deux volets) ───────────────────
+.section-label {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 14px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: $marine-clair;
+  background: linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 100%);
+  border-bottom: 1px solid $bord;
+  text-transform: uppercase;
+
+  > i {
+    font-size: 15px;
+    color: $texte-doux;
+  }
+}
+
+.section-titre {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// Pastille numérotée : l'ordre des trois blocs n'est pas indifférent, la
+// cascade série → type et site → rayon → boîte impose de les remplir de haut
+// en bas.
+.section-num {
+  flex-shrink: 0;
+  width: 19px;
+  height: 19px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: $marine-clair;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+// « facultatif » : l''API accepte l''import sans propriétaire, autant le dire
+// dans l''en-tête plutôt que de laisser chercher l''astérisque absent.
+.section-option {
+  flex-shrink: 0;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #F1F5F9;
+  color: $texte-faible;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.section-badge {
+  flex-shrink: 0;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: rgba(16, 124, 65, 0.1);
+  color: $vert-excel;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+// ── Panneau formulaire ────────────────────────────────────────────
+.form-panel {
+  width: 100%;
+  max-width: 540px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding: 0 0 4px;
+}
+
+// Pas d'`overflow: hidden` ici : il rognait la liste déroulante de la Série
+// au ras du bloc. Les coins de l'en-tête sont arrondis à la main.
+.form-section {
+  margin-bottom: 10px;
+  //border: 1px solid $bord;
+  border-radius: 10px;
+  background: #fff;
+
+  > .section-label { border-radius: 9px 9px 0 0; }
+}
+
+.form-section-body {
+  padding: 14px;
+}
+
+// Les deux cascades tiennent sur une seule ligne chacune : Série ‖ Type de
+// document, Site ‖ Rayon. Deux rangées de champs en moins, soit la hauteur
+// qu''il fallait retrouver pour que le volet ne défile plus.
+//
+// La bascule sur une colonne se décide sur la largeur du volet, pas sur celle
+// de la fenêtre : la barre du splitter se déplace à la souris et seule une
+// requête de conteneur suit ce mouvement.
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 14px;
+  container-type: inline-size;
+}
+
+.champ { grid-column: 1 / -1; }
+
+.champ-demi { grid-column: span 1; }
+
+@container (max-width: 400px) {
+  .champ-demi { grid-column: 1 / -1; }
+}
+
+// ── Libellés de champ ─────────────────────────────────────────────
+.form-label {
+  display: block;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  line-height: 18px !important;
+  letter-spacing: 0 !important;
+  color: $texte-doux !important;
+  margin-bottom: 5px !important;
+}
+
+// ── Aides de cascade & chargement ─────────────────────────────────
+.cascade-hint {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  font-size: 11.5px;
+  color: $texte-faible;
+  font-style: italic;
+}
+
+.select-loader {
+  position: absolute;
+  right: 34px;
+  top: 37px;
+  color: $marine-clair;
+  font-size: 12px;
+}
+
+// ── Barre de pied ─────────────────────────────────────────────────
+// Collante : les six champs dépassent souvent la hauteur du volet, les
+// boutons doivent rester atteignables sans redescendre. Fond opaque, sinon
+// les champs défilaient visiblement derrière.
+.form-footer-bar {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 2px;
+  margin-top: auto;
+  background: #fff;
+  border-top: 1px solid $bord;
+  z-index: 10;
+}
+
+.form-footer-left {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.form-footer-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.footer-etat {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #B45309;
+  white-space: nowrap;
+
+  &.pret { color: $vert-excel; }
+}
+
+// ── Panneau d'import ──────────────────────────────────────────────
+.upload-panel {
+  width: 100%;
+}
+
+.upload-section {
+  border-left: 1px solid $bord;
+  min-height: 100%;
+}
+
+.upload-section-body {
+  padding: 16px;
+}
+
+// ── Dropzone ──────────────────────────────────────────────────────
+.excel-dropzone {
+  border: 1px dashed #CBD5E1;
+  border-radius: 5px;
+  background: #FAFBFC;
+  transition: border-color 0.2s, background 0.2s;
+  cursor: pointer;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover:not(.dz-has-file) {
+    border-color: $vert-excel-clair;
+    background: rgba(33, 163, 102, 0.04);
+  }
+
+  &.dz-over {
+    border-color: $vert-excel;
+    background: rgba(16, 124, 65, 0.06);
+  }
+
+  &.dz-has-file {
+    border-style: solid;
+    border-color: rgba(16, 124, 65, 0.35);
+    background: rgba(16, 124, 65, 0.03);
+    cursor: default;
+    min-height: 0;
+  }
+}
+
+.dz-message {
+  text-align: center;
+  padding: 28px 24px;
+
+  .dz-icon {
+    font-size: 48px;
+    color: $vert-excel-clair;
+    margin-bottom: 14px;
+    line-height: 1;
+  }
+
+  h6 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 6px;
+  }
+
+  .note {
+    font-size: 12px;
+    color: $texte-faible;
+    display: block;
+  }
+}
+
+.dz-file-info {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  width: 100%;
+
+  .dz-file-icon {
+    font-size: 34px;
+    color: $vert-excel;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+
+  .dz-file-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    overflow: hidden;
+  }
+
+  .dz-filename {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: $texte;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.dz-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  font-size: 11.5px;
+  color: $texte-faible;
+
+  > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+}
+
+.dz-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  font-size: 12px;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.dz-replace-btn {
+  border: 1px solid $bord;
+  background: #fff;
+  color: $texte-doux;
+
+  &:hover {
+    border-color: rgba(16, 124, 65, 0.4);
+    color: $vert-excel;
+  }
+}
+
+.dz-remove-btn {
+  border: 1px solid #FCA5A5;
+  background: #FEF2F2;
+  color: #EF4444;
+
+  &:hover { background: #FEE2E2; }
+}
+
+// ── Spinner de lecture ────────────────────────────────────────────
+.excel-reading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  font-size: 12px;
+  color: $vert-excel;
+}
+
+.excel-read-spin {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(16, 124, 65, 0.25);
+  border-top-color: $vert-excel;
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+// ── Aperçu Excel ──────────────────────────────────────────────────
+.excel-preview-wrap {
+  margin: 0 16px 16px;
+  border: 1px solid $bord;
+  border-radius: 5px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.excel-preview-header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  padding: 9px 14px;
+  background: linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 100%);
+  border-bottom: 1px solid $bord;
+}
+
+.excel-preview-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #525252;
+  text-transform: uppercase;
+
+  i { font-size: 14px; }
+}
+
+.excel-preview-meta {
+  margin-left: auto;
+  font-size: 11.5px;
+  color: $texte-faible;
+  white-space: nowrap;
+
+  strong { color: $texte-doux; font-weight: 600; }
+}
+
+.excel-sheets-tabs {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.sheet-tab {
+  padding: 3px 11px;
+  font-size: 12px;
+  border-radius: 999px;
+  border: 1px solid $bord;
+  background: #fff;
+  color: $texte-doux;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.15s;
+
+  &:hover {
+    border-color: rgba(16, 124, 65, 0.4);
+    color: $vert-excel;
+  }
+
+  &.active {
+    background: $vert-excel;
+    color: #fff;
+    border-color: $vert-excel;
+  }
+}
+
+// ── Tableau d'aperçu ──────────────────────────────────────────────
+.excel-preview-body {
+  overflow: auto;
+  max-height: 380px;
+
+  scrollbar-width: thin;
+  scrollbar-color: #CBD5E1 transparent;
+
+  &::-webkit-scrollbar { width: 9px; height: 9px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb {
+    background: #CBD5E1;
+    border-radius: 9px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+}
+
+.excel-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 12.5px;
+
+  th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    padding: 9px 14px;
+    font-weight: 600;
+    color: $texte;
+    border-bottom: 1px solid $bord;
+    border-right: 1px solid $bord-doux;
+    white-space: nowrap;
+    text-align: left;
+    background: #EEF2F6;
+
+    &.row-num {
+      left: 0;
+      z-index: 3;
+      width: 44px;
+      text-align: center;
+      color: $texte-faible;
+      background: #E4EAF0;
+    }
+  }
+
+  td {
+    padding: 7px 14px;
+    border-bottom: 1px solid $bord-doux;
+    border-right: 1px solid $bord-doux;
+    color: $texte-doux;
+    white-space: nowrap;
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    &.row-num {
+      position: sticky;
+      left: 0;
+      z-index: 1;
+      text-align: center;
+      color: #CBD5E1;
+      font-size: 11px;
+      background: #FAFBFC;
+    }
+  }
+
+  // Alternance discrète : sur quarante lignes de tableur, l'œil perd la
+  // ligne sans elle.
+  tbody tr:nth-child(even) td { background: #FCFDFE; }
+
+  tbody tr:hover td {
+    background: rgba(16, 124, 65, 0.05);
+    color: $texte;
+  }
+}
+
+// ── Pagination de l'aperçu ────────────────────────────────────────
+// Hors de `.excel-preview-body`, qui défile : les commandes doivent rester
+// sous les yeux quand on parcourt les cinquante lignes de la page.
+.excel-pager {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  padding: 8px 14px;
+  border-top: 1px solid $bord;
+  background: #FAFBFC;
+}
+
+.pager-info {
+  font-size: 11.5px;
+  color: $texte-faible;
+
+  strong { color: $texte-doux; font-weight: 600; }
+}
+
+.pager-boutons {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.pager-btn {
+  min-width: 28px;
+  height: 28px;
+  padding: 0 7px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid $bord;
+  border-radius: 7px;
+  background: #fff;
+  color: $texte-doux;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+
+  &:hover:not(:disabled):not(.active) {
+    border-color: rgba(16, 124, 65, 0.4);
+    color: $vert-excel;
+  }
+
+  &.active {
+    border-color: $vert-excel2;
+    background: $vert-excel2;
+    color: #64748B;
+    cursor: default;
+  }
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+}
+
+// Rappel du calibre : sans lui, un tableau d''une seule page laisse croire
+// que l''aperçu montre tout, alors qu''il s''arrête à cinquante lignes.
+.pager-taille {
+  margin-left: 6px;
+  padding-left: 10px;
+  border-left: 1px solid $bord;
+  font-size: 11.5px;
+  color: $texte-faible;
+  white-space: nowrap;
+}
+
+.pager-ellipse {
+  padding: 0 2px;
+  color: #CBD5E1;
+  font-size: 12px;
+}
+
+.excel-loading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 24px 16px;
+  font-size: 12px;
+  color: $vert-excel;
+}
+
+.excel-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 44px;
+  color: $texte-faible;
+
+  i { font-size: 32px; color: #CBD5E1; }
+
+  p {
+    margin-top: 10px;
+    font-size: 13px;
+  }
+}
+
+// ══ CHAMPS DU FORMULAIRE ════════════════════════════════════════════════════
+// Les trois familles de champs arrivaient chacune avec la taille et les
+// couleurs du gabarit d'origine : boîtes de ~50 px, ombres violettes, chevron
+// noir plein. On les ramène toutes à la même boîte de 38 px et au marine.
+:host ::ng-deep {
+
+  // ── select2 : Série, Type de document, Site, Rayon, Boîte ───────
+  .raise-input-select {
+    // Sans ça, select2 retombe sur son thème propre (bordure #aaa, flèche #888)
+    --select2-selection-background: #fff;
+    --select2-selection-border-color: #{$bord};
+    --select2-selection-border-radius: 8px;
+    --select2-selection-text-color: #{$texte};
+    --select2-arrow-color: #BFBFBF;
+    --select2-placeholder-color: #CBD5E1;
+
+    display: block !important;
+    width: 100% !important;
+
+    // Aucune bordure ni ombre ne doit venir des enveloppes de select2
+    .select2,
+    .select2-container,
+    .selection {
+      width: 100% !important;
+      display: block !important;
+      border: none !important;
+      background: transparent !important;
+      box-shadow: none !important;
+    }
+
+    // Sélecteur volontairement long : deux règles du thème visent ces éléments
+    // en !important avec une spécificité supérieure à un simple
+    // `.raise-input-select .select2-selection` —
+    //   .raise-input-select .select2-selection--single (ombre violette, _job-search.scss)
+    //   .is-invalid .select2 .selection .select2-selection (rouge #fc564a, _reset.scss)
+    .select2 .selection .select2-selection,
+    .select2-selection--single,
+    .select2-selection {
+      height: 38px !important;
+      min-height: 38px !important;
+      max-height: 38px !important;
+      border: 1px solid $bord !important;
+      border-radius: 8px !important;
+      background: #fff !important;
+      box-shadow: none !important;
+      padding: 0 !important;
+      overflow: hidden !important;
+      display: flex !important;
+      align-items: center !important;
+      transition: border-color 0.15s, box-shadow 0.15s !important;
+
+      &:hover { border-color: #CBD5E1 !important; }
+    }
+
+    // .select2-selection est en flex : la flèche est un frère, pas un calque —
+    // inutile de lui réserver du padding à droite.
+    .select2-selection__rendered {
+      color: $texte !important;
+      font-size: 13px !important;
+      line-height: 36px !important;
+      padding: 0 4px 0 12px !important;
+      margin: 0 !important;
+    }
+
+    .select2-selection__placeholder { color: #CBD5E1 !important; }
+
+    .select2-selection__clear {
+      margin-right: 2px !important;
+      padding: 0 4px !important;
+      color: #CBD5E1 !important;
+      font-size: 15px !important;
+      font-weight: 400 !important;
+
+      &:hover { color: $texte-faible !important; }
+    }
+
+    // select2 dessine un triangle plein ; ng-zorro un chevron fin. On reprend
+    // le chevron pour que les deux familles de champs se ressemblent.
+    .select2-selection__arrow {
+      height: 38px !important;
+      width: 28px !important;
+      top: 0 !important;
+      right: 2px !important;
+
+      &::before {
+        content: "" !important;
+        width: 7px !important;
+        height: 7px !important;
+        border: solid #BFBFBF !important;
+        border-width: 0 1.5px 1.5px 0 !important;
+        border-radius: 0 !important;
+        transform: translateY(-2px) rotate(45deg) !important;
+      }
+    }
+
+    .select2-container--open .select2-selection__arrow::before {
+      transform: translateY(2px) rotate(-135deg) !important;
+    }
+
+    .select2.select2-container--focus .selection .select2-selection,
+    .select2.select2-container--open .selection .select2-selection {
+      border-color: rgba(0, 54, 110, 0.55) !important;
+      box-shadow: 0 0 0 3px rgba(0, 54, 110, 0.08) !important;
+    }
+
+    // Champ en attente de son parent : il doit se lire comme inerte, la
+    // mention « Sélectionnez d'abord… » juste en dessous explique pourquoi.
+    .select2.select2-container--disabled .select2-selection {
+      background: #F8FAFC !important;
+      border-color: $bord-doux !important;
+      cursor: not-allowed !important;
+    }
+
+    // Rouge aligné sur celui des inputs (#EF4444), pas le #fc564a du thème :
+    // les deux rouges cohabitaient dans le même formulaire.
+    &.is-invalid .select2 .selection .select2-selection {
+      border-color: #EF4444 !important;
+    }
+  }
+
+  // ── nz-tree-select / nz-select : services et propriétaires ──────
+  // Deux composants distincts, mais la même boîte de 38 px : à l''œil, ce sont
+  // deux champs à choix multiple posés l''un sous l''autre.
+  nz-tree-select,
+  nz-select {
+    display: block;
+    width: 100%;
+
+    .ant-select-selector {
+      min-height: 38px !important;
+      padding: 0 10px !important;
+      border: 1px solid $bord !important;
+      border-radius: 8px !important;
+      background: #fff !important;
+      box-shadow: none !important;
+      transition: border-color 0.15s, box-shadow 0.15s !important;
+    }
+
+    &:hover .ant-select-selector { border-color: #CBD5E1 !important; }
+
+    &.ant-select-focused .ant-select-selector,
+    &.ant-select-open .ant-select-selector {
+      border-color: rgba(0, 54, 110, 0.55) !important;
+      box-shadow: 0 0 0 3px rgba(0, 54, 110, 0.08) !important;
+    }
+
+    .ant-select-selection-placeholder {
+      color: #CBD5E1 !important;
+      font-size: 13px !important;
+      line-height: 36px !important;
+    }
+
+    .ant-select-selection-search-input { height: 36px !important; }
+
+    // Étiquettes des services retenus : même marine que le reste, et une
+    // hauteur qui laisse la boîte à 38 px tant qu'on reste sur une ligne.
+    .ant-select-selection-overflow { min-height: 36px; }
+
+    .ant-select-selection-item {
+      height: 24px !important;
+      line-height: 22px !important;
+      border: 1px solid rgba(0, 54, 110, 0.18) !important;
+      border-radius: 6px !important;
+      background: rgba(0, 54, 110, 0.07) !important;
+      color: $marine-clair !important;
+      font-size: 12px !important;
+    }
+
+    .ant-select-selection-item-remove { color: rgba(0, 54, 110, 0.55) !important; }
+
+    .ant-select-arrow { color: #BFBFBF !important; }
+  }
+
+  // ── Message d'erreur sous un champ ──────────────────────────────
+  .invalid-feedback {
+    display: block !important;
+    margin-top: 5px;
+    font-size: 11.5px !important;
+    color: #EF4444 !important;
+  }
+}
+
+// ── Liste déroulante de select2 ───────────────────────────────────
+// Avec `overlay`, la liste est rendue dans une couche CDK attachée au <body> :
+// elle sort du composant, `:host` ne l'atteint pas. Ces règles reprennent mot
+// pour mot le marine déjà posé par les autres écrans qui utilisent select2
+// (car-perso/add-modal, widgets interopérabilité) — sans elles, la ligne
+// survolée reste au violet #7366ff du gabarit.
+::ng-deep .select2-dropdown {
+  border: 1px solid #E2E8F0 !important;
+  border-radius: 10px !important;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.14) !important;
+  overflow: hidden;
+}
+
+::ng-deep .select2-results__option {
+  font-size: 13px !important;
+  padding: 9px 12px !important;
+}
+
+::ng-deep .select2-results__option--highlighted,
+::ng-deep .select2-results__option--highlighted[aria-selected] {
+  background: rgba(0, 54, 110, 0.09) !important;
+  color: rgba(0, 54, 110) !important;
+}
+
+::ng-deep .select2-results__option[aria-selected="true"] {
+  background: rgba(0, 54, 110, 0.14) !important;
+  color: rgba(0, 54, 110) !important;
+  font-weight: 600;
+}
+
+// Le champ de recherche de la liste arrivait sans bordure ni repère : un
+// rectangle vide au-dessus des options.
+::ng-deep .select2-search input {
+  height: 34px !important;
+  border: 1px solid #E2E8F0 !important;
+  border-radius: 8px !important;
+  font-size: 13px !important;
+
+  &:focus {
+    border-color: rgba(0, 54, 110, 0.55) !important;
+    box-shadow: 0 0 0 3px rgba(0, 54, 110, 0.08) !important;
+  }
+}
+
+// ── Container global ──────────────────────────────────────────────
+.container.job-apply-wrapper {
+  padding: 16px;
+}
+
+// ── Bouton principal ──────────────────────────────────────────────
+.newBtn {
+  justify-content: center;
+  height: 38px !important;
+  padding: 0 20px !important;
+  border-radius: 8px !important;
+  background-color: $marine !important;
+  color: #fff !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 7px !important;
+  border: none !important;
+  box-shadow: 0 2px 8px rgba(0, 20, 30, 0.3) !important;
+  transition: all 0.2s !important;
+
+  &:hover:not(:disabled) {
+    background-color: #002a3d !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(0, 20, 30, 0.4) !important;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none !important;
+  }
+}
+
+// ── Mobile : les volets s'empilent ────────────────────────────────
+// (Tailwind est configuré en max-width : `lg:` vaut ≤ 991px.)
+@media (max-width: 991px) {
+  nz-splitter {
+    height: auto;
+    min-height: 0;
+  }
+
+  .box { overflow-y: visible; }
+
+  .upload-section {
+    border-left: none;
+    border-top: 1px solid $bord;
+  }
+}

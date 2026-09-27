@@ -1,0 +1,61 @@
+<!-- ═══ MODAL : créer / modifier une action ══════════════════════ -->
+<!-- Même gabarit que le modal de Flash info (classes fi-*) -->
+<div class="fi-backdrop">
+    <div class="fi-panel">
+        <div class="fi-header">
+            <div class="fi-header-titles">
+                <span class="fi-title">
+                    <i class="fa-solid fa-bolt"></i>
+                    {{ validationForm.value.uid ? "Modifier l'action" : "Nouvelle action" }}
+                </span>
+            </div>
+            <button class="fi-close" type="button" (click)="closeModal()" title="Fermer">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <form [formGroup]="validationForm" (ngSubmit)="submitForm()">
+            <div class="fi-body custom-input">
+                <div class="fi-alert" *ngIf="errorTexte">
+                    <i class="fa-solid fa-circle-exclamation"></i> {{ errorTexte }}
+                </div>
+
+                <div class="fi-field">
+                    <label class="form-label" for="code_type_objet">Code <span class="txt-danger">*</span></label>
+                    <input class="fi-input" id="code_type_objet" type="text"
+                           placeholder="Ex. : SAVE, UPDATE, DELETE…"
+                           formControlName="code_type_objet"
+                           [class.fi-input-error]="validationForm.controls['code_type_objet'].touched
+                                                   && validationForm.controls['code_type_objet'].errors?.['required']">
+                    <span class="fi-error"
+                          *ngIf="validationForm.controls['code_type_objet'].touched
+                                 && validationForm.controls['code_type_objet'].errors?.['required']">
+                        Veuillez saisir le code de l'action.
+                    </span>
+                </div>
+
+                <div class="fi-field">
+                    <label class="form-label" for="lib_type_objet">Libellé de l'action <span class="txt-danger">*</span></label>
+                    <input class="fi-input" id="lib_type_objet" type="text"
+                           placeholder="Ex. : Enregistrer, Modifier, Supprimer…"
+                           formControlName="lib_type_objet"
+                           [class.fi-input-error]="validationForm.controls['lib_type_objet'].touched
+                                                   && validationForm.controls['lib_type_objet'].errors?.['required']">
+                    <span class="fi-error"
+                          *ngIf="validationForm.controls['lib_type_objet'].touched
+                                 && validationForm.controls['lib_type_objet'].errors?.['required']">
+                        Veuillez saisir le libellé de l'action.
+                    </span>
+                </div>
+            </div>
+
+            <div class="fi-footer">
+                <button class="fi-btn fi-btn-cancel" type="button" (click)="closeModal()">Annuler</button>
+                <button class="fi-btn fi-btn-confirm" type="submit" [disabled]="isloading">
+                    <i class="fa-solid" [ngClass]="isloading ? 'fa-circle-notch fa-spin' : 'fa-check'"></i>
+                    {{ isloading ? 'Enregistrement…' : (validationForm.value.uid ? 'Modifier' : 'Créer') }}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

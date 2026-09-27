@@ -1,10 +1,9 @@
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostListener, OnInit, ViewChild} from '@angular/core';
 import * as XLSX from 'xlsx';
 import * as pdfjsLib from 'pdfjs-dist';
 import {CommonModule} from "@angular/common";
 import {FormsModule} from "@angular/forms";
 import moment from "moment";
-import {NzTableModule} from "ng-zorro-antd/table";
 import {NzInputModule} from "ng-zorro-antd/input";
 import {NzIconModule} from "ng-zorro-antd/icon";
 import {NzTagModule} from "ng-zorro-antd/tag";
@@ -42,7 +41,6 @@ interface SentFile {
     imports: [
         CommonModule,
         CardComponent,
-        NzTableModule,
         NzInputModule,
         NzIconModule,
         NzTagModule,
@@ -53,7 +51,7 @@ interface SentFile {
     templateUrl: './documents-envoyes.component.html',
     styleUrl: './documents-envoyes.component.scss',
 })
-export class DocumentsEnvoyesComponent implements OnInit {
+export class DocumentsEnvoyesComponent implements OnInit, AfterViewInit {
 
     private users: any = [];
     isloading: boolean = false;
@@ -84,30 +82,26 @@ export class DocumentsEnvoyesComponent implements OnInit {
     readonly zoomStep: number = 0.25;
 
     // ── Tri ──────────────────────────────────────────────────
-    sortFns = {
-        lib_document: (a: RowData, b: RowData) =>
-            (a.lib_document ?? '').localeCompare(b.lib_document ?? ''),
-        email_received: (a: RowData, b: RowData) =>
-            (a.email_received ?? '').localeCompare(b.email_received ?? ''),
-        date_envoi: (a: RowData, b: RowData) =>
-            (a.date_envoi ?? '').localeCompare(b.date_envoi ?? ''),
-    };
+    // ── Tri (clic sur l'entête) ───────────────────────────────
+    sortKey: string = '';
+    sortOrder: 'asc' | 'desc' | '' = '';
 
-    // ── Filtres ──────────────────────────────────────────────
-    filters: {
-        lib_document: { text: string; value: string }[];
-        email_received: { text: string; value: string }[];
-    } = {
-        lib_document: [],
-        email_received: [],
-    };
+    // ── Pagination (la liste est chargée en une fois) ─────────
+    pageIndex = 1;
+    pageSize = 10;
+    readonly taillesPage = [10, 20, 50, 100];
 
-    filterFns = {
-        lib_document: (list: string[], item: RowData) =>
-            list.some(val => (item.lib_document ?? '').toLowerCase().includes(val.toLowerCase())),
-        email_received: (list: string[], item: RowData) =>
-            list.some(val => (item.email_received ?? '').toLowerCase().includes(val.toLowerCase())),
-    };
+    // ── Ascenseur horizontal dessiné (les barres natives sont masquées sur iOS) ──
+    @ViewChild('tableWrap') tableWrap?: ElementRef<HTMLDivElement>;
+    @ViewChild('hBar') hBar?: ElementRef<HTMLDivElement>;
+    hScrollVisible = false;
+    hScrollMore = false;
+    thumbWidth = 0;
+    thumbLeft = 0;
+    private dragging = false;
+    private dragStartX = 0;
+    private dragStartScroll = 0;
+
 
     constructor(private autor: Authorization, private httService: HttpService, private cdr: ChangeDetectorRef) {
         pdfjsLib.GlobalWorkerOptions.workerSrc = '/assets/pdfjs/pdf.worker.mjs';
@@ -126,6 +120,9 @@ export class DocumentsEnvoyesComponent implements OnInit {
             ? this.dataMails.filter((row: any) =>
                 Object.values(row).some(v => String(v).toLowerCase().includes(val)))
             : [...this.dataMails];
+        this.applySort();
+        this.pageIndex = 1;               // une nouvelle recherche repart de la première page
+        setTimeout(() => this.syncHScroll());
     }
 
     togglePassword(row: RowData): void {
@@ -307,12 +304,9 @@ export class DocumentsEnvoyesComponent implements OnInit {
                         };
                     });
 
-                    this.filters = {
-                        lib_document: this.buildFilter('lib_document'),
-                        email_received: this.buildFilter('email_received'),
-                    };
-
                     this.filteredData = [...this.dataMails];
+                    this.applySort();
+                    setTimeout(() => this.syncHScroll());
                 }
             })
             .catch(() => {
@@ -358,5 +352,133 @@ export class DocumentsEnvoyesComponent implements OnInit {
 
         const fileName = `documents_envoyes_${moment().format('YYYYMMDD_HHmmss')}.xlsx`;
         XLSX.writeFile(wb, fileName);
+    }
+
+    // ── Tri par colonne : asc -> desc -> aucun ────────────────
+    sortBy(key: string): void {
+        if (this.sortKey !== key) {
+            this.sortKey = key;
+            this.sortOrder = 'asc';
+        } else if (this.sortOrder === 'asc') {
+            this.sortOrder = 'desc';
+        } else {
+            this.sortKey = '';
+            this.sortOrder = '';
+            this.onSearch(this.searchValue);   // on retrouve l'ordre initial, recherche conservée
+            return;
+        }
+        this.applySort();
+    }
+
+    private applySort(): void {
+        if (!this.sortKey || !this.sortOrder) {
+            return;
+        }
+        const key = this.sortKey;
+        const dir = this.sortOrder === 'desc' ? -1 : 1;
+        this.filteredData = [...this.filteredData].sort((a: any, b: any) =>
+            String(a?.[key] ?? '').localeCompare(String(b?.[key] ?? '')) * dir
+        );
+    }
+
+    // ── Pagination ───────────────────────────────────────────
+    // La liste arrive en une fois : la pagination ne fait que découper
+    // `filteredData`.
+
+    get nbPages(): number {
+        return Math.max(1, Math.ceil(this.filteredData.length / this.pageSize));
+    }
+
+    get rowsPage(): any[] {
+        const debut = (this.pageIndex - 1) * this.pageSize;
+        return this.filteredData.slice(debut, debut + this.pageSize);
+    }
+
+    allerPage(page: number): void {
+        const cible = Math.min(Math.max(page, 1), this.nbPages);
+        if (cible === this.pageIndex) return;
+        this.pageIndex = cible;
+        setTimeout(() => this.syncHScroll());
+    }
+
+    changerTaille(taille: number): void {
+        if (taille === this.pageSize) return;
+        this.pageSize = taille;
+        this.pageIndex = 1;
+        setTimeout(() => this.syncHScroll());
+    }
+
+    // ══ Ascenseur horizontal personnalisé ═══════════════════════════════
+    ngAfterViewInit(): void {
+        setTimeout(() => this.syncHScroll());
+    }
+
+    @HostListener('window:resize')
+    syncHScroll(): void {
+        const el = this.tableWrap?.nativeElement;
+        if (!el) {
+            return;
+        }
+        const maxScroll = el.scrollWidth - el.clientWidth;
+        this.hScrollVisible = maxScroll > 2;
+        this.hScrollMore = el.scrollLeft < maxScroll - 2;
+
+        const barEl = this.hBar?.nativeElement;
+        if (this.hScrollVisible && !barEl) {
+            // la barre vient d'apparaître : on recalcule une fois qu'elle est rendue
+            setTimeout(() => this.syncHScroll());
+        }
+
+        const track = barEl?.clientWidth || el.clientWidth;
+        this.thumbWidth = Math.max(40, Math.round(track * (el.clientWidth / el.scrollWidth)));
+        const maxX = track - this.thumbWidth;
+        this.thumbLeft = maxScroll > 0 ? Math.round((el.scrollLeft / maxScroll) * maxX) : 0;
+    }
+
+    onBarPointerDown(ev: PointerEvent): void {
+        const el = this.tableWrap?.nativeElement;
+        const bar = this.hBar?.nativeElement;
+        if (!el || !bar) {
+            return;
+        }
+        const rect = bar.getBoundingClientRect();
+        const maxScroll = el.scrollWidth - el.clientWidth;
+        const maxX = rect.width - this.thumbWidth;
+        const pointerX = ev.clientX - rect.left;
+
+        // clic hors du pouce : on saute directement à cette position
+        if (pointerX < this.thumbLeft || pointerX > this.thumbLeft + this.thumbWidth) {
+            const x = Math.min(Math.max(pointerX - this.thumbWidth / 2, 0), maxX);
+            el.scrollLeft = maxX > 0 ? (x / maxX) * maxScroll : 0;
+        }
+
+        this.dragging = true;
+        this.dragStartX = ev.clientX;
+        this.dragStartScroll = el.scrollLeft;
+        bar.setPointerCapture(ev.pointerId);
+        ev.preventDefault();
+        this.syncHScroll();
+    }
+
+    @HostListener('document:pointermove', ['$event'])
+    onBarPointerMove(ev: PointerEvent): void {
+        if (!this.dragging) {
+            return;
+        }
+        const el = this.tableWrap?.nativeElement;
+        const bar = this.hBar?.nativeElement;
+        if (!el || !bar) {
+            return;
+        }
+        const maxScroll = el.scrollWidth - el.clientWidth;
+        const maxX = bar.clientWidth - this.thumbWidth;
+        const dx = ev.clientX - this.dragStartX;
+        el.scrollLeft = this.dragStartScroll + (maxX > 0 ? dx * (maxScroll / maxX) : 0);
+    }
+
+    @HostListener('document:pointerup')
+    @HostListener('document:pointercancel')
+    onBarPointerUp(): void {
+        this.dragging = false;
     }
 }

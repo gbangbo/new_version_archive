@@ -70,88 +70,67 @@
                                 </div>
 
                                 <!-- ══ TABLE ════════════════════════════════════ -->
-                                <div class="overflow-x-auto support-ticket-table custom-scrollbar">
-                                    <nz-table
-                                        #nzTable
-                                        [nzData]="filteredData"
-                                        [nzPageSize]="10"
-                                        [nzShowPagination]="true"
-                                        [nzShowTotal]="totalTemplate"
-                                        nzShowSizeChanger
-                                        nzBordered
-                                        nzSize="small"
-                                        [nzScroll]="filteredData.length > 0 ? { x: '1250px' } : {}"
-                                    >
-                                        <thead>
-                                        <tr>
-                                            <th nzWidth="220px"
-                                                nzColumnKey="lib_document"
-                                                [nzSortFn]="sortFns.lib_document"
-                                                [nzSortDirections]="['ascend','descend',null]"
-                                                [nzFilterFn]="filterFns.lib_document"
-                                                [nzFilters]="filters.lib_document">
-                                                Document
-                                            </th>
-                                            <th nzWidth="220px"
-                                                nzColumnKey="email_received"
-                                                [nzSortFn]="sortFns.email_received"
-                                                [nzSortDirections]="['ascend','descend',null]"
-                                                [nzFilterFn]="filterFns.email_received"
-                                                [nzFilters]="filters.email_received">
-                                                Destinataire(s)
-                                            </th>
-                                            <th nzWidth="80px" nzAlign="center">
-                                                Fichiers
-                                            </th>
-                                            <th nzWidth="150px" nzAlign="center">
-                                                Mot de passe
-                                            </th>
-                                            <th nzWidth="200px">
-                                                Message
-                                            </th>
-                                            <th nzWidth="140px"
-                                                nzColumnKey="date_envoi"
-                                                [nzSortFn]="sortFns.date_envoi"
-                                                [nzSortDirections]="['ascend','descend',null]">
-                                                Date d'envoi
-                                            </th>
-                                            <th nzWidth="80px" nzAlign="center">
-                                                Consulter
-                                            </th>
-                                        </tr>
-                                        </thead>
+                                <div class="tt-scroll-shell" [class.tt-more-right]="hScrollMore">
+                                <div class="tree-table-wrap" #tableWrap (scroll)="syncHScroll()">
 
-                                        <tbody>
-                                        <tr *ngFor="let row of nzTable.data" class="op-table-row">
-                                            <!-- Document -->
-                                            <td>
-                                                <div class="op-doc-cell">
-                                                    <span class="op-type-badge">{{ row.lib_document || '—' }}</span>
-                                                    <span class="op-doc-code" *ngIf="row.code_document">
-                                                        N° {{ row.code_document }}
-                                                    </span>
-                                                </div>
-                                            </td>
+                                    <!-- Entête colonnes -->
+                                    <div class="tree-table-header">
+                                        <div class="ttc-name" (click)="sortBy('lib_document')">
+                                            Document
+                                            <span class="tt-sort-icons">
+                                                <span class="tt-sort-up"
+                                                      [class.tt-sort-active]="sortKey === 'lib_document' && sortOrder === 'asc'">↑</span>
+                                                <span class="tt-sort-down"
+                                                      [class.tt-sort-active]="sortKey === 'lib_document' && sortOrder === 'desc'">↓</span>
+                                            </span>
+                                        </div>
+                                        <div class="ttc-dest" (click)="sortBy('email_received')">
+                                            Destinataire(s)
+                                            <span class="tt-sort-icons">
+                                                <span class="tt-sort-up"
+                                                      [class.tt-sort-active]="sortKey === 'email_received' && sortOrder === 'asc'">↑</span>
+                                                <span class="tt-sort-down"
+                                                      [class.tt-sort-active]="sortKey === 'email_received' && sortOrder === 'desc'">↓</span>
+                                            </span>
+                                        </div>
+                                        <div class="ttc-fichiers">Fichiers</div>
+                                        <div class="ttc-pwd">Mot de passe</div>
+                                        <div class="ttc-message">Message</div>
+                                        <div class="ttc-date" (click)="sortBy('date_envoi')">
+                                            Date d'envoi
+                                            <span class="tt-sort-icons">
+                                                <span class="tt-sort-up"
+                                                      [class.tt-sort-active]="sortKey === 'date_envoi' && sortOrder === 'asc'">↑</span>
+                                                <span class="tt-sort-down"
+                                                      [class.tt-sort-active]="sortKey === 'date_envoi' && sortOrder === 'desc'">↓</span>
+                                            </span>
+                                        </div>
+                                        <div class="ttc-actions">Consulter</div>
+                                    </div>
 
-                                            <!-- Destinataires -->
-                                            <td>
-                                                <div class="flex flex-wrap gap-1">
-                                                    <nz-tag *ngFor="let mail of row.destinataires" nzColor="blue">
-                                                        {{ mail }}
-                                                    </nz-tag>
-                                                    <span *ngIf="!row.destinataires?.length">—</span>
-                                                </div>
-                                            </td>
+                                    <!-- Lignes -->
+                                    <div class="tree-table-body">
+                                        <div class="tt-row" *ngFor="let row of rowsPage">
+                                            <div class="ttc-name">
+                                                <i class="fa-regular fa-file-lines tt-row-icon"></i>
+                                                <span>
+                                                    <span class="tt-name-text tt-parent">{{ row.lib_document || '—' }}</span>
+                                                    <span class="op-doc-code" *ngIf="row.code_document">N° {{ row.code_document }}</span>
+                                                </span>
+                                            </div>
 
-                                            <!-- Nb fichiers -->
-                                            <td nzAlign="center">
+                                            <div class="ttc-dest">
+                                                <nz-tag *ngFor="let mail of row.destinataires" nzColor="blue">{{ mail }}</nz-tag>
+                                                <span *ngIf="!row.destinataires?.length">—</span>
+                                            </div>
+
+                                            <div class="ttc-fichiers">
                                                 <nz-tag nzColor="geekblue">
                                                     <i class="fa-solid fa-paperclip"></i> {{ row.nb_fichiers }}
                                                 </nz-tag>
-                                            </td>
+                                            </div>
 
-                                            <!-- Mot de passe -->
-                                            <td nzAlign="center">
+                                            <div class="ttc-pwd">
                                                 <div class="op-pwd-cell" *ngIf="row.file_password; else noPwd">
                                                     <span class="op-pwd-value">
                                                         {{ row.showPassword ? row.file_password : '••••••••' }}
@@ -163,49 +142,76 @@
                                                         <i class="fa-regular" [ngClass]="row.showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
                                                     </button>
                                                 </div>
-                                                <ng-template #noPwd><span class="cell-text">—</span></ng-template>
-                                            </td>
+                                                <ng-template #noPwd>—</ng-template>
+                                            </div>
 
-                                            <!-- Message -->
-                                            <td>
-                                                <span class="cell-text" [title]="row.message_send">
-                                                    {{ row.message_send || '—' }}
-                                                </span>
-                                            </td>
+                                            <div class="ttc-message" [title]="row.message_send">
+                                                {{ row.message_send || '—' }}
+                                            </div>
 
-                                            <!-- Date d'envoi -->
-                                            <td>
-                                                <span class="cell-text">{{ row.date_envoi || '—' }}</span>
-                                            </td>
+                                            <div class="ttc-date">{{ row.date_envoi || '—' }}</div>
 
-                                            <!-- Consulter les fichiers -->
-                                            <td nzAlign="center">
+                                            <div class="ttc-actions">
                                                 <button class="op-files-btn"
                                                         nz-tooltip nzTooltipTitle="Consulter les fichiers envoyés"
                                                         [disabled]="!row.nb_fichiers"
                                                         (click)="openFiles(row)">
                                                     <i class="fa-regular fa-folder-open"></i>
                                                 </button>
-                                            </td>
-                                        </tr>
+                                            </div>
+                                        </div>
 
-                                        <tr *ngIf="!isloading && filteredData?.length === 0">
-                                            <td colspan="7">
-                                                <div class="op-empty-state">
-                                                    <app-feather-icon class="icon-inbox" [icon]="'inbox'"></app-feather-icon>
-                                                    <span>Aucun document envoyé !</span>
-                                                    <small *ngIf="searchValue">
-                                                        Aucun résultat pour « {{ searchValue }} »
-                                                    </small>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        </tbody>
-                                    </nz-table>
+                                        <!-- Empty state -->
+                                        <div *ngIf="!isloading && !filteredData.length" class="op-empty-state">
+                                            <app-feather-icon class="icon-inbox" [icon]="'inbox'"></app-feather-icon>
+                                            <span>Aucun document envoyé !</span>
+                                            <small *ngIf="searchValue">
+                                                Aucun résultat pour « {{ searchValue }} »
+                                            </small>
+                                        </div>
+                                    </div>
                                 </div>
-                                <ng-template #totalTemplate let-total>
-                                    Total : <strong>{{ total }}</strong> enregistrement(s)
-                                </ng-template>
+                                </div>
+
+                                <!-- Ascenseur horizontal dessiné (visible en permanence) -->
+                                <div class="tt-hscroll" *ngIf="hScrollVisible" #hBar
+                                     (pointerdown)="onBarPointerDown($event)">
+                                    <div class="tt-hscroll-thumb"
+                                         [style.width.px]="thumbWidth"
+                                         [style.left.px]="thumbLeft"></div>
+                                </div>
+
+                                <!-- Footer : hors de la zone de défilement -->
+                                <div class="tree-table-footer">
+                                    <span class="tt-total">
+                                        Total : <strong>{{ filteredData.length }}</strong> enregistrement(s)
+                                    </span>
+
+                                    <div class="tt-pager" *ngIf="filteredData.length">
+                                        <select class="tt-pager-taille"
+                                                [ngModel]="pageSize"
+                                                (ngModelChange)="changerTaille($event)"
+                                                title="Lignes par page">
+                                            <option *ngFor="let t of taillesPage" [ngValue]="t">{{ t }} / page</option>
+                                        </select>
+
+                                        <button class="tt-pager-btn" type="button"
+                                                [disabled]="pageIndex <= 1"
+                                                (click)="allerPage(pageIndex - 1)"
+                                                title="Page précédente">
+                                            <i class="fa-solid fa-chevron-left"></i>
+                                        </button>
+
+                                        <span class="tt-pager-page">{{ pageIndex }} / {{ nbPages }}</span>
+
+                                        <button class="tt-pager-btn" type="button"
+                                                [disabled]="pageIndex >= nbPages"
+                                                (click)="allerPage(pageIndex + 1)"
+                                                title="Page suivante">
+                                            <i class="fa-solid fa-chevron-right"></i>
+                                        </button>
+                                    </div>
+                                </div>
 
                             </div>
                         </div>

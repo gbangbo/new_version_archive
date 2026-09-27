@@ -19,12 +19,23 @@
 // ═══════════════════════════════════════
 // MODAL HEADER — garde ta couleur rgba(0, 54, 110)
 // ═══════════════════════════════════════
-.modal .modal-dialog .modal-content .modal-header {
+.modal .modal-dialog .modal-content.category-popup .modal-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px;
   padding: 14px 18px;
   background-color: rgba(0, 54, 110) !important;
   color: #fff !important;
   border-bottom: none !important;
   flex-shrink: 0 !important;
+
+  // neutralise le crayon generique injecte par styles.scss
+  // (.category-popup .modal-header::before) : ici l'icone vient du menu lateral
+  &::before {
+    content: none !important;
+    display: none !important;
+  }
 }
 
 .modal-header > h5 {
@@ -37,12 +48,33 @@
   letter-spacing: 0 !important;
   text-transform: none !important;
   margin: 0;
+}
 
-  i { font-size: 15px; }
+// Icone reprise du menu lateral (Gestion des acces)
+.modal-head-icon {
+  display: inline-flex;
+  align-items: center;
+  line-height: 0;
+
+  // ::ng-deep : le <svg> appartient au template de <app-svg-icon>
+  ::ng-deep svg {
+    width: 17px;
+    height: 17px;
+    vertical-align: middle;
+    stroke: #fff;
+    fill: none;
+
+    &.fill-icon {
+      stroke: none;
+      fill: #fff;
+    }
+  }
 }
 
 // Croix — carré translucide arrondi (style flash-info)
 .modal-header .fi-close {
+  flex-shrink: 0;
+  margin-left: auto;
   display: inline-flex;
   align-items: center;
   justify-content: center;

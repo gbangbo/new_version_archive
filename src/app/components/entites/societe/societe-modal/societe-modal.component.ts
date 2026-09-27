@@ -29,7 +29,9 @@ export class SocieteModalComponent {
         double_auth: new FormControl('',),
         actif: new FormControl(true,),
         position: new FormControl('',),
-        parent: new FormControl('',)
+        parent: new FormControl('',),
+        sens: new FormControl('',),
+        action: new FormControl('',)
 
     })
     errorTexte: string = '';
@@ -81,6 +83,8 @@ export class SocieteModalComponent {
                 position: data?.position || '',
                 actif: data?.actif || true,
                 parent: data?.parent,
+                uid: data?.key || '',
+                action: data?.action || '',
             });
 
             // {
@@ -113,7 +117,7 @@ export class SocieteModalComponent {
         this.isloading = true;
         let payload = {
             ...this.validationForm.value,
-            "action": this.validationForm.value.uid ? 2 : 1,
+            "action": this.validationForm.value.action,
             "double_auth": this.validationForm.value.double_auth ? 1 : 0,
             "parent": this.validationForm.value.parent || '',
             "idsociete": this.users?.datasociete?.uid,

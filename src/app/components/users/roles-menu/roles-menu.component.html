@@ -1,0 +1,200 @@
+<div class="container main-setting">
+    <div class="grid grid-cols-12 card-gap">
+        <div class="col-span-12">
+            <app-card [border]="true" [padding]="false">
+
+                <div class="rm-erreur" *ngIf="erreur">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <span>{{ erreur }}</span>
+                    <button type="button" class="rm-erreur-fermer" (click)="erreur = ''">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <div class="rm">
+
+                    <!-- ══ VOLET GAUCHE : LES RÔLES ═════════════════ -->
+                    <aside class="rm-roles">
+                        <div class="rm-pane-head">
+                            <span class="rm-pane-title">Rôles</span>
+                            <span class="rm-pane-count">{{ rolesFiltres.length }}</span>
+                        </div>
+
+                        <div class="rm-search">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input type="text" placeholder="Rechercher un rôle..."
+                                   [(ngModel)]="rechercheRole">
+                        </div>
+
+                        <div class="rm-roles-list">
+                            <div class="rm-skeleton" *ngIf="isloadingRoles">
+                                <span class="rm-spinner"></span> Chargement…
+                            </div>
+
+                            <button type="button" class="rm-role"
+                                    *ngFor="let r of rolesFiltres"
+                                    [class.active]="roleSelectionne?.uid === r.uid"
+                                    (click)="choisirRole(r)">
+                                <span class="rm-role-avatar">{{ (r.libelle || '?').charAt(0) }}</span>
+                                <span class="rm-role-texte">
+                                    <span class="rm-role-nom">{{ r.libelle || '—' }}</span>
+                                    <span class="rm-role-code" *ngIf="r.code">{{ r.code }}</span>
+                                </span>
+                                <i class="fa-solid fa-chevron-right rm-role-caret"></i>
+                            </button>
+
+                            <div class="rm-vide" *ngIf="!isloadingRoles && !rolesFiltres.length">
+                                <app-feather-icon [icon]="'inbox'"></app-feather-icon>
+                                <span>Aucun rôle</span>
+                            </div>
+                        </div>
+                    </aside>
+
+                    <!-- ══ VOLET DROIT : LES MENUS ══════════════════ -->
+                    <section class="rm-menus">
+
+                        <!-- Aucun rôle choisi -->
+                        <div class="rm-invite" *ngIf="!roleSelectionne">
+                            <i class="fa-solid fa-hand-pointer"></i>
+                            <p>Choisissez un rôle à gauche pour définir les menus auxquels il a accès.</p>
+                        </div>
+
+                        <ng-container *ngIf="roleSelectionne">
+                            <div class="rm-pane-head">
+                                <span class="rm-pane-title">
+                                    Menus de « {{ roleSelectionne.libelle }} »
+                                </span>
+                                <span class="rm-pane-count">{{ nbCoches }} / {{ nbMenus }}</span>
+
+                            </div>
+
+                            <div class="rm-search">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <input type="text" placeholder="Rechercher un menu..."
+                                       [(ngModel)]="rechercheMenu">
+                            </div>
+
+                            <div class="rm-arbre">
+                                <div class="rm-skeleton" *ngIf="isloadingMenus">
+                                    <span class="rm-spinner"></span> Chargement…
+                                </div>
+
+                                <ng-container *ngIf="!isloadingMenus">
+
+                                    <!-- Racine : coche tout, replie tout -->
+                                    <div class="rm-ligne rm-racine" *ngIf="arbreFiltre.length"
+                                         (click)="basculerRacine()">
+                                        <button type="button" class="rm-caret"
+                                                (click)="racineRepliee = !racineRepliee; $event.stopPropagation()">
+                                            <i class="fa-solid fa-chevron-down"
+                                               [class.replie]="racineRepliee"></i>
+                                        </button>
+                                        <span class="rm-case"
+                                              [class.on]="racineCochee"
+                                              [class.partiel]="racinePartielle">
+                                            <i class="fa-solid"
+                                               [class.fa-check]="racineCochee"
+                                               [class.fa-minus]="racinePartielle"></i>
+                                        </span>
+                                        <span class="rm-titre rm-titre-racine">{{ libelleRacine }}</span>
+                                    </div>
+
+                                    <ng-container *ngIf="!racineRepliee">
+                                        <ng-container *ngTemplateOutlet="branche;
+                                                      context: { $implicit: arbreFiltre, niveau: 1 }">
+                                        </ng-container>
+                                    </ng-container>
+
+                                    <div class="rm-vide" *ngIf="!arbreFiltre.length">
+                                        <app-feather-icon [icon]="'inbox'"></app-feather-icon>
+                                        <span>Aucun menu</span>
+                                    </div>
+                                </ng-container>
+                            </div>
+
+                            <!-- Barre d'enregistrement -->
+                            <div class="rm-footer">
+                                <span class="rm-footer-etat" [class.modifie]="modifie">
+                                    <ng-container *ngIf="modifie; else aJour">
+                                        <i class="fa-solid fa-circle-exclamation"></i>
+                                        Modifications non enregistrées
+                                    </ng-container>
+                                    <ng-template #aJour>
+                                        <i class="fa-solid fa-circle-check"></i> À jour
+                                    </ng-template>
+                                </span>
+
+                                <button type="button" class="rm-btn rm-btn-cancel"
+                                        [disabled]="!modifie || isSaving"
+                                        (click)="annuler()">
+                                    Annuler
+                                </button>
+                                <button type="button" class="rm-btn rm-btn-confirm"
+                                        [disabled]="!modifie || isSaving"
+                                        (click)="enregistrer()">
+                                    <i class="fa-solid"
+                                       [ngClass]="isSaving ? 'fa-circle-notch fa-spin' : 'fa-check'"></i>
+                                    {{ isSaving ? 'Enregistrement…' : 'Enregistrer' }}
+                                </button>
+                            </div>
+                        </ng-container>
+                    </section>
+                </div>
+
+            </app-card>
+        </div>
+    </div>
+</div>
+
+<!-- ══ BRANCHE RÉCURSIVE ═══════════════════════════════════════ -->
+<ng-template #branche let-noeuds let-niveau="niveau">
+    <ng-container *ngFor="let n of noeuds">
+        <div class="rm-ligne"
+             [class.inactif]="!n.actif"
+             [class.non-cochable]="!estCochable(n)"
+             [class.parent]="n.enfants.length"
+             [style.padding-left.px]="14 + niveau * 22"
+             [title]="n.path || ''"
+             (click)="basculer(n)">
+
+            <button type="button" class="rm-caret"
+                    *ngIf="n.enfants.length; else pasDeCaret"
+                    (click)="basculerRepli(n, $event)">
+                <i class="fa-solid fa-chevron-down" [class.replie]="estReplie(n)"></i>
+            </button>
+            <ng-template #pasDeCaret><span class="rm-caret rm-caret-vide"></span></ng-template>
+
+            <span class="rm-case"
+                  *ngIf="estCochable(n); else caseInactive"
+                  [class.on]="estCoche(n)"
+                  [class.partiel]="estPartiel(n)">
+                <i class="fa-solid" [class.fa-check]="estCoche(n) && !estPartiel(n)"
+                   [class.fa-minus]="estPartiel(n)"></i>
+            </span>
+            <ng-template #caseInactive>
+                <span class="rm-case rm-case-bloquee"
+                      nz-tooltip
+                      nzTooltipTitle="Menu désactivé : il n'apparaît dans aucune barre latérale, il ne peut donc pas être attribué">
+                    <i class="fa-solid fa-ban"></i>
+                </span>
+            </ng-template>
+
+            <span class="rm-icone" *ngIf="n.icone">
+                <app-svg-icon [icon]="n.icone" [change]="true"></app-svg-icon>
+            </span>
+
+            <span class="rm-titre">{{ n.titre }}</span>
+
+            <span class="rm-badge-inactif" *ngIf="!n.actif"
+                  nz-tooltip nzTooltipTitle="Ce menu est désactivé : il n'apparaît dans aucune barre latérale">
+                inactif
+            </span>
+        </div>
+
+        <ng-container *ngIf="n.enfants.length && !estReplie(n)">
+            <ng-container *ngTemplateOutlet="branche;
+                          context: { $implicit: n.enfants, niveau: niveau + 1 }">
+            </ng-container>
+        </ng-container>
+    </ng-container>
+</ng-template>

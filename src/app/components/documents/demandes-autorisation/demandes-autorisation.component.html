@@ -37,14 +37,6 @@
                                     </div>
 
                                     <div class="op-toolbar-right">
-                                        <nz-select class="da-statut"
-                                                   nzAllowClear
-                                                   nzPlaceHolder="Tous les statuts"
-                                                   [ngModel]="selectedStatut"
-                                                   (ngModelChange)="onStatutChange($event)">
-                                            <nz-option *ngFor="let s of statuts" [nzValue]="s" [nzLabel]="statutLabel(s)"></nz-option>
-                                        </nz-select>
-
                                         <div class="op-search-wrap">
                                             <svg class="op-search-icon" viewBox="0 0 24 24" fill="none"
                                                  stroke="currentColor" stroke-width="2" stroke-linecap="round">
@@ -65,115 +57,136 @@
                                                 </svg>
                                             </button>
                                         </div>
+
+                                        <!-- Export : même bouton que documents/documents-envoyes -->
+                                        <button class="op-btn op-btn-outline"
+                                                nz-tooltip nzTooltipTitle="Exporter en Excel"
+                                                [disabled]="isExporting || isloading || !rows.length"
+                                                (click)="exportToExcel()">
+                                            <i data-feather="download" style="width: 15px;"></i>
+                                            <span class="btn-label">Exporter</span>
+                                        </button>
                                     </div>
                                 </div>
 
                                 <!-- ══ TABLE ════════════════════════════════════ -->
-                                <div class="overflow-x-auto support-ticket-table custom-scrollbar">
-                                    <nz-table
-                                        #nzTable
-                                        [nzData]="rows"
-                                        [nzPageSize]="10"
-                                        [nzShowPagination]="true"
-                                        [nzShowTotal]="totalTemplate"
-                                        nzShowSizeChanger
-                                        nzBordered
-                                        nzSize="small"
-                                        [nzNoResult]="emptyTpl"
-                                        [nzScroll]="rows.length > 0 ? { x: '1050px' } : {}">
-                                        <thead>
-                                        <tr>
-                                            <th nzWidth="220px">Bénéficiaire</th>
-                                            <th nzWidth="260px">Document</th>
-                                            <th nzWidth="130px">Action(s)</th>
-                                            <th nzWidth="110px">Statut</th>
-                                            <th nzWidth="210px">Période</th>
-                                            <th nzWidth="160px">Date demande</th>
-                                            <th nzWidth="170px" nzAlign="center" nzRight>Décision</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        <tr *ngFor="let r of nzTable.data" class="op-table-row">
-                                            <!-- Bénéficiaire -->
-                                            <td>
-                                                <div class="op-benef-cell">
-                                                    <span class="op-benef-avatar">{{ initials(r.beneficiaire) }}</span>
-                                                    <span class="cell-text">{{ r.beneficiaire }}</span>
-                                                </div>
-                                            </td>
+                                <div class="tt-scroll-shell" [class.tt-more-right]="hScrollMore">
+                                <div class="tree-table-wrap" #tableWrap (scroll)="syncHScroll()">
 
-                                            <!-- Document -->
-                                            <td>
-                                                <div class="da-doc">
-                                                    <span class="da-doc-name" [title]="r.document">{{ r.document }}</span>
-                                                    <span class="da-motif" *ngIf="r.motif"
-                                                          nz-tooltip [nzTooltipTitle]="r.motif">
-                                                        <i class="fa-regular fa-comment-dots"></i> motif
-                                                    </span>
-                                                </div>
-                                            </td>
+                                    <!-- Entête colonnes -->
+                                    <div class="tree-table-header">
+                                        <div class="ttc-name">Bénéficiaire</div>
+                                        <div class="ttc-doc">Document</div>
+                                        <div class="ttc-motif">Motif</div>
+                                        <div class="ttc-tags">Action(s)</div>
+                                        <div class="ttc-statut">Statut</div>
+                                        <div class="ttc-periode">Période</div>
+                                        <div class="ttc-date">Date demande</div>
+                                        <div class="ttc-actions">Décision</div>
+                                    </div>
 
-                                            <!-- Actions demandées -->
-                                            <td>
-                                                <div class="flex flex-wrap gap-1">
-                                                    <nz-tag *ngFor="let a of r.actions" [nzColor]="actionColor(a)">{{ a }}</nz-tag>
-                                                    <span *ngIf="!r.actions.length">—</span>
-                                                </div>
-                                            </td>
+                                    <!-- Lignes -->
+                                    <div class="tree-table-body">
+                                        <div class="tt-row" *ngFor="let r of rowsPage">
+                                            <div class="ttc-name">
+                                                <span class="op-benef-avatar">{{ initials(r.beneficiaire) }}</span>
+                                                <span class="tt-name-text tt-parent">{{ r.beneficiaire }}</span>
+                                            </div>
 
-                                            <!-- Statut -->
-                                            <td>
+                                            <div class="ttc-doc">
+                                                <span class="da-doc-name" [title]="r.document">{{ r.document }}</span>
+                                            </div>
+
+                                            <div class="ttc-motif">
+                                                <span *ngIf="r.motif; else sansMotif" [title]="r.motif">{{ r.motif }}</span>
+                                                <ng-template #sansMotif>—</ng-template>
+                                            </div>
+
+                                            <div class="ttc-tags">
+                                                <nz-tag *ngFor="let a of r.actions" [nzColor]="actionColor(a)">{{ a }}</nz-tag>
+                                                <span *ngIf="!r.actions.length">—</span>
+                                            </div>
+
+                                            <div class="ttc-statut">
                                                 <nz-tag [nzColor]="statutColor(r.statut)">{{ statutLabel(r.statut) }}</nz-tag>
-                                            </td>
+                                            </div>
 
-                                            <!-- Période -->
-                                            <td><span class="cell-text">{{ r.periode }}</span></td>
+                                            <div class="ttc-periode">{{ r.periode || '—' }}</div>
+                                            <div class="ttc-date">{{ r.date || '—' }}</div>
 
-                                            <!-- Date -->
-                                            <td><span class="cell-text">{{ r.date || '—' }}</span></td>
-
-                                            <!-- Décision -->
-                                            <td nzAlign="center" nzRight>
-                                                <div class="op-actions">
-                                                    <button class="btn-round-edit btn-round-detail"
-                                                            nz-tooltip [nzTooltipTitle]="'Détails'" nzTooltipPlacement="top"
-                                                            (click)="openDetail(r)">
-                                                        <app-feather-icon class="icon-small" [icon]="'eye'"></app-feather-icon>
+                                            <div class="ttc-actions">
+                                                <button class="btn-round-edit btn-round-detail tt-action-btn mr-2"
+                                                        nz-tooltip [nzTooltipTitle]="'Détails'" nzTooltipPlacement="top"
+                                                        (click)="openDetail(r)">
+                                                    <app-feather-icon class="icon-small" [icon]="'eye'"></app-feather-icon>
+                                                </button>
+                                                <ng-container *ngIf="isPending(r)">
+                                                    <button class="btn-round-edit btn-round-valid tt-action-btn mr-2"
+                                                            nz-tooltip [nzTooltipTitle]="'Valider'" nzTooltipPlacement="top"
+                                                            (click)="openDecision(r, 1)">
+                                                        <app-feather-icon class="icon-small" [icon]="'check'"></app-feather-icon>
                                                     </button>
-                                                    <ng-container *ngIf="isPending(r)">
-                                                        <button class="btn-round-edit btn-round-valid"
-                                                                nz-tooltip [nzTooltipTitle]="'Valider'" nzTooltipPlacement="top"
-                                                                (click)="openDecision(r, 1)">
-                                                            <app-feather-icon class="icon-small" [icon]="'check'"></app-feather-icon>
-                                                        </button>
-                                                        <button class="btn-round-edit btn-round-reject"
-                                                                nz-tooltip [nzTooltipTitle]="'Rejeter'" nzTooltipPlacement="top"
-                                                                (click)="openDecision(r, 2)">
-                                                            <app-feather-icon class="icon-small" [icon]="'x'"></app-feather-icon>
-                                                        </button>
-                                                    </ng-container>
-                                                    <span class="da-decided" *ngIf="!isPending(r)">
-                                                        <i class="fa-solid fa-circle-check"></i>
-                                                    </span>
-                                                </div>
-                                            </td>
-                                        </tr>
+                                                    <button class="btn-round-edit btn-round-reject tt-action-btn"
+                                                            nz-tooltip [nzTooltipTitle]="'Rejeter'" nzTooltipPlacement="top"
+                                                            (click)="openDecision(r, 2)">
+                                                        <app-feather-icon class="icon-small" [icon]="'x'"></app-feather-icon>
+                                                    </button>
+                                                </ng-container>
+                                                <span class="da-decided" *ngIf="!isPending(r)">
+                                                    <i class="fa-solid fa-circle-check"></i>
+                                                </span>
+                                            </div>
+                                        </div>
 
-                                        </tbody>
-                                    </nz-table>
+                                        <!-- Empty state -->
+                                        <div *ngIf="!isloading && !rows.length" class="op-empty-state">
+                                            <app-feather-icon class="icon-inbox" [icon]="'inbox'"></app-feather-icon>
+                                            <span>Aucune demande d'autorisation</span>
+                                            <small *ngIf="searchValue">Aucun résultat pour « {{ searchValue }} »</small>
+                                        </div>
+                                    </div>
+                                </div>
                                 </div>
 
-                                <ng-template #emptyTpl>
-                                    <div class="op-empty-state">
-                                        <app-feather-icon class="icon-inbox" [icon]="'inbox'"></app-feather-icon>
-                                        <span>Aucune demande d'autorisation</span>
-                                        <small *ngIf="searchValue || selectedStatut">Aucun résultat pour ce filtre</small>
-                                    </div>
-                                </ng-template>
+                                <!-- Ascenseur horizontal dessiné (visible en permanence) -->
+                                <div class="tt-hscroll" *ngIf="hScrollVisible" #hBar
+                                     (pointerdown)="onBarPointerDown($event)">
+                                    <div class="tt-hscroll-thumb"
+                                         [style.width.px]="thumbWidth"
+                                         [style.left.px]="thumbLeft"></div>
+                                </div>
 
-                                <ng-template #totalTemplate let-total>
-                                    Total : <strong>{{ total }}</strong> demande(s)
-                                </ng-template>
+                                <!-- Footer : hors de la zone de défilement -->
+                                <div class="tree-table-footer">
+                                    <span class="tt-total">
+                                        Total : <strong>{{ rows.length }}</strong> demande(s)
+                                    </span>
+
+                                    <div class="tt-pager" *ngIf="rows.length">
+                                        <select class="tt-pager-taille"
+                                                [ngModel]="pageSize"
+                                                (ngModelChange)="changerTaille($event)"
+                                                title="Lignes par page">
+                                            <option *ngFor="let t of taillesPage" [ngValue]="t">{{ t }} / page</option>
+                                        </select>
+
+                                        <button class="tt-pager-btn" type="button"
+                                                [disabled]="pageIndex <= 1"
+                                                (click)="allerPage(pageIndex - 1)"
+                                                title="Page précédente">
+                                            <i class="fa-solid fa-chevron-left"></i>
+                                        </button>
+
+                                        <span class="tt-pager-page">{{ pageIndex }} / {{ nbPages }}</span>
+
+                                        <button class="tt-pager-btn" type="button"
+                                                [disabled]="pageIndex >= nbPages"
+                                                (click)="allerPage(pageIndex + 1)"
+                                                title="Page suivante">
+                                            <i class="fa-solid fa-chevron-right"></i>
+                                        </button>
+                                    </div>
+                                </div>
 
                             </div>
                         </div>

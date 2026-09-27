@@ -1,117 +1,190 @@
-<div class="modal  fade show modal-backdrop">
-    <div class="modal-dialog modal-dialog-centered modal-md">
-        <div class="modal-content category-popup">
-            <div class="modal-header">
-                <h5 class="modal-title">{{validationForm.value.idmenu ? 'MODIFIER LE MENU':'AJOUTER UN MENU'}}</h5>
-                <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close" (click)="closeModal()"></button>
-            </div>
-            <div class="modal-body p-0 custom-input">
-                <div class="text-start">
-                    <div class="p-20">
-                        <div class="alert alert-danger flex items-center gap-3" role="alert"
-                             style="animation: slideDown 0.3s ease;" *ngIf="errorTexte">
-                            <div>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-circle stroke-danger">
-                                    <circle cx="12" cy="12" r="10"></circle>
-                                    <line x1="12" y1="8" x2="12" y2="12"></line>
-                                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                                </svg>
-                            </div>
-                            <span class="txt-light">{{errorTexte}}</span>
-                        </div>
-                        <form class="grid grid-cols-12 gap-4 needs-validation" novalidate="" [formGroup]="validationForm" (ngSubmit)="submitForm()">
-                            <div class="col-span-12">
-                                <label class="form-label" for="title">Titre
-                                    <span class="txt-danger">*</span>
-                                </label>
-                                <input class="form-control"
-                                       id="title"
-                                       type="text" placeholder=""
-                                       formControlName="title"
-                                       [ngClass]="{ 'is-invalid' : validationForm.controls['title'].touched &&  validationForm.controls['title'].errors?.['required'] , 'is-valid' : validationForm.controls['title'].valid}">
-                                @if(validationForm.controls['title'].valid) {
-                                <!--<div class="valid-feedback">Looks's Good!</div>-->
-                                } @else if(validationForm.controls['title'].touched && validationForm.controls['title'].errors?.['required']) {
-                                <div class="invalid-feedback">Veuillez saisir le titre svp</div>
-                                }
-                            </div>
-                            <div class="col-span-12">
-                                <label class="form-label" for="path">Chemin
-                                    <span class="txt-danger">*</span>
-                                </label>
-                                <input class="form-control"
-                                       id="path"
-                                       type="text" placeholder=""
-                                       formControlName="path"
-                                       [ngClass]="{ 'is-invalid' : validationForm.controls['path'].touched &&  validationForm.controls['path'].errors?.['required'] , 'is-valid' : validationForm.controls['path'].valid}">
-                                @if(validationForm.controls['path'].valid) {
-                                <!--<div class="valid-feedback">Looks's Good!</div>-->
-                                } @else if(validationForm.controls['path'].touched && validationForm.controls['path'].errors?.['required']) {
-                                <div class="invalid-feedback">Veuillez saisir le chemin svp</div>
-                                }
-                            </div>
-                            <div class="col-span-12">
-                                <label class="form-label" for="icontype">Type de lien
-                                    <span class="txt-danger">*</span>
-                                </label>
-                                <input class="form-control"
-                                       id="icontype"
-                                       type="text" placeholder="Ex: sub, link"
-                                       formControlName="icontype"
-                                       [ngClass]="{ 'is-invalid' : validationForm.controls['icontype'].touched &&  validationForm.controls['icontype'].errors?.['required'] , 'is-valid' : validationForm.controls['icontype'].valid}">
-                                @if(validationForm.controls['icontype'].valid) {
-                                <!--<div class="valid-feedback">Looks's Good!</div>-->
-                                } @else if(validationForm.controls['icontype'].touched && validationForm.controls['icontype'].errors?.['required']) {
-                                <div class="invalid-feedback">Veuillez saisir le type de lien</div>
-                                }
-                            </div>
-                            <div class="col-span-12">
-                                <label class="form-label" for="icon">Icon
-<!--                                    <span class="txt-danger">*</span>-->
-                                </label>
-                                <input class="form-control"
-                                       id="icon"
-                                       type="text" placeholder=""
-                                       formControlName="icon"
-                                       [ngClass]="{ 'is-invalid' : validationForm.controls['icon'].touched &&  validationForm.controls['icon'].errors?.['required'] , 'is-valid' : validationForm.controls['icon'].valid}">
-                                @if(validationForm.controls['icon'].valid) {
-                                <!--<div class="valid-feedback">Looks's Good!</div>-->
-                                } @else if(validationForm.controls['icon'].touched && validationForm.controls['icon'].errors?.['required']) {
-                                <div class="invalid-feedback">Veuillez saisir le chemin svp</div>
-                                }
-                            </div>
-                            <div class="col-span-12">
-                                <label class="form-label" for="rang">Rang
-                                    <!--                                    <span class="txt-danger">*</span>-->
-                                </label>
-                                <input class="form-control"
-                                       id="rang"
-                                       type="text" placeholder=""
-                                       formControlName="rang"
-                                       [ngClass]="{ 'is-invalid' : validationForm.controls['icon'].touched &&  validationForm.controls['rang'].errors?.['required'] , 'is-valid' : validationForm.controls['rang'].valid}">
-                                @if(validationForm.controls['rang'].valid) {
-                                <!--<div class="valid-feedback">Looks's Good!</div>-->
-                                } @else if(validationForm.controls['rang'].touched && validationForm.controls['rang'].errors?.['required']) {
-                                <div class="invalid-feedback">Veuillez saisir le chemin svp</div>
-                                }
-                            </div>
-                            <div class="col-span-12">
-                                <label class="flex items-center gap-3 cursor-pointer">
-                                    <nz-switch nzCheckedChildren="Actif" nzUnCheckedChildren="Inactif" formControlName="actif"></nz-switch>
-<!--                                    <span class="form-label mb-0">Activer le menu</span>-->
-                                </label>
-                            </div>
-                            <div class="col-span-12 flex justify-end">
-                                <button class="btn btn-primary text-white w-full mt-8 newBtn" type="submit">
-                                    <i class="{{isloading?'fas fa-spin fa-circle-notch':''}}"></i>
-                                    {{validationForm.value.idmenu ? 'Modifier':' Créer +'}}
+<div class="mp-backdrop">
+    <div class="mp-modal" role="dialog" aria-modal="true">
 
-                                </button>
-                            </div>
-                        </form>
+        <!-- ══ EN-TÊTE ═══════════════════════════════════════════════ -->
+        <div class="mp-header">
+            <span class="mp-title">
+                <i class="fa-solid fa-bars"></i> {{ titrePanneau }}
+            </span>
+            <button class="mp-close" type="button" (click)="closeModal()" title="Fermer (Échap)">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <!-- ══ CORPS ═════════════════════════════════════════════════ -->
+        <form class="mp-body custom-input" [formGroup]="validationForm" (ngSubmit)="submitForm()" novalidate>
+
+            <div class="mp-alert" *ngIf="errorTexte">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                <span>{{ errorTexte }}</span>
+            </div>
+
+            <!-- ── Type : pilote le reste du formulaire ── -->
+            <div class="mp-field">
+                <label class="mp-label">Type</label>
+                <div class="mp-type-choices" role="radiogroup" aria-label="Type de menu">
+                    <button type="button" class="mp-type" [class.active]="estRubrique"
+                            role="radio" [attr.aria-checked]="estRubrique"
+                            (click)="choisirType('sub')">
+                        <i class="fa-solid fa-layer-group"></i>
+                        <span class="mp-type-name">Rubrique dépliante</span>
+                        <span class="mp-type-hint">contient des sous-menus</span>
+                    </button>
+                    <button type="button" class="mp-type" [class.active]="!estRubrique"
+                            role="radio" [attr.aria-checked]="!estRubrique"
+                            (click)="choisirType('link')">
+                        <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                        <span class="mp-type-name">Lien direct</span>
+                        <span class="mp-type-hint">ouvre une page</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ── Titre ── -->
+            <div class="mp-field">
+                <label class="mp-label" for="mp-title">Titre <span class="mp-req">*</span></label>
+                <input class="mp-input" id="mp-title" type="text" formControlName="title"
+                       placeholder="Ex : Mes documents"
+                       [class.invalid]="validationForm.controls['title'].touched
+                                        && validationForm.controls['title'].errors?.['required']">
+                <span class="mp-help mp-help-error"
+                      *ngIf="validationForm.controls['title'].touched
+                             && validationForm.controls['title'].errors?.['required']">
+                    Le titre est obligatoire.
+                </span>
+            </div>
+
+            <!-- ── Parent : rend le déplacement possible ── -->
+            <div class="mp-field">
+                <label class="mp-label" for="mp-parent">Rattaché à</label>
+                <nz-select class="mp-select" id="mp-parent" formControlName="parent"
+                           nzShowSearch nzAllowClear
+                           nzPlaceHolder="Menu de premier niveau"
+                           [nzDropdownStyle]="{ 'max-height': '260px' }">
+                    <nz-option nzValue="" nzLabel="— Menu de premier niveau —"></nz-option>
+                    <nz-option *ngFor="let p of optionsParent"
+                               [nzValue]="p.uid"
+                               [nzLabel]="indent(p.niveau) + p.titre"></nz-option>
+                </nz-select>
+                <span class="mp-help">Changer ce champ déplace le menu dans l'arbre.</span>
+            </div>
+
+            <!-- ── Page : lien direct, et tout menu rattaché ── -->
+            <div class="mp-field" *ngIf="pageObligatoire">
+                <label class="mp-label" for="mp-path">Page <span class="mp-req">*</span></label>
+                <nz-select class="mp-select" id="mp-path" formControlName="path"
+                           nzShowSearch nzAllowClear
+                           [nzServerSearch]="true"
+                           (nzOnSearch)="onRechercheRoute($event)"
+                           nzPlaceHolder="/documents/mes-documents"
+                           nzNotFoundContent="Tapez un chemin pour l'ajouter"
+                           [nzDropdownStyle]="{ 'max-height': '260px' }">
+                    <nz-option *ngFor="let r of routesProposees" [nzValue]="r" [nzLabel]="r"></nz-option>
+                </nz-select>
+                <span class="mp-help mp-help-ok" *ngIf="validationForm.value.path && routeConnue">
+                    <i class="fa-solid fa-check"></i> Route connue de l'application.
+                </span>
+                <span class="mp-help mp-help-warn" *ngIf="validationForm.value.path && !routeConnue">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    Cette route ne figure pas parmi les {{ routes.length }} pages déclarées.
+                    Le menu s'affichera, mais ne mènera nulle part si elle n'existe pas.
+                </span>
+            </div>
+
+            <!-- ── Icône : seulement au premier niveau ── -->
+            <div class="mp-field" *ngIf="porteIcone">
+                <label class="mp-label">Icône</label>
+
+                <button type="button" class="mp-icon-trigger" (click)="choixIconeOuvert = !choixIconeOuvert">
+                    <span class="mp-icon-preview" *ngIf="validationForm.value.icon">
+                        <app-svg-icon [icon]="validationForm.value.icon" [change]="true"></app-svg-icon>
+                    </span>
+                    <span class="mp-icon-name">
+                        {{ validationForm.value.icon || 'Choisir une icône' }}
+                    </span>
+                    <i class="fa-solid"
+                       [class.fa-chevron-down]="!choixIconeOuvert"
+                       [class.fa-chevron-up]="choixIconeOuvert"></i>
+                </button>
+
+                <span class="mp-help mp-help-warn"
+                      *ngIf="validationForm.value.icon && estIconeIncomplete(validationForm.value.icon)">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    Cette icône n'existe qu'en version « contour » : elle s'affichera vide
+                    si le thème passe en icônes pleines.
+                </span>
+
+                <div class="mp-icon-picker" *ngIf="choixIconeOuvert">
+                    <input class="mp-input mp-icon-search" type="text"
+                           placeholder="Rechercher une icône…"
+                           [(ngModel)]="rechercheIcone" [ngModelOptions]="{standalone: true}">
+                    <div class="mp-icon-grid">
+                        <button type="button" class="mp-icon-cell"
+                                *ngFor="let ic of iconesFiltrees"
+                                [class.active]="validationForm.value.icon === ic"
+                                [class.incomplete]="estIconeIncomplete(ic)"
+                                [title]="ic + (estIconeIncomplete(ic) ? ' — contour seulement' : '')"
+                                (click)="choisirIcone(ic)">
+                            <app-svg-icon [icon]="ic" [change]="true"></app-svg-icon>
+                        </button>
+                    </div>
+                    <div class="mp-icon-legend">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        bordure orange : disponible en contour seulement
                     </div>
                 </div>
             </div>
+
+            <!-- ── Placement parmi les voisins ── -->
+            <div class="mp-field" *ngIf="freres.length">
+                <label class="mp-label" for="mp-apres">Placer</label>
+                <nz-select class="mp-select" id="mp-apres"
+                           [(ngModel)]="apresUid" [ngModelOptions]="{standalone: true}"
+                           [nzDropdownStyle]="{ 'max-height': '260px' }">
+                    <nz-option nzValue="" nzLabel="En première position"></nz-option>
+                    <nz-option *ngFor="let f of freres"
+                               [nzValue]="f.uid" [nzLabel]="'Après « ' + f.titre + ' »'"></nz-option>
+                </nz-select>
+            </div>
+
+            <!-- ── Actif ── -->
+            <div class="mp-field mp-field-inline">
+                <nz-switch nzCheckedChildren="Actif" nzUnCheckedChildren="Inactif"
+                           formControlName="actif"></nz-switch>
+                <span class="mp-help mp-help-inline">
+                    Un menu inactif reste enregistré mais disparaît de la barre latérale.
+                </span>
+            </div>
+
+            <!-- ── Aperçu ── -->
+            <div class="mp-field">
+                <label class="mp-label">Aperçu dans la barre</label>
+                <div class="mp-preview-box">
+                    <div class="mp-preview-row" *ngFor="let e of apercu"
+                         [class.is-new]="e.nouveau"
+                         [class.is-child]="!porteIcone">
+                        <span class="mp-preview-icon" *ngIf="e.icone">
+                            <app-svg-icon [icon]="e.icone" [change]="true"></app-svg-icon>
+                        </span>
+                        <span class="mp-preview-title">{{ e.titre }}</span>
+                        <i class="fa-solid fa-angle-right mp-preview-caret"
+                           *ngIf="e.nouveau && estRubrique"></i>
+                        <span class="mp-preview-flag" *ngIf="e.nouveau">
+                            {{ estEdition ? 'modifié' : 'nouveau' }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <!-- ══ PIED ══════════════════════════════════════════════════ -->
+        <div class="mp-footer">
+            <button class="mp-btn mp-btn-cancel" type="button" (click)="closeModal()">Annuler</button>
+            <button class="mp-btn mp-btn-confirm" type="button"
+                    [disabled]="isloading" (click)="submitForm()">
+                <i class="fa-solid" [ngClass]="isloading ? 'fa-circle-notch fa-spin' : 'fa-check'"></i>
+                {{ isloading ? 'Enregistrement…' : (estEdition ? 'Modifier' : 'Créer') }}
+            </button>
         </div>
     </div>
 </div>

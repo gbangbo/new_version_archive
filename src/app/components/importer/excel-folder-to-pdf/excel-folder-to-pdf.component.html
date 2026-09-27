@@ -1,1 +1,454 @@
-<p>excel-folder-to-pdf works!</p>
+<div class="container job-apply-wrapper">
+
+    <nz-splitter>
+
+        <!-- ══ PANNEAU GAUCHE : FORMULAIRE ══════════════════════════ -->
+        <nz-splitter-panel nzDefaultSize="32%" nzMin="28%" nzMax="65%">
+            <div class="box">
+                <form class="form-panel" [formGroup]="validationForm" (ngSubmit)="submitForm()">
+
+                    <!-- ─ 1. Classement : Série → Type de document ─────────── -->
+                    <div class="form-section">
+                        <div class="section-label">
+                            <span class="section-num">1</span>
+                            <i class="ti ti-folders"></i>
+                            <span class="section-titre">Classement du document</span>
+                        </div>
+                        <div class="form-section-body form-grid">
+
+                            <!-- Série -->
+                            <div class="champ champ-demi position-relative">
+                                <label class="form-label" for="idcategories">
+                                    Série <span class="txt-danger">*</span>
+                                </label>
+                                <select2
+                                        [data]="dataSeries"
+                                        placeholder="Sélectionnez la série"
+                                        id="idcategories"
+                                        formControlName="idcategories"
+                                        [overlay]="true"
+                                        [resettable]="true"
+                                        [listPosition]="'below'"
+                                        [minCountForSearch]="1"
+                                        [resultMaxHeight]="'300'"
+                                        noResultMessage="Aucune donnée trouvée"
+                                        class="raise-input-select"
+                                        [disabled]="loadingSerie"
+                                        (update)="selectSerie($event)">
+                                </select2>
+                                <div class="select-loader" *ngIf="loadingSerie">
+                                    <i class="fas fa-spin fa-circle-notch"></i>
+                                </div>
+                            </div>
+
+                            <!-- Type de document (activé après sélection de la série) -->
+                            <div class="champ champ-demi position-relative">
+                                <label class="form-label" for="idtype_docs">
+                                    Type de document <span class="txt-danger">*</span>
+                                </label>
+                                <select2
+                                        [data]="dataTypeDocument"
+                                        placeholder="Sélectionnez le type de document"
+                                        id="idtype_docs"
+                                        formControlName="idtype_docs"
+                                        [overlay]="true"
+                                        [resettable]="true"
+                                        [listPosition]="'below'"
+                                        [minCountForSearch]="1"
+                                        [resultMaxHeight]="'300'"
+                                        noResultMessage="Aucune donnée trouvée"
+                                        class="raise-input-select"
+                                        [disabled]="!validationForm.get('idcategories')?.value"
+                                        [ngClass]="{
+                                          'is-invalid': validationForm.controls['idtype_docs'].touched && validationForm.controls['idtype_docs'].errors?.['required'],
+                                          'is-valid':   validationForm.controls['idtype_docs'].valid
+                                        }">
+                                </select2>
+                                <div class="select-loader" *ngIf="loadingType">
+                                    <i class="fas fa-spin fa-circle-notch"></i>
+                                </div>
+                                <div class="cascade-hint" *ngIf="!validationForm.get('idcategories')?.value">
+                                    <i class="ti ti-arrow-up-left"></i> Sélectionnez d'abord une série
+                                </div>
+                                @if(validationForm.controls['idtype_docs'].touched &&
+                                validationForm.controls['idtype_docs'].errors?.['required']) {
+                                <div class="invalid-feedback">Veuillez sélectionner le type de document.</div>
+                                }
+                            </div>
+
+                            <!-- Service bénéficiaire -->
+                            <div class="champ position-relative">
+                                <label class="form-label" for="dataservices">
+                                    Service bénéficiaire <span class="txt-danger">*</span>
+                                </label>
+                                <nz-tree-select
+                                        id="dataservices"
+                                        style="width: 100%"
+                                        formControlName="dataservices"
+                                        [nzNodes]="dataOrg"
+                                        nzShowSearch
+                                        nzMultiple
+                                        [nzMaxTagCount]="2"
+                                        nzPlaceHolder="Sélectionnez le service bénéficiaire"
+                                        [nzDropdownStyle]="{ 'max-height': '300px', 'overflow': 'auto' }"/>
+                                <div class="select-loader" *ngIf="loadingOrg">
+                                    <i class="fas fa-spin fa-circle-notch"></i>
+                                </div>
+                                @if(validationForm.controls['dataservices'].touched &&
+                                validationForm.controls['dataservices'].errors?.['required']) {
+                                <div class="invalid-feedback">Veuillez sélectionner le service bénéficiaire.</div>
+                                }
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- ─ 2. Emplacement : Site → Rayon → Boîte ───────────── -->
+                    <div class="form-section">
+                        <div class="section-label">
+                            <span class="section-num">2</span>
+                            <i class="ti ti-archive"></i>
+                            <span class="section-titre">Emplacement d'archivage</span>
+                        </div>
+                        <div class="form-section-body form-grid">
+
+                            <!-- Site -->
+                            <div class="champ champ-demi position-relative">
+                                <label class="form-label" for="idsite">
+                                    Site <span class="txt-danger">*</span>
+                                </label>
+                                <select2
+                                        [data]="dataSites"
+                                        placeholder="Sélectionnez le site"
+                                        id="idsite"
+                                        formControlName="idsite"
+                                        [overlay]="true"
+                                        [resettable]="true"
+                                        [listPosition]="'below'"
+                                        [minCountForSearch]="1"
+                                        [resultMaxHeight]="'300'"
+                                        noResultMessage="Aucune donnée trouvée"
+                                        class="raise-input-select"
+                                        (update)="changeSite($event)">
+                                </select2>
+                                <div class="select-loader" *ngIf="loadingSite">
+                                    <i class="fas fa-spin fa-circle-notch"></i>
+                                </div>
+                            </div>
+
+                            <!-- Rayon (activé après sélection du site) -->
+                            <div class="champ champ-demi position-relative">
+                                <label class="form-label" for="idrayon">
+                                    Rayon <span class="txt-danger">*</span>
+                                </label>
+                                <select2
+                                        [data]="dataRayon"
+                                        placeholder="Sélectionnez le rayon"
+                                        id="idrayon"
+                                        formControlName="idrayon"
+                                        [overlay]="true"
+                                        [resettable]="true"
+                                        [listPosition]="'below'"
+                                        [minCountForSearch]="1"
+                                        [resultMaxHeight]="'300'"
+                                        noResultMessage="Aucune donnée trouvée"
+                                        class="raise-input-select"
+                                        [disabled]="!validationForm.get('idsite')?.value"
+                                        (update)="changeRayon($event)">
+                                </select2>
+                                <div class="select-loader" *ngIf="loadingRayon">
+                                    <i class="fas fa-spin fa-circle-notch"></i>
+                                </div>
+                                <div class="cascade-hint" *ngIf="!validationForm.get('idsite')?.value">
+                                    <i class="ti ti-arrow-up-left"></i> Sélectionnez d'abord un site
+                                </div>
+                            </div>
+
+                            <!-- Boîte d'archivage (activé après sélection du rayon) -->
+                            <div class="champ position-relative">
+                                <label class="form-label" for="idboite">
+                                    Boîte d'archivage <span class="txt-danger">*</span>
+                                </label>
+                                <select2
+                                        [data]="dataBoites"
+                                        placeholder="Sélectionnez la boîte d'archivage"
+                                        id="idboite"
+                                        formControlName="idboite"
+                                        [overlay]="true"
+                                        [resettable]="true"
+                                        [listPosition]="'below'"
+                                        [minCountForSearch]="1"
+                                        [resultMaxHeight]="'300'"
+                                        noResultMessage="Aucune donnée trouvée"
+                                        class="raise-input-select"
+                                        [disabled]="!validationForm.get('idrayon')?.value"
+                                        [ngClass]="{
+                                          'is-invalid': validationForm.controls['idboite'].touched && validationForm.controls['idboite'].errors?.['required'],
+                                          'is-valid':   validationForm.controls['idboite'].valid
+                                        }">
+                                </select2>
+                                <div class="select-loader" *ngIf="loadingBoite">
+                                    <i class="fas fa-spin fa-circle-notch"></i>
+                                </div>
+                                <div class="cascade-hint" *ngIf="!validationForm.get('idrayon')?.value">
+                                    <i class="ti ti-arrow-up-left"></i> Sélectionnez d'abord un rayon
+                                </div>
+                                @if(validationForm.controls['idboite'].touched &&
+                                validationForm.controls['idboite'].errors?.['required']) {
+                                <div class="invalid-feedback">Veuillez sélectionner la boîte d'archivage.</div>
+                                }
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- ─ 3. Propriétaires (facultatif pour l'API) ─────────── -->
+                    <div class="form-section">
+                        <div class="section-label">
+                            <span class="section-num">3</span>
+                            <i class="ti ti-users"></i>
+                            <span class="section-titre">Propriétaires</span>
+                            <span class="section-option">facultatif</span>
+                        </div>
+                        <div class="form-section-body">
+                            <div class="champ position-relative">
+                                <label class="form-label" for="dataproprietaires">
+                                    Utilisateurs propriétaires
+                                </label>
+                                <nz-select id="dataproprietaires"
+                                           style="width: 100%"
+                                           nzMode="multiple"
+                                           nzShowSearch
+                                           [nzMaxTagCount]="2"
+                                           nzPlaceHolder="Sélectionnez les utilisateurs"
+                                           [nzLoading]="loadingComptes"
+                                           [nzDropdownStyle]="{ 'max-height': '300px', 'overflow': 'auto' }"
+                                           [(ngModel)]="proprietaires"
+                                           [ngModelOptions]="{standalone: true}">
+                                    <nz-option *ngFor="let compte of dataComptes"
+                                               [nzLabel]="compte.label"
+                                               [nzValue]="compte.value"></nz-option>
+                                </nz-select>
+                                <div class="cascade-hint" *ngIf="!proprietaires.length">
+                                    <i class="ti ti-info-circle"></i>
+                                    Sans propriétaire, les documents importés n'appartiendront à personne en particulier.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="form-footer-bar">
+                        <div class="form-footer-left">
+                            <span class="footer-etat pret" *ngIf="!champsManquants.length">
+                                <i class="fa-solid fa-circle-check"></i> Prêt à importer
+                            </span>
+                            <span class="footer-etat" *ngIf="champsManquants.length"
+                                  [attr.title]="champsManquants.join(', ')">
+                                <i class="fa-solid fa-circle-exclamation"></i>
+                                {{ champsManquants.length }} élément(s) à renseigner
+                            </span>
+                        </div>
+                        <div class="form-footer-right">
+                            <button class="btn btn-light me-2" type="button"
+                                    [disabled]="isSaving" (click)="resetForm()">
+                                Annuler
+                            </button>
+                            <button class="btn newBtn" type="button"
+                                    [disabled]="isSaving" (click)="submitForm()">
+                                <i class="fa-solid"
+                                   [ngClass]="isSaving ? 'fa-circle-notch fa-spin' : 'fa-file-import'"></i>
+                                {{ isSaving ? 'Importation…' : 'Importer' }}
+                            </button>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+        </nz-splitter-panel>
+
+        <!-- ══ PANNEAU DROIT : DROPZONE + APERÇU ═════════════════════ -->
+        <nz-splitter-panel>
+            <div class="box">
+                <div class="upload-panel">
+
+                    <div class="upload-section">
+                        <div class="section-label">
+                            <i class="ti ti-file-spreadsheet"></i>
+                            <span class="section-titre">Importer un fichier Excel</span>
+                            <span class="section-badge" *ngIf="selectedFile">
+                                {{ excelRows.length }} ligne(s)
+                            </span>
+                        </div>
+                        <div class="upload-section-body">
+
+                            <!-- Input file caché, déclenché par le clic sur le cadre -->
+                            <input #fileInput type="file" accept=".xls,.xlsx"
+                                   style="display:none"
+                                   (change)="onFileInput($event)">
+
+                            <!-- Dropzone : clic sur tout le cadre -->
+                            <div class="excel-dropzone"
+                                 [class.dz-over]="isDragOver"
+                                 [class.dz-has-file]="!!selectedFile"
+                                 (click)="!selectedFile && fileInput.click()"
+                                 (dragover)="onDragOver($event)"
+                                 (dragleave)="onDragLeave()"
+                                 (drop)="onDrop($event)">
+
+                                <!-- État vide -->
+                                <div class="dz-message" *ngIf="!selectedFile">
+                                    <div class="dz-icon">
+                                        <i class="fa-regular fa-file-excel"></i>
+                                    </div>
+                                    <h6>Glissez-déposez votre fichier Excel ici</h6>
+                                    <span class="note">
+                                        ou cliquez pour sélectionner <strong>(.xls, .xlsx uniquement)</strong>
+                                    </span>
+                                </div>
+
+                                <!-- Fichier sélectionné -->
+                                <div class="dz-file-info" *ngIf="selectedFile">
+                                    <div class="dz-file-icon">
+                                        <i class="fa-regular fa-file-excel"></i>
+                                    </div>
+                                    <div class="dz-file-details">
+                                        <span class="dz-filename">{{ selectedFile.name }}</span>
+                                        <span class="dz-meta">
+                                            <span><i class="ti ti-weight"></i>
+                                                {{ (selectedFile.size / 1024).toFixed(1) }} Ko</span>
+                                            <span *ngIf="excelSheets.length"><i class="ti ti-table"></i>
+                                                {{ excelSheets.length }} feuille(s)</span>
+                                            <span *ngIf="excelSheets.length"><i class="ti ti-list-numbers"></i>
+                                                {{ excelRows.length }} ligne(s)</span>
+                                        </span>
+                                    </div>
+                                    <button class="dz-btn dz-replace-btn" type="button"
+                                            (click)="fileInput.click()" title="Remplacer le fichier">
+                                        <i class="fa-solid fa-arrows-rotate"></i>
+                                    </button>
+                                    <button class="dz-btn dz-remove-btn" type="button"
+                                            (click)="removeFile()" title="Retirer le fichier">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+
+                            </div>
+
+                            <!-- Lecture en cours -->
+                            <div class="excel-reading" *ngIf="isReadingFile">
+                                <span class="excel-read-spin"></span>
+                                Lecture du fichier en cours...
+                            </div>
+
+                        </div>
+
+                        <!-- ─ Aperçu des données ──────────────────────── -->
+                        <div class="excel-preview-wrap" *ngIf="excelHeaders.length || excelRows.length">
+
+                            <div class="excel-preview-header">
+                                <span class="excel-preview-title">
+                                    <i class="ti ti-eye"></i> Aperçu des données
+                                </span>
+
+                                <!-- Onglets feuilles si plusieurs -->
+                                <div class="excel-sheets-tabs" *ngIf="excelSheets.length > 1">
+                                    <button *ngFor="let sheet of excelSheets"
+                                            type="button"
+                                            class="sheet-tab"
+                                            [class.active]="sheet === activeSheet"
+                                            (click)="selectSheet(sheet)">
+                                        <i class="ti ti-table"></i> {{ sheet }}
+                                    </button>
+                                </div>
+
+                                <span class="excel-preview-meta">
+                                    <strong>{{ excelHeaders.length }}</strong> colonne(s)
+                                    <ng-container *ngIf="excelSheets.length === 1">
+                                        &nbsp;·&nbsp; Feuille <strong>{{ activeSheet }}</strong>
+                                    </ng-container>
+                                </span>
+                            </div>
+
+                            <div class="excel-preview-body">
+
+                                <div *ngIf="isReadingFile" class="excel-loading">
+                                    <span class="excel-read-spin"></span> Chargement...
+                                </div>
+
+                                <div class="excel-table-wrap" *ngIf="!isReadingFile && excelHeaders.length">
+                                    <table class="excel-table">
+                                        <thead>
+                                        <tr>
+                                            <th class="row-num">#</th>
+                                            <th *ngFor="let h of excelHeaders">{{ h }}</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr *ngFor="let row of lignesPage; let i = index">
+                                            <td class="row-num">{{ premiereLigne + i + 1 }}</td>
+                                            <td *ngFor="let h of excelHeaders; let j = index"
+                                                [attr.title]="row[j]">
+                                                {{ row[j] !== undefined && row[j] !== null ? row[j] : '' }}
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div *ngIf="!isReadingFile && !excelHeaders.length" class="excel-empty">
+                                    <i class="ti ti-table-off"></i>
+                                    <p>Aucune donnée dans cette feuille</p>
+                                </div>
+
+                            </div>
+
+                            <!-- Pagination de l'aperçu : 50 lignes par page.
+                                 Les commandes restent visibles, grisées quand
+                                 il n'y a pas de page à atteindre.
+                                 L'import porte toujours sur la feuille entière. -->
+                            <div class="excel-pager" *ngIf="!isReadingFile && excelRows.length">
+                                <span class="pager-info">
+                                    Lignes <strong>{{ premiereLigne + 1 }}</strong>
+                                    à <strong>{{ premiereLigne + lignesPage.length }}</strong>
+                                    sur <strong>{{ excelRows.length }}</strong>
+                                </span>
+
+                                <div class="pager-boutons">
+                                    <button type="button" class="pager-btn"
+                                            [disabled]="pageCourante === 1"
+                                            title="Page précédente"
+                                            (click)="allerPage(pageCourante - 1)">
+                                        <i class="fa-solid fa-chevron-left"></i>
+                                    </button>
+
+                                    <ng-container *ngFor="let p of pagesAffichees">
+                                        <span class="pager-ellipse" *ngIf="p === '…'">…</span>
+                                        <button type="button" class="pager-btn pager-num"
+                                                *ngIf="p !== '…'"
+                                                [class.active]="p === pageCourante"
+                                                (click)="allerPage($any(p))">{{ p }}</button>
+                                    </ng-container>
+
+                                    <button type="button" class="pager-btn"
+                                            [disabled]="pageCourante === nbPages"
+                                            title="Page suivante"
+                                            (click)="allerPage(pageCourante + 1)">
+                                        <i class="fa-solid fa-chevron-right"></i>
+                                    </button>
+
+                                    <span class="pager-taille">{{ taillePage }} / page</span>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </nz-splitter-panel>
+
+    </nz-splitter>
+
+</div>

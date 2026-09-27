@@ -1,0 +1,226 @@
+<div class="container main-setting">
+    <div class="grid grid-cols-12 card-gap">
+        <div class="col-span-12">
+            <app-card [border]="true" [padding]="false">
+
+                <div class="grid grid-cols-12 gap-4 tabs">
+                    <div class="col-span-12">
+                        <div class="relative">
+
+                            <!-- ══ OVERLAY SPINNER ══════════════════════════════ -->
+                            <div *ngIf="isloading"
+                                 class="absolute inset-0 flex justify-center items-center z-10 rounded-lg"
+                                 style="background: rgba(248,250,252,0.85); backdrop-filter: blur(2px);">
+                                <div class="text-center">
+                                    <div class="op-spinner"></div>
+                                    <p class="mt-3" style="color:#64748b; font-size:13px; font-weight:600;">
+                                        Chargement des données...
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="table-container" [class.op-loading]="isloading">
+
+                                <!-- ══ TOOLBAR ══════════════════════════════════ -->
+                                <div class="op-toolbar">
+                                    <div class="op-toolbar-left">
+                                        <div class="op-toolbar-title">
+                                            <div class="op-toolbar-icon">
+                                                <i class="far fa-clipboard"></i>
+                                            </div>
+                                            <div>
+                                                <span class="op-toolbar-label">ACTIONS PAR MENU</span>
+                                                <span class="op-toolbar-count">
+                                                    {{ nbAffichees }} association(s)
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="op-toolbar-right">
+                                        <!-- Recherche -->
+                                        <div class="op-search-wrap">
+                                            <svg class="op-search-icon" viewBox="0 0 24 24" fill="none"
+                                                 stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                                                <circle cx="11" cy="11" r="8"/>
+                                                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                                            </svg>
+                                            <input class="op-search-input"
+                                                   placeholder="Rechercher..."
+                                                   [(ngModel)]="searchValue"
+                                                   (ngModelChange)="onSearch($event)"/>
+                                            <button *ngIf="searchValue"
+                                                    class="op-search-clear"
+                                                    (click)="searchValue=''; onSearch('')">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                     stroke-width="2.5" stroke-linecap="round" width="12" height="12">
+                                                    <line x1="18" y1="6" x2="6" y2="18"/>
+                                                    <line x1="6" y1="6" x2="18" y2="18"/>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                        <button class="op-btn op-btn-outline"
+                                                nz-tooltip nzTooltipTitle="Associer des actions à des menus"
+                                                (click)="openModal()">
+                                            <i data-feather="link" style="width: 15px;"></i>
+                                            <span class="btn-label">Associer</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- ══ TABLE ════════════════════════════════════ -->
+                                <div class="tt-scroll-shell" [class.tt-more-right]="hScrollMore">
+                                <div class="tree-table-wrap" #tableWrap (scroll)="syncHScroll()">
+
+                                    <!-- Entête colonnes -->
+                                    <div class="tree-table-header">
+                                        <div class="ttc-name">Menu / Action</div>
+                                        <div class="ttc-code">Code</div>
+                                        <div class="ttc-visible">Visible</div>
+                                        <div class="ttc-mail">Créé le</div>
+                                        <div class="ttc-actions">Actions</div>
+                                    </div>
+
+                                    <!-- Arborescence : les menus, et sous chaque page ses actions -->
+                                    <div class="tree-table-body">
+                                        <nz-tree-view [nzTreeControl]="treeControl"
+                                                      [nzDataSource]="dataSource"
+                                                      nzBlockNode>
+
+                                            <!-- Feuille : une action associée à la page -->
+                                            <nz-tree-node *nzTreeNodeDef="let node" nzTreeNodePadding>
+                                                <div class="tt-row">
+                                                    <div class="ttc-name" [style.padding-left.px]="node.level * 20 + 12">
+                                                        <nz-tree-node-toggle nzTreeNodeNoopToggle
+                                                                             style="display:inline-flex; align-items:center; width:16px; flex-shrink:0;">
+                                                        </nz-tree-node-toggle>
+                                                        <i class="fa-solid fa-bolt tt-file-icon"></i>
+                                                        <span class="tt-name-text"
+                                                              [innerHTML]="highlightMatch(node.titre, searchValue)">
+                                                        </span>
+                                                    </div>
+                                                    <div class="ttc-code">
+                                                        <span [innerHTML]="highlightMatch(node.ligne?.code_type_objet, searchValue)"></span>
+                                                    </div>
+                                                    <div class="ttc-visible">
+                                                        <nz-tag [nzColor]="node.ligne?.visible ? '#87d068' : '#9a0218'"
+                                                                nz-tooltip
+                                                                nzTooltipTitle="Activer ou désactiver cette association"
+                                                                (click)="toggleVisible(node.ligne)">
+                                                            {{ node.ligne?.visible ? 'Oui' : 'Non' }}
+                                                        </nz-tag>
+                                                    </div>
+                                                    <div class="ttc-mail">{{ node.ligne?.cree || '—' }}</div>
+                                                    <div class="ttc-actions">
+                                                        <button class="btn-round-edit tt-action-btn mr-2"
+                                                                nz-tooltip nzTooltipTitle="Modifier cette association"
+                                                                nzTooltipPlacement="top"
+                                                                (click)="openModal(node.ligne)">
+                                                            <app-feather-icon class="icon-small" [icon]="'edit-3'"></app-feather-icon>
+                                                        </button>
+                                                        <button class="btn-round-edit tt-action-btn mr-2"
+                                                                nz-tooltip nzTooltipTitle="Activer ou désactiver"
+                                                                nzTooltipPlacement="top"
+                                                                (click)="toggleVisible(node.ligne)">
+                                                            <app-feather-icon class="icon-small" [icon]="'power'"></app-feather-icon>
+                                                        </button>
+                                                        <button class="btn-round-edit tt-action-btn"
+                                                                nz-tooltip nzTooltipTitle="Supprimer cette association"
+                                                                nzTooltipPlacement="top"
+                                                                (click)="deleteAssociation(node.ligne)">
+                                                            <app-feather-icon class="icon-small" [icon]="'trash-2'"></app-feather-icon>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </nz-tree-node>
+
+                                            <!-- Nœud menu : rubrique ou page porteuse d'actions -->
+                                            <nz-tree-node *nzTreeNodeDef="let node; when: hasChild" nzTreeNodePadding>
+                                                <div class="tt-row tt-row-menu" (click)="basculerNoeud(node)">
+                                                    <div class="ttc-name" [style.padding-left.px]="node.level * 20 + 12">
+                                                        <!-- La flèche garde la bascule native de ng-zorro, mais
+                                                             stoppe la propagation : sinon la ligne basculerait à
+                                                             son tour et l'état reviendrait à son point de départ.
+                                                             L'icône est choisie explicitement plutôt que par
+                                                             `nzTreeNodeToggleRotateIcon`, pour qu'elle ne puisse
+                                                             pas se désynchroniser de l'état réel du nœud. -->
+                                                        <nz-tree-node-toggle class="tt-toggle"
+                                                                             (click)="$event.stopPropagation()">
+                                                            <nz-icon [nzType]="treeControl.isExpanded(node) ? 'caret-down' : 'caret-right'"/>
+                                                        </nz-tree-node-toggle>
+                                                        <span class="tt-svg-icon" *ngIf="node.icon; else puceMenu">
+                                                            <app-svg-icon [icon]="node.icon" [change]="true"></app-svg-icon>
+                                                        </span>
+                                                        <ng-template #puceMenu>
+                                                            <i class="fa-solid fa-bars tt-menu-icon"></i>
+                                                        </ng-template>
+                                                        <span>
+                                                            <span class="tt-name-text tt-parent"
+                                                                  [innerHTML]="highlightMatch(node.titre, searchValue)">
+                                                            </span>
+                                                            <span class="tt-path-text" *ngIf="node.path">{{ node.path }}</span>
+                                                        </span>
+                                                    </div>
+                                                    <div class="ttc-code">
+                                                        <span class="tt-badge" *ngIf="node.nbActions">
+                                                            {{ node.nbActions }} action(s)
+                                                        </span>
+                                                    </div>
+                                                    <div class="ttc-visible">—</div>
+                                                    <div class="ttc-mail">—</div>
+                                                    <div class="ttc-actions">
+                                                        <button class="btn-round-edit tt-action-btn"
+                                                                nz-tooltip nzTooltipTitle="Associer des actions à ce menu"
+                                                                nzTooltipPlacement="top"
+                                                                (click)="openModal({uidmenu: node.key}); $event.stopPropagation()">
+                                                            <app-feather-icon class="icon-small" [icon]="'plus'"></app-feather-icon>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </nz-tree-node>
+
+                                        </nz-tree-view>
+
+                                        <!-- Empty state -->
+                                        <div *ngIf="!isloading && !nbAffichees" class="op-empty-state">
+                                            <app-feather-icon class="icon-inbox" [icon]="'inbox'"></app-feather-icon>
+                                            <span>Aucune association trouvée !</span>
+                                            <small *ngIf="searchValue">
+                                                Aucun résultat pour « {{ searchValue }} »
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                                </div>
+
+                                <!-- Ascenseur horizontal dessiné (visible en permanence) -->
+                                <div class="tt-hscroll" *ngIf="hScrollVisible" #hBar
+                                     (pointerdown)="onBarPointerDown($event)">
+                                    <div class="tt-hscroll-thumb"
+                                         [style.width.px]="thumbWidth"
+                                         [style.left.px]="thumbLeft"></div>
+                                </div>
+
+                                <!-- Footer : hors de la zone de défilement -->
+                                <div class="tree-table-footer">
+                                    <span class="tt-total">
+                                        Total : <strong>{{ nbAffichees }}</strong> association(s)
+                                    </span>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </app-card>
+        </div>
+    </div>
+    @if(modalOpen){
+    <app-assoc-modal [dataLigne]="dataLigne"
+                     [menuNodes]="menuNodes"
+                     [menuExpandedKeys]="menuExpandedKeys"
+                     [typesObjets]="typeObjetOptions"
+                     (modalOpen)="handleModal($event)"></app-assoc-modal>
+    }
+</div>

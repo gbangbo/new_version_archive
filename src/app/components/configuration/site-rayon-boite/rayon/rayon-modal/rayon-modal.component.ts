@@ -40,7 +40,7 @@ export class RayonModalComponent implements OnChanges {
     constructor(private autor: Authorization, private httService: HttpService) {
         this.users = this.autor.getInfosUsers();
         this.savesites(this.users?.datasociete?.uid || this.users?.uidsociete)
-        this.saveservice(this.users?.datasociete?.uid || this.users?.uidsociete)
+        this.chargerDernierNiveau(this.users?.datasociete?.uid || this.users?.uidsociete)
     }
 
     ngOnChanges(changes: SimpleChanges) {
@@ -51,6 +51,7 @@ export class RayonModalComponent implements OnChanges {
                     uid: changes['dataLigne']?.currentValue.uid,
                     libelle_rayon: changes['dataLigne']?.currentValue.libelle_rayon,
                 });
+                this.preselectionnerLibelle();
             }, 1000)
 
         }
@@ -77,26 +78,72 @@ export class RayonModalComponent implements OnChanges {
             });
     }
 
-    saveservice(idsociete: string = '', idservice: string = '', iddepartement: string = '') {
+    /**
+     * Les libellés proposés sont les entités du **dernier niveau** de
+     * l'organigramme : ce sont elles qui correspondent à un rayon physique,
+     * les niveaux au-dessus ne sont que des regroupements.
+     */
+    chargerDernierNiveau(idsociete: string = '', niveau: string = '') {
         this.dataService = [];
         this.loadingService = true;
-        this.httService.getData(`${environment.api_url}auth/:saveservice?idsociete=${idsociete}&idservice=${idservice}&iddepartement=${iddepartement}`, false, this.users?.access_token || '')
+        this.httService.getData(`${environment.api_url}auth/:save-service-organigramme?societe=${idsociete}&niveau=${niveau}`, false, this.users?.access_token || '')
             .toPromise()
             .then((res: any) => {
                 this.loadingService = false;
-                if (res.body.status) {
-                    this.dataService = res.body.data.map((d: any) => {
-                        return {
-                            ...d,
-                            label: d.sigle_service,
-                            value: d.sigle_service,
-                        }
-                    });
+                if (res.body.status || res.body.success) {
+                    this.dataService = this.feuilles(res.body.data || []);
+                    this.preselectionnerLibelle();
                 }
             })
-            .catch((err) => {
+            .catch(() => {
                 this.loadingService = false;
             });
+    }
+
+    /**
+     * Aplatit l'arbre renvoyé par l'API en ne gardant que les feuilles, avec
+     * l'uid en valeur et le libellé à l'affichage.
+     */
+    private feuilles(noeuds: any[]): any[] {
+        let out: any[] = [];
+        for (const n of noeuds || []) {
+            if (n?.children?.length) {
+                out = out.concat(this.feuilles(n.children));
+            } else if (n?.uid) {
+                out.push({
+                    value: String(n.uid),
+                    label: n.libelle || n.sigle || '',
+                    libelle: n.libelle || n.sigle || '',
+                });
+            }
+        }
+        return out;
+    }
+
+    /**
+     * En modification, la ligne porte le libellé et non l'uid : on retrouve
+     * l'entrée correspondante pour que la liste s'affiche déjà renseignée.
+     */
+    private preselectionnerLibelle(): void {
+        const valeur = this.validationForm.value.libelle_rayon;
+        if (!valeur || !this.dataService.length) {
+            return;
+        }
+        const dejaUnUid = this.dataService.some((s: any) => s.value === valeur);
+        if (dejaUnUid) {
+            return;
+        }
+        const trouve = this.dataService.find((s: any) => s.libelle === valeur);
+        if (trouve) {
+            this.validationForm.patchValue({libelle_rayon: trouve.value});
+        }
+    }
+
+    /** Le libellé à enregistrer : celui de l'entité choisie, ou la saisie libre. */
+    private libelleRetenu(): string {
+        const valeur = this.validationForm.value.libelle_rayon || '';
+        const choisi = this.dataService.find((s: any) => s.value === valeur);
+        return choisi ? choisi.libelle : valeur;
     }
 
     submitForm() {
@@ -112,8 +159,8 @@ export class RayonModalComponent implements OnChanges {
             "idsociete": this.users?.datasociete?.uid || this.users?.uidsociete,
             "idrayon": this.validationForm.value.uid || '',
             "idsite": this.validationForm.value.idsite,
-            "libelle_rayon": this.validationForm.value.libelle_rayon,
-            "code_rayon": this.validationForm.value.libelle_rayon
+            "libelle_rayon": this.libelleRetenu(),
+            "code_rayon": this.libelleRetenu()
         }
         console.log("payload ===", payload)
         this.httService.postData(`${environment.api_url}api/:saverayons`, payload, this.users?.access_token || '')

@@ -1000,241 +1000,6 @@
 }
 
 
-$col-toggle: 36px;
-$col-phone: 140px;
-$col-email: 200px;
-$col-auth: 140px;
-$col-actions: 100px;
-
-.tree-table-wrap {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  border-top: 1px solid #E2E8F0;
-}
-
-// ── Header ────────────────────────────────
-.tree-table-header {
-  display: flex;
-  align-items: center;
-  padding: 0;
-  background: #F1F5F9;
-  border-bottom: 1px solid #E2E8F0;
-  font-size: 12px;
-  font-weight: 600;
-  color: #374151;
-  min-height: 38px;
-  user-select: none;
-
-  > div {
-    padding: 0 12px;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    height: 38px;
-    border-right: 1px solid #E2E8F0;
-
-    &:last-child {
-      border-right: none;
-    }
-  }
-}
-
-// ── Body ──────────────────────────────────
-.tree-table-body {
-  overflow-y: auto;
-  max-height: calc(100vh - 280px);
-
-  // Masquer les styles natifs nz-tree
-  ::ng-deep .ant-tree {
-    padding: 0 !important;
-  }
-
-  ::ng-deep nz-tree-node {
-    display: block !important;
-    height: auto !important;
-    padding: 0 !important;
-    margin: 0 !important;
-  }
-
-  ::ng-deep .ant-tree-indent,
-  ::ng-deep .ant-tree-indent-unit {
-    display: none !important; // on gère l'indentation manuellement
-  }
-
-  ::ng-deep nz-tree-node-option {
-    display: block !important;
-    width: 100% !important;
-    padding: 0 !important;
-    background: transparent !important;
-    border-radius: 0 !important;
-  }
-
-  ::ng-deep .ant-tree-node-content-wrapper {
-    padding: 0 !important;
-    width: 100% !important;
-    border-radius: 0 !important;
-
-    &:hover {
-      background: transparent !important;
-    }
-  }
-
-  ::ng-deep nz-tree-node-toggle {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    width: 100% !important;
-    height: 100% !important;
-    flex-shrink: 0 !important;
-  }
-}
-
-// ── Ligne ─────────────────────────────────
-.tt-row {
-  display: flex;
-  align-items: center;
-  min-height: 38px;
-  border-bottom: 1px solid #F1F5F9;
-  cursor: pointer;
-  transition: background 0.12s;
-  width: 100%;
-  line-height: 1;
-
-  &:hover {
-    background: #EFF6FF;
-
-    .tt-action-btn {
-      opacity: 1;
-    }
-  }
-
-  &.tt-row-selected {
-    background: #DBEAFE;
-
-    &:hover {
-      background: #BFDBFE;
-    }
-  }
-
-  > div {
-    padding: 6px 12px;
-    display: flex;
-    align-items: center;
-    flex-shrink: 0;
-    overflow: hidden;
-  }
-}
-
-// ── Colonnes ──────────────────────────────
-.ttc-toggle {
-  width: $col-toggle;
-  min-width: $col-toggle;
-  padding: 0 !important;
-  justify-content: center;
-  border-right: 1px solid #F1F5F9;
-}
-
-.ttc-name {
-  flex: 1;
-  min-width: 0;
-  gap: 8px;
-  border-right: 1px solid #F1F5F9;
-}
-
-
-.ttc-email {
-  width: $col-email;
-  min-width: $col-email;
-  font-size: 12px;
-  color: #64748B;
-  border-right: 1px solid #F1F5F9;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.ttc-auth {
-  width: 180px !important;
-  min-width: $col-auth;
-  border-right: 1px solid #F1F5F9;
-  justify-content: center;
-
-  ::ng-deep .ant-tag {
-    margin: 0 !important;
-    width: 100% !important;
-    border-radius: 51px;
-    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
-  }
-}
-
-.ttc-actions {
-  width: 120px !important;
-  min-width: 120px !important;
-  justify-content: center;
-}
-
-// ── Contenu cellule Nom ───────────────────
-.tt-avatar {
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  object-fit: cover;
-  flex-shrink: 0;
-  border: 1px solid #E2E8F0;
-}
-
-.tt-name-text {
-  font-size: 12px;
-  color: #374151;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.tt-parent {
-  font-weight: 600;
-  color: #0F172A;
-}
-
-// ── Icônes tri header ─────────────────────
-.tt-sort-icons {
-  display: inline-flex;
-  flex-direction: column;
-  font-size: 9px;
-  color: #CBD5E1;
-  line-height: 1;
-  gap: 1px;
-  margin-left: 2px;
-}
-
-// ── Bouton action (visible au hover) ──────
-.tt-action-btn {
-  opacity: 7;
-  transition: opacity 0.15s;
-  width: 28px !important;
-  height: 28px !important;
-}
-
-// ── Footer ────────────────────────────────
-.tree-table-footer {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  padding: 8px 16px;
-  border-top: 1px solid #E2E8F0;
-  background: #F8FAFC;
-  font-size: 12px;
-  color: #64748B;
-  min-height: 40px;
-
-  strong {
-    color: #0F172A;
-    font-weight: 700;
-  }
-}
-
-
 //**********************Tree
 
 // ══════════════════════════════════════════
@@ -1245,13 +1010,24 @@ $col-toggle: 36px;
 $col-phone: 140px;
 $col-email: 200px;
 $col-auth: 140px;
-$col-actions: 70px;
+$col-actions: 120px;           // repris du bloc doublon (2 boutons de 28px)
+$col-name: 260px;              // largeur mini de la colonne « Libellé »
+$tt-min-width: 440px;          // somme des colonnes -> déclenche le scroll horizontal
 
 .tree-table-wrap {
   display: flex;
   flex-direction: column;
   width: 100%;
   border-top: 1px solid #E2E8F0;
+  overflow-x: auto;                     // défilement horizontal uniquement
+  overflow-y: hidden;                   // pas d'ascenseur vertical : la page défile
+  -webkit-overflow-scrolling: touch;
+  // pas de `scrollbar-width` ici : dès qu'on la déclare, Chrome ignore les
+  // pseudo-éléments ::-webkit-scrollbar et redessine la barre horizontale
+
+  &::-webkit-scrollbar {
+    height: 0;                          // remplacée par .tt-hscroll, toujours visible
+  }
 }
 
 // ── Header ────────────────────────────────
@@ -1265,6 +1041,10 @@ $col-actions: 70px;
   font-weight: 600;
   color: #374151;
   min-height: 38px;
+  min-width: $tt-min-width;
+  position: sticky;
+  top: 0;
+  z-index: 3;
   user-select: none;
 
   > div {
@@ -1273,6 +1053,7 @@ $col-actions: 70px;
     align-items: center;
     gap: 4px;
     height: 38px;
+    white-space: nowrap;
     border-right: 1px solid #E2E8F0;
 
     &:last-child {
@@ -1283,8 +1064,8 @@ $col-actions: 70px;
 
 // ── Body ──────────────────────────────────
 .tree-table-body {
-  overflow-y: auto;
-  max-height: calc(100vh - 280px);
+  overflow: visible;        // le defilement est gere par .tree-table-wrap
+  min-width: $tt-min-width;
 
   // Masquer les styles natifs nz-tree
   ::ng-deep .ant-tree {
@@ -1334,12 +1115,14 @@ $col-actions: 70px;
 // ── Ligne ─────────────────────────────────
 .tt-row {
   display: flex;
-  align-items: center;
+  align-items: stretch;
   min-height: 38px;
   border-bottom: 1px solid #F1F5F9;
   cursor: pointer;
   transition: background 0.12s;
   width: 100%;
+  min-width: $tt-min-width;
+  line-height: 1;
 
   &:hover {
     background: #EFF6FF;
@@ -1376,8 +1159,8 @@ $col-actions: 70px;
 //}
 
 .ttc-name {
-  flex: 1;
-  min-width: 0;
+  flex: 1 0 $col-name;
+  min-width: $col-name;
   gap: 8px;
   border-right: 1px solid #F1F5F9;
 }
@@ -1444,6 +1227,28 @@ $col-actions: 70px;
   justify-content: center;
 }
 
+// -- Aucune troncature : le texte va a la ligne dans toutes les colonnes --
+.tt-row > div,
+.tt-row > div * {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+// ... sauf les images : le texte « alt » d'un logo cassé débordait de sa case
+// et ajoutait 1px de hauteur au tableau -> ascenseur vertical parasite
+.tt-row > div img {
+  max-width: 100%;
+  overflow: hidden;
+  object-fit: cover;
+}
+
+.ttc-logo {
+  overflow: hidden;
+}
+
 // ── Contenu cellule Nom ───────────────────
 .tt-avatar {
   width: 26px;
@@ -1457,9 +1262,10 @@ $col-actions: 70px;
 .tt-name-text {
   font-size: 12px;
   color: #374151;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  line-height: 1.35;
 }
 
 .tt-parent {
@@ -1487,6 +1293,48 @@ $col-actions: 70px;
 }
 
 // ── Footer ────────────────────────────────
+// -- Ascenseur horizontal dessine (les barres natives sont masquees sur iOS) --
+.tt-scroll-shell {
+  position: relative;
+
+  &.tt-more-right::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 28px;
+    pointer-events: none;
+    background: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.95));
+  }
+}
+
+.tt-hscroll {
+  position: relative;
+  height: 10px;
+  margin: 6px 12px 0;
+  border-radius: 6px;
+  background: #F1F5F9;
+  border: 1px solid #E2E8F0;
+  cursor: pointer;
+  touch-action: none;             // le glissement pilote le tableau, pas la page
+  user-select: none;
+}
+
+.tt-hscroll-thumb {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: 6px;
+  background: #94A3B8;
+  transition: background 0.15s;
+}
+
+.tt-hscroll:hover .tt-hscroll-thumb,
+.tt-hscroll:active .tt-hscroll-thumb {
+  background: #64748B;
+}
+
 .tree-table-footer {
   display: flex;
   align-items: center;
@@ -1608,4 +1456,51 @@ $col-actions: 70px;
 // Supprime la rotation CSS par défaut sur l'icône nz-icon
 ::ng-deep [nzTreeNodeToggleRotateIcon] {
   display: none !important;
+}
+
+// -- Mobile : colonnes resserrees mais lisibles, on defile pour le reste --
+@media (max-width: 767px) {
+  $m-name: 150px;
+  $m-logo: 48px;
+  $m-actions: 96px;
+  $m-min-width: $m-name + $m-logo + $m-actions;
+
+  .tree-table-header,
+  .tree-table-body,
+  .tt-row {
+    min-width: $m-min-width;
+  }
+
+  .tree-table-header > div,
+  .tt-row > div {
+    padding: 6px 8px;
+    font-size: 11px;
+  }
+
+  // Selecteurs enfants pour repasser devant `.tt-row > div { flex-shrink: 0 }`
+  .tree-table-header > .ttc-name,
+  .tt-row > .ttc-name {
+    flex: 1 0 $m-name;
+    min-width: $m-name;
+    gap: 4px;
+  }
+
+  .ttc-logo { width: $m-logo !important; min-width: $m-logo !important; }
+
+  .tt-name-text {
+    font-size: 11px;
+    line-height: 1.3;
+  }
+
+  .ttc-actions {
+    width: $m-actions;
+    min-width: $m-actions;
+    gap: 2px;
+  }
+
+  .ttc-actions .tt-action-btn {
+    width: 26px !important;
+    height: 26px !important;
+    margin-right: 0 !important;   // neutralise le .mr-2 du template
+  }
 }

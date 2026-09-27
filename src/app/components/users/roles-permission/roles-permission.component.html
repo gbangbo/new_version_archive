@@ -1,25 +1,216 @@
-<div class="container role-permission-wrapper">
-    <div class="grid grid-cols-12">
+<div class="container main-setting">
+    <div class="grid grid-cols-12 card-gap">
         <div class="col-span-12">
-            <div class="card">
-                <div class="card-header card-no-border text-end">
-                    <div class="card-header-right-icon">
-                        <a class="btn btn-primary font-medium text-white !inline-block" href="javascript:void(0)" (click)="openPermissionModal()">
-                            <i class="fa-solid fa-plus pe-2"></i>Add Permission
-                        </a>
-                    </div>
+            <app-card [border]="true" [padding]="false">
+
+                <div class="rp-erreur" *ngIf="erreur">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <span>{{ erreur }}</span>
+                    <button type="button" class="rp-erreur-fermer" (click)="erreur = ''">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
                 </div>
-                <div class="card-body pt-0 px-0">
-                    <div class="list-product permission-table">
-                        <div class="overflow-x-auto custom-scrollbar">
-                            <app-table [hasCheckbox]="true" [tableConfig]="tableConfig" [searchPlaceholder]="'Search here... '" [pageSize]="10" [paginateDetails]="true" [showPaginate]="true" [selectedRows]="true" (action)="handleAction($event)"></app-table>
+
+                <!-- ══ EN-TÊTE ══════════════════════════════════════ -->
+                <div class="rp-head">
+                    <h2 class="rp-titre">Permissions</h2>
+
+                    <div class="rp-head-bar">
+                        <div class="rp-champ">
+                            <label class="rp-label" for="rp-role">Rôle</label>
+                            <nz-select class="rp-select" id="rp-role"
+                                       nzShowSearch
+                                       nzPlaceHolder="Choisir un rôle"
+                                       [ngModel]="roleUid"
+                                       (ngModelChange)="changerRole($event)"
+                                       [nzDropdownStyle]="{ 'max-height': '280px' }">
+                                <nz-option *ngFor="let r of roles"
+                                           [nzValue]="r.uid"
+                                           [nzLabel]="r.libelle"></nz-option>
+                            </nz-select>
+                        </div>
+
+                        <div class="rp-champ rp-champ-recherche" *ngIf="roleUid">
+                            <label class="rp-label" for="rp-search">Rechercher</label>
+                            <div class="rp-search">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <input id="rp-search" type="text"
+                                       placeholder="Un menu, un sous-menu..."
+                                       [(ngModel)]="recherche">
+                            </div>
+                        </div>
+
+                        <div class="rp-compteur" *ngIf="roleUid">
+                            <strong>{{ nbAccordees }}</strong> / {{ nbPossibles }} permission(s)
                         </div>
                     </div>
                 </div>
-            </div>
+
+                <!-- ══ AUCUN RÔLE CHOISI ════════════════════════════ -->
+                <div class="rp-invite" *ngIf="!roleUid">
+                    <i class="fa-solid fa-user-shield"></i>
+                    <p>Choisissez un rôle pour définir ce qu'il peut faire sur chaque page.</p>
+                </div>
+
+                <ng-container *ngIf="roleUid">
+
+                    <div class="rp-chargement" *ngIf="isloading">
+                        <span class="rp-spinner"></span> Chargement…
+                    </div>
+
+                    <!-- ══ GRILLE ═══════════════════════════════════
+                         Grille CSS plutôt qu'un <table> : l'en-tête d'un
+                         tableau se faisait rogner par des styles globaux du
+                         thème, et les largeurs de colonne devenaient
+                         imprévisibles. Ici tout est maîtrisé ici même. -->
+                    <!-- Aucune action définie : la matrice n'aurait aucune colonne -->
+                    <div class="rp-invite" *ngIf="!isloading && !actions.length">
+                        <i class="fa-solid fa-bolt"></i>
+                        <p>Aucune action n'est définie pour cette société.<br>
+                            Créez-les d'abord dans « Menu &rsaquo; Actions », elles deviendront
+                            les colonnes de cette matrice.</p>
+                    </div>
+
+                    <div class="rp-grille" *ngIf="!isloading && actions.length"
+                         [style.--rp-nb-actions]="actions.length">
+
+                        <!-- En-tête -->
+                        <div class="rp-cell rp-cell-menu rp-head-cell">
+                            <button type="button" class="rp-plier"
+                                    [attr.title]="toutEstReplie ? 'Tout déplier' : 'Tout replier'"
+                                    (click)="toutEstReplie ? toutDeplier() : toutReplier()">
+                                <i class="fa-solid"
+                                   [class.fa-chevron-right]="toutEstReplie"
+                                   [class.fa-chevron-down]="!toutEstReplie"></i>
+                            </button>
+                            <span class="rp-th-titre">Menu</span>
+                            <span class="rp-th-compte">{{ nbPages }} page(s)</span>
+                        </div>
+
+                        <div class="rp-cell rp-cell-action rp-head-cell"
+                             *ngFor="let a of actions">
+                            <span class="rp-th-nom">
+                                <i [ngClass]="a.icone"></i> {{ a.libelle }}
+                            </span>
+                            <span class="rp-th-ratio"
+                                  [class.plein]="nbPagesPourAction(a.cle)
+                                                 && nbPourAction(a.cle) === nbPagesPourAction(a.cle)">
+                                {{ nbPourAction(a.cle) }} / {{ nbPagesPourAction(a.cle) }}
+                            </span>
+                        </div>
+
+                        <!-- Coche une action sur toutes les pages affichées -->
+                        <div class="rp-cell rp-cell-menu rp-toutes-cell">
+                            <span class="rp-toutes">toutes les pages</span>
+                        </div>
+                        <div class="rp-cell rp-cell-action rp-toutes-cell"
+                             *ngFor="let a of actions">
+                            <span class="rp-case"
+                                  *ngIf="nbPagesPourAction(a.cle); else colonneVide"
+                                  [class.on]="colonneCochee(a.cle)"
+                                  [class.partiel]="colonnePartielle(a.cle)"
+                                  [attr.title]="'Tout ' + a.libelle.toLowerCase() + ' sur les '
+                                                + nbPagesPourAction(a.cle) + ' page(s) concernée(s)'"
+                                  (click)="basculerColonne(a.cle)">
+                                <i class="fa-solid"
+                                   [class.fa-check]="colonneCochee(a.cle)"
+                                   [class.fa-minus]="colonnePartielle(a.cle)"></i>
+                            </span>
+                            <ng-template #colonneVide>
+                                <span class="rp-sans-cible"
+                                      nz-tooltip
+                                      nzTooltipTitle="Aucune page affichée n'utilise cette action">—</span>
+                            </ng-template>
+                        </div>
+
+                        <!-- Lignes -->
+                        <ng-container *ngFor="let l of lignesFiltrees">
+                            <div class="rp-cell rp-cell-menu"
+                                 [class.rubrique]="l.estRubrique">
+                                <span class="rp-menu"
+                                      [style.padding-left.px]="l.profondeur * 22">
+
+                                    <button type="button" class="rp-caret"
+                                            *ngIf="l.estRubrique; else pasDeCaret"
+                                            [attr.title]="estReplie(l) ? 'Déplier' : 'Replier'"
+                                            (click)="basculerRepli(l, $event)">
+                                        <i class="fa-solid fa-chevron-down"
+                                           [class.replie]="estReplie(l)"></i>
+                                    </button>
+                                    <ng-template #pasDeCaret>
+                                        <span class="rp-caret rp-caret-vide"></span>
+                                    </ng-template>
+
+                                    <span class="rp-menu-icone" *ngIf="l.icone">
+                                        <app-svg-icon [icon]="l.icone" [change]="true"></app-svg-icon>
+                                    </span>
+                                    <span class="rp-menu-titre">{{ l.titre }}</span>
+                                    <span class="rp-menu-badge" *ngIf="l.estRubrique">
+                                        {{ l.cibles.length }} page(s)
+                                    </span>
+                                </span>
+                            </div>
+
+                            <div class="rp-cell rp-cell-action"
+                                 [class.rubrique]="l.estRubrique"
+                                 *ngFor="let a of actions">
+                                <span class="rp-case"
+                                      *ngIf="ciblesPour(l, a.cle).length; else sansCible"
+                                      [class.on]="estCochee(l, a.cle)"
+                                      [class.partiel]="estPartielle(l, a.cle)"
+                                      [attr.title]="l.estRubrique
+                                          ? a.libelle + ' sur ' + ciblesPour(l, a.cle).length + ' page(s) de « ' + l.titre + ' »'
+                                          : a.libelle + ' « ' + l.titre + ' »'"
+                                      (click)="basculer(l, a.cle)">
+                                    <i class="fa-solid"
+                                       [class.fa-check]="estCochee(l, a.cle)"
+                                       [class.fa-minus]="estPartielle(l, a.cle)"></i>
+                                </span>
+                                <ng-template #sansCible>
+                                    <span class="rp-sans-cible"
+                                          nz-tooltip
+                                          [nzTooltipTitle]="messageSansCible(l, a)">—</span>
+                                </ng-template>
+                            </div>
+                        </ng-container>
+                    </div>
+
+                    <div class="rp-vide" *ngIf="!isloading && !lignesFiltrees.length">
+                        <app-feather-icon [icon]="'inbox'"></app-feather-icon>
+                        <span *ngIf="!recherche">Ce rôle n'a encore aucun menu</span>
+                        <span *ngIf="recherche">Aucun menu ne correspond</span>
+                        <small *ngIf="!recherche">
+                            Attribuez-lui d'abord des menus depuis l'écran « Rôles &amp; menus ».
+                        </small>
+                        <small *ngIf="recherche">Aucun résultat pour « {{ recherche }} »</small>
+                    </div>
+
+                    <!-- ══ PIED ═════════════════════════════════════ -->
+                    <div class="rp-footer">
+                        <span class="rp-footer-etat" [class.modifie]="modifie">
+                            <ng-container *ngIf="modifie; else aJour">
+                                <i class="fa-solid fa-circle-exclamation"></i>
+                                Modifications non enregistrées
+                            </ng-container>
+                            <ng-template #aJour>
+                                <i class="fa-solid fa-circle-check"></i> À jour
+                            </ng-template>
+                        </span>
+
+                        <button type="button" class="rp-btn rp-btn-cancel"
+                                [disabled]="!modifie || isSaving" (click)="annuler()">
+                            Annuler
+                        </button>
+                        <button type="button" class="rp-btn rp-btn-confirm"
+                                [disabled]="!modifie || isSaving" (click)="enregistrer()">
+                            <i class="fa-solid"
+                               [ngClass]="isSaving ? 'fa-circle-notch fa-spin' : 'fa-check'"></i>
+                            {{ isSaving ? 'Enregistrement…' : 'Enregistrer' }}
+                        </button>
+                    </div>
+                </ng-container>
+
+            </app-card>
         </div>
     </div>
-    @if(modalOpen) {
-        <app-permission-modal (modalOpen)="handleModalOpen($event)"></app-permission-modal>
-    }
 </div>

@@ -1,315 +1,434 @@
-// ═══════════════════════════════════════
-// MODAL DIALOG
-// ═══════════════════════════════════════
-.modal .modal-dialog {
-  //width: 770px !important;
-  max-width: 95vw !important;
-}
-
-// ═══════════════════════════════════════
-// MODAL CONTENT
-// ═══════════════════════════════════════
-.modal-content.category-popup {
-  border-radius: 4px !important;
-  border: none !important;
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.18), 0 4px 16px rgba(0, 0, 0, 0.08) !important;
-  overflow: hidden;
-}
-
-// ═══════════════════════════════════════
-// MODAL HEADER — garde ta couleur rgba(0, 54, 110)
-// ═══════════════════════════════════════
-.modal .modal-dialog .modal-content .modal-header {
-  padding: 10px 20px;
-  background-color: rgba(0, 54, 110) !important;
-  color: #fff !important;
-  border-top-right-radius: 0px;
-  border-top-left-radius: 0px;
-  border-bottom: 3px solid rgba(255, 255, 255, 0.1);
-  flex-shrink: 0 !important;
-}
-
-.modal-header > h5 {
-  color: #fff !important;
-  font-size: 13px !important;
-  font-weight: 700 !important;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  margin: 0;
-}
-
-.modal-header .btn-close {
-  filter: var(--tw-btn-close-white-filter);
-  opacity: 0.8;
-  transition: opacity 0.2s, transform 0.2s;
-
-  &:hover {
-    opacity: 1;
-    transform: rotate(90deg);
+// ══ MODAL DE CRÉATION / MODIFICATION D'UN MENU ══════════════════════════════
+//
+// Coquille reprise du modal « flash info » (components/flash-info) : voile
+// sombre, en-tête navy avec icône, corps défilant, pied séparé par un filet.
+// Les classes sont recopiées plutôt que partagées — les styles de composant
+// sont encapsulés, on ne peut pas réutiliser celles d'un autre écran.
+//
+// Les icônes du sprite ne portent pas leur propre couleur : les variantes
+// `stroke-` ont fill="none" et des tracés sans attribut `stroke`, les `fill-`
+// des chemins sans attribut `fill`. Hors de la barre latérale, qui les colore
+// dans _sidebar.scss, il faut poser stroke et fill soi-même — sans ce mixin le
+// svg est présent mais ne dessine rien.
+@mixin icone-sprite($couleur) {
+  ::ng-deep svg {
+    &.stroke-icon { stroke: $couleur; fill: none; }
+    &.fill-icon   { fill: $couleur; }
   }
 }
 
-// ═══════════════════════════════════════
-// MODAL BODY
-// ═══════════════════════════════════════
-.modal-body {
-  padding: 0 !important;
-  background: #fff;
-}
-
-// ═══════════════════════════════════════
-// FORM LABELS
-// ═══════════════════════════════════════
-.form-label {
-  font-size: 11px !important;
-  font-weight: 700 !important;
-  color: #475569 !important;
-  //text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 5px !important;
-}
-
-// ═══════════════════════════════════════
-// FORM CONTROLS
-// ═══════════════════════════════════════
-.form-control {
-  height: 40px !important;
-  border: 1.5px solid #E2E8F0 !important;
-  border-radius: 8px !important;
-  font-size: 13px !important;
-  color: #0F172A !important;
-  background: #F8FAFC !important;
-  transition: all 0.2s !important;
-
-  &::placeholder {
-    color: #CBD5E1 !important;
-  }
-
-  &:focus {
-    border-color: rgba(0, 54, 110) !important;
-    background: #fff !important;
-    box-shadow: 0 0 0 3px rgba(0, 54, 110, 0.1) !important;
-    outline: none !important;
-  }
-
-  &.is-invalid {
-    border-color: #EF4444 !important;
-    background: #FEF2F2 !important;
-    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.08) !important;
-  }
-
-  &.is-valid {
-    border-color: #10B981 !important;
-    background: #F0FDF4 !important;
-  }
-}
-
-// ═══════════════════════════════════════
-// WIZARD FOOTER
-// ═══════════════════════════════════════
-.wizard-footer {
-  padding: 12px 20px 16px;
-  border-top: 1px solid #F1F5F9;
-  background: #F8FAFC;
-  border-bottom-left-radius: 12px;
-  border-bottom-right-radius: 12px;
-  flex-shrink: 0 !important;
-}
-
-// Bouton Précédent
-.btn.button-light-primary {
-  height: 38px;
-  padding: 0 18px;
-  border: 1.5px solid #E2E8F0 !important;
-  border-radius: 8px;
-  background: #fff !important;
-  color: #475569 !important;
-  font-size: 13px;
-  font-weight: 600;
-  display: inline-flex;
+// ── Coquille ───────────────────────────────────────────────
+.mp-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(0px);
+  display: flex;
   align-items: center;
-  gap: 6px;
-  transition: all 0.2s;
-
-  &:hover:not(:disabled) {
-    border-color: rgba(0, 54, 110) !important;
-    color: rgba(0, 54, 110) !important;
-    background: #EFF6FF !important;
-  }
-
-  &:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-  }
+  justify-content: center;
+  padding: 16px;
 }
 
-// Bouton Suivant/Valider — garde ton #00141e
-.newBtn {
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  height: 38px !important;
-  padding: 0 20px !important;
-  border-radius: 8px !important;
-  background-color: #00141e !important;
-  color: #fff !important;
-  font-size: 13px !important;
-  font-weight: 600 !important;
-  gap: 7px !important;
-  border: none !important;
-  box-shadow: 0 2px 8px rgba(0, 20, 30, 0.3) !important;
-  transition: all 0.2s !important;
-
-  &:hover:not(:disabled) {
-    background-color: #002a3d !important;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 14px rgba(0, 20, 30, 0.4) !important;
-  }
-
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    transform: none;
-  }
-}
-
-// ═══════════════════════════════════════
-// SELECT LOADER
-// ═══════════════════════════════════════
-.select-loader {
-  position: absolute;
-  right: 12px;
-  top: 70%;
-  transform: translateY(-50%);
-  color: rgba(0, 54, 110);
-}
-
-// ═══════════════════════════════════════
-// RESUME — section title garde ta couleur
-// ═══════════════════════════════════════
-.resume-container {
+.mp-modal {
+  width: 560px;
+  max-width: 94vw;
+  max-height: 92vh;
+  background: #fff;
+  border-radius: 5px;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 8px 0;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.25);
 }
 
-.resume-section {
-  border-radius: 4px;
-  overflow: hidden;
-  border: 1px solid #E8EDF2;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
-}
-
-.resume-section-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 16px;
-  background-color: rgb(231, 231, 231);
-  color: #000;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  border-bottom: none;
-
-  svg {
-    stroke: #000 !important;
-  }
-
-  i {
-    color: #000;
-    font-size: 13px;
-  }
-}
-
-.resume-row {
+.mp-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 9px 16px;
-  border-bottom: 1px solid #F8FAFC;
-  font-size: 13px;
-  transition: background 0.12s;
-
-  &:last-child {
-    border-bottom: none;
-  }
-
-  &:nth-child(even) {
-    background: #FAFBFC;
-  }
-
-  &:hover {
-    background: #EFF6FF;
-  }
+  gap: 12px;
+  padding: 14px 18px;
+  background-color: rgba(0, 54, 110);
+  color: #fff;
+  flex-shrink: 0;
 }
 
-.resume-label {
-  color: #64748B;
-  font-weight: 500;
+.mp-title {
+  font-size: 14px;
+  font-weight: 700;
+
+  i { margin-right: 6px; }
+}
+
+.mp-close {
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+  cursor: pointer;
+
+  &:hover { background: rgba(255, 255, 255, 0.3); }
+}
+
+// Le corps défile ; l'en-tête et le pied restent visibles.
+.mp-body {
+  padding: 18px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.mp-alert {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  font-size: 12.5px;
+}
+
+.mp-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 14px 18px;
+  border-top: 1px solid #eef2f7;
+  flex-shrink: 0;
+}
+
+.mp-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 38px;
+  padding: 0 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:disabled { opacity: 0.65; cursor: not-allowed; }
+}
+
+.mp-btn-cancel {
+  background: #f1f5f9;
+  color: #475569;
+
+  &:hover:not(:disabled) { background: #e2e8f0; }
+}
+
+.mp-btn-confirm {
+  background: rgba(0, 54, 110);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 54, 110, 0.25);
+
+  &:hover:not(:disabled) { background: #003a75; }
+}
+
+// ── Champs ─────────────────────────────────────────────────
+.mp-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.mp-field-inline {
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+}
+
+.mp-label {
   font-size: 12px;
+  font-weight: 600;
+  line-height: 18px;
+  color: #64748B;
 }
 
-.resume-value {
-  color: #0F172A;
-  text-align: right;
+.mp-req { color: #EF4444; }
+
+.mp-input {
+  width: 100%;
+  height: 38px;
+  padding: 0 11px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  background: #f8fafc;
   font-size: 13px;
+  color: #1e293b;
+  outline: none;
+  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
 
-  strong {
-    font-weight: 700;
+  &::placeholder { color: #c0cad6; }
+
+  &:focus {
+    border-color: rgba(0, 54, 110, 0.7);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(0, 54, 110, 0.1);
+  }
+
+  &.invalid { border-color: #EF4444; }
+}
+
+// nz-select aligné sur .mp-input : sans ça le thème d'ng-zorro impose sa
+// propre hauteur et sa propre bordure, et les champs ne se ressemblent plus.
+:host ::ng-deep .mp-select {
+  width: 100%;
+
+  .ant-select-selector {
+    height: 38px !important;
+    padding: 0 11px !important;
+    border: 1.5px solid #e2e8f0 !important;
+    border-radius: 8px !important;
+    background: #f8fafc !important;
+    box-shadow: none !important;
+    transition: border-color 0.15s, background 0.15s, box-shadow 0.15s !important;
+  }
+
+  .ant-select-selection-item,
+  .ant-select-selection-placeholder,
+  .ant-select-selection-search-input {
+    line-height: 35px !important;
+    font-size: 13px !important;
+  }
+
+  .ant-select-selection-item { color: #1e293b !important; }
+  .ant-select-selection-placeholder { color: #c0cad6 !important; }
+
+  &:not(.ant-select-disabled):hover .ant-select-selector {
+    border-color: #cbd5e1 !important;
+  }
+
+  &.ant-select-focused .ant-select-selector,
+  &.ant-select-open .ant-select-selector {
+    border-color: rgba(0, 54, 110, 0.7) !important;
+    background: #fff !important;
+    box-shadow: 0 0 0 3px rgba(0, 54, 110, 0.1) !important;
+  }
+
+  .ant-select-arrow { color: #94A3B8 !important; }
+}
+
+.mp-help {
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: #94A3B8;
+
+  i { margin-right: 4px; }
+}
+
+.mp-help-inline { flex: 1; }
+.mp-help-ok     { color: #059669; }
+.mp-help-warn   { color: #B45309; }
+.mp-help-error  { color: #EF4444; }
+
+// ── Choix du type ──────────────────────────────────────────
+.mp-type-choices {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.mp-type {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 10px 12px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  background: #f8fafc;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s ease, background 0.15s ease;
+
+  i {
+    font-size: 14px;
+    color: #94A3B8;
+    margin-bottom: 3px;
+    transition: color 0.15s ease;
+  }
+
+  &:hover:not(.active) { border-color: #cbd5e1; }
+
+  &.active {
+    border-color: rgba(0, 54, 110, 0.7);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(0, 54, 110, 0.1);
+
+    i { color: rgba(0, 54, 110); }
+    .mp-type-name { color: rgba(0, 54, 110); }
+  }
+}
+
+.mp-type-name {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #475569;
+}
+
+.mp-type-hint {
+  font-size: 11px;
+  color: #94A3B8;
+}
+
+// ── Sélecteur d'icône ──────────────────────────────────────
+.mp-icon-trigger {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 38px;
+  padding: 0 11px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  background: #f8fafc;
+  cursor: pointer;
+  transition: border-color 0.15s;
+
+  &:hover { border-color: #cbd5e1; }
+
+  i { margin-left: auto; font-size: 11px; color: #94A3B8; }
+}
+
+.mp-icon-preview {
+  display: inline-flex;
+  align-items: center;
+
+  ::ng-deep svg { width: 18px; height: 18px; }
+  @include icone-sprite(rgba(0, 54, 110, 1));
+}
+
+.mp-icon-name {
+  font-size: 13px;
+  color: #1e293b;
+}
+
+.mp-icon-picker {
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 10px;
+  background: #f8fafc;
+}
+
+.mp-icon-search {
+  height: 34px;
+  margin-bottom: 8px;
+  background: #fff;
+}
+
+.mp-icon-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 5px;
+  max-height: 190px;
+  overflow-y: auto;
+}
+
+.mp-icon-cell {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+  transition: border-color 0.12s ease, background 0.12s ease;
+
+  ::ng-deep svg { width: 17px; height: 17px; }
+  @include icone-sprite(#475569);
+
+  &:hover { background: #EEF2F7; }
+
+  // Bordure orange : l'icône manque en version pleine (cf. icones-sidebar.ts)
+  &.incomplete { border-color: #FCD34D; }
+
+  &.active {
+    border-color: rgba(0, 54, 110, 0.7);
+    background: rgba(0, 54, 110, 0.08);
+  }
+}
+
+.mp-icon-legend {
+  margin-top: 8px;
+  font-size: 10.5px;
+  color: #94A3B8;
+
+  i { color: #B45309; margin-right: 3px; }
+}
+
+// ── Aperçu ─────────────────────────────────────────────────
+.mp-preview-box {
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 8px;
+  background: #f8fafc;
+}
+
+.mp-preview-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #475569;
+
+  &.is-child {
+    padding-left: 26px;
+    font-size: 12.5px;
+  }
+
+  &.is-new {
+    background: #fff;
     color: rgba(0, 54, 110);
+    font-weight: 600;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
   }
 }
 
-// ═══════════════════════════════════════
-// ICON SM
-// ═══════════════════════════════════════
-::ng-deep .icon-sm svg {
-  width: 14px !important;
-  height: 14px !important;
-  stroke: #000 !important;
+.mp-preview-icon {
+  display: inline-flex;
+
+  ::ng-deep svg { width: 17px; height: 17px; }
+  @include icone-sprite(#475569);
 }
 
-// ═══════════════════════════════════════
-// RESPONSIVE
-// ═══════════════════════════════════════
-@media (max-width: 768px) {
-  .modal .modal-dialog {
-    width: 95vw !important;
-    margin: 10px auto !important;
-  }
-
-  .modal-header > h5 {
-    font-size: 12px !important;
-  }
-
-  .wizard-footer {
-    padding: 10px 14px 12px;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-
-  .newBtn, .btn.button-light-primary {
-    height: 36px !important;
-    font-size: 12px !important;
-    padding: 0 14px !important;
-  }
+.mp-preview-title {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-@media (max-width: 576px) {
-  .resume-row {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 4px;
-
-    .resume-value {
-      text-align: left;
-    }
-  }
+.mp-preview-caret {
+  font-size: 10px;
+  color: #94A3B8;
 }
 
-::ng-deep .card .card-body {
-  padding: 5px !important;
+.mp-preview-flag {
+  flex-shrink: 0;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: rgba(0, 54, 110);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+// ── Mobile ─────────────────────────────────────────────────
+@media (max-width: 575px) {
+  .mp-modal { max-height: 100vh; border-radius: 0; }
+  .mp-icon-grid { grid-template-columns: repeat(6, 1fr); }
+  .mp-type-choices { grid-template-columns: 1fr; }
 }

@@ -1636,9 +1636,7 @@ $col-actions: 70px;
 .org-canvas-wrap {
   padding: 20px;
   min-height: 400px;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
+  display: block;
   border-top: 1px solid #F1F5F9;
 
   .canvas-scroll {
@@ -1674,11 +1672,83 @@ $col-actions: 70px;
   border: 1px solid #F1F5F9;
   border-radius: 8px;
   background: #F8FAFC;
+  cursor: grab;
+  // glissement horizontal = deplacement du canevas ; glissement vertical = defilement natif
+  touch-action: pan-y;
+
+  &.is-panning {
+    cursor: grabbing;
+  }
 
   canvas {
     display: block;
     min-width: 100%;
   }
+
+  &::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  &::-webkit-scrollbar:horizontal {
+    height: 0;                // remplacee par .tt-hscroll, toujours visible
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #F1F5F9;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #CBD5E1;
+    border-radius: 4px;
+
+    &:hover {
+      background: #94A3B8;
+    }
+  }
+}
+
+// -- Ascenseur horizontal dessine (les barres natives sont masquees sur iOS) --
+.tt-scroll-shell {
+  position: relative;
+  width: 100%;
+
+  &.tt-more-right::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 18px;              // au-dessus de la barre dessinee
+    width: 28px;
+    pointer-events: none;
+    border-radius: 0 8px 8px 0;
+    background: linear-gradient(to right, rgba(248, 250, 252, 0), rgba(248, 250, 252, 0.95));
+  }
+}
+
+.tt-hscroll {
+  position: relative;
+  height: 10px;
+  margin: 8px 2px 0;
+  border-radius: 6px;
+  background: #F1F5F9;
+  border: 1px solid #E2E8F0;
+  cursor: pointer;
+  touch-action: none;
+  user-select: none;
+}
+
+.tt-hscroll-thumb {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: 6px;
+  background: #94A3B8;
+  transition: background 0.15s;
+}
+
+.tt-hscroll:hover .tt-hscroll-thumb,
+.tt-hscroll:active .tt-hscroll-thumb {
+  background: #64748B;
 }
 
 

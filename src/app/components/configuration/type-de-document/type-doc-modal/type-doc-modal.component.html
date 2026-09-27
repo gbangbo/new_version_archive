@@ -1,11 +1,23 @@
-<div class="modal  fade show modal-backdrop">
-    <div class="modal-dialog modal-dialog-centered modal-md">
-        <div class="modal-content category-popup">
-            <div class="modal-header">
-                <h5 class="modal-title">{{formDataTypeDoc.value.uid ? 'MODIFICATION DU TYPE DE DOCUMENT':'CREATION DE TYPE DE DOCUMENT'}}</h5>
-                <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close" (click)="closeModal()"></button>
+<!-- ═══ MODAL : créer / modifier un type de document ═══════════ -->
+<!-- Coque au gabarit de Flash info (classes fi-*). L'assistant à étapes et son
+     pied « Précédent / Suivant » sont conservés tels quels : c'est lui qui
+     pilote la validation, le remplacer par le pied standard casserait le flux.
+     `category-popup` reste sur le panneau pour les styles globaux des champs. -->
+<div class="fi-backdrop">
+    <div class="fi-panel category-popup">
+        <div class="fi-header">
+            <div class="fi-header-titles">
+                <span class="fi-title">
+                    <i class="fa-regular fa-file-lines"></i>
+                    {{ formDataTypeDoc.value.uid ? 'Modifier le type de document' : 'Nouveau type de document' }}
+                </span>
             </div>
-            <div class="modal-body p-0 custom-input">
+            <button class="fi-close" type="button" (click)="closeModal()" title="Fermer">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="fi-body custom-input">
 
 
 
@@ -463,13 +475,6 @@
                         </button>
                     </div>
                 </app-card>
-
-
-
-
-
-
-            </div>
         </div>
     </div>
 </div>

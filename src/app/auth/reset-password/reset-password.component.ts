@@ -142,24 +142,59 @@ export class ResetPasswordComponent {
 
             }, '')
                 .toPromise()
-                .then((res: any) => {
+                .then(async (res: any) => {
                     this.loading = false;
                     if (res.body.status) {
-                        const respons = res.body.data;
+
+                        let response: any = {...res.body.data, ...res.body.data.datas_users};
+                        delete response.datas_users;
+
+                        if (parseInt(response?.datasociete?.double_auth || 0)) {
+                            const mapDataTemp = {
+                                ...response,
+                                err: this.loginForm.value.password,
+                                _menu: [],
+                                dataUsers: []
+                            };
+                            const mapSessionTemp = cryptSession(JSON.stringify(mapDataTemp), decode64(environment.CONFIG.APP_PASS));
+                            sessionStorage.setItem(`_temp_`, mapSessionTemp);
+                            this.router.navigate(["/auth/confirme-auth-otp"]);
+                            return;
+                        }
+
+
+                        try {
+                            const res: any = await this.httService.getData(`${environment.api_url}auth/:rolemenu?idrole=${response?.dataroles?.uid}&idsociete=${response?.datasociete?.uid}`,
+                                false, response?.access_token).toPromise();
+                            if (res?.body.success && res?.body.data.length) {
+                                response._menu = res?.body?.data?.flatMap((e: any) => e.datamenu).sort((a: any, b: any) => a.rang - b.rang);
+                            }
+                        } catch {
+
+                        }
                         const mapData = {
-                            ...respons,
-                            _menu: [],
-                            dataUsers: []
+                            ...response
                         };
+
                         const mapSession = cryptSession(JSON.stringify(mapData), decode64(environment.CONFIG.APP_PASS));
                         sessionStorage.setItem(environment.CONFIG.APP_TOKEN_NAME, mapSession);
-
                         localStorage.setItem("user", JSON.stringify(user));
 
                         if (!localStorage.getItem(environment.CONFIG.layout_name)) {
                             localStorage.setItem(environment.CONFIG.layout_name, 'dark-sidebar');
                         }
                         this.router.navigate(["/accueil"]);
+                    } else {
+                        this.loading = false;
+                        this.toast.error(`${res?.body?.message || 'Une erreur est survenue.'} `, '',
+                            {
+                                positionClass: 'toast-top-right',
+                                closeButton: true,
+                                timeOut: 3000
+                            })
+                        setTimeout(() => {
+                            this.errorTexte = res?.body?.message || 'Une erreur est survenue.';
+                        }, 3000)
                     }
                 })
                 .catch((err) => {

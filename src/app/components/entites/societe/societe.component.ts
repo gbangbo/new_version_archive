@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, HostListener, OnInit, ViewChild} from '@angular/core';
 import {CardComponent} from "../../../shared/components/ui/card/card.component";
 import {CommonModule} from "@angular/common";
 import {FormsModule} from "@angular/forms";
@@ -42,7 +42,18 @@ const TREE_DATA: TreeNode[] = [];
     templateUrl: './societe.component.html',
     styleUrl: './societe.component.scss',
 })
-export class SocieteComponent implements OnInit {
+export class SocieteComponent implements OnInit, AfterViewInit {
+    // ── Ascenseur horizontal dessiné (les barres natives sont masquées sur iOS) ──
+    @ViewChild('tableWrap') tableWrap?: ElementRef<HTMLDivElement>;
+    @ViewChild('hBar') hBar?: ElementRef<HTMLDivElement>;
+    hScrollVisible = false;     // le tableau déborde-t-il ?
+    hScrollMore = false;        // reste-t-il des colonnes à droite ?
+    thumbWidth = 0;
+    thumbLeft = 0;
+    private dragging = false;
+    private dragStartX = 0;
+    private dragStartScroll = 0;
+
     dataSociete: any = [];
     dataLigne: any = [];
     private users: any = [];
@@ -123,6 +134,80 @@ export class SocieteComponent implements OnInit {
     }
 
 
+    // ══ Ascenseur horizontal personnalisé ═══════════════════════════════
+    ngAfterViewInit(): void {
+        setTimeout(() => this.syncHScroll());
+    }
+
+    @HostListener('window:resize')
+    syncHScroll(): void {
+        const el = this.tableWrap?.nativeElement;
+        if (!el) {
+            return;
+        }
+        const maxScroll = el.scrollWidth - el.clientWidth;
+        this.hScrollVisible = maxScroll > 2;
+        this.hScrollMore = el.scrollLeft < maxScroll - 2;
+
+        const barEl = this.hBar?.nativeElement;
+        if (this.hScrollVisible && !barEl) {
+            // la barre vient d'apparaître : on recalcule une fois qu'elle est rendue
+            setTimeout(() => this.syncHScroll());
+        }
+
+        const track = barEl?.clientWidth || el.clientWidth;
+        this.thumbWidth = Math.max(40, Math.round(track * (el.clientWidth / el.scrollWidth)));
+        const maxX = track - this.thumbWidth;
+        this.thumbLeft = maxScroll > 0 ? Math.round((el.scrollLeft / maxScroll) * maxX) : 0;
+    }
+
+    onBarPointerDown(ev: PointerEvent): void {
+        const el = this.tableWrap?.nativeElement;
+        const bar = this.hBar?.nativeElement;
+        if (!el || !bar) {
+            return;
+        }
+        const rect = bar.getBoundingClientRect();
+        const maxScroll = el.scrollWidth - el.clientWidth;
+        const maxX = rect.width - this.thumbWidth;
+        const pointerX = ev.clientX - rect.left;
+
+        // clic hors du pouce : on saute directement à cette position
+        if (pointerX < this.thumbLeft || pointerX > this.thumbLeft + this.thumbWidth) {
+            const x = Math.min(Math.max(pointerX - this.thumbWidth / 2, 0), maxX);
+            el.scrollLeft = maxX > 0 ? (x / maxX) * maxScroll : 0;
+        }
+
+        this.dragging = true;
+        this.dragStartX = ev.clientX;
+        this.dragStartScroll = el.scrollLeft;
+        bar.setPointerCapture(ev.pointerId);
+        ev.preventDefault();
+        this.syncHScroll();
+    }
+
+    @HostListener('document:pointermove', ['$event'])
+    onBarPointerMove(ev: PointerEvent): void {
+        if (!this.dragging) {
+            return;
+        }
+        const el = this.tableWrap?.nativeElement;
+        const bar = this.hBar?.nativeElement;
+        if (!el || !bar) {
+            return;
+        }
+        const maxScroll = el.scrollWidth - el.clientWidth;
+        const maxX = bar.clientWidth - this.thumbWidth;
+        const dx = ev.clientX - this.dragStartX;
+        el.scrollLeft = this.dragStartScroll + (maxX > 0 ? dx * (maxScroll / maxX) : 0);
+    }
+
+    @HostListener('document:pointerup')
+    @HostListener('document:pointercancel')
+    onBarPointerUp(): void {
+        this.dragging = false;
+    }
+
     ngOnInit(): void {
         window.scrollTo({top: 0, behavior: 'smooth'});
         this.users = this.autor.getInfosUsers();
@@ -150,6 +235,7 @@ export class SocieteComponent implements OnInit {
 
                     this.treeData = this.mapApiToTree(this.dataBenef);
                     this.dataSource.setData(this.treeData);
+                    setTimeout(() => this.syncHScroll());
                     console.log("res.body.data", res.body.data)
                     console.log("this.dataSource===", this.treeData)
 
@@ -171,8 +257,11 @@ export class SocieteComponent implements OnInit {
         this.dataLigne = {
             ...e,
             sens: sens,
-            parent: sens == 'a' ? e.key : (parent?.key || '')
+            parent: sens == 'a' ? e.key : (parent?.key || ''),
+            action: sens == 'a' ? 1 : 2,
         };
+
+        console.log("To update this.dataLigne ====", this.dataLigne)
     }
 
     openToNew(row?: any) {
@@ -450,6 +539,7 @@ export class SocieteComponent implements OnInit {
         if (!value || value.trim() === '') {
             // Réinitialiser — afficher tout
             this.dataSource.setData(this.treeData);
+            setTimeout(() => this.syncHScroll());
             // Ré-expand le premier nœud
             setTimeout(() => {
                 const first = this.treeControl.dataNodes?.[0];
@@ -459,6 +549,7 @@ export class SocieteComponent implements OnInit {
         }
         const filtered = this.filterTree(this.treeData, value.toLowerCase());
         this.dataSource.setData(filtered);
+        setTimeout(() => this.syncHScroll());
         // Expand tout pour voir les résultats
         setTimeout(() => this.treeControl.expandAll(), 0);
     }

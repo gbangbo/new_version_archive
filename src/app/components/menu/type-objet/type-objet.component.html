@@ -1,0 +1,174 @@
+<div class="container main-setting">
+    <div class="grid grid-cols-12 card-gap">
+        <div class="col-span-12">
+            <app-card [border]="true" [padding]="false">
+
+                <div class="grid grid-cols-12 gap-4 tabs">
+                    <div class="col-span-12">
+                        <div class="relative">
+
+                            <!-- ══ OVERLAY SPINNER ══════════════════════════════ -->
+                            <div *ngIf="isloading"
+                                 class="absolute inset-0 flex justify-center items-center z-10 rounded-lg"
+                                 style="background: rgba(248,250,252,0.85); backdrop-filter: blur(2px);">
+                                <div class="text-center">
+                                    <div class="op-spinner"></div>
+                                    <p class="mt-3" style="color:#64748b; font-size:13px; font-weight:600;">
+                                        Chargement des données...
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="table-container" [class.op-loading]="isloading">
+
+                                <!-- ══ TOOLBAR ══════════════════════════════════ -->
+                                <div class="op-toolbar">
+                                    <div class="op-toolbar-left">
+                                        <div class="op-toolbar-title">
+                                            <div class="op-toolbar-icon">
+                                                <i class="far fa-clipboard"></i>
+                                            </div>
+                                            <div>
+                                                <span class="op-toolbar-label">LISTE DES ACTIONS</span>
+                                                <span class="op-toolbar-count">
+                                                    {{ filteredData.length || 0 }} enregistrement(s)
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="op-toolbar-right">
+                                        <!-- Recherche -->
+                                        <div class="op-search-wrap">
+                                            <svg class="op-search-icon" viewBox="0 0 24 24" fill="none"
+                                                 stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                                                <circle cx="11" cy="11" r="8"/>
+                                                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                                            </svg>
+                                            <input class="op-search-input"
+                                                   placeholder="Rechercher..."
+                                                   [(ngModel)]="searchValue"
+                                                   (ngModelChange)="onSearch($event)"/>
+                                            <button *ngIf="searchValue"
+                                                    class="op-search-clear"
+                                                    (click)="searchValue=''; onSearch('')">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                     stroke-width="2.5" stroke-linecap="round" width="12" height="12">
+                                                    <line x1="18" y1="6" x2="6" y2="18"/>
+                                                    <line x1="6" y1="6" x2="18" y2="18"/>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                        <button class="op-btn op-btn-outline"
+                                                nz-tooltip nzTooltipTitle="Nouvelle action"
+                                                (click)="openModal()">
+                                            <i data-feather="edit-2" style="width: 15px;"></i>
+                                            <span class="btn-label">Nouveau</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- ══ TABLE ════════════════════════════════════ -->
+                                <div class="tt-scroll-shell" [class.tt-more-right]="hScrollMore">
+                                <div class="tree-table-wrap" #tableWrap (scroll)="syncHScroll()">
+
+                                    <!-- Entête colonnes -->
+                                    <div class="tree-table-header">
+                                        <div class="ttc-name" (click)="sortBy('lib_type_objet')">
+                                            Libellé de l'action
+                                            <span class="tt-sort-icons">
+                                                <span class="tt-sort-up"
+                                                      [class.tt-sort-active]="sortKey === 'lib_type_objet' && sortOrder === 'asc'">↑</span>
+                                                <span class="tt-sort-down"
+                                                      [class.tt-sort-active]="sortKey === 'lib_type_objet' && sortOrder === 'desc'">↓</span>
+                                            </span>
+                                        </div>
+                                        <div class="ttc-code" (click)="sortBy('code_type_objet')">
+                                            Code
+                                            <span class="tt-sort-icons">
+                                                <span class="tt-sort-up"
+                                                      [class.tt-sort-active]="sortKey === 'code_type_objet' && sortOrder === 'asc'">↑</span>
+                                                <span class="tt-sort-down"
+                                                      [class.tt-sort-active]="sortKey === 'code_type_objet' && sortOrder === 'desc'">↓</span>
+                                            </span>
+                                        </div>
+                                        <div class="ttc-mail" (click)="sortBy('cree')">
+                                            Créé le
+                                            <span class="tt-sort-icons">
+                                                <span class="tt-sort-up"
+                                                      [class.tt-sort-active]="sortKey === 'cree' && sortOrder === 'asc'">↑</span>
+                                                <span class="tt-sort-down"
+                                                      [class.tt-sort-active]="sortKey === 'cree' && sortOrder === 'desc'">↓</span>
+                                            </span>
+                                        </div>
+                                        <div class="ttc-actions">Actions</div>
+                                    </div>
+
+                                    <!-- Lignes -->
+                                    <div class="tree-table-body">
+                                        <div class="tt-row" *ngFor="let row of filteredData">
+                                            <div class="ttc-name">
+                                                <span class="tt-name-text tt-parent"
+                                                      [innerHTML]="highlightMatch(row.lib_type_objet, searchValue)">
+                                                </span>
+                                            </div>
+                                            <div class="ttc-code">
+                                                <span [innerHTML]="highlightMatch(row.code_type_objet, searchValue)"></span>
+                                            </div>
+                                            <div class="ttc-mail">{{ row.cree || '—' }}</div>
+                                            <div class="ttc-actions">
+                                                <button class="btn-round-edit tt-action-btn mr-2"
+                                                        nz-tooltip nzTooltipTitle="Modifier l'action"
+                                                        nzTooltipPlacement="top"
+                                                        (click)="openModal(row)">
+                                                    <app-feather-icon class="icon-small" [icon]="'edit-3'"></app-feather-icon>
+                                                </button>
+                                                <button class="btn-round-edit tt-action-btn"
+                                                        nz-tooltip nzTooltipTitle="Supprimer l'action"
+                                                        nzTooltipPlacement="top"
+                                                        (click)="deleteTypeObjet(row)">
+                                                    <app-feather-icon class="icon-small" [icon]="'trash-2'"></app-feather-icon>
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <!-- Empty state -->
+                                        <div *ngIf="!isloading && filteredData?.length === 0"
+                                             class="op-empty-state">
+                                            <app-feather-icon class="icon-inbox" [icon]="'inbox'"></app-feather-icon>
+                                            <span>Aucune donnée trouvée !</span>
+                                            <small *ngIf="searchValue">
+                                                Aucun résultat pour « {{ searchValue }} »
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                                </div>
+
+                                <!-- Ascenseur horizontal dessiné (visible en permanence) -->
+                                <div class="tt-hscroll" *ngIf="hScrollVisible" #hBar
+                                     (pointerdown)="onBarPointerDown($event)">
+                                    <div class="tt-hscroll-thumb"
+                                         [style.width.px]="thumbWidth"
+                                         [style.left.px]="thumbLeft"></div>
+                                </div>
+
+                                <!-- Footer : hors de la zone de défilement -->
+                                <div class="tree-table-footer">
+                                    <span class="tt-total">
+                                        Total : <strong>{{ filteredData.length || 0 }}</strong> enregistrement(s)
+                                    </span>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </app-card>
+        </div>
+    </div>
+    @if(modalOpen){
+    <app-type-objet-modal [dataLigne]="dataLigne" (modalOpen)="handleModal($event)"></app-type-objet-modal>
+    }
+</div>

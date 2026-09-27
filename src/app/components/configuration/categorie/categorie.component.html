@@ -65,7 +65,8 @@
                                 </div>
 
                                 <!-- ══ TREE TABLE ════════════════════════════════ -->
-                                <div class="tree-table-wrap">
+                                <div class="tt-scroll-shell" [class.tt-more-right]="hScrollMore">
+                                <div class="tree-table-wrap" #tableWrap (scroll)="syncHScroll()">
 
                                     <!-- Header colonnes -->
                                     <div class="tree-table-header">
@@ -184,13 +185,22 @@
                                         </div>
                                     </div>
 
-                                    <!-- Footer -->
-                                    <div class="tree-table-footer">
-                                    <span class="tt-total">
-                                        Total : <strong>{{ treeControl.dataNodes?.length || 0 }}</strong> enregistrement(s)
-                                    </span>
-                                    </div>
+                                </div>
+                                </div>
 
+                                <!-- Ascenseur horizontal dessiné (visible en permanence) -->
+                                <div class="tt-hscroll" *ngIf="hScrollVisible" #hBar
+                                     (pointerdown)="onBarPointerDown($event)">
+                                    <div class="tt-hscroll-thumb"
+                                         [style.width.px]="thumbWidth"
+                                         [style.left.px]="thumbLeft"></div>
+                                </div>
+
+                                <!-- Footer : hors de la zone de défilement -->
+                                <div class="tree-table-footer">
+                                <span class="tt-total">
+                                    Total : <strong>{{ treeControl.dataNodes?.length || 0 }}</strong> enregistrement(s)
+                                </span>
                                 </div>
 
                             </div>

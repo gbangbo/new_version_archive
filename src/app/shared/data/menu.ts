@@ -11,7 +11,7 @@ export const menuItems: Menu[] =
             id: 'home',
             icon: 'home',
             type: 'link',
-            path: 'accueil',
+            path: '/accueil',
             bookmark: true,
             level: 1,
         },
@@ -56,7 +56,8 @@ export const menuItems: Menu[] =
                     title: 'Mes documents',
                     type: 'link',
                     id: 'chart-widgets'
-                }, {
+                },
+                {
                     path: '/documents/documents-envoyes',
                     title: 'Documents envoyés',
                     type: 'link',
@@ -141,7 +142,7 @@ export const menuItems: Menu[] =
             id: 'mail-box',
             icon: 'change',
             type: 'link',
-            path: '/mail-box',
+            path: '/changer-societe',
             badge: false,
             badge_color: 'danger',
             badge_value: "0",
@@ -280,9 +281,26 @@ export const menuItems: Menu[] =
                     badge: false,
                     badge_value: 'New',
                     badge_color: 'success'
-                }, {
+                },
+                {
                     path: '/user/nomination',
                     title: 'Nomination',
+                    type: 'link',
+                    badge: false,
+                    badge_value: 'New',
+                    badge_color: 'success'
+                },
+                {
+                    path: '/user/role-menu',
+                    title: 'Rôle & menus',
+                    type: 'link',
+                    badge: false,
+                    badge_value: 'New',
+                    badge_color: 'success'
+                },
+                {
+                    path: '/user/role-permission',
+                    title: 'Rôle & permissions',
                     type: 'link',
                     badge: false,
                     badge_value: 'New',
@@ -495,7 +513,8 @@ export const menuItems: Menu[] =
                     path: '/records-management/procedure-versement',
                     title: 'Procédure de versement',
                     type: 'link'
-                }, {
+                },
+                {
                     path: '/records-management/procedure-elimination',
                     title: 'Procédure d\'élimination',
                     type: 'link'
@@ -544,7 +563,8 @@ export const menuItems: Menu[] =
                     type: 'link'
                 }
             ],
-        }, {
+        },
+        {
         title: 'Menu',
         id: 'sample-page',
         icon: 'sample-page',
@@ -558,6 +578,16 @@ export const menuItems: Menu[] =
             {
                 path: '/menu/onglet',
                 title: 'Onglet',
+                type: 'link'
+            },
+            {
+                path: '/menu/type-objet',
+                title: 'Actions',
+                type: 'link'
+            },
+            {
+                path: '/menu/actions-par-menu',
+                title: 'Actions par menu',
                 type: 'link'
             }
         ],

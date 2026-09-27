@@ -395,3 +395,220 @@
     stroke: #7366FF !important;
   }
 }
+
+// ═══════════════════════════════════════════════════════════
+// Modal — même gabarit que celui de Flash info (faq.component)
+// ═══════════════════════════════════════════════════════════
+.fi-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(0px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.fi-panel {
+  width: 520px;
+  max-width: 94vw;
+  max-height: 92vh;
+  background: #fff;
+  border-radius: 5px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.25);
+}
+
+.fi-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 18px;
+  background-color: rgba(0, 54, 110);
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.fi-title {
+  font-size: 14px;
+  font-weight: 700;
+
+  i {
+    margin-right: 6px;
+  }
+}
+
+.fi-close {
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+  cursor: pointer;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+}
+
+.fi-body {
+  padding: 18px;
+  overflow-y: auto;
+}
+
+.fi-alert {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  margin-bottom: 14px;
+  border-radius: 8px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  font-size: 12.5px;
+}
+
+.fi-field {
+  margin-bottom: 14px;
+}
+
+.fi-input {
+  width: 100%;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 9px 11px;
+  font-size: 13px;
+  color: #1e293b;
+  background: #f8fafc;
+  outline: none;
+  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+
+  &::placeholder {
+    color: #c0cad6;
+  }
+
+  &:focus {
+    border-color: rgba(0, 54, 110, 0.7);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(0, 54, 110, 0.1);
+  }
+}
+
+.fi-input-error {
+  border-color: #fca5a5;
+  background: #fef2f2;
+
+  &:focus {
+    border-color: #ef4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+  }
+}
+
+.fi-error {
+  display: block;
+  margin-top: 5px;
+  font-size: 12px;
+  color: #b91c1c;
+}
+
+.fi-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 14px 18px;
+  border-top: 1px solid #eef2f7;
+  flex-shrink: 0;
+}
+
+.fi-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, opacity 0.15s;
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+}
+
+.fi-btn-cancel {
+  background: #f1f5f9;
+  color: #475569;
+
+  &:hover {
+    background: #e2e8f0;
+  }
+}
+
+.fi-btn-confirm {
+  background: rgba(0, 54, 110);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 54, 110, 0.25);
+
+  &:hover:not(:disabled) {
+    background: #003a75;
+  }
+}
+
+// variante « information » de l'encart (le modal s'en sert aussi pour un message neutre)
+.fi-alert-info {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+  color: #1e40af;
+}
+
+// L'illustration est un SVG en `width: 70%` : dans l'encart elle prenait la
+// moitié de la largeur et écrasait le message. On la borne, le texte reprend
+// la place.
+.fi-alert app-svg-nomination {
+  display: block;
+  flex: 0 0 96px;
+  width: 96px;
+  line-height: 0;
+
+  ::ng-deep svg {
+    width: 100% !important;
+    height: auto;
+    display: block;
+  }
+}
+
+.fi-alert > span {
+  flex: 1;
+  min-width: 0;
+  line-height: 1.45;
+}
+
+// ── Calendrier déroulant ────────────────────────────────────────────
+// Tout le composant owl est dimensionné en `em` à partir de
+// `.owl-dt-container { font-size: 1rem }` : baisser cette base le rend
+// proportionnellement plus compact, sans rien casser. Et on le borne à la
+// hauteur de la fenêtre, avec défilement interne au pire.
+// La classe est posée par `[panelClass]` du champ, donc rien ne fuit sur les
+// autres sélecteurs de date de l'application.
+::ng-deep .op-datepicker {
+
+  .owl-dt-container {
+    font-size: 0.85rem;
+  }
+
+  .owl-dt-popup-container {
+    max-height: 70vh;
+    overflow-y: auto;
+    border-radius: 8px;
+  }
+}

@@ -1,6 +1,6 @@
 import {
     Component, OnInit, AfterViewInit,
-    ElementRef, ViewChild
+    ElementRef, HostListener, ViewChild
 } from '@angular/core';
 import {CardComponent} from "../../../../shared/components/ui/card/card.component";
 import {CommonModule} from "@angular/common";
@@ -101,6 +101,20 @@ export class PreviewComponent implements OnInit, AfterViewInit {
 
     @ViewChild('orgCanvas', {static: false})
     canvasRef!: ElementRef<HTMLCanvasElement>;
+
+    // -- Deplacement du canevas + ascenseur horizontal dessine --
+    @ViewChild('canvasScroll') canvasScroll?: ElementRef<HTMLDivElement>;
+    @ViewChild('hBar') hBar?: ElementRef<HTMLDivElement>;
+    hScrollVisible = false;
+    hScrollMore = false;
+    thumbWidth = 0;
+    thumbLeft = 0;
+    private dragging = false;
+    private panning = false;
+    private dragStartX = 0;
+    private dragStartY = 0;
+    private dragStartScroll = 0;
+    private dragStartScrollTop = 0;
 
     private viewReady = false;
 
@@ -335,6 +349,8 @@ export class PreviewComponent implements OnInit, AfterViewInit {
         const ctx = canvas.getContext('2d')!;
         ctx.scale(dpr, dpr);
 
+        setTimeout(() => this.syncHScroll());
+
         // Fond général
         ctx.fillStyle = '#F8FAFC';
         ctx.fillRect(0, 0, finalW, this.totalH + TITLE_H);
@@ -503,14 +519,110 @@ export class PreviewComponent implements OnInit, AfterViewInit {
     }
     zoomIn(): void {
         this.zoomLevel = Math.min(this.ZOOM_MAX, +(this.zoomLevel + this.ZOOM_STEP).toFixed(1));
+        setTimeout(() => this.syncHScroll());
     }
 
     zoomOut(): void {
         this.zoomLevel = Math.max(this.ZOOM_MIN, +(this.zoomLevel - this.ZOOM_STEP).toFixed(1));
+        setTimeout(() => this.syncHScroll());
     }
 
     resetZoom(): void {
         this.zoomLevel = 1;
+        setTimeout(() => this.syncHScroll());
+    }
+
+    // ══ Deplacement au doigt / a la souris ══════════════════════════════
+    onPanStart(ev: PointerEvent): void {
+        const el = this.canvasScroll?.nativeElement;
+        if (!el) {
+            return;
+        }
+        this.panning = true;
+        this.dragStartX = ev.clientX;
+        this.dragStartY = ev.clientY;
+        this.dragStartScroll = el.scrollLeft;
+        this.dragStartScrollTop = el.scrollTop;
+        el.setPointerCapture(ev.pointerId);
+        el.classList.add('is-panning');
+        ev.preventDefault();
+    }
+
+    // ══ Ascenseur horizontal personnalise ═══════════════════════════════
+    @HostListener('window:resize')
+    syncHScroll(): void {
+        const el = this.canvasScroll?.nativeElement;
+        if (!el) {
+            this.hScrollVisible = false;
+            return;
+        }
+        const maxScroll = el.scrollWidth - el.clientWidth;
+        this.hScrollVisible = maxScroll > 2;
+        this.hScrollMore = el.scrollLeft < maxScroll - 2;
+
+        const barEl = this.hBar?.nativeElement;
+        if (this.hScrollVisible && !barEl) {
+            setTimeout(() => this.syncHScroll());
+        }
+
+        const track = barEl?.clientWidth || el.clientWidth;
+        this.thumbWidth = Math.max(40, Math.round(track * (el.clientWidth / el.scrollWidth)));
+        const maxX = track - this.thumbWidth;
+        this.thumbLeft = maxScroll > 0 ? Math.round((el.scrollLeft / maxScroll) * maxX) : 0;
+    }
+
+    onBarPointerDown(ev: PointerEvent): void {
+        const el = this.canvasScroll?.nativeElement;
+        const bar = this.hBar?.nativeElement;
+        if (!el || !bar) {
+            return;
+        }
+        const rect = bar.getBoundingClientRect();
+        const maxScroll = el.scrollWidth - el.clientWidth;
+        const maxX = rect.width - this.thumbWidth;
+        const pointerX = ev.clientX - rect.left;
+
+        if (pointerX < this.thumbLeft || pointerX > this.thumbLeft + this.thumbWidth) {
+            const x = Math.min(Math.max(pointerX - this.thumbWidth / 2, 0), maxX);
+            el.scrollLeft = maxX > 0 ? (x / maxX) * maxScroll : 0;
+        }
+
+        this.dragging = true;
+        this.dragStartX = ev.clientX;
+        this.dragStartScroll = el.scrollLeft;
+        bar.setPointerCapture(ev.pointerId);
+        ev.preventDefault();
+        this.syncHScroll();
+    }
+
+    @HostListener('document:pointermove', ['$event'])
+    onPointerMove(ev: PointerEvent): void {
+        const el = this.canvasScroll?.nativeElement;
+        if (!el) {
+            return;
+        }
+        if (this.panning) {
+            el.scrollLeft = this.dragStartScroll - (ev.clientX - this.dragStartX);
+            el.scrollTop = this.dragStartScrollTop - (ev.clientY - this.dragStartY);
+            return;
+        }
+        if (this.dragging && this.hBar?.nativeElement) {
+            const bar = this.hBar.nativeElement;
+            const maxScroll = el.scrollWidth - el.clientWidth;
+            const maxX = bar.clientWidth - this.thumbWidth;
+            const dx = ev.clientX - this.dragStartX;
+            el.scrollLeft = this.dragStartScroll + (maxX > 0 ? dx * (maxScroll / maxX) : 0);
+        }
+    }
+
+    @HostListener('document:pointerup')
+    @HostListener('document:pointercancel')
+    onPointerUp(): void {
+        this.dragging = false;
+        if (this.panning) {
+            this.panning = false;
+            this.canvasScroll?.nativeElement?.classList.remove('is-panning');
+        }
     }
 
 // ── Export PNG ────────────────────────────────────────────────────────────

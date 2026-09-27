@@ -1,0 +1,113 @@
+<!-- ═══ MODAL : associer des actions à des menus ═════════════════ -->
+<!-- Même gabarit que le modal de Flash info (classes fi-*) -->
+<div class="fi-backdrop">
+    <div class="fi-panel">
+        <div class="fi-header">
+            <div class="fi-header-titles">
+                <span class="fi-title">
+                    <i class="fa-solid fa-link"></i>
+                    {{ isEdition ? "Modifier l'association" : "Associer des actions à des menus" }}
+                </span>
+            </div>
+            <button class="fi-close" type="button" (click)="closeModal()" title="Fermer">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="fi-body custom-input">
+            <div class="fi-alert" *ngIf="errorTexte">
+                <i class="fa-solid fa-circle-exclamation"></i> {{ errorTexte }}
+            </div>
+
+            <!-- ── Création : plusieurs menus × plusieurs actions ── -->
+            <ng-container *ngIf="!isEdition">
+                <div class="fi-field">
+                    <label class="form-label">Menus <span class="txt-danger">*</span></label>
+                    <nz-tree-select class="op-select op-tree-select"
+                                    nzMultiple
+                                    nzAllowClear
+                                    nzShowSearch
+                                    nzDropdownClassName="op-select-dropdown op-tree-dropdown"
+                                    [nzDropdownStyle]="dropdownStyle"
+                                    nzPlaceHolder="Sélectionnez un ou plusieurs menus"
+                                    [nzNodes]="menuNodes"
+                                    [nzExpandedKeys]="menuExpandedKeys"
+                                    [nzTreeTemplate]="menuNodeTpl"
+                                    [(ngModel)]="uidmenus"></nz-tree-select>
+                </div>
+
+                <div class="fi-field">
+                    <label class="form-label">Actions <span class="txt-danger">*</span></label>
+                    <nz-select class="op-select"
+                               nzMode="multiple"
+                               nzAllowClear
+                               nzShowSearch
+                               nzDropdownClassName="op-select-dropdown"
+                               nzPlaceHolder="Sélectionnez une ou plusieurs actions"
+                               [(ngModel)]="datatypobjets">
+                        <nz-option *ngFor="let t of typesObjets"
+                                   [nzValue]="t.uid"
+                                   [nzLabel]="t.code_type_objet ? t.lib_type_objet + ' (' + t.code_type_objet + ')' : t.lib_type_objet"></nz-option>
+                    </nz-select>
+                </div>
+
+                <div class="fi-field fi-switch-row">
+                    <span class="form-label">Association visible</span>
+                    <nz-switch [(ngModel)]="visible"></nz-switch>
+                </div>
+
+                <div class="fi-recap" *ngIf="nbCouples > 0">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <span><strong>{{ nbCouples }}</strong> association(s) seront créées
+                        ({{ uidmenus.length }} menu(s) × {{ datatypobjets.length }} action(s)).</span>
+                </div>
+            </ng-container>
+
+            <!-- ── Modification : un seul couple ── -->
+            <ng-container *ngIf="isEdition">
+                <div class="fi-field">
+                    <label class="form-label">Menu <span class="txt-danger">*</span></label>
+                    <nz-tree-select class="op-select op-tree-select"
+                                    nzShowSearch
+                                    nzDropdownClassName="op-select-dropdown op-tree-dropdown"
+                                    [nzDropdownStyle]="dropdownStyle"
+                                    nzPlaceHolder="Sélectionnez le menu"
+                                    [nzNodes]="menuNodes"
+                                    [nzExpandedKeys]="menuExpandedKeys"
+                                    [nzTreeTemplate]="menuNodeTpl"
+                                    [(ngModel)]="uidmenu"></nz-tree-select>
+                </div>
+
+                <div class="fi-field">
+                    <label class="form-label">Action <span class="txt-danger">*</span></label>
+                    <nz-select class="op-select"
+                               nzShowSearch
+                               nzDropdownClassName="op-select-dropdown"
+                               nzPlaceHolder="Sélectionnez l'action"
+                               [(ngModel)]="uidtypeobjet">
+                        <nz-option *ngFor="let t of typesObjets"
+                                   [nzValue]="t.uid"
+                                   [nzLabel]="t.code_type_objet ? t.lib_type_objet + ' (' + t.code_type_objet + ')' : t.lib_type_objet"></nz-option>
+                    </nz-select>
+                </div>
+            </ng-container>
+        </div>
+
+        <div class="fi-footer">
+            <button class="fi-btn fi-btn-cancel" type="button" (click)="closeModal()">Annuler</button>
+            <button class="fi-btn fi-btn-confirm" type="button" [disabled]="isloading" (click)="submitForm()">
+                <i class="fa-solid" [ngClass]="isloading ? 'fa-circle-notch fa-spin' : 'fa-check'"></i>
+                {{ isloading ? 'Enregistrement…' : (isEdition ? 'Modifier' : 'Associer') }}
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Gabarit d'un menu dans l'arbre : même icône et même hiérarchie que la sidebar -->
+<ng-template #menuNodeTpl let-node>
+    <span class="op-tree-node" [class.op-tree-parent]="!node.isLeaf">
+        <app-svg-icon *ngIf="node.origin.icon" [icon]="node.origin.icon" [change]="true"></app-svg-icon>
+        <i *ngIf="!node.origin.icon" class="fa-solid fa-circle op-tree-puce"></i>
+        <span class="op-tree-title">{{ node.title }}</span>
+    </span>
+</ng-template>

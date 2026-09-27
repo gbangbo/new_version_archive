@@ -1,7 +1,6 @@
-import {Component, OnInit} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, HostListener, OnInit, ViewChild} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
-import {NzTableModule, NzTableQueryParams} from 'ng-zorro-antd/table';
 import {NzTagModule} from 'ng-zorro-antd/tag';
 import {NzToolTipModule} from 'ng-zorro-antd/tooltip';
 import * as XLSX from 'xlsx';
@@ -31,13 +30,13 @@ import {
 @Component({
     selector: 'app-mes-imputations',
     imports: [
-        CommonModule, FormsModule, NzTableModule, NzTagModule, NzToolTipModule,
+        CommonModule, FormsModule, NzTagModule, NzToolTipModule,
         CardComponent, FeatherIconComponent,
     ],
     templateUrl: './mes-imputations.component.html',
     styleUrl: './mes-imputations.component.scss',
 })
-export class MesImputationsComponent implements OnInit {
+export class MesImputationsComponent implements OnInit, AfterViewInit {
 
     private users: any = {};
     isloading = false;
@@ -53,6 +52,18 @@ export class MesImputationsComponent implements OnInit {
     // ── Pagination serveur ───────────────────────────────────
     pageIndex = 1;
     pageSize = 10;
+    readonly taillesPage = [10, 20, 50, 100];
+
+    // ── Ascenseur horizontal dessiné (les barres natives sont masquées sur iOS) ──
+    @ViewChild('tableWrap') tableWrap?: ElementRef<HTMLDivElement>;
+    @ViewChild('hBar') hBar?: ElementRef<HTMLDivElement>;
+    hScrollVisible = false;
+    hScrollMore = false;
+    thumbWidth = 0;
+    thumbLeft = 0;
+    private dragging = false;
+    private dragStartX = 0;
+    private dragStartScroll = 0;
     total = 0;
 
     constructor(private autor: Authorization, private httService: HttpService) {
@@ -89,6 +100,7 @@ export class MesImputationsComponent implements OnInit {
                 if (reponseOk(body)) {
                     this.rows = lignesDeReponse(body).map(e => this.mapper(e));
                     this.total = totalDeReponse(body, this.rows.length);
+                    setTimeout(() => this.syncHScroll());
                 } else {
                     this.rows = [];
                     this.total = 0;
@@ -107,15 +119,25 @@ export class MesImputationsComponent implements OnInit {
         return mapperDocument(e, d => moment(d).format('DD/MM/YYYY'));
     }
 
-    /**
-     * Changement de page ou de taille de page : nz-table émet cet évènement au
-     * premier rendu aussi, d'où le garde-fou qui évite un second appel inutile.
-     */
-    onQueryParams(params: NzTableQueryParams): void {
-        const {pageIndex, pageSize} = params;
-        if (pageIndex === this.pageIndex && pageSize === this.pageSize) return;
-        this.pageIndex = pageIndex;
-        this.pageSize = pageSize;
+    // ── Pagination (pied du tableau) ─────────────────────────
+    // Les données arrivent page par page du serveur : le pied pilote
+    // `pageIndex`/`pageSize` et relance `charger()`.
+
+    get nbPages(): number {
+        return Math.max(1, Math.ceil(this.total / this.pageSize));
+    }
+
+    allerPage(page: number): void {
+        const cible = Math.min(Math.max(page, 1), this.nbPages);
+        if (cible === this.pageIndex) return;
+        this.pageIndex = cible;
+        this.charger();
+    }
+
+    changerTaille(taille: number): void {
+        if (taille === this.pageSize) return;
+        this.pageSize = taille;
+        this.pageIndex = 1;
         this.charger();
     }
 
@@ -178,5 +200,79 @@ export class MesImputationsComponent implements OnInit {
         }));
 
         XLSX.writeFile(wb, `mes_imputations_${moment().format('YYYYMMDD_HHmmss')}.xlsx`);
+    }
+
+    // ══ Ascenseur horizontal personnalisé ═══════════════════════════════
+    ngAfterViewInit(): void {
+        setTimeout(() => this.syncHScroll());
+    }
+
+    @HostListener('window:resize')
+    syncHScroll(): void {
+        const el = this.tableWrap?.nativeElement;
+        if (!el) {
+            return;
+        }
+        const maxScroll = el.scrollWidth - el.clientWidth;
+        this.hScrollVisible = maxScroll > 2;
+        this.hScrollMore = el.scrollLeft < maxScroll - 2;
+
+        const barEl = this.hBar?.nativeElement;
+        if (this.hScrollVisible && !barEl) {
+            // la barre vient d'apparaître : on recalcule une fois qu'elle est rendue
+            setTimeout(() => this.syncHScroll());
+        }
+
+        const track = barEl?.clientWidth || el.clientWidth;
+        this.thumbWidth = Math.max(40, Math.round(track * (el.clientWidth / el.scrollWidth)));
+        const maxX = track - this.thumbWidth;
+        this.thumbLeft = maxScroll > 0 ? Math.round((el.scrollLeft / maxScroll) * maxX) : 0;
+    }
+
+    onBarPointerDown(ev: PointerEvent): void {
+        const el = this.tableWrap?.nativeElement;
+        const bar = this.hBar?.nativeElement;
+        if (!el || !bar) {
+            return;
+        }
+        const rect = bar.getBoundingClientRect();
+        const maxScroll = el.scrollWidth - el.clientWidth;
+        const maxX = rect.width - this.thumbWidth;
+        const pointerX = ev.clientX - rect.left;
+
+        // clic hors du pouce : on saute directement à cette position
+        if (pointerX < this.thumbLeft || pointerX > this.thumbLeft + this.thumbWidth) {
+            const x = Math.min(Math.max(pointerX - this.thumbWidth / 2, 0), maxX);
+            el.scrollLeft = maxX > 0 ? (x / maxX) * maxScroll : 0;
+        }
+
+        this.dragging = true;
+        this.dragStartX = ev.clientX;
+        this.dragStartScroll = el.scrollLeft;
+        bar.setPointerCapture(ev.pointerId);
+        ev.preventDefault();
+        this.syncHScroll();
+    }
+
+    @HostListener('document:pointermove', ['$event'])
+    onBarPointerMove(ev: PointerEvent): void {
+        if (!this.dragging) {
+            return;
+        }
+        const el = this.tableWrap?.nativeElement;
+        const bar = this.hBar?.nativeElement;
+        if (!el || !bar) {
+            return;
+        }
+        const maxScroll = el.scrollWidth - el.clientWidth;
+        const maxX = bar.clientWidth - this.thumbWidth;
+        const dx = ev.clientX - this.dragStartX;
+        el.scrollLeft = this.dragStartScroll + (maxX > 0 ? dx * (maxScroll / maxX) : 0);
+    }
+
+    @HostListener('document:pointerup')
+    @HostListener('document:pointercancel')
+    onBarPointerUp(): void {
+        this.dragging = false;
     }
 }

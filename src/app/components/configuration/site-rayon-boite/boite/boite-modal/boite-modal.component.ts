@@ -18,6 +18,7 @@ export class BoiteModalComponent implements OnChanges {
     @Input() dataLigne: any;
 
     public validationForm = new FormGroup({
+        idsite: new FormControl('', Validators.required),
         idrayon: new FormControl('', Validators.required),
         code_boites: new FormControl('', Validators.required),
         libelle_boites: new FormControl('', Validators.required),
@@ -31,40 +32,84 @@ export class BoiteModalComponent implements OnChanges {
 
     isloading: boolean = false;
     users: any = [];
+    dataSite: any = [];
     dataRayon: any = [];
     dataService: any = [];
     errorTexte: string = "";
     loadingSites: boolean = false;
+    loadingRayons: boolean = false;
     loadingService: boolean = false;
 
     constructor(private autor: Authorization, private httService: HttpService) {
         this.users = this.autor.getInfosUsers();
-        this.saverayons(this.users?.datasociete?.uid  || this.users?.uidsociete)
+        // Les rayons ne sont chargés qu'une fois le site choisi : l'API les
+        // filtre par `idsite`, et proposer tous les rayons de la société
+        // reviendrait à laisser ranger une boîte dans un autre site.
+        this.savesites(this.users?.datasociete?.uid || this.users?.uidsociete)
     }
 
     ngOnChanges(changes: SimpleChanges) {
         if (changes['dataLigne'] && changes['dataLigne']?.currentValue) {
+            const ligne = changes['dataLigne'].currentValue;
+            // le site n'est pas porté directement par la boîte : il vient de son rayon
+            const idsite = ligne?.datasite?.uid
+                || ligne?.datarayon?.datasite?.uid
+                || ligne?.datarayon?.idsite
+                || '';
+
+            if (idsite) {
+                this.saverayons(this.users?.datasociete?.uid || this.users?.uidsociete, String(idsite));
+            }
+
             setTimeout(() => {
                 this.validationForm.patchValue({
-                    idrayon: String(changes['dataLigne']?.currentValue?.datarayon?.uid),
-                    uid: changes['dataLigne']?.currentValue?.uid,
-                    libelle_boites: changes['dataLigne']?.currentValue.libelle_boites,
-                    code_boites: changes['dataLigne']?.currentValue.code_boites,
+                    idsite: idsite ? String(idsite) : '',
+                    idrayon: String(ligne?.datarayon?.uid || ''),
+                    uid: ligne?.uid,
+                    libelle_boites: ligne.libelle_boites,
+                    code_boites: ligne.code_boites,
                 });
-
-                console.log("POur Boite", changes['dataLigne']?.currentValue)
             }, 1000)
 
         }
     }
 
-    saverayons(idsociete: string = '', idsite: string = '') {
-        this.dataRayon = [];
+    savesites(idsociete: string = '', idsite: string = '') {
+        this.dataSite = [];
         this.loadingSites = true;
-        this.httService.getData(`${environment.api_url}api/:saverayons?idsociete=${idsociete}&idsite=${idsite}`, false, this.users?.access_token || '')
+        this.httService.getData(`${environment.api_url}api/:savesites?idsociete=${idsociete}&idsite=${idsite}`, false, this.users?.access_token || '')
             .toPromise()
             .then((res: any) => {
                 this.loadingSites = false;
+                if (res.body.status) {
+                    this.dataSite = res.body.data.map((d: any) => ({
+                        label: d.libelle_sites,
+                        value: String(d.uid),
+                    }));
+                }
+            })
+            .catch(() => {
+                this.loadingSites = false;
+            });
+    }
+
+    /** Changement de site : on repart de zéro sur le rayon. */
+    changeSite(event: any) {
+        const idsite = event?.value || '';
+        this.validationForm.patchValue({idrayon: ''});
+        this.dataRayon = [];
+        if (idsite) {
+            this.saverayons(this.users?.datasociete?.uid || this.users?.uidsociete, idsite);
+        }
+    }
+
+    saverayons(idsociete: string = '', idsite: string = '') {
+        this.dataRayon = [];
+        this.loadingRayons = true;
+        this.httService.getData(`${environment.api_url}api/:saverayons?idsociete=${idsociete}&idsite=${idsite}`, false, this.users?.access_token || '')
+            .toPromise()
+            .then((res: any) => {
+                this.loadingRayons = false;
                 if (res.body.status) {
                     this.dataRayon = res.body.data.map((d: any) => {
                         return {
@@ -74,8 +119,8 @@ export class BoiteModalComponent implements OnChanges {
                     });
                 }
             })
-            .catch((err) => {
-                this.loadingSites = false;
+            .catch(() => {
+                this.loadingRayons = false;
             });
     }
 

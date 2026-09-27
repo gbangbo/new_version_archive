@@ -1,0 +1,432 @@
+// ═══════════════════════════════════════════════════════════
+// Modal — même gabarit que celui de Flash info (faq.component)
+// ═══════════════════════════════════════════════════════════
+.fi-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(0px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.fi-panel {
+  width: 520px;
+  max-width: 94vw;
+  max-height: 92vh;
+  background: #fff;
+  border-radius: 5px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.25);
+}
+
+.fi-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 18px;
+  background-color: rgba(0, 54, 110);
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.fi-title {
+  font-size: 14px;
+  font-weight: 700;
+
+  i {
+    margin-right: 6px;
+  }
+}
+
+.fi-close {
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+  cursor: pointer;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+}
+
+.fi-body {
+  padding: 18px;
+  overflow-y: auto;
+}
+
+.fi-alert {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  margin-bottom: 14px;
+  border-radius: 8px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  font-size: 12.5px;
+}
+
+.fi-field {
+  margin-bottom: 14px;
+}
+
+.fi-switch-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  background: #f8fafc;
+
+  .form-label {
+    margin: 0;
+  }
+}
+
+.fi-recap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #eff6ff;
+  color: #1e40af;
+  font-size: 12.5px;
+
+  i {
+    font-size: 14px;
+  }
+}
+
+.fi-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 14px 18px;
+  border-top: 1px solid #eef2f7;
+  flex-shrink: 0;
+}
+
+.fi-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, opacity 0.15s;
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+}
+
+.fi-btn-cancel {
+  background: #f1f5f9;
+  color: #475569;
+
+  &:hover {
+    background: #e2e8f0;
+  }
+}
+
+.fi-btn-confirm {
+  background: rgba(0, 54, 110);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 54, 110, 0.25);
+
+  &:hover:not(:disabled) {
+    background: #003a75;
+  }
+}
+
+// ── Listes déroulantes ──────────────────────────────────────────────
+.op-select {
+  display: block;
+  width: 100%;
+}
+
+:host ::ng-deep .op-select {
+
+  .ant-select-selector {
+    min-height: 38px !important;
+    padding: 0 11px !important;
+    border: 1.5px solid #e2e8f0 !important;
+    border-radius: 8px !important;
+    background: #f8fafc !important;
+    box-shadow: none !important;
+    transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+  }
+
+  &:hover .ant-select-selector {
+    border-color: #cbd5e1 !important;
+  }
+
+  &.ant-select-focused .ant-select-selector,
+  &.ant-select-open .ant-select-selector {
+    border-color: rgba(0, 54, 110, 0.7) !important;
+    background: #fff !important;
+    box-shadow: 0 0 0 3px rgba(0, 54, 110, 0.1) !important;
+  }
+
+  .ant-select-selection-placeholder {
+    color: #c0cad6 !important;
+    font-size: 13px;
+    line-height: 34px !important;
+  }
+
+  .ant-select-arrow {
+    color: #94a3b8 !important;
+    font-size: 12px;
+  }
+
+  // sélection simple
+  &:not(.ant-select-multiple) .ant-select-selection-item {
+    color: #1e293b !important;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 34px !important;
+  }
+}
+
+// ── Multi-sélection : la boîte grandit avec les étiquettes ──
+:host ::ng-deep .op-select.ant-select-multiple {
+
+  .ant-select-selector {
+    height: auto !important;
+    min-height: 40px !important;
+    padding: 4px 8px !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+  }
+
+  .ant-select-selection-overflow {
+    width: 100%;
+    gap: 4px;
+    row-gap: 4px;
+  }
+
+  .ant-select-selection-overflow-item {
+    max-width: 100%;
+  }
+
+  .ant-select-selection-item {
+    height: 26px !important;
+    line-height: 24px !important;
+    max-width: 100%;
+    margin: 0 !important;
+    padding: 0 4px 0 8px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    background: #eff6ff !important;
+    border: 1px solid #bfdbfe !important;
+    border-radius: 6px !important;
+    color: #1e40af !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+  }
+
+  .ant-select-selection-item-content {
+    line-height: 24px !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .ant-select-selection-item-remove {
+    display: inline-flex !important;
+    align-items: center;
+    margin-left: 6px;
+    color: #1e40af !important;
+    opacity: 0.7;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  .ant-select-selection-search {
+    margin-inline-start: 2px;
+  }
+
+  .ant-select-selection-placeholder {
+    line-height: 30px !important;
+  }
+}
+
+// ── Panneau déroulant (rendu hors du composant -> classe dédiée) ────
+::ng-deep .op-select-dropdown {
+  // fond opaque : sans ça le cadre du panneau laisse voir le modal au travers
+  background: #ffffff !important;
+  border-radius: 10px !important;
+  padding: 4px !important;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12) !important;
+  border: 1px solid #e2e8f0 !important;
+  overflow: hidden !important;
+
+  .ant-select-item-option-container,
+  .cdk-virtual-scroll-viewport,
+  nz-option-container,
+  nz-option-item {
+    background: transparent !important;
+  }
+
+  .ant-select-item {
+    border-radius: 6px !important;
+    font-size: 13px !important;
+    color: #334155 !important;
+  }
+
+  .ant-select-item-option-active {
+    background: #eff6ff !important;
+  }
+
+  .ant-select-item-option-selected {
+    background: #dbeafe !important;
+    font-weight: 600 !important;
+  }
+}
+
+// ── Arbre des menus dans le panneau déroulant ───────────────────────
+// Même lecture que la sidebar : icône, hiérarchie dépliable, parents en gras.
+::ng-deep .op-tree-dropdown {
+  min-width: 320px !important;
+
+  // le panneau ne doit pas descendre au-delà de l'écran : on le plafonne et on défile
+  max-height: 300px !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 0 10px 10px 0;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+
+    &:hover {
+      background: #94a3b8;
+    }
+  }
+
+  .ant-select-tree-list-holder,
+  .ant-select-tree-list-holder-inner {
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  .ant-select-tree {
+    background: transparent !important;
+    padding: 2px !important;
+  }
+
+  .ant-select-tree-treenode {
+    width: 100%;
+    align-items: center !important;
+    padding: 0 !important;
+    border-bottom: 1px solid #f1f5f9;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  .ant-select-tree-switcher {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    align-self: stretch;
+    color: #94a3b8;
+  }
+
+  .ant-select-tree-node-content-wrapper {
+    flex: 1;
+    min-height: 36px;
+    display: flex !important;
+    align-items: center;
+    padding: 4px 8px !important;
+    border-radius: 6px !important;
+    background: transparent !important;
+
+    &:hover {
+      background: #eff6ff !important;
+    }
+  }
+
+  .ant-select-tree-node-selected {
+    background: #dbeafe !important;
+  }
+
+  // un parent n'est pas sélectionnable : on le signale au curseur
+  .ant-select-tree-treenode-disabled .ant-select-tree-node-content-wrapper,
+  .op-tree-parent {
+    cursor: default;
+  }
+}
+
+.op-tree-node {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #475569;
+  min-width: 0;
+
+  // Le sprite `icon-sprite.svg` n'est colorié que par les styles de la sidebar
+  // (`.page-wrapper … svg.stroke-icon { stroke: … }`). Dans un overlay, l'icône
+  // se retrouve sans taille ni couleur, donc invisible : on les redonne ici.
+  ::ng-deep svg {
+    width: 17px;
+    height: 17px;
+    flex-shrink: 0;
+    stroke: #2563eb;
+    fill: none;
+  }
+
+  ::ng-deep svg.fill-icon {
+    stroke: none;
+    fill: #2563eb;
+  }
+}
+
+.op-tree-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.op-tree-parent .op-tree-title {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.op-tree-puce {
+  font-size: 5px;
+  color: #cbd5e1;
+  width: 17px;
+  text-align: center;
+  flex-shrink: 0;
+}

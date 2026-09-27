@@ -1,0 +1,504 @@
+// ══ RÔLES & PERMISSIONS ═════════════════════════════════════════════════════
+// Un rôle sélectionné, les actions en colonnes, les menus et sous-menus en
+// lignes.
+//
+// Les icônes du sprite ne portent pas leur propre couleur : les variantes
+// `stroke-` ont fill="none" et des tracés sans attribut `stroke`, les `fill-`
+// des chemins sans attribut `fill`. Hors de la barre latérale, qui les colore
+// dans _sidebar.scss, il faut poser stroke et fill soi-même.
+@mixin icone-sprite($couleur) {
+  ::ng-deep svg {
+    &.stroke-icon { stroke: $couleur; fill: none; }
+    &.fill-icon   { fill: $couleur; }
+  }
+}
+
+// ── Bandeau d'erreur ───────────────────────────────────────
+.rp-erreur {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 18px;
+  border-bottom: 1px solid #FECACA;
+  background: #FEF2F2;
+  color: #B91C1C;
+  font-size: 12.5px;
+
+  span { flex: 1; }
+}
+
+.rp-erreur-fermer {
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 5px;
+  background: transparent;
+  color: #B91C1C;
+  cursor: pointer;
+
+  &:hover { background: rgba(185, 28, 28, 0.1); }
+}
+
+// ── En-tête ────────────────────────────────────────────────
+.rp-head {
+  padding: 20px 22px 16px;
+  border-bottom: 1px solid #EEF2F7;
+}
+
+.rp-titre {
+  margin: 0 0 16px;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: #0F172A;
+}
+
+.rp-head-bar {
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.rp-champ {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 6px;
+  min-width: 0;
+}
+
+.rp-champ-recherche { flex: 1; max-width: 320px; }
+
+.rp-label {
+  display: block;
+  height: 18px;
+  line-height: 18px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748B;
+}
+
+:host ::ng-deep .rp-select {
+  display: block;
+  width: 260px;
+  height: 38px;            // même hauteur que le champ de recherche
+
+  .ant-select-selector {
+    height: 38px !important;
+    padding: 0 11px !important;
+    border: 1.5px solid #E2E8F0 !important;
+    border-radius: 8px !important;
+    background: #fff !important;
+    box-shadow: none !important;
+  }
+
+  .ant-select-selection-item,
+  .ant-select-selection-placeholder,
+  .ant-select-selection-search-input {
+    line-height: 35px !important;
+    font-size: 13px !important;
+  }
+
+  .ant-select-selection-placeholder { color: #C0CAD6 !important; }
+
+  &.ant-select-focused .ant-select-selector,
+  &.ant-select-open .ant-select-selector {
+    border-color: rgba(0, 54, 110, 0.7) !important;
+    box-shadow: 0 0 0 3px rgba(0, 54, 110, 0.1) !important;
+  }
+}
+
+.rp-search {
+  position: relative;
+  height: 38px;
+
+  i {
+    position: absolute;
+    left: 11px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 12px;
+    color: #94A3B8;
+    pointer-events: none;
+  }
+
+  input {
+    width: 100%;
+    height: 38px;
+    padding: 0 12px 0 32px;
+    border: 1.5px solid #E2E8F0;
+    border-radius: 8px;
+    background: #fff;
+    font-size: 13px;
+    color: #1E293B;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+
+    &::placeholder { color: #C0CAD6; }
+
+    &:focus {
+      border-color: rgba(0, 54, 110, 0.7);
+      box-shadow: 0 0 0 3px rgba(0, 54, 110, 0.1);
+    }
+  }
+}
+
+.rp-compteur {
+  margin-left: auto;
+  padding-bottom: 10px;
+  font-size: 12.5px;
+  color: #64748B;
+
+  strong { color: rgba(0, 54, 110); font-size: 14px; }
+}
+
+// ── Invite ─────────────────────────────────────────────────
+.rp-invite {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 70px 40px;
+  color: #94A3B8;
+  text-align: center;
+
+  i { font-size: 32px; color: #CBD5E1; }
+  p { margin: 0; font-size: 13px; max-width: 340px; }
+}
+
+// ── Grille ─────────────────────────────────────────────────
+// Une grille CSS, pas un <table> : l'en-tête d'un tableau se faisait rogner
+// par des styles globaux du thème et les largeurs de colonne devenaient
+// imprévisibles. Ici le gabarit de colonnes est déclaré une fois, point.
+.rp-grille {
+  display: grid;
+  // le nombre de colonnes vient du composant : autant que d'actions
+  grid-template-columns: minmax(260px, 34%) repeat(var(--rp-nb-actions, 6), minmax(120px, 1fr));
+  align-items: stretch;
+  overflow-x: auto;
+}
+
+.rp-cell {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  padding: 9px 8px;
+  border-bottom: 1px solid #F5F7FA;
+}
+
+.rp-cell-menu {
+  gap: 9px;
+  padding-left: 18px;
+  padding-right: 14px;
+}
+
+// Un filet entre colonnes : à six colonnes de cases identiques, l'œil a
+// besoin d'un repère vertical pour ne pas glisser d'une action à l'autre.
+.rp-cell-action {
+  justify-content: center;
+  border-left: 1px solid #EEF2F7;
+}
+
+// Une rubrique chapeaute ses sous-menus : fond et graisse la distinguent,
+// comme dans la barre latérale.
+.rp-cell.rubrique {
+  background: #F8FAFC;
+
+  .rp-menu-titre {
+    font-weight: 700;
+    color: rgba(0, 54, 110);
+  }
+}
+
+// ── En-tête ────────────────────────────────────────────────
+// Chaque cellule colle indépendamment : en grille il n'y a pas de ligne à
+// épingler, ce sont les cellules qui le font.
+.rp-head-cell {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: #F8FAFC;
+  border-bottom: 1.5px solid #CBD5E1;
+  padding-top: 11px;
+  padding-bottom: 11px;
+}
+
+.rp-cell-action.rp-head-cell {
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+}
+
+.rp-plier {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 5px;
+  background: transparent;
+  color: #64748B;
+  font-size: 11px;
+  cursor: pointer;
+
+  &:hover { background: #E2E8F0; color: #1E293B; }
+}
+
+.rp-th-titre {
+  flex: 1;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #334155;
+}
+
+.rp-th-compte {
+  font-size: 11px;
+  font-weight: 600;
+  color: #94A3B8;
+  white-space: nowrap;
+}
+
+.rp-th-nom {
+  font-size: 12px;
+  font-weight: 700;
+  color: #334155;
+  white-space: nowrap;
+
+  i {
+    margin-right: 5px;
+    font-size: 11px;
+    color: #94A3B8;
+  }
+}
+
+// Le ratio vire au vert quand toutes les pages ont l'action : un coup d'œil
+// suffit alors à voir ce qui est entièrement accordé.
+.rp-th-ratio {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #94A3B8;
+  white-space: nowrap;
+
+  &.plein { color: #059669; }
+}
+
+// ── Ligne « toutes les pages » ─────────────────────────────
+.rp-toutes-cell {
+  background: #FAFBFC;
+  border-bottom: 1px solid #EEF2F7;
+}
+
+.rp-toutes {
+  font-size: 11.5px;
+  font-style: italic;
+  color: #94A3B8;
+}
+
+// ── Contenu d'une ligne ────────────────────────────────────
+.rp-menu {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+}
+
+.rp-caret {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 5px;
+  background: transparent;
+  color: #64748B;
+  font-size: 10px;
+  cursor: pointer;
+
+  &:hover { background: #E2E8F0; color: #1E293B; }
+
+  i {
+    transition: transform 0.18s;
+
+    &.replie { transform: rotate(-90deg); }
+  }
+}
+
+// Les feuilles gardent la gouttière du chevron, pour que les titres restent
+// alignés avec ceux des rubriques.
+.rp-caret-vide { visibility: hidden; }
+
+.rp-menu-icone {
+  display: inline-flex;
+  flex-shrink: 0;
+
+  ::ng-deep svg { width: 16px; height: 16px; }
+  @include icone-sprite(rgba(0, 54, 110, 1));
+}
+
+.rp-menu-titre {
+  font-size: 13px;
+  color: #1E293B;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// Ce que la case de la rubrique couvre réellement.
+.rp-menu-badge {
+  flex-shrink: 0;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: #E2E8F0;
+  color: #64748B;
+  font-size: 10.5px;
+  font-weight: 600;
+}
+
+// ── Case à cocher ──────────────────────────────────────────
+// Trois états : accordée, partielle (rubrique dont seule une partie des pages
+// a l'action), rien.
+.rp-case {
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid #CBD5E1;
+  border-radius: 5px;
+  background: #fff;
+  color: #fff;
+  font-size: 9px;
+  cursor: pointer;
+  transition: all 0.12s;
+
+  &:hover { border-color: rgba(0, 54, 110, 0.6); }
+
+  &.on {
+    border-color: rgba(0, 54, 110);
+    background: rgba(0, 54, 110);
+  }
+
+  &.partiel {
+    border-color: rgba(0, 54, 110);
+    background: rgba(0, 54, 110, 0.15);
+    color: rgba(0, 54, 110);
+  }
+}
+
+// Rubrique vide : rien à accorder, on le dit plutôt que d'afficher une case
+// qui ne ferait rien.
+.rp-sans-cible {
+  color: #CBD5E1;
+  font-size: 13px;
+  cursor: default;
+}
+
+// ── États ──────────────────────────────────────────────────
+.rp-chargement {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 60px;
+  color: #94A3B8;
+  font-size: 12.5px;
+}
+
+.rp-spinner {
+  width: 15px;
+  height: 15px;
+  border: 2px solid #E2E8F0;
+  border-top-color: rgba(0, 54, 110);
+  border-radius: 50%;
+  animation: rp-spin 0.7s linear infinite;
+}
+
+@keyframes rp-spin {
+  to { transform: rotate(360deg); }
+}
+
+.rp-vide {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 50px 20px;
+  color: #CBD5E1;
+  font-size: 12.5px;
+}
+
+// ── Pied ───────────────────────────────────────────────────
+.rp-footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 22px;
+  border-top: 1px solid #EEF2F7;
+  background: #FAFBFC;
+}
+
+.rp-footer-etat {
+  flex: 1;
+  font-size: 12.5px;
+  color: #94A3B8;
+
+  i { margin-right: 5px; }
+
+  &.modifie {
+    color: #B45309;
+    font-weight: 600;
+  }
+}
+
+.rp-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 38px;
+  padding: 0 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:disabled { opacity: 0.55; cursor: not-allowed; }
+}
+
+.rp-btn-cancel {
+  background: #F1F5F9;
+  color: #475569;
+
+  &:hover:not(:disabled) { background: #E2E8F0; }
+}
+
+.rp-btn-confirm {
+  background: rgba(0, 54, 110);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 54, 110, 0.25);
+
+  &:hover:not(:disabled) { background: #003a75; }
+}
+
+// ── Écrans étroits ─────────────────────────────────────────
+@media (max-width: 767px) {
+  .rp-head { padding: 16px 14px 12px; }
+  .rp-compteur { margin-left: 0; }
+  :host ::ng-deep .rp-select { width: 100%; }
+  .rp-cell-menu { padding-left: 14px; padding-right: 10px; }
+
+  // Sous cette largeur, sept colonnes ne tiennent plus : la grille défile.
+  .rp-grille { grid-template-columns: minmax(200px, 40%) repeat(var(--rp-nb-actions, 6), minmax(96px, 1fr)); }
+}

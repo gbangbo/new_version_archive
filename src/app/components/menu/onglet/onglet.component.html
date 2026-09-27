@@ -69,7 +69,8 @@
                                 </div>
 
                                 <!-- ══ TREE TABLE ════════════════════════════════ -->
-                                <div class="tree-table-wrap">
+                                <div class="tt-scroll-shell" [class.tt-more-right]="hScrollMore">
+                                <div class="tree-table-wrap" #tableWrap (scroll)="syncHScroll()">
 
                                     <div class="alert txt-primary alert-bg-primary alert-dismissible fade show common-alert"
                                          role="alert"
@@ -97,7 +98,6 @@
                                             </span>
                                         </div>
                                         <div class="ttc-path">Path</div>
-                                        <div class="ttc-icon">Icône</div>
                                         <div class="ttc-rang">Rang</div>
                                         <div class="ttc-auth">Statut</div>
                                         <div class="ttc-actions">Actions</div>
@@ -120,17 +120,19 @@
                                                         <nz-tree-node-toggle nzTreeNodeNoopToggle
                                                             style="display:inline-flex; align-items:center; width:16px; flex-shrink:0;">
                                                         </nz-tree-node-toggle>
-                                                        <i class="fa-regular fa-circle tt-file-icon"></i>
+                                                        <span class="tt-svg-icon" *ngIf="node.icon; else puceFeuille">
+                                                            <app-svg-icon [icon]="node.icon" [change]="true"></app-svg-icon>
+                                                        </span>
+                                                        <ng-template #puceFeuille>
+                                                            <i class="fa-regular fa-circle tt-file-icon"></i>
+                                                        </ng-template>
                                                         <span class="tt-name-text"
                                                               [innerHTML]="highlightMatch(node.title, searchValue)">
                                                         </span>
                                                     </div>
 
                                                     <div class="ttc-path">
-                                                        <span class="tt-path-text">{{ node.path || '—' }}</span>
-                                                    </div>
-                                                    <div class="ttc-icon">
-                                                        <span class="tt-icon-badge">{{ node.icon || '—' }}</span>
+                                                        <span class="tt-path-text" [title]="node.path || ''">{{ node.path || '—' }}</span>
                                                     </div>
                                                     <div class="ttc-rang">{{ node.rang ?? '—' }}</div>
                                                     <div class="ttc-auth">
@@ -164,7 +166,12 @@
                                                         <nz-tree-node-toggle (click)="onNodeSelect(node)">
                                                             <nz-icon nzType="caret-down" nzTreeNodeToggleRotateIcon/>
                                                         </nz-tree-node-toggle>
-                                                        <i class="fa-solid fa-bars tt-menu-icon"></i>
+                                                        <span class="tt-svg-icon" *ngIf="node.icon; else puceMenu">
+                                                            <app-svg-icon [icon]="node.icon" [change]="true"></app-svg-icon>
+                                                        </span>
+                                                        <ng-template #puceMenu>
+                                                            <i class="fa-solid fa-bars tt-menu-icon"></i>
+                                                        </ng-template>
                                                         <span class="tt-name-text tt-parent"
                                                               (click)="onNodeSelect(node); $event.stopPropagation()"
                                                               [innerHTML]="highlightMatch(node.title, searchValue)">
@@ -172,10 +179,7 @@
                                                     </div>
 
                                                     <div class="ttc-path">
-                                                        <span class="tt-path-text">{{ node.path || '—' }}</span>
-                                                    </div>
-                                                    <div class="ttc-icon">
-                                                        <span class="tt-icon-badge">{{ node.icon || '—' }}</span>
+                                                        <span class="tt-path-text" [title]="node.path || ''">{{ node.path || '—' }}</span>
                                                     </div>
                                                     <div class="ttc-rang">{{ node.rang ?? '—' }}</div>
                                                     <div class="ttc-auth">
@@ -211,13 +215,22 @@
                                         </div>
                                     </div>
 
-                                    <!-- Footer -->
-                                    <div class="tree-table-footer">
-                                        <span class="tt-total">
-                                            Total : <strong>{{ treeControl.dataNodes?.length || 0 }}</strong> enregistrement(s)
-                                        </span>
-                                    </div>
+                                </div>
+                                </div>
 
+                                <!-- Ascenseur horizontal dessiné (visible en permanence) -->
+                                <div class="tt-hscroll" *ngIf="hScrollVisible" #hBar
+                                     (pointerdown)="onBarPointerDown($event)">
+                                    <div class="tt-hscroll-thumb"
+                                         [style.width.px]="thumbWidth"
+                                         [style.left.px]="thumbLeft"></div>
+                                </div>
+
+                                <!-- Footer : hors de la zone de défilement -->
+                                <div class="tree-table-footer">
+                                    <span class="tt-total">
+                                        Total : <strong>{{ treeControl.dataNodes?.length || 0 }}</strong> enregistrement(s)
+                                    </span>
                                 </div>
 
                             </div>
@@ -230,6 +243,8 @@
     </div>
 
     @if(modalOpen) {
-        <app-add-modal [dataLigne]="dataOneLigne" (modalOpen)="handleModal($event)"></app-add-modal>
+        <app-add-modal [dataLigne]="dataOneLigne"
+                       [arbre]="treeData"
+                       (modalOpen)="handleModal($event)"></app-add-modal>
     }
 </div>

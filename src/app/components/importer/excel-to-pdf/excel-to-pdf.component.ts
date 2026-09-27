@@ -1,11 +1,9 @@
-import {Component, OnInit} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, HostListener, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {Select2Module} from 'ng-select2-component';
 import {NzSplitterModule} from 'ng-zorro-antd/splitter';
 import {NzTreeSelectModule} from 'ng-zorro-antd/tree-select';
-import {NzIconModule} from 'ng-zorro-antd/icon';
-import {NzTagModule} from 'ng-zorro-antd/tag';
 import {Authorization} from '../../../protect/authorization.service';
 import {HttpService} from '../../../core/http.service';
 import {environment} from '../../../../environments/environment';
@@ -18,12 +16,11 @@ import Swal from "sweetalert2";
     imports: [
         CommonModule, FormsModule, ReactiveFormsModule,
         Select2Module, NzSplitterModule, NzTreeSelectModule,
-        NzIconModule, NzTagModule,
     ],
     templateUrl: './excel-to-pdf.component.html',
     styleUrl: './excel-to-pdf.component.scss',
 })
-export class ExcelToPdfComponent implements OnInit {
+export class ExcelToPdfComponent implements OnInit, AfterViewInit {
     users: any = [];
 
     validationForm = new FormGroup({
@@ -67,6 +64,7 @@ export class ExcelToPdfComponent implements OnInit {
     excelRows: any[][] = [];
     isDragOver = false;
     isReadingFile = false;
+    isSaving = false;
 
     private workbook: XLSX.WorkBook | null = null;
 
@@ -74,6 +72,7 @@ export class ExcelToPdfComponent implements OnInit {
         private autor: Authorization,
         private httService: HttpService,
         private toast: ToastrService,
+        private hostRef: ElementRef<HTMLElement>,
     ) {
     }
 
@@ -82,6 +81,52 @@ export class ExcelToPdfComponent implements OnInit {
         this.showSites(this.users?.datasociete?.uid, '');
         this.showSerie('', '', '');
         this.showOrganigramme(this.users?.datasociete?.uid, '');
+    }
+
+    ngAfterViewInit(): void {
+        // Après le rendu : la barre de fil d'Ariane n'a sa hauteur définitive
+        // qu'une fois peinte.
+        setTimeout(() => this.ajusterHauteurVolets());
+    }
+
+    @HostListener('window:resize')
+    onRedimensionnement(): void {
+        this.ajusterHauteurVolets();
+    }
+
+    // Les volets occupent ce qui reste sous l'en-tête, mesuré plutôt que
+    // deviné : le calc(100vh - N) codé en dur laissait soit un ascenseur dans
+    // le volet gauche, soit un débordement de la page entière selon l'écran.
+    private ajusterHauteurVolets(): void {
+        const volets = this.hostRef.nativeElement.querySelector('nz-splitter') as HTMLElement | null;
+        if (!volets) return;
+
+        // En dessous de 991px les volets s'empilent et se déroulent avec la page.
+        if (window.innerWidth <= 991) {
+            volets.style.removeProperty('height');
+            return;
+        }
+
+        const haut = volets.getBoundingClientRect().top + window.scrollY;
+        volets.style.height = `calc(100vh - ${Math.round(haut)}px - 16px)`;
+    }
+
+    // ── État du formulaire ────────────────────────────────────────
+
+    // Ce qu'il reste à renseigner, libellés compris : le pied de page
+    // l'annonce avant le clic plutôt que de laisser découvrir les erreurs
+    // champ par champ après coup.
+    get champsManquants(): string[] {
+        const v = this.validationForm.value;
+        const manque: string[] = [];
+        if (!v.idcategories) manque.push('Série');
+        if (!v.idtype_docs) manque.push('Type de document');
+        if (!v.dataservices?.length) manque.push('Service bénéficiaire');
+        if (!v.idsite) manque.push('Site');
+        if (!v.idrayon) manque.push('Rayon');
+        if (!v.idboites) manque.push("Boîte d'archivage");
+        if (!this.selectedFile) manque.push('Fichier Excel');
+        return manque;
     }
 
     // ── Chaîne : Site → Rayon → Boîte ────────────────────────────
@@ -304,6 +349,7 @@ export class ExcelToPdfComponent implements OnInit {
                 .map(row => row.map((cell: any) => this.formatDateValue(cell)))
                 .filter(row => row.some(cell => cell !== '' && cell !== null && cell !== undefined))
             : [];
+        this.pageCourante = 1;
     }
 
     selectSheet(sheet: string) {
@@ -318,6 +364,52 @@ export class ExcelToPdfComponent implements OnInit {
         this.activeSheet = '';
         this.excelHeaders = [];
         this.excelRows = [];
+        this.pageCourante = 1;
+    }
+
+    // ── Pagination de l'aperçu ────────────────────────────────────
+    // L'aperçu seul est paginé : l'import porte toujours sur la totalité des
+    // lignes de la feuille, quelle que soit la page affichée.
+
+    readonly taillePage = 50;
+    pageCourante = 1;
+
+    get nbPages(): number {
+        return Math.max(1, Math.ceil(this.excelRows.length / this.taillePage));
+    }
+
+    get premiereLigne(): number {
+        return (this.pageCourante - 1) * this.taillePage;
+    }
+
+    get lignesPage(): any[][] {
+        return this.excelRows.slice(this.premiereLigne, this.premiereLigne + this.taillePage);
+    }
+
+    allerPage(page: number): void {
+        this.pageCourante = Math.min(Math.max(1, page), this.nbPages);
+    }
+
+    // Fenêtre glissante : au-delà de sept pages, les numéros lointains sont
+    // remplacés par des points de suspension plutôt que de déborder l'en-tête.
+    get pagesAffichees(): (number | '…')[] {
+        const total = this.nbPages;
+        if (total <= 7) return Array.from({length: total}, (_, i) => i + 1);
+
+        const courante = this.pageCourante;
+        const pages = new Set<number>([1, total, courante]);
+        if (courante > 1) pages.add(courante - 1);
+        if (courante < total) pages.add(courante + 1);
+        if (courante <= 3) { pages.add(2); pages.add(3); pages.add(4); }
+        if (courante >= total - 2) { pages.add(total - 1); pages.add(total - 2); pages.add(total - 3); }
+
+        const triees = [...pages].filter(p => p >= 1 && p <= total).sort((a, b) => a - b);
+        const sortie: (number | '…')[] = [];
+        triees.forEach((p, i) => {
+            if (i && p - triees[i - 1] > 1) sortie.push('…');
+            sortie.push(p);
+        });
+        return sortie;
     }
 
     // ── Submit / Reset ────────────────────────────────────────────
@@ -332,8 +424,6 @@ export class ExcelToPdfComponent implements OnInit {
             return;
         }
 
-        const staticFields = ['code_docs', 'date_docs', 'lib_docs'];
-
         const excelJson = this.excelRows.map(row =>
             Object.fromEntries(this.excelHeaders.map((h, i) => [h, row[i] ?? '']))
         );
@@ -344,9 +434,16 @@ export class ExcelToPdfComponent implements OnInit {
 
             for (const [key, value] of Object.entries(row)) {
                 const formatted = this.formatDateValue(value);
-                if (staticFields.includes(key)) {
-                    statics[key] = formatted;
+                const cle = this.normaliserEntete(key);
+
+                if (ExcelToPdfComponent.CHAMPS_STATIQUES.includes(cle)) {
+                    // Écrit sous le nom canonique attendu par l'API, quel que
+                    // soit celui de la colonne du fichier.
+                    statics[cle] = formatted;
                 } else {
+                    // Une propriété dynamique garde en revanche son intitulé
+                    // d'origine : c'est lui que le serveur rapproche des
+                    // propriétés déclarées sur le type de document.
                     proprietes_dynamics.push({proprietes_docs: key, value_proprietes_docs: formatted});
                 }
             }
@@ -363,15 +460,17 @@ export class ExcelToPdfComponent implements OnInit {
             dataservices: this.setTranformer(this.validationForm.value.dataservices),
             statut_ocr: this.validationForm.value.statut_ocr,
         };
-        console.log('Payload:', JSON.stringify(payload, null, 2));
-        //  this.isloading = true;
+
+        this.isSaving = true;
         this.httService.postData(`${environment.api_url}api/:importation-excel-pdf`, payload, this.users?.access_token || '')
             .toPromise()
             .then((res: any) => {
-                //  this.isloading = false;
-                console.log("res.body ===", res.body)
+                this.isSaving = false;
                 if (res.body.status || res.body.success) {
-                    //  this.resetAfterSave();
+                    // Import accepté : on repart d'un écran vierge. Sans ça,
+                    // le formulaire et le fichier restaient en place et on
+                    // pouvait réimporter les mêmes lignes sans s'en rendre compte.
+                    this.resetForm();
                     Swal.fire({
                         title: res?.body?.message,
                         icon: 'success',
@@ -386,14 +485,34 @@ export class ExcelToPdfComponent implements OnInit {
                 }
             })
             .catch((err: any) => {
-                // this.isloading = false;
-                console.log("err", err)
+                this.isSaving = false;
                 Swal.fire({
                     title: err?.error?.err?.message || 'Une erreur est survenue !',
                     icon: 'error',
                     confirmButtonText: 'OK'
                 });
             });
+    }
+
+    // Les trois colonnes reprises telles quelles par l'API. Le reste du
+    // fichier part en propriétés dynamiques.
+    private static readonly CHAMPS_STATIQUES = ['code_docs', 'date_docs', 'lib_docs'];
+
+    // Un en-tête saisi à la main s'écrit « Code_docs », « code docs »,
+    // « date-docs » ou traîne une espace de fin. La comparaison stricte
+    // d'avant les renvoyait tous dans les propriétés dynamiques et laissait
+    // les trois champs statiques vides sans rien signaler. On compare donc sur
+    // un nom normalisé : sans accent, sans casse, espaces, tirets et points
+    // ramenés à un tiret bas.
+    private normaliserEntete(nom: any): string {
+        return (nom ?? '')
+            .toString()
+            .normalize('NFD')
+            .replace(/[̀-ͯ]/g, '')
+            .trim()
+            .toLowerCase()
+            .replace(/[\s\-.]+/g, '_')
+            .replace(/_+/g, '_');
     }
 
     private formatDateValue(value: any): any {
@@ -413,8 +532,21 @@ export class ExcelToPdfComponent implements OnInit {
         }))
     }
 
+    // Remet l'écran à son état d'ouverture : les champs, les listes filles des
+    // cascades, le fichier et son aperçu, et l'état de validation (reset()
+    // repasse les contrôles en « untouched », donc plus de messages rouges).
     resetForm() {
-        this.validationForm.reset({statut_ocr: 0});
+        this.validationForm.reset({
+            idsite: '',
+            idrayon: '',
+            idboites: '',
+            idcategories: '',
+            idtype_docs: '',
+            dataservices: [],
+            statut_ocr: 0,
+        });
+        // Les listes filles sont rechargées par les cascades : on les vide pour
+        // ne pas laisser les valeurs de l'import précédent.
         this.dataRayon = [];
         this.dataBoites = [];
         this.dataTypeDocument = [];

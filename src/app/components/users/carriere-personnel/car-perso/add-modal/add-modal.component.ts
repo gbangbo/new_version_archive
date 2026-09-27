@@ -27,6 +27,7 @@ import {NzTreeSelectModule} from "ng-zorro-antd/tree-select";
 import {FlatNode, TreeNode} from "../../../../entites/organigramme/tree-node.model";
 import {NzTreeFlatDataSource, NzTreeFlattener} from "ng-zorro-antd/tree-view";
 import {FlatTreeControl} from "@angular/cdk/tree";
+import {SvgIconComponent} from "../../../../../shared/components/ui/svg-icon/svg-icon.component";
 
 const TREE_DATA: TreeNode[] = [];
 
@@ -35,7 +36,7 @@ const TREE_DATA: TreeNode[] = [];
     imports: [CommonModule, FormsModule,
         ReactiveFormsModule, NzSwitchModule,
         Select2Module, CardComponent, NzDatePickerModule,
-        FeatherIconComponent, DocUploadComponent, NzTreeSelectModule],
+        FeatherIconComponent, DocUploadComponent, NzTreeSelectModule, SvgIconComponent],
     templateUrl: './add-modal.component.html',
     styleUrl: './add-modal.component.scss',
 })

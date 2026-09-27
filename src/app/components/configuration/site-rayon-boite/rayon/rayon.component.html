@@ -72,87 +72,116 @@
 
                                 <!-- ══ TABLE ════════════════════════════════════ -->
 
-                                <div class="overflow-x-auto support-ticket-table custom-scrollbar">
-                                    <nz-table
-                                        #nzTable
-                                        [nzData]="filteredData"
-                                        [nzPageSize]="10"
-                                        [nzShowPagination]="true"
-                                        [nzShowTotal]="totalTemplate"
-                                        nzShowSizeChanger
-                                        nzBordered
-                                        nzSize="small"
-                                        [nzScroll]="filteredData.length > 0 ? { x: '1200px' } : {}"
-                                    >
-                                        <thead>
-                                        <tr>
-                                            <th nzWidth="150px"
-                                                nzColumnKey="libelle_sites"
-                                                [nzSortFn]="sortFns.libelle_sites"
-                                                [nzSortDirections]="['ascend','descend',null]"
-                                                [nzFilterFn]="filterFns.libelle_sites"
-                                                [nzFilters]="filters.libelle_sites">
-                                                Site
-                                            </th>
-                                            <th nzWidth="150px"
-                                                nzColumnKey="libelle_rayon"
-                                                [nzSortFn]="sortFns.libelle_rayon"
-                                                [nzSortDirections]="['ascend','descend',null]"
-                                                [nzFilterFn]="filterFns.libelle_rayon"
-                                                [nzFilters]="filters.libelle_rayon">
-                                                Libellé
-                                            </th>
-                                            <th nzWidth="50px">
-                                                Créé le
-                                            </th>
-                                            <th nzWidth="30px" nzColumnKey="action" nzAlign="center">
-                                                Actions
-                                            </th>
-                                        </tr>
-                                        </thead>
+                                <div class="tt-scroll-shell" [class.tt-more-right]="hScrollMore">
+                                <div class="tree-table-wrap" #tableWrap (scroll)="syncHScroll()">
 
-                                        <tbody>
-                                        <tr *ngFor="let row of nzTable.data; let i = index"
-                                            class="op-table-row">
-                                            <td>
-                                                <span class="cell-text">{{ row.libelle_sites }}</span>
-                                            </td>    <td>
-                                                <span class="cell-text">{{ row.libelle_rayon }}</span>
-                                            </td>
-                                            <td>
-                                                <span class="cell-text">{{ row.created_at }}</span>
-                                            </td>
-                                            <td nzAlign="center">
-                                                <div class="op-actions">
-                                                    <button class="btn-round-edit"
-                                                            nz-tooltip
-                                                            [nzTooltipTitle]="'Modifier le site'"
-                                                            nzTooltipPlacement="top"
-                                                            (click)="openModal(row)">
-                                                        <app-feather-icon class="icon-small"
-                                                                          [icon]="'edit-3'"></app-feather-icon>
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr *ngIf="!isloading && filteredData?.length === 0">
-                                            <td colspan="9">
-                                                <div class="op-empty-state">
-                                                    <app-feather-icon class="icon-inbox"
-                                                                      [icon]="'inbox'"></app-feather-icon>
-                                                    <span>Aucun donnée trouvé !</span>
-                                                    <small *ngIf="searchValue">
-                                                        Aucun résultat pour « {{ searchValue }} »
-                                                    </small>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        </tbody>
-                                    </nz-table>
+                                    <!-- Entête colonnes -->
+                                    <div class="tree-table-header">
+                                        <div class="ttc-site" (click)="sortBy('libelle_sites')">
+                                            Site
+                                            <span class="tt-sort-icons">
+                                                <span class="tt-sort-up"
+                                                      [class.tt-sort-active]="sortKey === 'libelle_sites' && sortOrder === 'asc'">↑</span>
+                                                <span class="tt-sort-down"
+                                                      [class.tt-sort-active]="sortKey === 'libelle_sites' && sortOrder === 'desc'">↓</span>
+                                            </span>
+                                        </div>
+                                        <div class="ttc-name" (click)="sortBy('libelle_rayon')">
+                                            Libellé
+                                            <span class="tt-sort-icons">
+                                                <span class="tt-sort-up"
+                                                      [class.tt-sort-active]="sortKey === 'libelle_rayon' && sortOrder === 'asc'">↑</span>
+                                                <span class="tt-sort-down"
+                                                      [class.tt-sort-active]="sortKey === 'libelle_rayon' && sortOrder === 'desc'">↓</span>
+                                            </span>
+                                        </div>
+                                        <div class="ttc-cree" (click)="sortBy('created_at')">
+                                            Créé le
+                                            <span class="tt-sort-icons">
+                                                <span class="tt-sort-up"
+                                                      [class.tt-sort-active]="sortKey === 'created_at' && sortOrder === 'asc'">↑</span>
+                                                <span class="tt-sort-down"
+                                                      [class.tt-sort-active]="sortKey === 'created_at' && sortOrder === 'desc'">↓</span>
+                                            </span>
+                                        </div>
+                                        <div class="ttc-actions">Actions</div>
+                                    </div>
+
+                                    <!-- Lignes -->
+                                    <div class="tree-table-body">
+                                        <div class="tt-row" *ngFor="let row of rowsPage">
+                                            <div class="ttc-site">
+                                                <span [innerHTML]="highlightMatch(row.libelle_sites, searchValue)"></span>
+                                            </div>
+                                            <div class="ttc-name">
+                                                <span class="tt-name-text tt-parent"
+                                                      [innerHTML]="highlightMatch(row.libelle_rayon, searchValue)">
+                                                </span>
+                                            </div>
+                                            <div class="ttc-cree">
+                                                <span [innerHTML]="highlightMatch(row.created_at, searchValue)"></span>
+                                            </div>
+                                            <div class="ttc-actions">
+                                                <button class="btn-round-edit tt-action-btn"
+                                                        nz-tooltip nzTooltipTitle="Modifier le rayon"
+                                                        nzTooltipPlacement="top"
+                                                        (click)="openModal(row)">
+                                                    <app-feather-icon class="icon-small" [icon]="'edit-3'"></app-feather-icon>
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <!-- Empty state -->
+                                        <div *ngIf="!isloading && !filteredData.length" class="op-empty-state">
+                                            <app-feather-icon class="icon-inbox" [icon]="'inbox'"></app-feather-icon>
+                                            <span>Aucune donnée trouvée !</span>
+                                            <small *ngIf="searchValue">
+                                                Aucun résultat pour « {{ searchValue }} »
+                                            </small>
+                                        </div>
+                                    </div>
                                 </div>
-                                <ng-template #totalTemplate let-total>
-                                    Total : <strong>{{ total }}</strong> enregistrement(s)
-                                </ng-template>
+                                </div>
+
+                                <!-- Ascenseur horizontal dessiné (visible en permanence) -->
+                                <div class="tt-hscroll" *ngIf="hScrollVisible" #hBar
+                                     (pointerdown)="onBarPointerDown($event)">
+                                    <div class="tt-hscroll-thumb"
+                                         [style.width.px]="thumbWidth"
+                                         [style.left.px]="thumbLeft"></div>
+                                </div>
+
+                                <!-- Footer : hors de la zone de défilement -->
+                                <div class="tree-table-footer">
+                                    <span class="tt-total">
+                                        Total : <strong>{{ filteredData.length }}</strong> enregistrement(s)
+                                    </span>
+
+                                    <div class="tt-pager" *ngIf="filteredData.length">
+                                        <select class="tt-pager-taille"
+                                                [ngModel]="pageSize"
+                                                (ngModelChange)="changerTaille($event)"
+                                                title="Lignes par page">
+                                            <option *ngFor="let t of taillesPage" [ngValue]="t">{{ t }} / page</option>
+                                        </select>
+
+                                        <button class="tt-pager-btn" type="button"
+                                                [disabled]="pageIndex <= 1"
+                                                (click)="allerPage(pageIndex - 1)"
+                                                title="Page précédente">
+                                            <i class="fa-solid fa-chevron-left"></i>
+                                        </button>
+
+                                        <span class="tt-pager-page">{{ pageIndex }} / {{ nbPages }}</span>
+
+                                        <button class="tt-pager-btn" type="button"
+                                                [disabled]="pageIndex >= nbPages"
+                                                (click)="allerPage(pageIndex + 1)"
+                                                title="Page suivante">
+                                            <i class="fa-solid fa-chevron-right"></i>
+                                        </button>
+                                    </div>
+                                </div>
 
                             </div>
                         </div>

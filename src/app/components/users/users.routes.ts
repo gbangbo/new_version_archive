@@ -8,6 +8,7 @@ import {RolesPermissionComponent} from "./roles-permission/roles-permission.comp
 import {CarrierePersonnelComponent} from "./carriere-personnel/carriere-personnel.component";
 import {FonctionPosteComponent} from "./fonction-poste/fonction-poste.component";
 import {NominationComponent} from "./nomination/nomination.component";
+import {RolesMenuComponent} from "./roles-menu/roles-menu.component";
 
 export const users: Routes = [
     {
@@ -51,11 +52,19 @@ export const users: Routes = [
         }
     },
     {
-        path: 'roles-permission',
+        path: 'role-permission',
         component: RolesPermissionComponent,
         data: {
-            title: 'Roles & Permission',
-            breadcrumb: 'Roles & Permission'
+            title: 'Rôles & Permission',
+            breadcrumb: 'Rôles & Permissions'
+        }
+    },
+    {
+        path: 'role-menu',
+        component: RolesMenuComponent,
+        data: {
+            title: 'Rôles & menus',
+            breadcrumb: 'Rôles & menus'
         }
     },
     {

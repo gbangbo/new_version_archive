@@ -12,37 +12,6 @@
 /* ═══════════════════════════════════════
    TOOLBAR
 ═══════════════════════════════════════ */
-.table-toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 16px;
-  background: #ffffff;
-  border-bottom: 1px solid #f0f0f0;
-
-  .edit-hint {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    color: #595959;
-    font-size: 13px;
-    user-select: none;
-
-    .edit-icon {
-      color: #1677ff;
-      font-size: 14px;
-    }
-  }
-
-  .search-input {
-    width: 300px;
-
-    input {
-      font-size: 13px;
-    }
-  }
-}
-
 /* ═══════════════════════════════════════
    HEADERS
 ═══════════════════════════════════════ */
@@ -129,70 +98,13 @@
    CELLULES EDITABLES
 ═══════════════════════════════════════ */
 
-.editable-cell {
-  cursor: pointer;
-  position: relative;
-  transition: background 0.15s ease;
-
-  &:hover {
-    background-color: #e6f4ff !important;
-
-    &::after {
-      content: '✎';
-      position: absolute;
-      right: 6px;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 11px;
-      color: #1677ff;
-      opacity: 0.7;
-      pointer-events: none;
-    }
-  }
-
-  input.ant-input {
-    font-size: 13px;
-    width: 100%;
-  }
-}
-
 /* ═══════════════════════════════════════
    TEXTES CELLULES
 ═══════════════════════════════════════ */
 
-.cell-text {
-  display: block;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.cell-placeholder {
-  color: #bfbfbf;
-  font-style: italic;
-}
-
-.action-text {
-  font-weight: 600;
-  color: #262626;
-  letter-spacing: 0.02em;
-}
-
 /* ═══════════════════════════════════════
    BADGE RESULT
 ═══════════════════════════════════════ */
-
-.col-result {
-  text-align: center;
-}
-
-.result-tag {
-  font-size: 11px !important;
-  font-weight: 600 !important;
-  letter-spacing: 0.03em;
-  border-radius: 4px !important;
-  padding: 1px 8px !important;
-}
 
 /* ═══════════════════════════════════════
    PAGINATION
@@ -249,47 +161,6 @@
 
 
 //--------
-
-.btn-edit-ghost {
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 14px;
-  background: transparent;
-  border: 1px solid #dadada;
-  border-radius: 5px;
-  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
-  color: #94a3b8;
-  font-size: 13px;
-  font-weight: 400;
-  font-family: inherit;
-  letter-spacing: 0.01em;
-  transition: background 0.2s ease, color 0.2s ease;
-  user-select: none;
-
-  svg {
-    width: 15px;
-    height: 15px;
-    color: #F19106;
-    flex-shrink: 0;
-    transition: transform 0.2s ease;
-    filter: drop-shadow(0 0 3px #F19106);
-  }
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.07);
-    color: #e2e8f0;
-
-    svg {
-      transform: rotate(-8deg) scale(1.1);
-    }
-  }
-
-  &:focus {
-    outline: none;
-  }
-}
 
 .btn-round-edit {
   display: inline-flex;
@@ -543,101 +414,13 @@
 }
 
 // ── Table rows ────────────────────────────────────────────
-.op-table-row {
-  transition: background 0.15s;
-
-  &:hover td {
-    background: #F8FAFC !important;
-  }
-}
-
 // ── Numéro de ligne ───────────────────────────────────────
-.op-row-num {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  background: #F1F5F9;
-  border-radius: 6px;
-  font-size: 11px;
-  font-weight: 700;
-  color: #64748B;
-}
-
 // ── Référence ─────────────────────────────────────────────
-.op-ref-cell {
-  font-family: 'Courier New', monospace;
-  font-size: 12px;
-  color: #334155;
-  font-weight: 600;
-}
-
 // ── Bénéficiaire ──────────────────────────────────────────
-.op-benef-cell {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.op-benef-avatar {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #DBEAFE, #BFDBFE);
-  color: #1D4ED8;
-  font-size: 11px;
-  font-weight: 800;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
 // ── Exercice badge ────────────────────────────────────────
-.op-exo-badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 2px 10px;
-  background: #F0FDF4;
-  color: #15803D;
-  border: 1px solid #BBF7D0;
-  border-radius: 20px;
-  font-size: 11px;
-  font-weight: 700;
-}
-
 // ── Mode règlement ────────────────────────────────────────
-.op-mode-cell {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  color: #475569;
-}
-
 // ── Montant ───────────────────────────────────────────────
-.op-montant-cell {
-  font-size: 13px;
-  font-weight: 700;
-  color: #0F172A;
-
-  small {
-    font-size: 10px;
-    font-weight: 500;
-    color: #94A3B8;
-    margin-left: 3px;
-  }
-}
-
 // ── Actions ───────────────────────────────────────────────
-.op-actions {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-}
-
 // ── Empty state ───────────────────────────────────────────
 .op-empty-state {
   display: flex;
@@ -792,82 +575,12 @@
   border-bottom: 2px solid #DBEAFE !important;
 }
 
-.tableau-inner {
-  border: 1px solid #DBEAFE;
-  border-radius: 8px;
-  overflow: hidden;
-  //margin: 4px 16px 8px 32px;
-
-  ::ng-deep .ant-table-thead > tr > th {
-    background: hsl(208, 67%, 24%) !important;
-    color: #ffffff !important;
-    font-size: 11px !important;
-    font-weight: 600 !important;
-    padding: 8px 10px !important;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    border-right: 1px solid rgba(255,255,255,0.15) !important;
-    border-bottom: none !important;
-  }
-
-  ::ng-deep .ant-table-tbody > tr > td {
-    font-size: 12px !important;
-    padding: 7px 10px !important;
-    color: #374151 !important;
-    background: #ffffff !important;
-    border-bottom: 1px solid #F0F7FF !important;
-    border-right: 1px solid #F0F7FF !important;
-  }
-
-  ::ng-deep .ant-table-tbody > tr:nth-child(even) > td {
-    background: #F8FBFF !important;
-  }
-
-  ::ng-deep .ant-table-tbody > tr:hover > td {
-    background: #EFF6FF !important;
-  }
-}
-
 // ═══════════════════════════════════════
 // NIVEAU 2 (dataValueSelectPro)
 // ═══════════════════════════════════════
 ::ng-deep .ant-table-expanded-row .ant-table-expanded-row > td {
   background: #FFF7ED !important;
   padding: 8px 12px !important;
-}
-
-.tableau-inner-2 {
-  border: 1px solid #FED7AA;
-  border-radius: 6px;
-  overflow: hidden;
-  margin: 4px 16px 6px 32px;
-
-  ::ng-deep .ant-table-thead > tr > th {
-    background: #EA580C !important;
-    color: #ffffff !important;
-    font-size: 11px !important;
-    font-weight: 600 !important;
-    padding: 7px 10px !important;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    border-right: 1px solid rgba(255,255,255,0.15) !important;
-    border-bottom: none !important;
-  }
-
-  ::ng-deep .ant-table-tbody > tr > td {
-    font-size: 12px !important;
-    padding: 6px 10px !important;
-    background: #ffffff !important;
-    border-bottom: 1px solid #FFF7ED !important;
-  }
-
-  ::ng-deep .ant-table-tbody > tr:nth-child(even) > td {
-    background: #FFF7ED !important;
-  }
-
-  ::ng-deep .ant-table-tbody > tr:hover > td {
-    background: #FFEDD5 !important;
-  }
 }
 
 // ═══════════════════════════════════════
@@ -944,31 +657,33 @@
 }
 
 
-.tableau-inner {
-  ::ng-deep .support-ticket-table thead tr th:first-child,
-  ::ng-deep .support-ticket-table thead tr td:first-child,
-  ::ng-deep .support-ticket-table tbody tr th:first-child,
-  ::ng-deep .support-ticket-table tbody tr td:first-child {
-    min-width: unset !important;
-    width: auto !important;
-  }
-}
-
 // ══════════════════════════════════════════════════════════
 // TREE TABLE — MENUS
 // ══════════════════════════════════════════════════════════
 
-$col-path: 160px;
-$col-icon: 120px;
+// Assez large pour les routes a deux segments (/importer/pdf-depuis-dossiers),
+// qui etaient tronquees a 160px. La colonne Titre est en flex:1, elle cede.
+$col-name: 260px;              // largeur mini de la colonne « Titre »
+$col-path: 260px;
 $col-rang: 70px;
 $col-auth: 120px;
-$col-actions: 70px;
+$col-actions: 100px;           // 2 boutons de 28px + marge + padding
+$tt-min-width: 810px;          // somme des colonnes -> déclenche le scroll horizontal
 
 .tree-table-wrap {
   display: flex;
   flex-direction: column;
   width: 100%;
   border-top: 1px solid #E2E8F0;
+  overflow-x: auto;                     // défilement horizontal uniquement
+  overflow-y: hidden;                   // pas d'ascenseur vertical : la page défile
+  -webkit-overflow-scrolling: touch;
+  // pas de `scrollbar-width` ici : dès qu'on la déclare, Chrome ignore les
+  // pseudo-éléments ::-webkit-scrollbar et redessine la barre horizontale
+
+  &::-webkit-scrollbar {
+    height: 0;                          // remplacée par .tt-hscroll, toujours visible
+  }
 }
 
 .tree-table-header {
@@ -981,10 +696,15 @@ $col-actions: 70px;
   font-weight: 600;
   color: #374151;
   min-height: 38px;
+  min-width: $tt-min-width;
+  position: sticky;
+  top: 0;
+  z-index: 3;
   user-select: none;
 
   > div {
     padding: 0 12px;
+    white-space: nowrap;
     display: flex;
     align-items: center;
     gap: 4px;
@@ -995,8 +715,8 @@ $col-actions: 70px;
 }
 
 .tree-table-body {
-  overflow-y: auto;
-  max-height: calc(100vh - 280px);
+  overflow: visible;        // le defilement est gere par .tree-table-wrap
+  min-width: $tt-min-width;
 
   ::ng-deep .ant-tree { padding: 0 !important; }
   ::ng-deep nz-tree-node {
@@ -1030,12 +750,13 @@ $col-actions: 70px;
 
 .tt-row {
   display: flex;
-  align-items: center;
+  align-items: stretch;
   min-height: 38px;
   border-bottom: 1px solid #F1F5F9;
   cursor: pointer;
   transition: background 0.12s;
   width: 100%;
+  min-width: $tt-min-width;
   line-height: 1;
 
   &:hover {
@@ -1059,8 +780,8 @@ $col-actions: 70px;
 
 // Colonnes
 .ttc-name {
-  flex: 1;
-  min-width: 0;
+  flex: 1 0 $col-name;
+  min-width: $col-name;
   gap: 8px;
   border-right: 1px solid #F1F5F9;
 
@@ -1078,14 +799,6 @@ $col-actions: 70px;
 .ttc-path {
   width: $col-path;
   min-width: $col-path;
-  font-size: 12px;
-  color: #64748B;
-  border-right: 1px solid #F1F5F9;
-}
-
-.ttc-icon {
-  width: $col-icon;
-  min-width: $col-icon;
   font-size: 12px;
   color: #64748B;
   border-right: 1px solid #F1F5F9;
@@ -1121,13 +834,36 @@ $col-actions: 70px;
   justify-content: center;
 }
 
+// -- Aucune troncature : le texte va a la ligne dans toutes les colonnes --
+.tt-row > div,
+.tt-row > div * {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+// ... sauf les images : le texte « alt » d'un logo cassé débordait de sa case
+// et ajoutait 1px de hauteur au tableau -> ascenseur vertical parasite
+.tt-row > div img {
+  max-width: 100%;
+  overflow: hidden;
+  object-fit: cover;
+}
+
+.ttc-logo {
+  overflow: hidden;
+}
+
 // Textes
 .tt-name-text {
   font-size: 12px;
   color: #374151;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  line-height: 1.35;
 }
 
 .tt-parent {
@@ -1142,25 +878,6 @@ $col-actions: 70px;
   overflow: hidden;
   text-overflow: ellipsis;
   font-family: 'Courier New', monospace;
-}
-
-.tt-icon-badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 2px 8px;
-  background: #F0F9FF;
-  color: #0369A1;
-  border: 1px solid #BAE6FD;
-  border-radius: 4px;
-  font-size: 11px;
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.tt-folder-icon {
-  font-size: 15px !important;
-  flex-shrink: 0;
-  color: #F19106;
 }
 
 .tt-file-icon {
@@ -1184,6 +901,48 @@ $col-actions: 70px;
   transition: opacity 0.15s;
   width: 28px !important;
   height: 28px !important;
+}
+
+// -- Ascenseur horizontal dessine (les barres natives sont masquees sur iOS) --
+.tt-scroll-shell {
+  position: relative;
+
+  &.tt-more-right::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 28px;
+    pointer-events: none;
+    background: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.95));
+  }
+}
+
+.tt-hscroll {
+  position: relative;
+  height: 10px;
+  margin: 6px 12px 0;
+  border-radius: 6px;
+  background: #F1F5F9;
+  border: 1px solid #E2E8F0;
+  cursor: pointer;
+  touch-action: none;             // le glissement pilote le tableau, pas la page
+  user-select: none;
+}
+
+.tt-hscroll-thumb {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: 6px;
+  background: #94A3B8;
+  transition: background 0.15s;
+}
+
+.tt-hscroll:hover .tt-hscroll-thumb,
+.tt-hscroll:active .tt-hscroll-thumb {
+  background: #64748B;
 }
 
 .tree-table-footer {
@@ -1231,5 +990,87 @@ $col-actions: 70px;
     ::ng-deep svg {
       color: #EF4444 !important;
     }
+  }
+}
+
+// Icône réellement choisie pour le menu, rendue devant son titre.
+// Repli sur fa-bars / fa-circle quand aucune n'est renseignée.
+// Icône réellement choisie pour le menu, rendue devant son titre.
+// Repli sur fa-bars / fa-circle quand aucune n'est renseignée.
+//
+// Les symboles du sprite ne portent pas leur propre couleur : les variantes
+// `stroke-` ont fill="none" et des tracés sans attribut `stroke`, les `fill-`
+// des chemins sans attribut `fill`. Hors de la barre latérale, qui les colore
+// dans _sidebar.scss, il faut donc poser stroke et fill nous-mêmes — sinon le
+// svg est bien présent mais ne dessine rien.
+.tt-svg-icon {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+
+  ::ng-deep svg {
+    width: 16px;
+    height: 16px;
+
+    &.stroke-icon {
+      stroke: #1565C0;
+      fill: none;
+    }
+
+    &.fill-icon {
+      fill: #1565C0;
+    }
+  }
+}
+
+// -- Mobile : colonnes resserrees mais lisibles, on defile pour le reste --
+@media (max-width: 767px) {
+  $m-name: 150px;
+  $m-path: 150px;
+  $m-rang: 48px;
+  $m-auth: 74px;
+  $m-actions: 88px;
+  $m-min-width: $m-name + $m-path + $m-rang + $m-auth + $m-actions;
+
+  .tree-table-header,
+  .tree-table-body,
+  .tt-row {
+    min-width: $m-min-width;
+  }
+
+  .tree-table-header > div,
+  .tt-row > div {
+    padding: 6px 8px;
+    font-size: 11px;
+  }
+
+  // Selecteurs enfants pour repasser devant `.tt-row > div { flex-shrink: 0 }`
+  .tree-table-header > .ttc-name,
+  .tt-row > .ttc-name {
+    flex: 1 0 $m-name;
+    min-width: $m-name;
+    gap: 4px;
+  }
+
+  .ttc-path { width: $m-path !important; min-width: $m-path !important; }
+  .ttc-rang { width: $m-rang !important; min-width: $m-rang !important; }
+  .ttc-auth { width: $m-auth !important; min-width: $m-auth !important; }
+
+  .tt-name-text,
+  .tt-path-text {
+    font-size: 10px;
+    line-height: 1.3;
+  }
+
+  .ttc-actions {
+    width: $m-actions;
+    min-width: $m-actions;
+    gap: 2px;
+  }
+
+  .ttc-actions .tt-action-btn {
+    width: 26px !important;
+    height: 26px !important;
+    margin-right: 0 !important;   // neutralise le .mr-2 du template
   }
 }

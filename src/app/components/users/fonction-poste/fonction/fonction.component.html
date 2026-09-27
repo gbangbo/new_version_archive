@@ -71,78 +71,79 @@
                                 </div>
 
                                 <!-- ══ TABLE ════════════════════════════════════ -->
+                                <div class="tt-scroll-shell" [class.tt-more-right]="hScrollMore">
+                                <div class="tree-table-wrap" #tableWrap (scroll)="syncHScroll()">
 
-                                <div class="overflow-x-auto support-ticket-table custom-scrollbar">
-                                    <nz-table
-                                        #nzTable
-                                        [nzData]="filteredData"
-                                        [nzPageSize]="10"
-                                        [nzShowPagination]="true"
-                                        [nzShowTotal]="totalTemplate"
-                                        nzShowSizeChanger
-                                        nzBordered
-                                        nzSize="small"
-                                        [nzScroll]="filteredData.length > 0 ? { x: '1200px' } : {}"
-                                    >
-                                        <thead>
-                                        <tr>
-                                            <th nzWidth="90px"
-                                                nzColumnKey="libelle_fonction"
-                                                [nzSortFn]="sortFns.libelle_fonction"
-                                                [nzSortDirections]="['ascend','descend',null]"
-                                                [nzFilterFn]="filterFns.libelle_fonction"
-                                                [nzFilters]="filters.libelle_fonction">
-                                                Libellé
-                                            </th>
-                                            <th nzWidth="50px">
-                                                Créé le
-                                            </th>
-                                            <th nzWidth="40px" nzColumnKey="action" nzAlign="center">
-                                                Actions
-                                            </th>
-                                        </tr>
-                                        </thead>
+                                    <!-- Entête colonnes -->
+                                    <div class="tree-table-header">
+                                        <div class="ttc-name" (click)="sortBy('libelle_fonction')">
+                                            Libellé
+                                            <span class="tt-sort-icons">
+                                                <span class="tt-sort-up"
+                                                      [class.tt-sort-active]="sortKey === 'libelle_fonction' && sortOrder === 'asc'">↑</span>
+                                                <span class="tt-sort-down"
+                                                      [class.tt-sort-active]="sortKey === 'libelle_fonction' && sortOrder === 'desc'">↓</span>
+                                            </span>
+                                        </div>
+                                        <div class="ttc-mail" (click)="sortBy('created_at')">
+                                            Créé le
+                                            <span class="tt-sort-icons">
+                                                <span class="tt-sort-up"
+                                                      [class.tt-sort-active]="sortKey === 'created_at' && sortOrder === 'asc'">↑</span>
+                                                <span class="tt-sort-down"
+                                                      [class.tt-sort-active]="sortKey === 'created_at' && sortOrder === 'desc'">↓</span>
+                                            </span>
+                                        </div>
+                                        <div class="ttc-actions">Actions</div>
+                                    </div>
 
-                                        <tbody>
-                                        <tr *ngFor="let row of nzTable.data; let i = index"
-                                            class="op-table-row">
-                                            <td>
-                                                <span class="cell-text">{{ row.libelle_fonction }}</span>
-                                            </td>
-                                            <td>
-                                                <span class="cell-text">{{ row.created_at }}</span>
-                                            </td>
-                                            <td nzAlign="center">
-                                                <div class="op-actions">
-                                                    <button class="btn-round-edit"
-                                                            nz-tooltip
-                                                            [nzTooltipTitle]="'Modifier la fonction'"
-                                                            nzTooltipPlacement="top"
-                                                            (click)="openModal(row)">
-                                                        <app-feather-icon class="icon-small"
-                                                                          [icon]="'edit-3'"></app-feather-icon>
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr *ngIf="!isloading && filteredData?.length === 0">
-                                            <td colspan="9">
-                                                <div class="op-empty-state">
-                                                    <app-feather-icon class="icon-inbox"
-                                                                      [icon]="'inbox'"></app-feather-icon>
-                                                    <span>Aucun donnée trouvé !</span>
-                                                    <small *ngIf="searchValue">
-                                                        Aucun résultat pour « {{ searchValue }} »
-                                                    </small>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        </tbody>
-                                    </nz-table>
+                                    <!-- Lignes -->
+                                    <div class="tree-table-body">
+                                        <div class="tt-row" *ngFor="let row of filteredData">
+                                            <div class="ttc-name">
+                                                <i class="fa-solid fa-user-tie tt-row-icon"></i>
+                                                <span class="tt-name-text tt-parent"
+                                                      [innerHTML]="highlightMatch(row.libelle_fonction, searchValue)">
+                                                </span>
+                                            </div>
+                                            <div class="ttc-mail">{{ row.created_at || '—' }}</div>
+                                            <div class="ttc-actions">
+                                                <button class="btn-round-edit tt-action-btn"
+                                                        nz-tooltip nzTooltipTitle="Modifier la fonction"
+                                                        nzTooltipPlacement="top"
+                                                        (click)="openModal(row)">
+                                                    <app-feather-icon class="icon-small" [icon]="'edit-3'"></app-feather-icon>
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <!-- Empty state -->
+                                        <div *ngIf="!isloading && filteredData?.length === 0"
+                                             class="op-empty-state">
+                                            <app-feather-icon class="icon-inbox" [icon]="'inbox'"></app-feather-icon>
+                                            <span>Aucune donnée trouvée !</span>
+                                            <small *ngIf="searchValue">
+                                                Aucun résultat pour « {{ searchValue }} »
+                                            </small>
+                                        </div>
+                                    </div>
                                 </div>
-                                <ng-template #totalTemplate let-total>
-                                    Total : <strong>{{ total }}</strong> enregistrement(s)
-                                </ng-template>
+                                </div>
+
+                                <!-- Ascenseur horizontal dessiné (visible en permanence) -->
+                                <div class="tt-hscroll" *ngIf="hScrollVisible" #hBar
+                                     (pointerdown)="onBarPointerDown($event)">
+                                    <div class="tt-hscroll-thumb"
+                                         [style.width.px]="thumbWidth"
+                                         [style.left.px]="thumbLeft"></div>
+                                </div>
+
+                                <!-- Footer : hors de la zone de défilement -->
+                                <div class="tree-table-footer">
+                                    <span class="tt-total">
+                                        Total : <strong>{{ filteredData.length || 0 }}</strong> enregistrement(s)
+                                    </span>
+                                </div>
 
                             </div>
                         </div>

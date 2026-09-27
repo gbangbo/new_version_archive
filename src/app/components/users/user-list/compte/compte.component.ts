@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, HostListener, OnInit, ViewChild} from '@angular/core';
 import {CardComponent} from "../../../../shared/components/ui/card/card.component";
 import {CommonModule} from "@angular/common";
 import {FormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
@@ -7,7 +7,6 @@ import {HttpService} from "../../../../core/http.service";
 import {environment} from "../../../../../environments/environment";
 import {ToastrService} from "ngx-toastr";
 import {NzSwitchModule} from "ng-zorro-antd/switch";
-import {NzTableModule} from "ng-zorro-antd/table";
 import {NzTooltipDirective} from "ng-zorro-antd/tooltip";
 import {Select2Module} from "ng-select2-component";
 import {NzSelectModule} from "ng-zorro-antd/select";
@@ -17,6 +16,7 @@ import {TableClickedAction} from "../../../../shared/interface/common";
 import {TableComponent} from "../../../../shared/components/ui/table/table.component";
 import {FeatherIconComponent} from "../../../../shared/components/ui/feather-icon/feather-icon.component";
 import moment from "moment";
+import {DomSanitizer, SafeHtml} from "@angular/platform-browser";
 import {CompteModalComponent} from "./compte-modal/compte-modal.component";
 import {NzTagModule} from "ng-zorro-antd/tag";
 
@@ -51,12 +51,12 @@ interface RowData {
         Select2Module,
         NzTabsModule,
         NzIconModule,
-        NzTableModule, TableComponent, FeatherIconComponent, NzTagModule, CompteModalComponent],
+        TableComponent, FeatherIconComponent, NzTagModule, CompteModalComponent],
     providers: [],
     templateUrl: './compte.component.html',
     styleUrl: './compte.component.scss',
 })
-export class CompteComponent implements OnInit {
+export class CompteComponent implements OnInit, AfterViewInit {
 
     dataSociete: any = [];
 
@@ -74,47 +74,27 @@ export class CompteComponent implements OnInit {
 
     filteredData: RowData[] = [];
 
-    // ── Fonctions de tri ──────────────────────────────────────
-    sortFns = {
-        created_at: (a: RowData, b: RowData) =>
-            (a.created_at ?? '').localeCompare(b.created_at ?? ''),
-        emailAgent: (a: RowData, b: RowData) =>
-            (a.emailAgent ?? '').localeCompare(b.emailAgent ?? ''),
-        name: (a: RowData, b: RowData) =>
-            (a.name ?? '').localeCompare(b.name ?? '')
-    };
+    // ── Tri (clic sur l'entête) ───────────────────────────────
+    sortKey: string = '';
+    sortOrder: 'asc' | 'desc' | '' = '';
 
-    // ── Filtres ───────────────────────────────────────────────
-    filters: {
-        created_at: { text: string; value: string }[];
-        emailAgent: { text: string; value: string }[];
-        name: { text: string; value: string }[];
-    } = {
-        created_at: [],
-        emailAgent: [],
-        name: [],
-    };
+    // ── Ascenseur horizontal dessiné (les barres natives sont masquées sur iOS) ──
+    @ViewChild('tableWrap') tableWrap?: ElementRef<HTMLDivElement>;
+    @ViewChild('hBar') hBar?: ElementRef<HTMLDivElement>;
+    hScrollVisible = false;
+    hScrollMore = false;
+    thumbWidth = 0;
+    thumbLeft = 0;
+    private dragging = false;
+    private dragStartX = 0;
+    private dragStartScroll = 0;
 
-    filterFns = {
-        // Filtre sur nom_beneficiaire
-        created_at: (list: string[], item: RowData) =>
-            list.some(val =>
-                (item.created_at ?? '').toLowerCase().includes(val.toLowerCase())
-            ),
-        emailAgent: (list: string[], item: RowData) =>
-            list.some(val =>
-                (item.emailAgent ?? '').toLowerCase().includes(val.toLowerCase())
-            ),
-        name: (list: string[], item: RowData) =>
-            list.some(val =>
-                (item.name ?? '').toLowerCase().includes(val.toLowerCase())
-            ),
-    };
     private dataBenef: any = [];
 
     constructor(private autor: Authorization,
                 private fb: FormBuilder,
-                private httService: HttpService) {
+                private httService: HttpService,
+                private sanitizer: DomSanitizer) {
 
     }
 
@@ -169,24 +149,9 @@ export class CompteComponent implements OnInit {
                     //     "created_at": "2026-04-26T21:12:06.702271Z",
                     //     "updated_at": "2026-04-29T15:56:10.140060Z"
                     // }
-                    this.filters = {
-                        ...this.filters,
-                        emailAgent: [...new Set(this.dataBenef?.map((e: any) => e.emailAgent))]
-                            .filter((v: any) => v)
-                            .map((v: any) => ({
-                                text: v,
-                                value: v
-                            })),
-                        name: [...new Set(
-                            this.dataBenef
-                                ?.filter((e: any) => e?.name)
-                                .map((e: any) => e.name)
-                        )].map((v: any) => ({
-                            text: v,
-                            value: v
-                        })) || []
-                    }
                     this.filteredData = [...this.dataBenef];
+                    this.applySort();
+                    setTimeout(() => this.syncHScroll());
                     console.log("this.filteredData ===", this.filteredData)
 
                 }
@@ -205,7 +170,122 @@ export class CompteComponent implements OnInit {
                 Object.values(row).some(v => String(v).toLowerCase().includes(val))
             )
             : [...this.dataBenef];
+        this.applySort();
+        setTimeout(() => this.syncHScroll());
     }
+
+    // ── Tri par colonne : asc -> desc -> aucun ────────────────
+    sortBy(key: string): void {
+        if (this.sortKey !== key) {
+            this.sortKey = key;
+            this.sortOrder = 'asc';
+        } else if (this.sortOrder === 'asc') {
+            this.sortOrder = 'desc';
+        } else {
+            this.sortKey = '';
+            this.sortOrder = '';
+            this.onSearch(this.searchValue);   // on retrouve l'ordre initial, recherche conservée
+            return;
+        }
+        this.applySort();
+    }
+
+    private applySort(): void {
+        if (!this.sortKey || !this.sortOrder) {
+            return;
+        }
+        const key = this.sortKey;
+        const dir = this.sortOrder === 'desc' ? -1 : 1;
+        this.filteredData = [...this.filteredData].sort((a: any, b: any) =>
+            String(a?.[key] ?? '').localeCompare(String(b?.[key] ?? '')) * dir
+        );
+    }
+
+    // ── Surlignage des occurrences recherchées ────────────────
+    highlightMatch(text: string, search: string): SafeHtml {
+        if (!search || !text) return text;
+        const regex = new RegExp(`(${search})`, 'gi');
+        const highlighted = text.replace(
+            regex,
+            '<mark style="background:#FEF08A;color:#713F12;border-radius:2px;padding:0 2px">$1</mark>'
+        );
+        return this.sanitizer.bypassSecurityTrustHtml(highlighted);
+    }
+
+    // ══ Ascenseur horizontal personnalisé ═══════════════════════════════
+    ngAfterViewInit(): void {
+        setTimeout(() => this.syncHScroll());
+    }
+
+    @HostListener('window:resize')
+    syncHScroll(): void {
+        const el = this.tableWrap?.nativeElement;
+        if (!el) {
+            return;
+        }
+        const maxScroll = el.scrollWidth - el.clientWidth;
+        this.hScrollVisible = maxScroll > 2;
+        this.hScrollMore = el.scrollLeft < maxScroll - 2;
+
+        const barEl = this.hBar?.nativeElement;
+        if (this.hScrollVisible && !barEl) {
+            // la barre vient d'apparaître : on recalcule une fois qu'elle est rendue
+            setTimeout(() => this.syncHScroll());
+        }
+
+        const track = barEl?.clientWidth || el.clientWidth;
+        this.thumbWidth = Math.max(40, Math.round(track * (el.clientWidth / el.scrollWidth)));
+        const maxX = track - this.thumbWidth;
+        this.thumbLeft = maxScroll > 0 ? Math.round((el.scrollLeft / maxScroll) * maxX) : 0;
+    }
+
+    onBarPointerDown(ev: PointerEvent): void {
+        const el = this.tableWrap?.nativeElement;
+        const bar = this.hBar?.nativeElement;
+        if (!el || !bar) {
+            return;
+        }
+        const rect = bar.getBoundingClientRect();
+        const maxScroll = el.scrollWidth - el.clientWidth;
+        const maxX = rect.width - this.thumbWidth;
+        const pointerX = ev.clientX - rect.left;
+
+        // clic hors du pouce : on saute directement à cette position
+        if (pointerX < this.thumbLeft || pointerX > this.thumbLeft + this.thumbWidth) {
+            const x = Math.min(Math.max(pointerX - this.thumbWidth / 2, 0), maxX);
+            el.scrollLeft = maxX > 0 ? (x / maxX) * maxScroll : 0;
+        }
+
+        this.dragging = true;
+        this.dragStartX = ev.clientX;
+        this.dragStartScroll = el.scrollLeft;
+        bar.setPointerCapture(ev.pointerId);
+        ev.preventDefault();
+        this.syncHScroll();
+    }
+
+    @HostListener('document:pointermove', ['$event'])
+    onBarPointerMove(ev: PointerEvent): void {
+        if (!this.dragging) {
+            return;
+        }
+        const el = this.tableWrap?.nativeElement;
+        const bar = this.hBar?.nativeElement;
+        if (!el || !bar) {
+            return;
+        }
+        const maxScroll = el.scrollWidth - el.clientWidth;
+        const maxX = bar.clientWidth - this.thumbWidth;
+        const dx = ev.clientX - this.dragStartX;
+        el.scrollLeft = this.dragStartScroll + (maxX > 0 ? dx * (maxScroll / maxX) : 0);
+    }
+
+    @HostListener('document:pointerup')
+    @HostListener('document:pointercancel')
+    onBarPointerUp(): void {
+        this.dragging = false;
+    }
+
 
     handleModal(value: boolean) {
         if (value) {
