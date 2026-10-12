@@ -599,19 +599,31 @@
 
                                         <p class="scan-message">{{ messagePont }}</p>
 
-                                        <button type="button" class="scan-bouton"
-                                                (click)="numeriser()"
-                                                [disabled]="!pontDisponible || scanEnCours || isUploading">
-                                            <span class="scan-spinner" *ngIf="scanEnCours || isUploading"></span>
-                                            <i class="fa-solid fa-print" *ngIf="!scanEnCours && !isUploading"></i>
-                                            {{ scanEnCours ? 'Numérisation en cours...' : (isUploading ? 'Import en cours...' : 'Numériser') }}
-                                        </button>
+                                        <div class="scan-actions">
+                                            <button type="button" class="scan-bouton"
+                                                    (click)="numeriser()"
+                                                    [disabled]="!pontDisponible || scanEnCours || isUploading">
+                                                <span class="scan-spinner" *ngIf="scanEnCours || isUploading"></span>
+                                                <i class="fa-solid fa-print" *ngIf="!scanEnCours && !isUploading"></i>
+                                                {{ scanEnCours ? 'Numérisation en cours…' : (isUploading ? 'Import en cours...' : 'Numériser') }}
+                                                <span class="scan-chrono" *ngIf="scanEnCours && scanEcoule">{{ scanEcoule }}</span>
+                                            </button>
+
+                                            <button type="button" class="scan-bouton scan-bouton-annuler"
+                                                    *ngIf="scanEnCours"
+                                                    (click)="annulerNumerisation()"
+                                                    [disabled]="annulationEnCours">
+                                                <i class="fa-solid fa-xmark"></i>
+                                                {{ annulationEnCours ? 'Annulation…' : 'Annuler' }}
+                                            </button>
+                                        </div>
 
                                         <small class="scan-aide" *ngIf="pontVerifie && pontDisponible">
                                             Cliquez sur « Numériser » : NAPS2 s'ouvre pour régler et ajuster
                                             vos pages. Enregistrez depuis NAPS2 en donnant un nom à votre
                                             document — sans changer de dossier — et il revient ici
                                             automatiquement.
+                                            Pour arrêter : « Annuler », ou fermez simplement la fenêtre NAPS2.
                                         </small>
 
                                         <!-- Progression de l'import vers la zone temporaire -->

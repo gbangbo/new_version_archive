@@ -75,15 +75,16 @@
   // Valeur de repli avant la mesure JS : header (136px) + fil d'Ariane (~56px).
   // ajusterHauteurCarte() dans le .ts remplace ensuite cette hauteur par la
   // valeur exacte mesurée, car le fil d'Ariane n'a pas de hauteur fixe.
-  height: calc(100vh - 192px);
+  height: calc(-181px + 154vh) !important
+  //height: calc(100vh - 192px) !important;
 }
 
 .container.job-apply-wrapper {
-  height: 100%;
+  height: 130vh !important;
 }
 
 nz-splitter {
-  height: 100%;
+  height: 100% !important;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   border-radius: 6px;
   overflow: hidden; // arrondit proprement les coins (dont la barre du bas)
@@ -2505,6 +2506,34 @@ input[type="checkbox"]:checked {
   &:disabled             { opacity: .5; cursor: not-allowed; }
 
   i { font-size: 17px; }
+}
+
+// Les deux boutons de la zone de scan. « Annuler » n'apparait que pendant
+// l'attente : hors scan, il n'y a rien a arreter.
+.scan-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+// Compteur de temps ecoule, discret : il informe sans attirer l'oeil.
+.scan-chrono {
+  font-variant-numeric: tabular-nums;   // la largeur ne saute pas a chaque seconde
+  font-weight: 500;
+  opacity: .75;
+  padding-left: 2px;
+}
+
+// Retrait franc plutot qu'un second bouton bleu : l'action principale reste
+// lisible d'un coup d'oeil.
+.scan-bouton-annuler {
+  background: #fff;
+  color: #b42318;
+  border: 1px solid #f0c2bd;
+
+  &:hover:not(:disabled) { background: #fef3f2; }
 }
 
 .scan-spinner {

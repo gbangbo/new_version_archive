@@ -40,6 +40,16 @@ export interface ScannerStatus {
     files: ScanFile[];
 }
 
+/**
+ * Resultat d'une demande d'annulation.
+ * `message` porte l'echec REEL - celui de la voie extension - et non celui du
+ * repli : c'est lui qu'il faut montrer a l'utilisateur et lire dans un rapport.
+ */
+export interface ResultatAnnulation {
+    ok: boolean;
+    message?: string;
+}
+
 /** Enveloppe renvoyee par background.js pour toutes les actions. */
 interface BridgeResponse<T = any> {
     success: boolean;
@@ -63,9 +73,28 @@ export class ScannerBridgeService {
 
     /** Delai maximal d'une action ; un scan papier peut etre long. */
     private static readonly TIMEOUT_DEFAUT = 20000;
-    // Doit rester SUPERIEUR au scanTimeout du host (300 s) : l'utilisateur
-    // numerise et ajuste ses pages dans NAPS2 pendant ce temps.
-    private static readonly TIMEOUT_SCAN = 360000;
+    // Le host n'impose plus de duree : il attend tant que la fenetre NAPS2 vit.
+    // Ce plafond n'est donc qu'un filet, pour le cas ou le service worker de
+    // l'extension serait arrete par Chrome et la reponse perdue. L'arret voulu
+    // passe par annulerScan() ou par la fermeture de NAPS2.
+    private static readonly TIMEOUT_SCAN = 1800000;
+
+    /**
+     * Nom de fichier reserve qui transforme une demande de scan en demande
+     * d'annulation cote host. Les dix actions de l'extension sont figees par la
+     * publication au Web Store - en ajouter une imposerait un reexamen de
+     * plusieurs semaines - et la page n'a pas le droit d'appeler le poste en
+     * direct. Passer par l'action 'scan' est le seul canal qui reste.
+     */
+    private static readonly COMMANDE_ANNULER = '__ARCHIVEPRO_ANNULER__';
+
+    /**
+     * Meme commande en appel direct, tentee en second. Elle ne marche que
+     * depuis un contexte que Chrome autorise a joindre le reseau prive : pas
+     * depuis `http://archivepro.ci`, mais depuis une page locale ou un poste
+     * servi en HTTPS. Gardee parce qu'elle ne coute rien et depanne au besoin.
+     */
+    private static readonly URL_ANNULATION = 'http://localhost:3000/scan/annuler';
 
     // ────────────────────────────────────────────────────────────
     // Detection de l'extension
@@ -241,6 +270,59 @@ export class ScannerBridgeService {
             code_societe: contexte.code_societe || '',
             token: contexte.token || ''
         }, ScannerBridgeService.TIMEOUT_SCAN);
+    }
+
+    /**
+     * Demande au poste d'arreter l'attente en cours.
+     *
+     * Le poste depose un temoin que la boucle du host relit : celle-ci rend la
+     * main dans la seconde, ferme NAPS2 et fait echouer le scan() en attente
+     * avec « Numerisation annulee ». L'ecran n'a donc rien a defaire lui-meme.
+     *
+     * Ne leve jamais : rend false si le poste n'a pas pu etre joint, a charge
+     * de l'appelant de proposer autre chose (fermer NAPS2 a la main).
+     */
+    async annulerScan(): Promise<ResultatAnnulation> {
+        // 1. Par l'extension : le seul canal autorise a joindre le poste depuis
+        //    une page en http (Chrome interdit le reseau prive aux contextes non
+        //    securises).
+        let echecExtension: string;
+        try {
+            await this.envoyer('scan', {filename: ScannerBridgeService.COMMANDE_ANNULER}, 10000);
+            return {ok: true};
+        } catch (e: any) {
+            echecExtension = e?.message || String(e);
+            console.warn('[ArchivePro] Annulation par l extension impossible :', echecExtension);
+        }
+
+        // 2. En direct, mais SEULEMENT la ou Chrome l'autorise.
+        //
+        //    Sur `http://ged.archivepro.ci`, `isSecureContext` vaut false : la
+        //    requete sera refusee d'office (« not a secure context [...] address
+        //    space loopback »). La tenter quand meme n'apporte rien et pose une
+        //    erreur CORS rouge PAR-DESSUS la vraie cause, qu'elle finit par
+        //    masquer - c'est exactement ce qui a egare le diagnostic.
+        if (!window.isSecureContext) {
+            return {ok: false, message: echecExtension};
+        }
+
+        const stop = new AbortController();
+        const echeance = setTimeout(() => stop.abort(), 4000);
+        try {
+            const reponse = await fetch(ScannerBridgeService.URL_ANNULATION, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: '{}',
+                signal: stop.signal,
+            });
+            if (!reponse.ok) return {ok: false, message: echecExtension};
+            const data = await reponse.json();
+            return data?.success ? {ok: true} : {ok: false, message: data?.error || echecExtension};
+        } catch (_) {
+            return {ok: false, message: echecExtension};
+        } finally {
+            clearTimeout(echeance);
+        }
     }
 
     /**

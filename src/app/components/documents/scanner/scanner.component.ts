@@ -48,28 +48,6 @@ interface FoodNode {
     children?: FoodNode[];
 }
 
-const TREE_DATA: FoodNode[] = [
-    {
-        name: 'Fichiers',
-        children: [
-            {
-                name: 'Apple',
-                extension: ''
-            },
-            {
-                name: 'Banana',
-                extension: ''
-            },
-            {
-                name: 'Fruit loops',
-                extension: ''
-            }
-
-        ]
-    }
-];
-const TREE_DATAA: TreeNode[] = [];
-
 /** Flat node with expandable and level information */
 interface ExampleFlatNode {
     expandable: boolean;
@@ -127,6 +105,14 @@ export class ScannerComponent implements OnInit, AfterViewInit, OnDestroy {
     pontVerifie = false;
     messagePont = 'Recherche du poste de scan...';
     scanEnCours = false;
+
+    /** Temps ecoule depuis le debut du scan, « mm:ss ». Repond a la seule
+     *  question que se pose l'utilisateur devant un spinner : depuis quand ? */
+    scanEcoule = '';
+    /** true entre le clic sur « Annuler » et la fin effective du scan. */
+    annulationEnCours = false;
+    private scanDebut = 0;
+    private scanChrono: any = null;
     // DropzoneConfigInterface = {
     //     url: '/api/saveuploadfile-temps',
     //     addRemoveLinks: true,
@@ -527,6 +513,7 @@ export class ScannerComponent implements OnInit, AfterViewInit, OnDestroy {
         this.resizeObs?.disconnect();
         this.editor.destroy();
         this.editor2.destroy();
+        this.arreterChrono();
     }
 
     loadFileTemps(idsociete: string = '', iduser_file_temp: string = '') {
@@ -765,6 +752,56 @@ export class ScannerComponent implements OnInit, AfterViewInit, OnDestroy {
      * Les fichiers importes remontent ensuite par loadFileTemps() et s'affichent
      * dans l'arbre « Fichiers importes », exactement comme un televersement.
      */
+    private demarrerChrono(): void {
+        this.scanDebut = Date.now();
+        this.scanEcoule = '00:00';
+        this.arreterChrono();
+        this.scanChrono = setInterval(() => {
+            const s = Math.floor((Date.now() - this.scanDebut) / 1000);
+            const mm = String(Math.floor(s / 60)).padStart(2, '0');
+            const ss = String(s % 60).padStart(2, '0');
+            this.scanEcoule = `${mm}:${ss}`;
+            this.cdr.detectChanges();
+        }, 1000);
+    }
+
+    private arreterChrono(): void {
+        if (this.scanChrono) {
+            clearInterval(this.scanChrono);
+            this.scanChrono = null;
+        }
+    }
+
+    /**
+     * Arrete la numerisation en cours.
+     *
+     * Le poste ferme NAPS2 et fait echouer le scan() en attente : c'est son
+     * `finally` qui remet l'ecran en etat, pas cette methode. Si le poste est
+     * injoignable, on le dit plutot que de rendre un spinner fige - et la
+     * fermeture de NAPS2 a la main reste la porte de sortie, elle arrete le
+     * scan tout aussi surement.
+     */
+    async annulerNumerisation(): Promise<void> {
+        if (!this.scanEnCours || this.annulationEnCours) return;
+
+        this.annulationEnCours = true;
+        this.messagePont = 'Annulation en cours...';
+        this.cdr.detectChanges();
+
+        const resultat = await this.bridge.annulerScan();
+        if (!resultat.ok) {
+            this.annulationEnCours = false;
+            this.messagePont = 'Le poste de scan ne repond pas a la demande d arret.';
+            // La cause exacte est affichee, pas seulement le repli a proposer :
+            // sans elle, il faut ouvrir la console pour savoir ce qui a echoue.
+            this.toast.warning(
+                (resultat.message ? resultat.message + ' — ' : '')
+                + 'Fermez la fenetre NAPS2 : la numerisation s arretera aussitot.',
+                'Annulation impossible', {timeOut: 12000, enableHtml: false});
+            this.cdr.detectChanges();
+        }
+    }
+
     async numeriser(): Promise<void> {
         if (this.scanEnCours || this.isUploading) return;
 
@@ -782,7 +819,9 @@ export class ScannerComponent implements OnInit, AfterViewInit, OnDestroy {
         }
 
         this.scanEnCours = true;
+        this.annulationEnCours = false;
         this.messagePont = 'NAPS2 est ouvert : numerisez, ajustez vos pages puis enregistrez.';
+        this.demarrerChrono();
         this.cdr.detectChanges();
 
         try {
@@ -805,13 +844,23 @@ export class ScannerComponent implements OnInit, AfterViewInit, OnDestroy {
             await this.importerPages(nouvelles.map(f => f.name));
 
         } catch (e: any) {
-            Swal.fire({
-                title: e?.message || 'La numerisation a echoue.',
-                icon: 'error',
-                confirmButtonText: 'OK'
-            });
+            const message = e?.message || 'La numerisation a echoue.';
+            // Un arret demande par l'utilisateur n'est pas un incident : il ne
+            // merite pas une fenetre rouge a refermer.
+            if (this.annulationEnCours || /annul/i.test(message)) {
+                this.toast.info('Numerisation annulee.', 'Numerisation', {timeOut: 3000});
+            } else {
+                Swal.fire({
+                    title: message,
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
         } finally {
             this.scanEnCours = false;
+            this.annulationEnCours = false;
+            this.arreterChrono();
+            this.scanEcoule = '';
             this.messagePont = this.pontDisponible ? 'Poste de scan pret' : this.messagePont;
             this.cdr.detectChanges();
         }
