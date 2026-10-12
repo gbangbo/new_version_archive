@@ -4,14 +4,14 @@ import {ActivatedRoute, NavigationEnd, Router, RouterOutlet} from '@angular/rout
 import {filter, map, Subscription} from 'rxjs';
 
 import {LoaderComponent} from "./shared/components/ui/loader/loader.component";
-import {BackToTopComponent} from "./shared/components/ui/back-to-top/back-to-top.component";
+// import {BackToTopComponent} from "./shared/components/ui/back-to-top/back-to-top.component";
 import {LayoutService} from './shared/services/layout.service';
 import {SessionExpiredModalComponent} from "./components/session-expired-modal/session-expired-modal.component";
 import {HttpService} from "./core/http.service";
 
 @Component({
     selector: 'app-root',
-    imports: [RouterOutlet, LoaderComponent, BackToTopComponent, SessionExpiredModalComponent],
+    imports: [RouterOutlet, LoaderComponent, /* BackToTopComponent, */ SessionExpiredModalComponent],
     templateUrl: './app.component.html',
     styleUrl: './app.component.scss'
 })

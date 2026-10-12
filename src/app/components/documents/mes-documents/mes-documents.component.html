@@ -18,7 +18,9 @@
                                     </p>
                                 </div>
                             </div>
+
                             <div class="table-container" [class.op-loading]="isloading">
+
                                 <!-- ══ TOOLBAR ══════════════════════════════════ -->
                                 <div class="op-toolbar">
                                     <!-- Titre + compteur -->
@@ -63,15 +65,15 @@
 
                                         <button class="op-btn op-btn-outline"
                                                 nz-tooltip nzTooltipTitle="Exporter en Excel"
+                                                [disabled]="isloading || !filteredData.length"
                                                 (click)="exportToExcel(filteredData)">
                                             <i class="fa-regular fa-file-excel"></i>
-                                            Excel
+                                            <span class="btn-label">Excel</span>
                                         </button>
 
                                         <button class="op-btn op-btn-outline"
-                                                nz-tooltip nzTooltipTitle="Nouveau personnel"
+                                                nz-tooltip nzTooltipTitle="Créer un document"
                                                 (click)="openModal()">
-                                            <!--                                            <i class="far fa-edit-3"></i>-->
                                             <i data-feather="edit-2" style="width: 15px;"></i>
                                             <!-- Masqué sur très petit écran via CSS -->
                                             <span class="btn-label">Nouveau</span>
@@ -80,115 +82,101 @@
                                 </div>
 
                                 <!-- ══ TABLE ════════════════════════════════════ -->
+                                <div class="tt-scroll-shell" [class.tt-more-right]="hScrollMore">
+                                    <div class="tree-table-wrap" #tableWrap (scroll)="syncHScroll()">
 
-                                <div class="overflow-x-auto support-ticket-table custom-scrollbar">
-                                    <nz-table
-                                        #nzTable
-                                        [nzData]="filteredData"
-                                        [nzPageSize]="10"
-                                        [nzShowPagination]="true"
-                                        [nzShowTotal]="totalTemplate"
-                                        nzShowSizeChanger
-                                        nzBordered
-                                        nzSize="small"
-                                        [nzScroll]="filteredData.length > 0 ? { x: '1200px' } : {}"
-                                        [nzNoResult]="emptyTpl"
-                                    >
-                                        <thead>
-                                        <tr>
-                                            <th nzWidth="110px"
-                                                nzColumnKey="code_docs"
-                                                [nzSortFn]="sortFns.code_docs"
-                                                [nzSortDirections]="['ascend','descend',null]"
-                                                [nzFilterFn]="filterFns.code_docs"
-                                                [nzFilters]="filters.code_docs">
-                                                Numéro doc.
-                                            </th>
-                                            <th nzWidth="180px"
-                                                nzColumnKey="lib_docs"
-                                                [nzSortFn]="sortFns.lib_docs"
-                                                [nzSortDirections]="['ascend','descend',null]"
-                                                [nzFilterFn]="filterFns.lib_docs"
-                                                [nzFilters]="filters.lib_docs">
-                                                Objet
-                                            </th>
+                                        <!-- Entête colonnes -->
+                                        <div class="tree-table-header">
+                                            <div class="ttc-code">Numéro doc.</div>
+                                            <div class="ttc-objet">Objet</div>
+                                            <div class="ttc-type">Type doc.</div>
+                                            <div class="ttc-date">Date</div>
+                                            <div class="ttc-position">Position</div>
+                                            <div class="ttc-range">Rangé ?</div>
+                                            <div class="ttc-archive">Archivé ?</div>
+                                            <div class="ttc-workflow">Workflow ?</div>
+                                            <div class="ttc-actions">Actions</div>
+                                        </div>
 
-                                            <th nzWidth="180px"
-                                                nzColumnKey="libelle_type_docs"
-                                                [nzSortFn]="sortFns.libelle_type_docs"
-                                                [nzSortDirections]="['ascend','descend',null]"
-                                                [nzFilterFn]="filterFns.libelle_type_docs"
-                                                [nzFilters]="filters.libelle_type_docs">
-                                                Type doc.
-                                            </th>
-                                            <th nzWidth="60px">
-                                                Date
-                                            </th>
-                                            <th nzWidth="60px">
-                                                Position
-                                            </th>
+                                        <!-- Lignes -->
+                                        <div class="tree-table-body">
+                                            <div class="tt-row" *ngFor="let row of rowsPage">
 
-                                            <th nzWidth="60px">
-                                                Rangé ?
-                                            </th>
-                                            <th nzWidth="60px">
-                                                Archivé ?
-                                            </th>
-                                            <th nzWidth="60px">
-                                                Workflow ?
-                                            </th>
-                                            <th nzWidth="50px" nzColumnKey="action" nzAlign="center">
-                                                Actions
-                                            </th>
-                                        </tr>
-                                        </thead>
+                                                <div class="ttc-code">
+                                                    <span class="tt-name-text tt-parent">{{ row.code_docs || '—' }}</span>
+                                                </div>
 
-                                        <tbody>
-                                        <tr *ngFor="let row of nzTable.data; let i = index"
-                                            class="op-table-row">
-                                            <td>
-                                                {{row.code_docs}}
-                                            </td>
-                                            <td>
-                                                <span class="cell-text cell-wrap">{{ row.lib_docs }}</span>
-                                            <td>
-                                                <span class="cell-text cell-wrap">{{ row.libelle_type_docs  }}</span>
-                                            </td>
-                                            <td>
-                                                <span class="cell-text cell-wrap">{{ row.date_docs }}</span>
-                                            </td>
-                                            <td>
-                                                <span class="cell-text cell-wrap">{{ row.code_boites }}</span>
-                                            </td>
-                                            <td>
-                                                <span class="cell-text cell-wrap">{{ '' }}</span>
-                                            </td>
-                                            <td>
-                                                <nz-tag [nzColor]="row.color">{{ ''}}</nz-tag>
-                                            </td>
-                                            <td>
-                                                <nz-tag [nzColor]="row.color">{{ ''}}</nz-tag>
-                                            </td>
-                                            <td nzAlign="center">
-                                                <app-doc-action-menu [doc]="row" (deleted)="onDocDeleted()"/>
-                                            </td>
-                                        </tr>
-                                        </tbody>
-                                    </nz-table>
-                                </div>
-                                <ng-template #totalTemplate let-total>
-                                    Total : <strong>{{ total }}</strong> enregistrement(s)
-                                </ng-template>
+                                                <div class="ttc-objet">
+                                                    <span class="tt-name-text" [title]="row.lib_docs">{{ row.lib_docs || '—' }}</span>
+                                                </div>
 
-                                <ng-template #emptyTpl>
-                                    <div class="op-empty-state">
-                                        <app-feather-icon class="icon-inbox" [icon]="'inbox'"></app-feather-icon>
-                                        <span>Aucune donnée trouvée !</span>
-                                        <small *ngIf="searchValue">
-                                            Aucun résultat pour « {{ searchValue }} »
-                                        </small>
+                                                <div class="ttc-type">{{ row.libelle_type_docs || '—' }}</div>
+                                                <div class="ttc-date">{{ row.date_docs || '—' }}</div>
+                                                <div class="ttc-position">{{ row.code_boites || '—' }}</div>
+
+                                                <!-- Rangé / Archivé / Workflow : l'API ne renvoie pas encore
+                                                     ces indicateurs, les cellules restent vides comme avant. -->
+                                                <div class="ttc-range">—</div>
+                                                <div class="ttc-archive">—</div>
+                                                <div class="ttc-workflow">—</div>
+
+                                                <div class="ttc-actions">
+                                                    <app-doc-action-menu [doc]="row" (deleted)="onDocDeleted()"/>
+                                                </div>
+                                            </div>
+
+                                            <!-- Empty state -->
+                                            <div *ngIf="!isloading && !filteredData.length" class="op-empty-state">
+                                                <app-feather-icon class="icon-inbox" [icon]="'inbox'"></app-feather-icon>
+                                                <span>Aucune donnée trouvée !</span>
+                                                <small *ngIf="searchValue">
+                                                    Aucun résultat pour « {{ searchValue }} »
+                                                </small>
+                                            </div>
+                                        </div>
+
                                     </div>
-                                </ng-template>
+                                </div>
+
+                                <!-- Ascenseur horizontal dessiné (visible en permanence) -->
+                                <div class="tt-hscroll" *ngIf="hScrollVisible" #hBar
+                                     (pointerdown)="onBarPointerDown($event)">
+                                    <div class="tt-hscroll-thumb"
+                                         [style.width.px]="thumbWidth"
+                                         [style.left.px]="thumbLeft"></div>
+                                </div>
+
+                                <!-- Footer : total + pagination, hors de la zone de défilement -->
+                                <div class="tree-table-footer">
+                                    <span class="tt-total">
+                                        Total : <strong>{{ filteredData.length }}</strong> enregistrement(s)
+                                    </span>
+
+                                    <div class="tt-pager" *ngIf="filteredData.length">
+                                        <select class="tt-pager-taille"
+                                                [ngModel]="pageSize"
+                                                (ngModelChange)="changerTaille($event)"
+                                                title="Lignes par page">
+                                            <option *ngFor="let t of taillesPage" [ngValue]="t">{{ t }} / page</option>
+                                        </select>
+
+                                        <button class="tt-pager-btn" type="button"
+                                                [disabled]="pageIndex <= 1"
+                                                (click)="allerPage(pageIndex - 1)"
+                                                title="Page précédente">
+                                            <i class="fa-solid fa-chevron-left"></i>
+                                        </button>
+
+                                        <span class="tt-pager-page">{{ pageIndex }} / {{ nbPages }}</span>
+
+                                        <button class="tt-pager-btn" type="button"
+                                                [disabled]="pageIndex >= nbPages"
+                                                (click)="allerPage(pageIndex + 1)"
+                                                title="Page suivante">
+                                            <i class="fa-solid fa-chevron-right"></i>
+                                        </button>
+                                    </div>
+                                </div>
 
                             </div>
                         </div>

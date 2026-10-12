@@ -132,8 +132,14 @@
                                                         <app-feather-icon class="icon-small" [icon]="'x'"></app-feather-icon>
                                                     </button>
                                                 </ng-container>
-                                                <span class="da-decided" *ngIf="!isPending(r)">
-                                                    <i class="fa-solid fa-circle-check"></i>
+                                                <span class="da-decided"
+                                                      [class.da-decided-ko]="isRejete(r)"
+                                                      *ngIf="!isPending(r)"
+                                                      nz-tooltip
+                                                      [nzTooltipTitle]="isRejete(r) ? 'Demande rejetee' : 'Demande validee'"
+                                                      nzTooltipPlacement="top">
+                                                    <i class="fa-solid"
+                                                       [ngClass]="isRejete(r) ? 'fa-circle-xmark' : 'fa-circle-check'"></i>
                                                 </span>
                                             </div>
                                         </div>

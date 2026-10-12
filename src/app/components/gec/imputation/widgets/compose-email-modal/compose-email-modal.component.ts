@@ -352,6 +352,7 @@ export class ComposeEmailModalComponent implements OnInit {
         const base: any = {
             action: ACTION_CREATION,
             document: this.selectedDoc.uid,
+            notify: this.notifyEmail,
             instruction: this.descImpute.trim(),
             est_confidentiel: this.estConfidentiel,
             active: true,
@@ -379,7 +380,7 @@ export class ComposeEmailModalComponent implements OnInit {
         const token = this.users?.access_token || '';
         const url = `${environment.api_url}api/:imputations-save`;
         this.isSaving = true;
-
+        console.log("payload ===",base)
         this.httService.postData(url, base, token).toPromise()
             .then((res: any) => {
                 this.isSaving = false;

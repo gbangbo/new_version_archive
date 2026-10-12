@@ -100,7 +100,7 @@ export class ConfirmeAuthOtpComponent implements AfterViewInit {
             "password": this.users.err
         }, '')
             .toPromise()
-            .then((res: any) => {
+            .then(async (res: any) => {
                 this.loading = false;
                 if (res.body.status) {
 
@@ -109,9 +109,28 @@ export class ConfirmeAuthOtpComponent implements AfterViewInit {
                     let response: any = {...res.body.data, ...res.body.data.datas_users};
                     delete response.datas_users;
 
+                    // Même chargement du menu qu'à la connexion simple : sans lui
+                    // la session démarre avec un `_menu` vide et routeGuardService
+                    // renvoie sur /error405 à la première navigation.
+                    let _menu: any[] = [];
+                    try {
+                        const resMenu: any = await this.httService.getData(`${environment.api_url}auth/:rolemenu?idrole=${response?.dataroles?.uid}&idsociete=${response?.datasociete?.uid}`,
+                            false, response?.access_token).toPromise();
+                        if (resMenu?.body?.success && resMenu?.body?.data?.datamenu?.length) {
+                            const trierParRang = (noeuds: any[]): any[] =>
+                                [...(noeuds || [])]
+                                    .sort((a: any, b: any) => (a?.rang ?? 0) - (b?.rang ?? 0))
+                                    .map((n: any) => ({...n, children: trierParRang(n?.children)}));
+
+                            _menu = trierParRang(resMenu.body.data.datamenu);
+                        }
+                    } catch {
+
+                    }
+
                     const mapData = {
                         ...response,
-                        _menu: [],
+                        _menu,
                         dataUsers: []
                     };
 

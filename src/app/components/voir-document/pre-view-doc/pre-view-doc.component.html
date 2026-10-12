@@ -207,13 +207,17 @@
 
                 <!-- Groupe Actions -->
                 <div class="tb-group">
+                    <!-- Imprimer / Télécharger : retirés quand l'autorisation
+                         accordée ne couvre pas l'action (cf. estAutorise). -->
                     <button class="tb-btn"
+                            *ngIf="peutImprimer"
                             (click)="printFile()"
                             [disabled]="isOffice(selectedFile.extension)"
                             title="Imprimer">
                         <i class="fa-solid fa-print"></i>
                     </button>
                     <button class="tb-btn"
+                            *ngIf="peutTelecharger"
                             (click)="downloadFile()"
                             title="Télécharger">
                         <nz-icon nzType="download"/>
@@ -367,7 +371,10 @@
                     <label class="form-label">Actions souhaitées <span class="txt-danger">*</span></label>
                     <div class="auth-checklist">
                         <label class="auth-check" *ngFor="let a of authActions" [class.active]="a.checked">
-                            <input type="checkbox" [(ngModel)]="a.checked" [name]="'act_' + a.key"/>
+                            <input type="checkbox"
+                                   [ngModel]="a.checked"
+                                   (ngModelChange)="choisirAction(a, $event)"
+                                   [name]="'act_' + a.key"/>
                             <span class="auth-check-box"><i class="fa-solid fa-check"></i></span>
                             <i [class]="a.icon" class="auth-check-ico"></i>
                             <span class="auth-check-label">{{ a.label }}</span>

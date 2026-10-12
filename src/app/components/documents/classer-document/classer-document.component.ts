@@ -3,7 +3,6 @@ import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {NzIconModule} from 'ng-zorro-antd/icon';
 import {NzSplitterModule} from 'ng-zorro-antd/splitter';
-import {NzDropDownModule} from 'ng-zorro-antd/dropdown';
 import {NzTreeFlatDataSource, NzTreeFlattener, NzTreeViewModule} from 'ng-zorro-antd/tree-view';
 import {Authorization} from '../../../protect/authorization.service';
 import {environment} from '../../../../environments/environment';
@@ -47,7 +46,7 @@ interface FlatNode {
 
 @Component({
     selector: 'app-classer-document',
-    imports: [CommonModule, FormsModule, NzTreeViewModule, NzIconModule, NzSplitterModule, NzDropDownModule, FeatherIconsComponent],
+    imports: [CommonModule, FormsModule, NzTreeViewModule, NzIconModule, NzSplitterModule, FeatherIconsComponent],
     templateUrl: './classer-document.component.html',
     styleUrl: './classer-document.component.scss',
 })
@@ -60,6 +59,10 @@ export class ClasserDocumentComponent implements OnInit {
 
     // États
     isloading = false;
+    // Le plan de classement et les pieces arrivent par deux appels distincts et
+    // l'arbre n'est complet qu'une fois les deux revenus : les panneaux gauches
+    // restent donc en chargement tant que l'un des deux tourne encore.
+    isLoadingPieces = false;
     isSaving = false;
     isUploading = false;
     uploadCurrent = 0;
@@ -84,7 +87,6 @@ export class ClasserDocumentComponent implements OnInit {
     selectedItem: ClassifyNode | null = null;
     breadcrumb: { name: string; uid: string | null }[] = [];
 
-    sortBy: 'date' | 'name' | 'type' = 'name';
 
     // ── Prévisualisation ──────────────────────────────────────────
     showPreview = false;
@@ -200,6 +202,7 @@ export class ClasserDocumentComponent implements OnInit {
     }
 
     showPieces(iduser = '', iddocuments = '') {
+        this.isLoadingPieces = true;
         this.httService
             .getData(
                 `${environment.api_url}api/:consultation-pieces-documents?iduser=${iduser}&iddocuments=${iddocuments}`,
@@ -207,7 +210,7 @@ export class ClasserDocumentComponent implements OnInit {
             )
             .toPromise()
             .then((res: any) => {
-                console.log("pieces ======", res.body.data)
+                this.isLoadingPieces = false;
                 if (res.body.status || res.body.success) {
                     this.pieceFiles = res.body.data.map((d: any) => {
                         return {
@@ -220,6 +223,7 @@ export class ClasserDocumentComponent implements OnInit {
                 }
             })
             .catch(() => {
+                this.isLoadingPieces = false;
             });
     }
 
@@ -370,18 +374,22 @@ export class ClasserDocumentComponent implements OnInit {
         return null;
     }
 
+    // Les deux listes gardent l'ordre renvoye par l'API : plus de tri cote client.
     get panelFolders(): ClassifyNode[] {
-        const items = this.folderContents.filter(n => !n.isFile);
-        return this.sortBy === 'name' ? [...items].sort((a, b) => a.name.localeCompare(b.name)) : items;
+        return this.folderContents.filter(n => !n.isFile);
     }
 
     get panelFiles(): ClassifyNode[] {
-        const items = this.folderContents.filter(n => n.isFile);
-        return this.sortBy === 'name' ? [...items].sort((a, b) => a.name.localeCompare(b.name)) : items;
+        return this.folderContents.filter(n => n.isFile);
     }
 
     get isEmpty(): boolean {
-        return !this.isloading && this.folderContents.length === 0;
+        return !this.isChargementEnCours && this.folderContents.length === 0;
+    }
+
+    // Etat de chargement commun aux deux panneaux de gauche (arbre + fichiers).
+    get isChargementEnCours(): boolean {
+        return this.isloading || this.isLoadingPieces;
     }
 
     get zoomPercent(): number {
@@ -823,6 +831,19 @@ export class ClasserDocumentComponent implements OnInit {
         this.showCatOrder('', uidTypeDoc, '');
     }
 
+    // L'API renvoie de l'ISO 8601 (2026-09-27T17:42:55.387092Z) : on l'affiche
+    // au format local jj/mm/aaaa hh:mm. Une valeur illisible est rendue telle
+    // quelle plutot que masquee, pour ne pas cacher une donnee inattendue.
+    formatDate(valeur?: string): string {
+        if (!valeur) return '';
+        const d = new Date(valeur);
+        if (isNaN(d.getTime())) return valeur;
+        return d.toLocaleString('fr-FR', {
+            day: '2-digit', month: '2-digit', year: 'numeric',
+            hour: '2-digit', minute: '2-digit',
+        });
+    }
+
     formatFileSize(bytes?: number): string {
         if (!bytes) return '';
         if (bytes < 1024) return `${bytes} o`;
@@ -836,10 +857,6 @@ export class ClasserDocumentComponent implements OnInit {
 
     get folderCount(): number {
         return this.treeControl.dataNodes?.filter(n => n.expandable).length || 0;
-    }
-
-    setSortBy(sort: 'date' | 'name' | 'type'): void {
-        this.sortBy = sort;
     }
 
 

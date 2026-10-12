@@ -1526,3 +1526,352 @@
   align-items: center;
 }
 
+// ══════════════════════════════════════════
+// TABLEAU (même gabarit que entites/societe)
+// ══════════════════════════════════════════
+
+// Colonnes resserrées : le tableau tient dans un écran courant, le défilement
+// horizontal n'apparaît qu'en dessous de la somme des largeurs.
+$col-code: 150px;              // « 00000004/DI/DEPARTEMENT INFORMATIQUE/2026 »
+$col-objet: 280px;             // colonne extensible : l'objet est le plus long
+$col-type: 170px;
+$col-date: 110px;              // « 05/09/2026 »
+$col-position: 120px;
+$col-range: 90px;
+$col-archive: 90px;
+$col-workflow: 100px;
+$col-actions: 90px;            // bouton rond du menu d'actions + padding
+$tt-min-width: $col-code + $col-objet + $col-type + $col-date + $col-position +
+               $col-range + $col-archive + $col-workflow + $col-actions;
+
+.tree-table-wrap {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  border-top: 1px solid #E2E8F0;
+  overflow-x: auto;                     // défilement horizontal uniquement
+  overflow-y: hidden;                   // pas d'ascenseur vertical : la page défile
+  -webkit-overflow-scrolling: touch;
+
+  &::-webkit-scrollbar {
+    height: 0;                          // remplacée par .tt-hscroll, toujours visible
+  }
+}
+
+// ── Header ────────────────────────────────
+.tree-table-header {
+  display: flex;
+  align-items: center;
+  padding: 0;
+  background: #F1F5F9;
+  border-bottom: 1px solid #E2E8F0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #374151;
+  min-height: 38px;
+  min-width: $tt-min-width;
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  user-select: none;
+
+  > div {
+    padding: 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    height: 38px;
+    white-space: nowrap;
+    border-right: 1px solid #E2E8F0;
+
+    &:last-child {
+      border-right: none;
+    }
+  }
+}
+
+// ── Body ──────────────────────────────────
+.tree-table-body {
+  overflow: visible;        // le défilement est géré par .tree-table-wrap
+  min-width: $tt-min-width;
+}
+
+// ── Ligne ─────────────────────────────────
+.tt-row {
+  display: flex;
+  align-items: stretch;
+  min-height: 38px;
+  border-bottom: 1px solid #F1F5F9;
+  transition: background 0.12s;
+  width: 100%;
+  min-width: $tt-min-width;
+  line-height: 1;
+
+  &:hover {
+    background: #EFF6FF;
+
+    .tt-action-btn {
+      opacity: 1;
+    }
+  }
+
+  > div {
+    padding: 6px 12px;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    overflow: hidden;
+    font-size: 12px;
+    color: #475569;
+    border-right: 1px solid #F1F5F9;
+
+    &:last-child {
+      border-right: none;
+    }
+  }
+}
+
+// ── Colonnes ──────────────────────────────
+.ttc-code {
+  width: $col-code;
+  min-width: $col-code;
+}
+
+.ttc-objet {
+  // Seule colonne extensible : elle absorbe la largeur restante.
+  flex: 1 0 $col-objet;
+  width: $col-objet;
+  min-width: $col-objet;
+}
+
+.ttc-type {
+  width: $col-type;
+  min-width: $col-type;
+}
+
+.ttc-date {
+  width: $col-date;
+  min-width: $col-date;
+  color: #64748B;
+}
+
+.ttc-position {
+  width: $col-position;
+  min-width: $col-position;
+}
+
+.ttc-range {
+  width: $col-range;
+  min-width: $col-range;
+}
+
+.ttc-archive {
+  width: $col-archive;
+  min-width: $col-archive;
+}
+
+.ttc-workflow {
+  width: $col-workflow;
+  min-width: $col-workflow;
+}
+
+.ttc-actions {
+  width: $col-actions;
+  min-width: $col-actions;
+  justify-content: center;
+}
+
+// ── Aucune troncature : le texte va à la ligne dans toutes les colonnes ──
+.tt-row > div,
+.tt-row > div * {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+// ── Contenu cellule ───────────────────────
+.tt-name-text {
+  font-size: 12px;
+  color: #374151;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  line-height: 1.35;
+}
+
+.tt-parent {
+  font-weight: 600;
+  color: #0F172A;
+}
+
+// ── Bouton action ─────────────────────────
+.tt-action-btn {
+  transition: opacity 0.15s;
+  width: 28px !important;
+  height: 28px !important;
+}
+
+// ── Ascenseur horizontal dessiné ──────────
+.tt-scroll-shell {
+  position: relative;
+
+  &.tt-more-right::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 28px;
+    pointer-events: none;
+    background: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.95));
+  }
+}
+
+.tt-hscroll {
+  position: relative;
+  height: 10px;
+  margin: 6px 12px 0;
+  border-radius: 6px;
+  background: #F1F5F9;
+  border: 1px solid #E2E8F0;
+  cursor: pointer;
+  touch-action: none;             // le glissement pilote le tableau, pas la page
+  user-select: none;
+}
+
+.tt-hscroll-thumb {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: 6px;
+  background: #94A3B8;
+  transition: background 0.15s;
+}
+
+.tt-hscroll:hover .tt-hscroll-thumb,
+.tt-hscroll:active .tt-hscroll-thumb {
+  background: #64748B;
+}
+
+// ── Footer + pagination ───────────────────
+.tree-table-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 8px 16px;
+  border-top: 1px solid #E2E8F0;
+  background: #F8FAFC;
+  font-size: 12px;
+  color: #64748B;
+  min-height: 40px;
+
+  strong {
+    color: #0F172A;
+    font-weight: 700;
+  }
+}
+
+.tt-pager {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tt-pager-taille {
+  height: 28px;
+  padding: 0 6px;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 6px;
+  background: #fff;
+  font-size: 12px;
+  color: #475569;
+  cursor: pointer;
+}
+
+.tt-pager-btn {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 6px;
+  background: #fff;
+  color: #475569;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+
+  &:hover:not(:disabled) {
+    background: #EFF6FF;
+    border-color: #BFDBFE;
+  }
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+}
+
+.tt-pager-page {
+  font-size: 12px;
+  color: #0F172A;
+  font-weight: 600;
+  min-width: 64px;
+  text-align: center;
+}
+
+// ── Mobile : colonnes resserrées mais lisibles ───────────────────────
+@media (max-width: 767px) {
+  $m-code: 120px;
+  $m-objet: 180px;
+  $m-type: 130px;
+  $m-date: 90px;
+  $m-position: 100px;
+  $m-range: 80px;
+  $m-archive: 80px;
+  $m-workflow: 90px;
+  $m-actions: 80px;
+  $m-min-width: $m-code + $m-objet + $m-type + $m-date + $m-position +
+                $m-range + $m-archive + $m-workflow + $m-actions;
+
+  .tree-table-header,
+  .tree-table-body,
+  .tt-row {
+    min-width: $m-min-width;
+  }
+
+  .tree-table-header > div,
+  .tt-row > div {
+    padding: 6px 8px;
+    font-size: 11px;
+  }
+
+  // Sélecteurs enfants pour repasser devant `.tt-row > div { flex-shrink: 0 }`
+  .tree-table-header > .ttc-objet,
+  .tt-row > .ttc-objet {
+    flex: 1 0 $m-objet;
+    min-width: $m-objet;
+  }
+
+  .ttc-code     { width: $m-code !important;     min-width: $m-code !important; }
+  .ttc-type     { width: $m-type !important;     min-width: $m-type !important; }
+  .ttc-date     { width: $m-date !important;     min-width: $m-date !important; }
+  .ttc-position { width: $m-position !important; min-width: $m-position !important; }
+  .ttc-range    { width: $m-range !important;    min-width: $m-range !important; }
+  .ttc-archive  { width: $m-archive !important;  min-width: $m-archive !important; }
+  .ttc-workflow { width: $m-workflow !important; min-width: $m-workflow !important; }
+
+  .ttc-actions {
+    width: $m-actions;
+    min-width: $m-actions;
+  }
+
+  .tt-name-text {
+    font-size: 11px;
+    line-height: 1.3;
+  }
+}
+

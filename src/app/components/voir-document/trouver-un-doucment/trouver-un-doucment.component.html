@@ -363,11 +363,40 @@
                     <small>Essayez d'autres mots-clés ou élargissez vos critères de filtrage</small>
                 </div>
 
+                <!-- Degrades du dossier dessine : declares une seule fois pour
+                     toute la liste, chaque carte les reference par leur id. -->
+                <svg class="svg-defs" aria-hidden="true" focusable="false">
+                    <defs>
+                        <linearGradient id="awpFolderBack" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0" stop-color="#fbbf5c"/>
+                            <stop offset="1" stop-color="#e8982a"/>
+                        </linearGradient>
+                        <linearGradient id="awpFolderFront" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0" stop-color="#ffd88a"/>
+                            <stop offset="1" stop-color="#f5a623"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+
                 <!-- Cartes -->
                 <div class="results-list" *ngIf="results.length > 0">
-                    <div class="doc-card" *ngFor="let doc of results; let i = index">
+                    <div class="doc-card" *ngFor="let doc of resultsPage; let i = index">
                         <div class="doc-icon-wrap">
+
+                            <!-- Document sans extension : dossier dessine (rabat,
+                                 feuille qui depasse, face avant en degrade). -->
+                            <svg *ngIf="isDossier(doc.extension)" class="doc-folder-svg"
+                                 viewBox="0 0 48 42" aria-hidden="true" focusable="false">
+                                <path d="M3 9a4 4 0 0 1 4-4h11.2c1.2 0 2.4.5 3.2 1.5l2.4 2.8c.4.5 1 .7 1.6.7H41a4 4 0 0 1 4 4v22a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9z"
+                                      fill="url(#awpFolderBack)"/>
+                                <rect x="11" y="11" width="26" height="11" rx="2" fill="#ffffff" opacity="0.92"/>
+                                <path d="M3 17h42v19a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V17z"
+                                      fill="url(#awpFolderFront)"/>
+                                <path d="M3 17h42v2H3z" fill="#ffffff" opacity="0.35"/>
+                            </svg>
+
                             <nz-icon
+                                *ngIf="!isDossier(doc.extension)"
                                 [nzType]="getFileIcon(doc.extension)"
                                 nzTheme="twotone"
                                 [nzTwotoneColor]="getFileIconColor(doc.extension)">
@@ -404,6 +433,38 @@
 <!--                                <i class="icofont icofont-download-alt"></i>-->
 <!--                            </button>-->
                         </div>
+                    </div>
+                </div>
+
+                <!-- Pagination (meme gabarit que le pager de documents-envoyes) -->
+                <div class="results-pager" *ngIf="results.length > 0">
+                    <span class="rp-total">
+                        Total : <strong>{{ results.length }}</strong> document(s)
+                    </span>
+
+                    <div class="rp-controls">
+                        <select class="rp-taille"
+                                [ngModel]="pageSize"
+                                (ngModelChange)="changerTaille($event)"
+                                title="Documents par page">
+                            <option *ngFor="let t of taillesPage" [ngValue]="t">{{ t }} / page</option>
+                        </select>
+
+                        <button class="rp-btn" type="button"
+                                [disabled]="pageIndex <= 1"
+                                (click)="allerPage(pageIndex - 1)"
+                                title="Page precedente">
+                            <i class="fa-solid fa-chevron-left"></i>
+                        </button>
+
+                        <span class="rp-page">{{ pageIndex }} / {{ nbPages }}</span>
+
+                        <button class="rp-btn" type="button"
+                                [disabled]="pageIndex >= nbPages"
+                                (click)="allerPage(pageIndex + 1)"
+                                title="Page suivante">
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </button>
                     </div>
                 </div>
 

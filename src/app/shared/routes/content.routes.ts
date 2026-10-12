@@ -1,5 +1,6 @@
 import {Routes} from "@angular/router";
 import {AdminGuard} from "../guard/admin.guard";
+import {routeGuardService} from "../../protect/auth.service";
 
 export const content: Routes = [
     {
@@ -58,6 +59,7 @@ export const content: Routes = [
     },
     {
         path: 'user',
+        canActivate: [AdminGuard, routeGuardService],
         loadChildren: () => import('../../components/users/users.routes').then(r => r.users),
         data: {
             breadcrumb: "Gestion des accès"
@@ -307,14 +309,14 @@ export const content: Routes = [
 
     {
         path: 'entites',
-        canActivate:[AdminGuard],
+        canActivate:[AdminGuard, routeGuardService],
         loadChildren: () => import('../../components/entites/entites.routes').then(r => r.entites),
         data: {
             breadcrumb: "Entité"
         },
     }, {
         path: 'records-management',
-        canActivate:[AdminGuard],
+        canActivate:[AdminGuard, routeGuardService],
         loadChildren: () => import('../../components/configuration/configuration.routes').then(r => r.configuration),
         data: {
             breadcrumb: "Records Management"
@@ -322,7 +324,7 @@ export const content: Routes = [
     },
     {
         path: 'documents',
-        canActivate:[AdminGuard],
+        canActivate:[AdminGuard, routeGuardService],
         loadChildren: () => import('../../components/documents/documents.routes').then(r => r.documents),
         data: {
             breadcrumb: "Documents"
@@ -330,7 +332,7 @@ export const content: Routes = [
     },
     {
         path: 'recherche',
-        canActivate:[AdminGuard],
+        canActivate:[AdminGuard, routeGuardService],
         loadChildren: () => import('../../components/voir-document/voir-documents.routes').then(r => r.voirdocuments),
         data: {
             breadcrumb: "Recherche"
@@ -338,7 +340,7 @@ export const content: Routes = [
     },
     {
         path: 'rh',
-        canActivate:[AdminGuard],
+        canActivate:[AdminGuard, routeGuardService],
         loadChildren: () => import('../../components/rh/rh.routes').then(r => r.rh),
         data: {
             breadcrumb: "Ressources humaines"
@@ -346,7 +348,7 @@ export const content: Routes = [
     },
     {
         path: 'menu',
-        canActivate:[AdminGuard],
+        canActivate:[AdminGuard, routeGuardService],
         loadChildren: () => import('../../components/menu/menu.routes').then(r => r.menuRoutes),
         data: {
             breadcrumb: "Menu"
@@ -354,14 +356,14 @@ export const content: Routes = [
     },
     {
         path: 'importer',
-        canActivate:[AdminGuard],
+        canActivate:[AdminGuard, routeGuardService],
         loadChildren: () => import('../../components/importer/importer.routes').then(r => r.importerRoutes),
         data: {
             breadcrumb: "Importation"
         }
     }, {
         path: 'gec',
-        canActivate:[AdminGuard],
+        canActivate:[AdminGuard, routeGuardService],
         loadChildren: () => import('../../components/gec/gec.routes').then(r => r.gecRoutes),
         data: {
             breadcrumb: "Gestion électronique des courriers"
@@ -369,7 +371,7 @@ export const content: Routes = [
     },
     {
         path: 'accueil',
-        canActivate:[AdminGuard],
+        canActivate:[AdminGuard], //routeGuardService
         loadChildren: () => import('../../components/accueil/accueil.routes').then(r => r.accueilRoutes),
         data: {
             breadcrumb: "Accueil"

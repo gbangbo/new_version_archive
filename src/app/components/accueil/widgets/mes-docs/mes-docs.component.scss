@@ -399,29 +399,38 @@
     box-shadow: 0 10px 26px rgba(0, 54, 110, 0.14);
 
     .doc-icon-wrap {
-      box-shadow: 0 6px 16px rgba(0, 54, 110, 0.35);
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.12);
     }
   }
 }
 
+// Vignette identique a celle des resultats de recherche : dossier dessine
+// sur fond gris clair, plutot qu'une icone blanche sur pastille bleue.
 .doc-icon-wrap {
   width: 48px;
   height: 48px;
-  background: linear-gradient(135deg, rgba(0, 54, 110), #1e5f9e);
+  background: #f4f6f9;
   border-radius: 13px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  box-shadow: 0 4px 10px rgba(0, 54, 110, 0.24);
   transition: transform 0.16s ease, box-shadow 0.16s ease;
+}
 
-  ::ng-deep svg {
-    width: 22px !important;
-    height: 22px !important;
-    color: #fff !important;
-    fill: rgba(255, 255, 255, 0.12) !important;
-  }
+// Bloc de <defs> partage : invisible, il ne porte que les degrades.
+.svg-defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.doc-folder-svg {
+  width: 30px;
+  height: 30px;
+  display: block;
+  filter: drop-shadow(0 2px 3px rgba(224, 143, 24, 0.35));
 }
 
 .doc-avatar {

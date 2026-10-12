@@ -235,6 +235,12 @@ export class DemandesAutorisationComponent implements OnInit, AfterViewInit {
     }
 
     // ── Décision : validation / rejet ─────────────────────────────────
+    // La pastille de la colonne « Decision » doit distinguer un rejet d'une
+    // validation : sans cela une demande rejetee affichait la coche verte.
+    isRejete(r: DemandeRow): boolean {
+        return this.normalizeStatut(r?.statut || '') === 'rejected';
+    }
+
     isPending(r: DemandeRow): boolean {
         const v = (r?.statut || '').toLowerCase();
         if (!v) return true;

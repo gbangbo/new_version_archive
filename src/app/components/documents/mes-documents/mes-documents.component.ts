@@ -1,20 +1,14 @@
-import {Component, OnInit} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, HostListener, OnInit, ViewChild} from '@angular/core';
 import * as XLSX from 'xlsx';
 import {CardComponent} from "../../../shared/components/ui/card/card.component";
 import {CommonModule} from "@angular/common";
+import {FormsModule} from "@angular/forms";
 import {Authorization} from "../../../protect/authorization.service";
 import {HttpService} from "../../../core/http.service";
 import {environment} from "../../../../environments/environment";
-import {NzTableModule} from "ng-zorro-antd/table";
 import {NzTooltipDirective} from "ng-zorro-antd/tooltip";
-import {Select2Module} from "ng-select2-component";
-import {NzSelectModule} from "ng-zorro-antd/select";
-import {NzTabsModule} from "ng-zorro-antd/tabs";
-import {NzIconModule} from "ng-zorro-antd/icon";
-import {TableComponent} from "../../../shared/components/ui/table/table.component";
 import {FeatherIconComponent} from "../../../shared/components/ui/feather-icon/feather-icon.component";
 import moment from "moment";
-import {NzTagModule} from "ng-zorro-antd/tag";
 import {Router} from "@angular/router";
 import {DocActionMenuComponent} from "../../../shared/components/ui/doc-action-menu/doc-action-menu.component";
 
@@ -31,19 +25,16 @@ interface RowData {
     selector: 'app-mes-documents',
     imports: [
         CommonModule,
+        FormsModule,
         CardComponent,
         NzTooltipDirective,
-        NzSelectModule,
-        Select2Module,
-        NzTabsModule,
-        NzIconModule,
-        NzTagModule,
-        NzTableModule, TableComponent, FeatherIconComponent, DocActionMenuComponent],
+        FeatherIconComponent,
+        DocActionMenuComponent],
     providers: [],
     templateUrl: './mes-documents.component.html',
     styleUrl: './mes-documents.component.scss',
 })
-export class MesDocumentsComponent implements OnInit {
+export class MesDocumentsComponent implements OnInit, AfterViewInit {
     dataSociete: any = [];
 
     private users: any = [];
@@ -57,42 +48,22 @@ export class MesDocumentsComponent implements OnInit {
 
     filteredData: RowData[] = [];
 
-    // ── Fonctions de tri ──────────────────────────────────────
-    sortFns = {
-        libelle_type_docs: (a: RowData, b: RowData) =>
-            (a.libelle_type_docs ?? '').localeCompare(b.libelle_type_docs ?? ''),
-        code_docs: (a: RowData, b: RowData) =>
-            (a.code_docs ?? '').localeCompare(b.code_docs ?? ''),
-        lib_docs: (a: RowData, b: RowData) =>
-            (a.lib_docs ?? '').localeCompare(b.lib_docs ?? '')
-    };
+    // ── Pagination (gabarit societe : pager maison dans le pied du tableau) ──
+    pageIndex = 1;
+    pageSize = 10;
+    readonly taillesPage = [10, 20, 50, 100];
 
-    // ── Filtres ───────────────────────────────────────────────
-    filters: {
-        lib_docs: { text: string; value: string }[];
-        code_docs: { text: string; value: string }[];
-        libelle_type_docs: { text: string; value: string }[];
-    } = {
-        lib_docs: [],
-        code_docs: [],
-        libelle_type_docs: [],
-    };
+    // ── Ascenseur horizontal dessiné (les barres natives sont masquées sur iOS) ──
+    @ViewChild('tableWrap') tableWrap?: ElementRef<HTMLDivElement>;
+    @ViewChild('hBar') hBar?: ElementRef<HTMLDivElement>;
+    hScrollVisible = false;
+    hScrollMore = false;
+    thumbWidth = 0;
+    thumbLeft = 0;
+    private dragging = false;
+    private dragStartX = 0;
+    private dragStartScroll = 0;
 
-    filterFns = {
-        // Filtre sur nom_beneficiaire
-        libelle_type_docs: (list: string[], item: RowData) =>
-            list.some(val =>
-                (item.libelle_type_docs ?? '').toLowerCase().includes(val.toLowerCase())
-            ),
-        code_docs: (list: string[], item: RowData) =>
-            list.some(val =>
-                (item.code_docs ?? '').toLowerCase().includes(val.toLowerCase())
-            ),
-        lib_docs: (list: string[], item: RowData) =>
-            list.some(val =>
-                (item.lib_docs ?? '').toLowerCase().includes(val.toLowerCase())
-            )
-    };
     private dataBenef: any = [];
 
     constructor(private autor: Authorization,
@@ -115,6 +86,8 @@ export class MesDocumentsComponent implements OnInit {
                 Object.values(row).some(v => String(v).toLowerCase().includes(val))
             )
             : [...this.dataBenef];
+        this.pageIndex = 1;               // une nouvelle recherche repart de la première page
+        setTimeout(() => this.syncHScroll());
     }
 
     // ── Rechargement après suppression d'un document ──────────
@@ -131,7 +104,6 @@ export class MesDocumentsComponent implements OnInit {
             .then((res: any) => {
                 this.isloading = false;
                 if (res.body.status) {
-                    console.log("res.body.data ===", res.body.data)
                     this.dataBenef = res.body.data.map((e: any) => {
 
                         return {
@@ -142,34 +114,10 @@ export class MesDocumentsComponent implements OnInit {
                             date_docs: moment(e?.date_docs).format('DD/MM/YYYY')
                         }
                     });
-                    this.filters = {
-                        ...this.filters,
-                        libelle_type_docs: [...new Set(this.dataBenef?.map((e: any) => e.libelle_type_docs))]
-                            .filter((v: any) => v)
-                            .map((v: any) => ({
-                                text: v,
-                                value: v
-                            })),
-                        code_docs: [...new Set(
-                            this.dataBenef
-                                ?.filter((e: any) => e?.code_docs)
-                                .map((e: any) => e.code_docs)
-                        )].map((v: any) => ({
-                            text: v,
-                            value: v
-                        })) || [],
-                        lib_docs: [...new Set(
-                            this.dataBenef
-                                ?.filter((e: any) => e?.lib_docs)
-                                .map((e: any) => e.lib_docs)
-                        )].map((v: any) => ({
-                            text: v,
-                            value: v
-                        })) || [],
-                    }
                     this.filteredData = [...this.dataBenef];
+                    this.pageIndex = 1;
                 }
-
+                setTimeout(() => this.syncHScroll());
             })
             .catch((err) => {
                 this.isloading = false;
@@ -182,31 +130,125 @@ export class MesDocumentsComponent implements OnInit {
         this.router.navigate(['/documents/creer-un-document']);
     }
 
+    // ── Pagination ────────────────────────────────────────────
+    get nbPages(): number {
+        return Math.max(1, Math.ceil(this.filteredData.length / this.pageSize));
+    }
+
+    get rowsPage(): RowData[] {
+        const debut = (this.pageIndex - 1) * this.pageSize;
+        return this.filteredData.slice(debut, debut + this.pageSize);
+    }
+
+    allerPage(page: number): void {
+        const cible = Math.min(Math.max(page, 1), this.nbPages);
+        if (cible === this.pageIndex) return;
+        this.pageIndex = cible;
+        setTimeout(() => this.syncHScroll());
+    }
+
+    changerTaille(taille: number): void {
+        if (taille === this.pageSize) return;
+        this.pageSize = taille;
+        this.pageIndex = 1;
+        setTimeout(() => this.syncHScroll());
+    }
+
 
     exportToExcel(filteredData: any) {
+        // Les colonnes exportées suivent celles du tableau.
         const rows = filteredData.map((row: any) => ({
-            'Nom & Prénoms': row.name || '',
-            'Email': row?.datapersonnel?.emailAgent || '',
-            'Sexe': row?.datapersonnel?.sexe || '',
-            'Site': row.libelle_site || '',
+            'Numéro doc.': row.code_docs || '',
+            'Objet': row.lib_docs || '',
+            'Type doc.': row.libelle_type_docs || '',
+            'Date': row.date_docs || '',
+            'Position': row.code_boites || '',
             'Service': row.libelle_service || '',
-            'Fonction': row.libelle_fonction || '',
-            'Période': row.periode || '',
-            'Jours restants': row.nbreJourRestant || '',
-            'Contact': row.telDomicile || '',
-            'Date création': row.created_at || '',
         }));
 
         const ws = XLSX.utils.json_to_sheet(rows);
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'Liste du personnel');
+        XLSX.utils.book_append_sheet(wb, ws, 'Liste des documents');
 
         const colWidths = Object.keys(rows[0] || {}).map(key => ({
             wch: Math.max(key.length, ...rows.map((r: any) => String(r[key] || '').length)) + 2
         }));
         ws['!cols'] = colWidths;
 
-        const fileName = `personnel_${moment().format('YYYYMMDD_HHmmss')}.xlsx`;
+        const fileName = `documents_${moment().format('YYYYMMDD_HHmmss')}.xlsx`;
         XLSX.writeFile(wb, fileName);
+    }
+
+    // ══ Ascenseur horizontal personnalisé ═══════════════════════════════
+    ngAfterViewInit(): void {
+        setTimeout(() => this.syncHScroll());
+    }
+
+    @HostListener('window:resize')
+    syncHScroll(): void {
+        const el = this.tableWrap?.nativeElement;
+        if (!el) {
+            return;
+        }
+        const maxScroll = el.scrollWidth - el.clientWidth;
+        this.hScrollVisible = maxScroll > 2;
+        this.hScrollMore = el.scrollLeft < maxScroll - 2;
+
+        const barEl = this.hBar?.nativeElement;
+        if (this.hScrollVisible && !barEl) {
+            // la barre vient d'apparaître : on recalcule une fois qu'elle est rendue
+            setTimeout(() => this.syncHScroll());
+        }
+
+        const track = barEl?.clientWidth || el.clientWidth;
+        this.thumbWidth = Math.max(40, Math.round(track * (el.clientWidth / el.scrollWidth)));
+        const maxX = track - this.thumbWidth;
+        this.thumbLeft = maxScroll > 0 ? Math.round((el.scrollLeft / maxScroll) * maxX) : 0;
+    }
+
+    onBarPointerDown(ev: PointerEvent): void {
+        const el = this.tableWrap?.nativeElement;
+        const bar = this.hBar?.nativeElement;
+        if (!el || !bar) {
+            return;
+        }
+        const maxScroll = el.scrollWidth - el.clientWidth;
+        const rect = bar.getBoundingClientRect();
+        const maxX = rect.width - this.thumbWidth;
+        const pointerX = ev.clientX - rect.left;
+
+        // clic hors du pouce : on saute directement à cette position
+        if (pointerX < this.thumbLeft || pointerX > this.thumbLeft + this.thumbWidth) {
+            const x = Math.min(Math.max(pointerX - this.thumbWidth / 2, 0), maxX);
+            el.scrollLeft = maxX > 0 ? (x / maxX) * maxScroll : 0;
+        }
+
+        this.dragging = true;
+        this.dragStartX = ev.clientX;
+        this.dragStartScroll = el.scrollLeft;
+        ev.preventDefault();
+        this.syncHScroll();
+    }
+
+    @HostListener('document:pointermove', ['$event'])
+    onBarPointerMove(ev: PointerEvent): void {
+        if (!this.dragging) {
+            return;
+        }
+        const el = this.tableWrap?.nativeElement;
+        const bar = this.hBar?.nativeElement;
+        if (!el || !bar) {
+            return;
+        }
+        const maxScroll = el.scrollWidth - el.clientWidth;
+        const maxX = bar.clientWidth - this.thumbWidth;
+        const dx = ev.clientX - this.dragStartX;
+        el.scrollLeft = this.dragStartScroll + (maxX > 0 ? dx * (maxScroll / maxX) : 0);
+    }
+
+    @HostListener('document:pointerup')
+    @HostListener('document:pointercancel')
+    onBarPointerUp(): void {
+        this.dragging = false;
     }
 }

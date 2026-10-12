@@ -36,26 +36,10 @@
                     Enregistrement...
                 </ng-container>
             </div>
-            <button class="topbar-icon-btn" nz-dropdown [nzDropdownMenu]="sortMenu" nzTrigger="click" title="Trier">
-                <i data-feather="sliders"></i>
-            </button>
             <button class="topbar-icon-btn" (click)="refreshAll()" title="Actualiser">
                 <i data-feather="refresh-ccw"></i>
             </button>
         </div>
-
-        <nz-dropdown-menu #sortMenu="nzDropdownMenu">
-            <ul nz-menu style="min-width:160px">
-                <li nz-menu-item (click)="setSortBy('date')">
-                    <i class="fa-regular fa-calendar mr-2"></i> Ordre API
-                    <i *ngIf="sortBy === 'date'" class="fa-solid fa-check ml-2" style="color:#0054b4"></i>
-                </li>
-                <li nz-menu-item (click)="setSortBy('name')">
-                    <i class="fa-solid fa-a mr-2"></i> Nom (A→Z)
-                    <i *ngIf="sortBy === 'name'" class="fa-solid fa-check ml-2" style="color:#0054b4"></i>
-                </li>
-            </ul>
-        </nz-dropdown-menu>
     </div>
 
     <!-- ══ BANNIÈRE UPLOAD ══════════════════════════════════════════════ -->
@@ -91,17 +75,17 @@
                 <!-- Corps arbre -->
                 <div class="tree-body" [class.tree-drag-active]="!!draggedItemUid">
 
-                    <div class="tree-loading" *ngIf="isloading">
+                    <div class="tree-loading" *ngIf="isChargementEnCours">
                         <span class="spin-ring"></span>
                         Chargement du plan de classement...
                     </div>
 
-                    <div class="tree-empty" *ngIf="!isloading && !treeData.length">
+                    <div class="tree-empty" *ngIf="!isChargementEnCours && !treeData.length">
                         <i class="fa-regular fa-folder"></i>
                         <p>Aucun plan de classement disponible.</p>
                     </div>
 
-                    <ng-container *ngIf="!isloading && treeData.length">
+                    <ng-container *ngIf="!isChargementEnCours && treeData.length">
 
                         <!-- Zone de drop racine -->
                         <div class="root-drop-zone" *ngIf="draggedItemUid"
@@ -242,7 +226,7 @@
                 <!-- Corps du panneau -->
                 <div class="fm-body">
 
-                    <div class="fm-loading" *ngIf="isloading">
+                    <div class="fm-loading" *ngIf="isChargementEnCours">
                         <span class="spin-ring"></span> Chargement...
                     </div>
 
@@ -257,18 +241,18 @@
 
                     <!-- Rien de sélectionné -->
                     <div class="fm-placeholder"
-                         *ngIf="!isloading && !currentFolderUid && folderContents.length === 0">
+                         *ngIf="!isChargementEnCours && !currentFolderUid && folderContents.length === 0">
                         <i class="fa-regular fa-hand-pointer fm-placeholder-icon"></i>
                         <p>Cliquez sur un dossier dans le plan de classement</p>
                     </div>
 
                     <!-- ── Vue LISTE ────────────────────────────────── -->
-                    <div class="fm-list" *ngIf="!isloading && !isEmpty && viewMode === 'list'">
+                    <div class="fm-list" *ngIf="!isChargementEnCours && !isEmpty && viewMode === 'list'">
 
                         <div class="fm-list-header">
                             <span class="lh-name">Nom</span>
                             <span class="lh-type">Type</span>
-                            <span class="lh-date">Date Mod.</span>
+                            <span class="lh-date">Date </span>
                             <span class="lh-size">Taille</span>
                         </div>
 
@@ -294,7 +278,7 @@
                             <i class="fa-regular fa-folder fm-list-icon fm-folder-color"></i>
                             <span class="fm-list-name">{{ folder.name }}</span>
                             <span class="fm-list-type-label">Dossier de fichiers</span>
-                            <span class="fm-list-date">{{ folder.date_modified || '' }}</span>
+                            <span class="fm-list-date">{{ formatDate(folder.date_modified) }}</span>
                             <span class="fm-list-size"></span>
                             <button class="fm-list-row-menu" (click)="$event.stopPropagation()" title="Options">
                                 <i data-feather="more-vertical"></i>
@@ -316,7 +300,7 @@
                                 {{ file.name }}<span *ngIf="file.extension" class="fm-list-ext-inline">.{{ file.extension }}</span>
                             </span>
                             <span class="fm-list-type-label" *ngIf="file.extension">{{ getFileExtLabel(file.extension) }}</span>
-                            <span class="fm-list-date">{{ file.date_modified || '' }}</span>
+                            <span class="fm-list-date">{{ formatDate(file.date_modified) }}</span>
                             <span class="fm-list-size">{{ formatFileSize(file.file_size) }}</span>
                             <button class="fm-list-row-menu" (click)="$event.stopPropagation()" title="Options">
                                 <i data-feather="more-vertical"></i>
@@ -326,7 +310,7 @@
                     </div>
 
                     <!-- ── Vue GRILLE ───────────────────────────────── -->
-                    <div class="fm-grid" *ngIf="!isloading && !isEmpty && viewMode === 'grid'">
+                    <div class="fm-grid" *ngIf="!isChargementEnCours && !isEmpty && viewMode === 'grid'">
 
                         <!-- Dossiers -->
                         <div class="fm-folder-card"
@@ -445,7 +429,8 @@
                 <i class="fa-regular fa-file-magnifying-glass"></i>
                 <p>Sélectionnez un fichier pour l'aperçu</p>
             </div>
-            <div class="cd-preview-scroll cd-preview-center" *ngIf="previewItem && previewExt === 'pdf'">
+            <div class="cd-preview-scroll cd-preview-center" [class.cd-zoomed]="zoomLevel > 1"
+                 *ngIf="previewItem && previewExt === 'pdf'">
                 <canvas id="cd-pdf-canvas"></canvas>
             </div>
             <div class="cd-preview-scroll cd-preview-center"

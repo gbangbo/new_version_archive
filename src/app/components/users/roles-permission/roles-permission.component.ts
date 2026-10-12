@@ -128,6 +128,7 @@ export class RolesPermissionComponent implements OnInit {
      */
     private assocParMenu = new Map<string, Set<string>>();
 
+
     /** Permissions retenues, sous la forme `idmenu:action`. */
     private accordees = new Set<string>();
     /** La référence pour ne poster que la différence, et pour « Annuler ». */
@@ -368,11 +369,15 @@ export class RolesPermissionComponent implements OnInit {
      * Les menus du rôle, via auth/:rolemenu — le même endpoint que l'écran
      * « Rôles & menus ». C'est lui qui détermine les lignes du tableau.
      *
-     * Forme de la réponse : une ligne par lien rôle↔menu, avec `dataroles` et
-     * `datamenu` en TABLEAUX. On filtre sur le rôle ouvert (la réponse mêle
-     * plusieurs rôles) et on ne prend que les entrées de premier rang de
-     * `datamenu` : leurs `children` sont la descendance du menu telle que la
-     * porte le modèle, pas des droits accordés.
+     * Forme actuelle de la réponse : un seul bloc pour le rôle interrogé,
+     * `{dataroles: {…}, datasociete: {…}, datamenu: [arbre]}`. Les sous-menus
+     * attribués sont imbriqués dans les `children` de `datamenu`, il faut donc
+     * descendre pour tous les retenir — sinon seules les rubriques de premier
+     * rang remonteraient et le tableau n'afficherait aucune page.
+     *
+     * Auparavant `data` était un TABLEAU d'une ligne par lien rôle↔menu, avec
+     * `dataroles` et `datamenu` eux-mêmes en tableaux : les deux formes sont
+     * acceptées, le temps que tous les environnements suivent.
      */
     private chargerMenusDuRole(idroles: string): void {
         this.isloading = true;
@@ -385,13 +390,14 @@ export class RolesPermissionComponent implements OnInit {
                 const attribues = new Set<string>();
 
                 if (res?.body?.status || res?.body?.success) {
-                    (res.body.data || []).forEach((ligne: any) => {
-                        const concerne = (ligne?.dataroles || [])
-                            .some((r: any) => r?.uid === idroles);
-                        if (!concerne) return;
-                        (ligne?.datamenu || []).forEach((m: any) => {
-                            if (m?.uid) attribues.add(m.uid);
-                        });
+                    const data = res.body.data;
+                    const blocs = Array.isArray(data) ? data : [data];
+
+                    blocs.forEach((bloc: any) => {
+                        const roles = Array.isArray(bloc?.dataroles) ? bloc.dataroles : [bloc?.dataroles];
+                        if (!roles.some((r: any) => r?.uid === idroles)) return;
+
+                        this.collecterUid(bloc?.datamenu, attribues);
                     });
                 }
 
@@ -401,6 +407,14 @@ export class RolesPermissionComponent implements OnInit {
                 this.isloading = false;
                 this.erreur = "Chargement des menus du rôle impossible.";
             });
+    }
+
+    /** Retient un nœud de `datamenu` et toute sa descendance. */
+    private collecterUid(noeuds: any, cible: Set<string>): void {
+        (Array.isArray(noeuds) ? noeuds : []).forEach((m: any) => {
+            if (m?.uid) cible.add(m.uid);
+            this.collecterUid(m?.children, cible);
+        });
     }
 
     // ── Cases ────────────────────────────────────────────────

@@ -87,6 +87,22 @@
     </div>
 
     <!-- ══ LISTE DOCUMENTS ═══════════════════════════════════════ -->
+    <!-- Dégradés du dossier dessiné : déclarés une seule fois pour toute la
+         liste, chaque carte les référence par leur id (même dossier que
+         l'écran de recherche). -->
+    <svg class="svg-defs" aria-hidden="true" focusable="false">
+        <defs>
+            <linearGradient id="awpFolderBack" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#fbbf5c"/>
+                <stop offset="1" stop-color="#e8982a"/>
+            </linearGradient>
+            <linearGradient id="awpFolderFront" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#ffd88a"/>
+                <stop offset="1" stop-color="#f5a623"/>
+            </linearGradient>
+        </defs>
+    </svg>
+
     <div class="docs-list" *ngIf="docsPage.length > 0; else emptyState">
         <div class="doc-card" *ngFor="let doc of docsPage">
 
@@ -98,7 +114,14 @@
 <!--            </div>-->
             <div class="doc-icon-wrap doc-consult" (click)="consulterDoc(doc)"
                  title="Consulter le document">
-                <app-feather-icon [icon]="'folder'"></app-feather-icon>
+                <svg class="doc-folder-svg" viewBox="0 0 48 42" aria-hidden="true" focusable="false">
+                    <path d="M3 9a4 4 0 0 1 4-4h11.2c1.2 0 2.4.5 3.2 1.5l2.4 2.8c.4.5 1 .7 1.6.7H41a4 4 0 0 1 4 4v22a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9z"
+                          fill="url(#awpFolderBack)"/>
+                    <rect x="11" y="11" width="26" height="11" rx="2" fill="#ffffff" opacity="0.92"/>
+                    <path d="M3 17h42v19a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V17z"
+                          fill="url(#awpFolderFront)"/>
+                    <path d="M3 17h42v2H3z" fill="#ffffff" opacity="0.35"/>
+                </svg>
             </div>
             <!-- Corps -->
             <div class="doc-body doc-consult" (click)="consulterDoc(doc)"

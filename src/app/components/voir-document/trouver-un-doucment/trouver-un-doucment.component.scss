@@ -580,6 +580,21 @@
   ::ng-deep .anticon { font-size: 24px !important; }
 }
 
+// Bloc de <defs> partage : invisible, il ne sert qu'a porter les degrades.
+.svg-defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.doc-folder-svg {
+  width: 28px;
+  height: 28px;
+  display: block;
+  filter: drop-shadow(0 2px 3px rgba(224, 143, 24, 0.35));
+}
+
 .doc-info { flex: 1; min-width: 0; }
 
 .doc-ref {
@@ -743,6 +758,11 @@
     height: 38px;
     border-radius: 8px;
     ::ng-deep .anticon { font-size: 20px !important; }
+
+    .doc-folder-svg {
+      width: 24px;
+      height: 24px;
+    }
   }
 
   .doc-info { min-width: 0; flex: 1; }
@@ -807,3 +827,73 @@
 
 
 // ── Menu contextuel : voir shared/components/ui/doc-action-menu ──
+
+// ══ PAGINATION DES RESULTATS ════════════════════════════════════
+.results-pager {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 14px;
+  padding: 10px 16px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 12px;
+  color: #64748b;
+
+  strong {
+    color: #0f172a;
+    font-weight: 700;
+  }
+}
+
+.rp-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rp-taille {
+  height: 28px;
+  padding: 0 6px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 6px;
+  background: #fff;
+  font-size: 12px;
+  color: #475569;
+  cursor: pointer;
+}
+
+.rp-btn {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 6px;
+  background: #fff;
+  color: #475569;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+
+  &:hover:not(:disabled) {
+    background: #eff6ff;
+    border-color: #bfdbfe;
+  }
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+}
+
+.rp-page {
+  font-size: 12px;
+  color: #0f172a;
+  font-weight: 600;
+  min-width: 64px;
+  text-align: center;
+}

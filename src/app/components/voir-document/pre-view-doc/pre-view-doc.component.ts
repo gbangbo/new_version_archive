@@ -55,6 +55,7 @@ export class PreViewDocComponent implements OnInit {
 
     sessionData: any = null;
     users: any = [];
+    dataAuto: any = [];
     isloading: boolean = false;
     pageLoading: boolean = true;
     selectedFile: ExampleFlatNode | null = null;
@@ -66,6 +67,26 @@ export class PreViewDocComponent implements OnInit {
     @HostListener('window:resize')
     onResize(): void {
         this.isMobile = window.innerWidth <= 768;
+    }
+
+    /**
+     * Raccourcis du navigateur : Ctrl/Cmd+P ouvre l'impression, Ctrl/Cmd+S
+     * enregistre la page. Masquer les boutons ne suffit pas, on bloque aussi
+     * ces deux entrées quand l'autorisation ne couvre pas l'action.
+     */
+    @HostListener('document:keydown', ['$event'])
+    bloquerRaccourcis(ev: KeyboardEvent): void {
+        if (!(ev.ctrlKey || ev.metaKey)) return;
+
+        const touche = (ev.key || '').toLowerCase();
+        if (touche === 'p' && !this.peutImprimer) {
+            ev.preventDefault();
+            this.toast.error("L'impression n'est pas comprise dans votre autorisation.", '');
+        }
+        if (touche === 's' && !this.peutTelecharger) {
+            ev.preventDefault();
+            this.toast.error("Le téléchargement n'est pas compris dans votre autorisation.", '');
+        }
     }
 
     /* ── Toolbar state ── */
@@ -146,9 +167,21 @@ export class PreViewDocComponent implements OnInit {
 
     authActions: { key: string; label: string; icon: string; checked: boolean }[] = [
         {key: 'consultation', label: 'Consultation', icon: 'fa-regular fa-eye', checked: true},
+        {key: 'modification', label: 'Modification', icon: 'fa-solid fa-pencil', checked: false},
         {key: 'telechargement', label: 'Téléchargement', icon: 'fa-solid fa-download', checked: false},
         {key: 'impression', label: 'Impression', icon: 'fa-solid fa-print', checked: false},
+
     ];
+
+    /**
+     * Une seule action par demande : cocher une case décoche les autres.
+     * L'apparence reste celle d'une case à cocher, et un second clic sur la
+     * case retenue la libère — la validation exige ensuite un choix.
+     */
+    choisirAction(action: { checked: boolean }, coche: boolean): void {
+        this.authActions.forEach(a => a.checked = false);
+        action.checked = coche;
+    }
 
     constructor(
         private autor: Authorization,
@@ -165,6 +198,7 @@ export class PreViewDocComponent implements OnInit {
         pdfjsLib.GlobalWorkerOptions.workerSrc = '/assets/pdfjs/pdf.worker.mjs';
         this.users = this.autor.getInfosUsers();
         this.sessionData = this.autor.getInfosPreview();
+
         // Log : consultation du dossier
         this.histoLog.log(`A consulter le dossier (${this.sessionData?.code_docs || ''})`);
         const uidTypeDoc = this.sessionData?.datatype_document?.[0]?.uid || '';
@@ -174,6 +208,7 @@ export class PreViewDocComponent implements OnInit {
         Promise.all([
             this.showPieces(this.users.uid, this.sessionData.uid),
             this.showCatOrder('', uidTypeDoc, ''),
+            this.showAutorisation(this.sessionData.uid, this.users.uid),
         ]).finally(() => {
             this.pageLoading = false;
         });
@@ -226,6 +261,7 @@ export class PreViewDocComponent implements OnInit {
             .toPromise()
             .then((res: any) => {
                 this.accessForbidden = false;
+                console.log("fichier voir auto....", res.body)
                 if (res.body.status || res.body.success) {
                     this.pieceFiles = res.body.data || [];
                     if (this.treeData?.length) {
@@ -242,6 +278,110 @@ export class PreViewDocComponent implements OnInit {
                     this.pieceFiles = [];
                     //  this.openAuthModal();
                 }
+            });
+    }
+
+    /* ────────────────────────────────────────
+       DROITS ACCORDÉS SUR LE FICHIER
+
+       `dataAuto` porte les demandes d'autorisation de l'utilisateur sur ce
+       document. Il peut y en avoir PLUSIEURS, chacune pour des actions
+       différentes et avec sa propre période : les droits se cumulent, mais
+       seulement sur les lignes encore dans leur fenêtre de validité.
+
+       Chaque ligne liste ses actions dans `action_auth`, avec les clés de
+       `authActions` (consultation, modification, telechargement, impression)
+       séparées par des virgules, et sa période dans `deadline_start_auth` /
+       `deadline_end_auth`. La comparaison est insensible à la casse et aux
+       accents : le serveur renvoie parfois le libellé accentué.
+
+       Tant que `dataAuto` est vide, l'utilisateur consulte le document par
+       ses droits habituels : on ne restreint rien. Dès qu'il est là par une
+       autorisation, on s'en tient strictement à ce qu'elle accorde — et une
+       autorisation expirée n'accorde plus rien.
+    ──────────────────────────────────────── */
+
+    /** Les demandes encore dans leur période : les expirées ne comptent plus. */
+    get autorisationsValides(): any[] {
+        const maintenant = Date.now();
+        return (this.dataAuto || []).filter((d: any) => {
+            const debut = this.borneDate(d?.deadline_start_auth, false);
+            const fin = this.borneDate(d?.deadline_end_auth, true);
+            if (debut !== null && maintenant < debut) return false;  // pas encore ouverte
+            if (fin !== null && maintenant > fin) return false;      // échue
+            return true;
+        });
+    }
+
+    /**
+     * Horodatage d'une borne de période. `finDeJournee` cale à 23:59:59 : une
+     * autorisation qui s'achève le 10/10 couvre toute cette journée. Une date
+     * absente ou illisible ne borne pas — mieux vaut ne pas couper un accès
+     * sur une donnée qu'on ne sait pas lire.
+     */
+    private borneDate(valeur: any, finDeJournee: boolean): number | null {
+        if (!valeur) return null;
+        const d = new Date(valeur);
+        if (isNaN(d.getTime())) return null;
+        finDeJournee ? d.setHours(23, 59, 59, 999) : d.setHours(0, 0, 0, 0);
+        return d.getTime();
+    }
+
+    get actionsAccordees(): Set<string> {
+        const cles = new Set<string>();
+        this.autorisationsValides.forEach((d: any) => {
+            String(d?.action_auth || '')
+                .split(',')
+                .map((c: string) => this.normaliserCle(c))
+                .filter(Boolean)
+                .forEach((c: string) => cles.add(c));
+        });
+        return cles;
+    }
+
+    /** Minuscules sans accent : « Téléchargement » et « telechargement » valent pareil. */
+    private normaliserCle(valeur: string): string {
+        return (valeur || '')
+            .trim()
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[̀-ͯ]/g, '');
+    }
+
+    /** L'accès se fait-il par une demande d'autorisation plutôt que de droit ? */
+    get accesSurAutorisation(): boolean {
+        return (this.dataAuto || []).length > 0;
+    }
+
+    estAutorise(cle: string): boolean {
+        return !this.accesSurAutorisation || this.actionsAccordees.has(this.normaliserCle(cle));
+    }
+
+    get peutImprimer(): boolean {
+        return this.estAutorise('impression');
+    }
+
+    get peutTelecharger(): boolean {
+        return this.estAutorise('telechargement');
+    }
+
+    showAutorisation(iddocuments: string = '', iduser: string = '') {
+        this.dataAuto = [];
+        return this.httService
+            .getData(
+                `${environment.api_url}api/:save-demande-authorisation?iddocuments=${iddocuments}&iduser_save=${iduser}&active_auth=${true}`,
+                false,
+                this.users?.access_token || ''
+            )
+            .toPromise()
+            .then((res: any) => {
+
+                if (res.body.status || res.body.success) {
+                    this.dataAuto = res.body.data || [];
+                }
+                console.log("this.dataAuto  ===", this.dataAuto)
+            })
+            .catch((err: any) => {
             });
     }
 
@@ -447,7 +587,7 @@ export class PreViewDocComponent implements OnInit {
     /* ────────────────────────────────────────
        Clic sur nœud
     ──────────────────────────────────────── */
-    onNodeClick(node: ExampleFlatNode): void {
+    async onNodeClick(node: ExampleFlatNode): Promise<void> {
         if (!node.isFile) {
             this.selectListSelection.toggle(node);
             return;
@@ -470,7 +610,6 @@ export class PreViewDocComponent implements OnInit {
         );
 
         const ext = (node.extension || '').toLowerCase();
-
         if (ext === 'pdf') {
             this.currentPdfUrl = this.getProxyUrl(node.url_file);
             this.currentPdfPwd = node.password_file;
@@ -568,6 +707,12 @@ export class PreViewDocComponent implements OnInit {
     ──────────────────────────────────────── */
     async printFile(): Promise<void> {
         if (!this.selectedFile?.url_file) return;
+        // Second verrou derrière le bouton masqué : raccourci clavier, appel
+        // depuis la console, bouton réaffiché par l'inspecteur.
+        if (!this.peutImprimer) {
+            this.toast.error("L'impression n'est pas comprise dans votre autorisation.", '');
+            return;
+        }
         const ext = (this.selectedFile.extension || '').toLowerCase();
         if (ext === 'pdf') {
             await this.printPdf();
@@ -644,6 +789,10 @@ export class PreViewDocComponent implements OnInit {
     ──────────────────────────────────────── */
     async downloadFile(): Promise<void> {
         if (!this.selectedFile?.url_file) return;
+        if (!this.peutTelecharger) {
+            this.toast.error("Le téléchargement n'est pas compris dans votre autorisation.", '');
+            return;
+        }
         const url = this.getProxyUrl(this.selectedFile.url_file);
         const filename = `${this.selectedFile.name}.${this.selectedFile.extension}`;
         try {

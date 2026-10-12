@@ -291,6 +291,9 @@
   font-size: 12px;
   color: #94a3b8;
   i { color: #16a34a; }
+
+  // Demande rejetee : croix rouge, alignee sur la couleur du tag « Rejetee ».
+  &.da-decided-ko i { color: #dc2626; }
 }
 
 // ── Popup de décision ─────────────────────────────────────────
@@ -479,15 +482,16 @@ nz-range-picker.w-full { width: 100%; }
 
 // Colonnes resserrées : le tableau tient dans un écran courant, le défilement
 // horizontal n'apparaît qu'en dessous de ~1230px de large.
-$col-doc: 190px;
+$col-doc: 260px;               // elargie : le libelle tenait sur 4-5 lignes
 $col-motif: 160px;
 $col-tags: 130px;
 $col-statut: 110px;
 $col-periode: 195px;           // « 27/09/2026 -> 27/09/2026 » sur une ligne
 $col-date: 135px;              // « 27/09/2026 17:50 »
 $col-actions: 130px;           // 3 boutons ronds de 28px + marges + padding
-$col-name: 180px;              // largeur mini de la colonne « Bénéficiaire »
-$tt-min-width: 1230px;         // somme des colonnes -> déclenche le scroll horizontal
+$col-name: 150px;              // largeur fixe de la colonne « Bénéficiaire »
+$tt-min-width: $col-name + $col-doc + $col-motif + $col-tags + $col-statut +
+               $col-periode + $col-date + $col-actions;   // -> scroll horizontal
 
 .tree-table-wrap {
   display: flex;
@@ -581,7 +585,9 @@ $tt-min-width: 1230px;         // somme des colonnes -> déclenche le scroll hor
 
 // ── Colonnes ──────────────────────────────
 .ttc-name {
-  flex: 1 0 $col-name;
+  // Plus de flex-grow ici : l'espace disponible va desormais a la colonne
+  // « Document », dont le libelle est bien plus long qu'un nom de personne.
+  flex: 0 0 $col-name;
   min-width: $col-name;
   gap: 8px;
   border-right: 1px solid #F1F5F9;
@@ -589,6 +595,7 @@ $tt-min-width: 1230px;         // somme des colonnes -> déclenche le scroll hor
 
 
 .ttc-doc {
+  flex: 1 0 $col-doc;
   width: $col-doc;
   min-width: $col-doc;
   font-size: 12px;
@@ -613,8 +620,10 @@ $tt-min-width: 1230px;         // somme des colonnes -> déclenche le scroll hor
 
   ::ng-deep .ant-tag {
     margin: 0 !important;
-    border-radius: 51px;
+    border-radius: 5px;
     font-size: 11px;
+    width: 100%;
+    text-align: center;
   }
 }
 
@@ -628,7 +637,7 @@ $tt-min-width: 1230px;         // somme des colonnes -> déclenche le scroll hor
     margin: 0 !important;
     width: 100% !important;
     text-align: center !important;
-    border-radius: 51px;
+    border-radius: 5px;
     box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
   }
 }

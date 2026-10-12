@@ -76,16 +76,36 @@ export class SessionExpiredModalComponent implements OnInit {
                 "password": this.loginForm.value.password
             }, '')
                 .toPromise()
-                .then((res: any) => {
+                .then(async (res: any) => {
                     this.loading = false;
 
                     if (res.body.status) {
 
                         let response: any = {...res.body.data, ...res.body.data.datas_users};
                         delete response.datas_users;
+
+                        // La session repart de zéro après la reconnexion : sans ce
+                        // rechargement du menu, `_menu` reste vide et la page
+                        // rechargée tombe sur /error405.
+                        let _menu: any[] = [];
+                        try {
+                            const resMenu: any = await this.httService.getData(`${environment.api_url}auth/:rolemenu?idrole=${response?.dataroles?.uid}&idsociete=${response?.datasociete?.uid}`,
+                                false, response?.access_token).toPromise();
+                            if (resMenu?.body?.success && resMenu?.body?.data?.datamenu?.length) {
+                                const trierParRang = (noeuds: any[]): any[] =>
+                                    [...(noeuds || [])]
+                                        .sort((a: any, b: any) => (a?.rang ?? 0) - (b?.rang ?? 0))
+                                        .map((n: any) => ({...n, children: trierParRang(n?.children)}));
+
+                                _menu = trierParRang(resMenu.body.data.datamenu);
+                            }
+                        } catch {
+
+                        }
+
                         const mapData = {
                             ...response,
-                            _menu: [],
+                            _menu,
                             dataUsers: []
                         };
 

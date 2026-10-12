@@ -182,13 +182,14 @@ export class RolesMenuComponent implements OnInit {
     /**
      * Les menus déjà attribués au rôle, qui pré-cochent les cases.
      *
-     * Forme de la réponse — une ligne par lien rôle↔menu :
-     *   { dataroles: [ {uid, libelle_role, …} ],
-     *     datamenu:  [ {uid, title, path, children: […]} ],
-     *     datasociete: [ {…} ] }
+     * Forme actuelle de la réponse — un seul bloc pour le rôle interrogé :
+     *   { dataroles:   {uid, libelle_role, …},
+     *     datasociete: {…},
+     *     datamenu:    [ {uid, title, path, children: [ … ]} ] }
      *
-     * Les trois champs sont des TABLEAUX, y compris `datamenu` : c'est ce qui
-     * faisait échouer le pré-cochage tant que je lisais `datamenu.uid`.
+     * Auparavant `data` était un TABLEAU d'une ligne par lien rôle↔menu, avec
+     * `dataroles` et `datamenu` eux-mêmes en tableaux. Les deux formes sont
+     * acceptées ci-dessous, le temps que tous les environnements suivent.
      */
     private chargerAttributions(role: Role): void {
         this.isloadingMenus = true;
@@ -208,25 +209,34 @@ export class RolesMenuComponent implements OnInit {
     }
 
     /**
-     * On ne retient que les menus du rôle ouvert : la réponse observée mêle
-     * les lignes de plusieurs rôles, on filtre donc sur `dataroles`.
+     * On ne retient que les menus du rôle ouvert : on vérifie `dataroles`
+     * avant de lire `datamenu`.
      *
-     * Et on ne prend que les entrées de premier rang de `datamenu`, sans
-     * descendre dans leurs `children` : ceux-ci ne sont que la descendance du
-     * menu telle que la porte le modèle, pas des droits accordés. Le back crée
-     * bien une ligne distincte par sous-menu attribué — « Documents » et ses
-     * cinq enfants apparaissent chacun sur sa propre ligne.
+     * `datamenu` est maintenant l'arbre des menus du rôle : les sous-menus
+     * attribués n'ont plus de ligne à eux, ils sont imbriqués dans `children`.
+     * Il faut donc descendre pour tout pré-cocher — c'est l'inverse de ce que
+     * demandait l'ancienne réponse, où `children` portait la descendance du
+     * modèle et non des droits accordés.
      */
-    private retenirAttributions(lignes: any[], role: Role): void {
-        (lignes || []).forEach((ligne: any) => {
-            const concerne = (ligne?.dataroles || []).some((r: any) => r?.uid === role.uid);
-            if (!concerne) return;
+    private retenirAttributions(data: any, role: Role): void {
+        const blocs = Array.isArray(data) ? data : [data];
 
-            (ligne?.datamenu || []).forEach((m: any) => {
-                if (!m?.uid) return;
+        blocs.forEach((bloc: any) => {
+            const roles = Array.isArray(bloc?.dataroles) ? bloc.dataroles : [bloc?.dataroles];
+            if (!roles.some((r: any) => r?.uid === role.uid)) return;
+
+            this.collecterUid(bloc?.datamenu);
+        });
+    }
+
+    /** Coche un nœud de `datamenu` et toute sa descendance. */
+    private collecterUid(noeuds: any): void {
+        (Array.isArray(noeuds) ? noeuds : []).forEach((m: any) => {
+            if (m?.uid) {
                 this.coches.add(m.uid);
                 this.initial.add(m.uid);
-            });
+            }
+            this.collecterUid(m?.children);
         });
     }
 

@@ -97,8 +97,13 @@ export class LoginComponent implements OnInit, OnDestroy {
                         try {
                             const res: any = await this.httService.getData(`${environment.api_url}auth/:rolemenu?idrole=${response?.dataroles?.uid}&idsociete=${response?.datasociete?.uid}`,
                                 false, response?.access_token).toPromise();
-                            if (res?.body.success && res?.body.data.length) {
-                                response._menu = res?.body?.data?.flatMap((e: any) => e.datamenu).sort((a: any, b: any) => a.rang - b.rang);
+                            if (res?.body?.success && res?.body?.data?.datamenu?.length) {
+                                const trierParRang = (noeuds: any[]): any[] =>
+                                    [...(noeuds || [])]
+                                        .sort((a: any, b: any) => (a?.rang ?? 0) - (b?.rang ?? 0))
+                                        .map((n: any) => ({...n, children: trierParRang(n?.children)}));
+
+                                response._menu = trierParRang(res.body.data.datamenu);
                             }
                         } catch {
 

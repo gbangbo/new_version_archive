@@ -72,6 +72,10 @@ export class TrouverUnDoucmentComponent implements OnInit, OnDestroy {
     isSearching: boolean = false;
     hasSearched: boolean = false;
     results: any[] = [];
+    // Pagination cote client : l'API renvoie la totalite des resultats.
+    pageIndex = 1;
+    pageSize = 10;
+    readonly taillesPage = [10, 20, 50, 100];
     totalResults: number = 0;
 
     // ── Données des filtres ───────────────────────────────
@@ -302,6 +306,7 @@ export class TrouverUnDoucmentComponent implements OnInit, OnDestroy {
         this.isSearching = true;
         this.hasSearched = false;
         this.results = [];
+        this.pageIndex = 1;
 
         let url: string;
         if (this.activeMode === 'fulltext') {
@@ -316,7 +321,6 @@ export class TrouverUnDoucmentComponent implements OnInit, OnDestroy {
             .then((res: any) => {
                 this.isSearching = false;
                 this.hasSearched = true;
-                console.log("document trouve ====", res.body.data)
                 if (res?.body?.status || res?.body?.success) {
                     this.results = res.body.data.map((e: any) => ({
                         ...e,
@@ -417,6 +421,7 @@ export class TrouverUnDoucmentComponent implements OnInit, OnDestroy {
         this.results = [];
         this.hasSearched = false;
         this.totalResults = 0;
+        this.pageIndex = 1;
         sessionStorage.removeItem(SEARCH_STORAGE_KEY);
     }
 
@@ -427,6 +432,7 @@ export class TrouverUnDoucmentComponent implements OnInit, OnDestroy {
         this.results = [];
         this.hasSearched = false;
         this.totalResults = 0;
+        this.pageIndex = 1;
         sessionStorage.removeItem(SEARCH_STORAGE_KEY);
     }
 
@@ -475,13 +481,45 @@ export class TrouverUnDoucmentComponent implements OnInit, OnDestroy {
     }
 
     // ── Helpers icônes ────────────────────────────────────
+    // Repli sur l'icone dossier : un resultat de recherche est un document qui
+    // regroupe des pieces, et la plupart n'exposent pas d'extension. 'file' en
+    // twotone n'est de toute facon pas enregistre dans provideNzIcons (seul
+    // FileOutline l'est) : la vignette restait vide.
     getFileIcon(ext: string): string {
         const e = (ext || '').toLowerCase();
         if (e === 'pdf') return 'file-pdf';
         if (['jpg', 'jpeg', 'png', 'PNG', 'JPG'].includes(e)) return 'file-image';
         if (['doc', 'docx'].includes(e)) return 'file-word';
         if (['xls', 'xlsx'].includes(e)) return 'file-excel';
-        return 'file';
+        return 'folder';
+    }
+
+    // Vrai quand aucune extension connue n'est associee au document : la carte
+    // affiche alors le dossier dessine plutot qu'une icone de fichier.
+    // ── Pagination ────────────────────────────────────────────────
+    get nbPages(): number {
+        return Math.max(1, Math.ceil(this.results.length / this.pageSize));
+    }
+
+    get resultsPage(): any[] {
+        const debut = (this.pageIndex - 1) * this.pageSize;
+        return this.results.slice(debut, debut + this.pageSize);
+    }
+
+    allerPage(page: number): void {
+        const cible = Math.min(Math.max(page, 1), this.nbPages);
+        if (cible === this.pageIndex) return;
+        this.pageIndex = cible;
+    }
+
+    changerTaille(taille: number): void {
+        if (taille === this.pageSize) return;
+        this.pageSize = taille;
+        this.pageIndex = 1;
+    }
+
+    isDossier(ext: string): boolean {
+        return this.getFileIcon(ext) === 'folder';
     }
 
     getFileIconColor(ext: string): string {
@@ -490,7 +528,7 @@ export class TrouverUnDoucmentComponent implements OnInit, OnDestroy {
         if (['jpg', 'jpeg', 'png'].includes(e)) return '#52c41a';
         if (['doc', 'docx'].includes(e)) return '#1890ff';
         if (['xls', 'xlsx'].includes(e)) return '#52c41a';
-        return '#8c8c8c';
+        return '#f5a623'; // meme orange que les dossiers de classer-document
     }
 
     getTypeBadgeColor(index: number): string {
