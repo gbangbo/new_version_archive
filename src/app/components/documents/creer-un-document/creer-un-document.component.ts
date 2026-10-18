@@ -269,6 +269,19 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
     private readonly OFFICE_EXTENSIONS = ['doc', 'docx', 'xls', 'xlsx'];
 
     // ── État du viewer PDF ───────────────────────────────────────
+    // ── Volets repliables de la colonne de droite ────────────
+    // Replier le téléversement et le plan de classement rend toute la hauteur
+    // de la colonne à l'aperçu du PDF, qui en a besoin pour être lisible.
+    uploadReplie = false;
+    treeReplie = false;
+
+    // ── Capture de texte depuis le PDF vers les Métadonnées ──────
+    // Champ « armé » : dernière propriété des Métadonnées qui a reçu le focus.
+    // On ne peut pas se fier à document.activeElement au moment du relâchement
+    // de la souris : cliquer dans l'aperçu a déjà fait perdre le focus au champ.
+    captureCible: any = null;
+    private textLayerTask: any = null;
+
     pdfDoc: any = null;
     currentPage = 1;
     totalPages = 0;
@@ -1135,7 +1148,7 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
     // Sécuriser l'URL pour l'iframe (pour PDF et images locales)
     getSafeUrl(data: any) {
         const proxyUrl = environment.production ? data.url_file : data.url_file.replace('http://api-ged.archivepro.ci', '');
-
+        console.log("lecture ===", data)
         //const extension = data?.lib_file_temp?.split('.')?.pop()?.toLowerCase();
         // const extension = proxyUrl.split('.').pop()?.toLowerCase();
 
@@ -1165,6 +1178,27 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
         this.isRenderingPdf = false;
         this.currentPageInput = 1;
 
+        this.loadPdfDocument(url, (pwd ?? '').toString(), false);
+    }
+
+    renderPdfWithPassword(url: string, password: string) {
+        this.loadPdfDocument(url, (password ?? '').toString(), true);
+    }
+
+    /* Point d'entrée unique vers pdf.js.
+
+       pdf.js refuse un PDF protégé de deux façons distinctes, que l'ancien code
+       confondait : NEED_PASSWORD (aucun mot de passe fourni) et
+       INCORRECT_PASSWORD (mot de passe fourni mais refusé par le fichier). D'où
+       l'impression que la saisie est réclamée « alors que le mot de passe est
+       bien dans le retour de l'API » : la valeur arrive bien, mais le fichier la
+       rejette (pièce ré-encodée par l'OCR, mot de passe propriétaire enregistré
+       à la place du mot de passe d'ouverture, espaces parasites…).
+
+       Le message distingue désormais les deux cas et la console indique ce qui a
+       été réellement essayé. Un mot de passe refusé est automatiquement retenté
+       une fois sans ses espaces de bordure avant de solliciter l'utilisateur. */
+    private loadPdfDocument(url: string, pwd: string, retry: boolean) {
         pdfjsLib.getDocument({url, password: pwd}).promise
             .then((pdf: any) => {
                 this.pdfDoc = pdf;
@@ -1173,26 +1207,43 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
                 this.renderPage(1);
             })
             .catch((error: any) => {
-                if (error.name === 'PasswordException') {
-                    const pass = prompt('Ce PDF est protégé. Veuillez saisir le mot de passe :');
-                    if (pass) this.renderPdfWithPassword(url, pass);
-                } else {
+                if (error?.name !== 'PasswordException') {
                     console.error('Erreur de chargement du PDF:', error);
                     this.isLoadingPreview = false;
+                    this.cdr.detectChanges();
+                    return;
                 }
-            });
-    }
 
-    renderPdfWithPassword(url: string, password: string) {
-        pdfjsLib.getDocument({url, password}).promise
-            .then((pdf: any) => {
-                this.pdfDoc = pdf;
-                this.totalPages = pdf.numPages;
-                this.cdr.detectChanges();
-                this.renderPage(1);
-            })
-            .catch(() => {
+                // PasswordResponses : 1 = NEED_PASSWORD, 2 = INCORRECT_PASSWORD
+                const motDePasseAbsent = error?.code === 1 || !pwd;
+
+                console.warn('[Aperçu PDF] mot de passe refusé', {
+                    url,
+                    motDePasseFourni: !!pwd,
+                    longueur: pwd.length,
+                    espacesDeBordure: pwd !== pwd.trim(),
+                    code: error?.code,
+                    message: error?.message
+                });
+
+                // Repli silencieux : mot de passe enregistré avec des espaces
+                if (!motDePasseAbsent && !retry && pwd.trim() && pwd.trim() !== pwd) {
+                    this.loadPdfDocument(url, pwd.trim(), true);
+                    return;
+                }
+
                 this.isLoadingPreview = false;
+                this.cdr.detectChanges();
+
+                const message = motDePasseAbsent
+                    ? "Ce PDF est protégé et aucun mot de passe n'est enregistré pour cette pièce. Veuillez le saisir :"
+                    : 'Le mot de passe enregistré pour cette pièce a été refusé par le fichier. Veuillez le saisir :';
+
+                const pass = prompt(message);
+                if (pass) {
+                    this.isLoadingPreview = true;
+                    this.loadPdfDocument(url, pass, true);
+                }
             });
     }
 
@@ -1219,6 +1270,7 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
                 .then(() => {
                     this.isRenderingPdf = false;
                     this.isLoadingPreview = false;
+                    this.renderTextLayer(page, viewport);
                     this.cdr.detectChanges();
                 })
                 .catch(() => {
@@ -1226,6 +1278,97 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
                     this.isLoadingPreview = false;
                 });
         });
+    }
+
+    /* Couche de texte superposée au canvas.
+
+       Le canvas est une image : sans cette couche, il n'y a rien à sélectionner
+       à la souris. pdf.js positionne ici des <span> transparents au-dessus de
+       chaque mot — c'est ce que fait le visualiseur officiel — ce qui rend la
+       sélection native possible.
+
+       Sans texte natif (PDF scanné), getTextContent ne renvoie aucun élément :
+       la couche reste vide et l'aperçu se comporte comme avant. */
+    private renderTextLayer(page: any, viewport: any): void {
+        const container = document.getElementById('pdf-text-layer');
+        if (!container) return;
+
+        // Un rendu peut être encore en cours (changement de page rapide, zoom
+        // répété) : on l'annule avant de repartir, sinon les deux couches se
+        // superposent.
+        if (this.textLayerTask) {
+            try { this.textLayerTask.cancel(); } catch { /* déjà terminé */ }
+            this.textLayerTask = null;
+        }
+        container.replaceChildren();
+
+        // pdf.js positionne les spans en calc(var(--total-scale-factor) * Npx) :
+        // sans cette variable, tout le texte s'empile dans le coin haut-gauche.
+        container.style.setProperty('--total-scale-factor', String(this.pdfScale));
+        container.style.width = viewport.width + 'px';
+        container.style.height = viewport.height + 'px';
+
+        page.getTextContent().then((textContent: any) => {
+            if (!textContent?.items?.length) return;
+            const layer = new (pdfjsLib as any).TextLayer({
+                textContentSource: textContent,
+                container,
+                viewport
+            });
+            this.textLayerTask = layer;
+            layer.render().catch(() => { /* rendu annulé */ });
+        }).catch(() => { /* page sans contenu texte */ });
+    }
+
+    // ── Capture d'une sélection du PDF vers un champ Métadonnées ──
+
+    /* Arme le champ : la prochaine sélection faite dans l'aperçu ira dedans. */
+    armerCapture(item: any): void {
+        this.captureCible = item;
+    }
+
+    /* Désarme : les sélections dans l'aperçu redeviennent sans effet. */
+    desarmerCapture(event?: Event): void {
+        event?.stopPropagation();
+        this.captureCible = null;
+    }
+
+    get libelleCapture(): string {
+        return this.captureCible?.lib_proprietes_docs || '';
+    }
+
+    /* Relâchement de la souris sur la couche de texte : on ajoute la sélection
+       au champ armé. Le contenu existant n'est jamais écrasé — la valeur est
+       complétée, ce qui permet de composer un champ à partir de plusieurs
+       fragments du document. */
+    onPdfTextSelection(): void {
+        if (!this.captureCible) return;
+
+        const selection = window.getSelection();
+        const brut = selection?.toString() || '';
+        if (!brut.trim()) return;
+
+        // La sélection doit venir de la couche de texte, pas du formulaire
+        const container = document.getElementById('pdf-text-layer');
+        const ancre = selection?.anchorNode as Node | null;
+        if (!container || !ancre || !container.contains(ancre)) return;
+
+        // Les retours à la ligne du PDF n'ont pas de sens dans un champ
+        const texte = brut.replace(/\s+/g, ' ').trim();
+        const item = this.captureCible;
+        const actuel = (item.value_proprietes_docs ?? '').toString();
+
+        if (item.type_proprietes_docs === 'number') {
+            // Champ numérique : on ne retient que les chiffres et le séparateur
+            const chiffres = texte.replace(/[^0-9.,-]/g, '').replace(',', '.');
+            if (!chiffres) return;
+            item.value_proprietes_docs = actuel ? actuel + chiffres : chiffres;
+        } else {
+            item.value_proprietes_docs = actuel ? actuel + ' ' + texte : texte;
+        }
+
+        selection?.removeAllRanges();
+        this.cdr.detectChanges();
     }
 
     // ── Navigation ───────────────────────────────────────────────
@@ -1451,6 +1594,7 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
 
     changeType(event: any) {
         this.ligneTypeOfDoc = [];
+        this.captureCible = null; // les champs sont reconstruits : plus rien à armer
 
         if (!event.value) return;
         this.showCatOrder('', event.value, '');
@@ -1489,6 +1633,7 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
 
         this.isEdit = false;
         this.ligneTypeOfDoc = [];
+        this.captureCible = null;
         this.dynamicValues = {};
         this.archiveStatus = 'courante';
         this.documentStatus = 'privee';

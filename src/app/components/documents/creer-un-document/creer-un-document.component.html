@@ -33,8 +33,9 @@
                     <!-- Section : Informations générales -->
                     <div class="form-section">
                         <div class="form-section-label">
-                            <i class="fa-solid fa-circle-info"></i>
-                            Informations générales
+<!--                            <span class="section-num">1</span>-->
+<!--                            <i class="fa-solid fa-circle-info"></i>-->
+                            <span class="section-titre">Informations générales</span>
                         </div>
                         <div class="grid grid-cols-12 gap-x-4 gap-y-4 form-section-body">
 
@@ -453,7 +454,16 @@
                     <!-- Section : Métadonnées (dynamique) -->
                     <div class="form-section" *ngIf="ligneTypeOfDoc?.dataPro?.length">
                         <div class="form-section-label">
-                            <i class="fa-solid fa-list-ul"></i> Métadonnées
+<!--                            <span class="section-num">2</span>-->
+                            <i class="fa-solid fa-list-ul"></i>
+                            <span class="section-titre">Métadonnées</span>
+                            <span class="capture-hint" *ngIf="captureCible">
+                                <i class="fa-solid fa-hand-pointer"></i>
+                                Sélectionnez dans le PDF &rarr; {{ libelleCapture }}
+                                <button type="button" class="capture-hint-off"
+                                        title="Désactiver la capture"
+                                        (click)="desarmerCapture($event)">&times;</button>
+                            </span>
 <!--                            <nz-tag class="type-badge" [nzColor]="'rgba(115, 102, 255, 0.1)'">{{ ligneTypeOfDoc?.libelle_type_docs }}</nz-tag>-->
                         </div>
                         <div class="grid grid-cols-12 gap-x-4 gap-y-4 form-section-body">
@@ -504,6 +514,8 @@
                                     <input class="form-control"
                                            [type]="item.type_proprietes_docs"
                                            [placeholder]="'Saisir ' + item.lib_proprietes_docs"
+                                           [class.champ-capture-actif]="captureCible === item"
+                                           (focus)="armerCapture(item)"
                                            [(ngModel)]="item.value_proprietes_docs"
                                            [ngModelOptions]="{standalone: true}">
                                 </div>
@@ -547,9 +559,13 @@
                 <div class="upload-panel">
 
                     <!-- Section : Téléverser -->
-                    <div class="upload-section upload-section--fixe">
-                        <div class="upload-section-label">
-                            <i class="fa-solid fa-cloud-arrow-up"></i> Téléverser un fichier
+                    <div class="upload-section upload-section--fixe" [class.section-pliee]="uploadReplie">
+                        <div class="upload-section-label section-pliable"
+                             (click)="uploadReplie = !uploadReplie"
+                             [title]="uploadReplie ? 'Déplier' : 'Replier'">
+<!--                            <i class="fa-solid fa-cloud-arrow-up"></i>-->
+                            <span class="section-titre">Téléverser un fichier</span>
+                            <i class="fa-solid fa-chevron-up section-chevron"></i>
                         </div>
                         <div class="upload-section-body">
 
@@ -601,12 +617,18 @@
                     </div>
 
                     <!-- Section : Fichiers importés -->
-                    <div class="upload-section tree-section" *ngIf="treeData?.length">
-                        <div class="upload-section-label">
-                            <i class="fa-solid fa-sitemap"></i> Plan de classement + fichiers importés
-                            <span class="drag-hint" *ngIf="dataFileTemps?.length">
+                    <div class="upload-section tree-section"
+                         *ngIf="treeData?.length"
+                         [class.section-pliee]="treeReplie">
+                        <div class="upload-section-label section-pliable"
+                             (click)="treeReplie = !treeReplie"
+                             [title]="treeReplie ? 'Déplier' : 'Replier'">
+                            <i class="fa-solid fa-sitemap"></i>
+                            <span class="section-titre">Plan de classement + fichiers importés</span>
+                            <span class="drag-hint" *ngIf="dataFileTemps?.length && !treeReplie">
                                 <i class="fa-solid fa-hand-pointer"></i> Glissez un fichier vers un dossier
                             </span>
+                            <i class="fa-solid fa-chevron-up section-chevron"></i>
                         </div>
                         <div class="upload-section-body tree-body">
                             <nz-tree-view [nzTreeControl]="treeControl" [nzDataSource]="dataSource" [nzDirectoryTree]="true">
@@ -928,7 +950,15 @@
 
                                 <!-- ── Canvas scrollable ──────────────────────── -->
                                 <div class="pdf-canvas-wrapper" #pdfWrapper>
-                                    <canvas id="pdf-canvas"></canvas>
+                                    <!-- Le canvas et sa couche de texte sont empilés : la couche
+                                         doit recouvrir exactement la page rendue. -->
+                                    <div class="pdf-page-stack">
+                                        <canvas id="pdf-canvas"></canvas>
+                                        <div id="pdf-text-layer"
+                                             class="pdf-text-layer"
+                                             [class.capture-armee]="captureCible"
+                                             (mouseup)="onPdfTextSelection()"></div>
+                                    </div>
                                 </div>
 
                             </div>

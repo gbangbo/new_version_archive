@@ -1160,7 +1160,10 @@ input[type="checkbox"]:checked {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  padding: 14px 14px 20px;
+  // Aucun retrait en haut ni sur les côtés : le bandeau d'en-tête de la
+  // première section doit affleurer le bord du volet, comme sur l'écran
+  // d'importation Excel. Le retrait de 14px est porté par les corps de section.
+  padding: 0 0 20px;
   box-sizing: border-box;
 }
 
@@ -1255,28 +1258,58 @@ input[type="checkbox"]:checked {
   flex-shrink: 0; // ne pas comprimer dans la colonne défilante (sinon champs clippés)
 }
 
-// Titre de section — style commun aux deux colonnes : les sections de gauche
-// (Informations générales, Métadonnées) et de droite (Téléverser, Plan de
-// classement, Prévisualisation) sont de même rang, elles doivent se lire pareil.
+// Titre de section — même en-tête que l'écran d'importation Excel
+// (importer/recuperer-pdf) : bandeau gris clair, titre en capitales, pastille
+// numérotée pour les sections du formulaire dont l'ordre de saisie compte.
+// Les sections de gauche (Informations générales, Métadonnées) et de droite
+// (Numériser, Plan de classement, Prévisualisation) sont de même rang, elles
+// doivent se lire pareil.
 .form-section-label,
 .upload-section-label {
   display: flex;
   align-items: center;
   gap: 9px;
-  padding: 0 2px 9px;
+  padding: 9px 14px;
   margin-bottom: 12px;
-  background: transparent;
-  font-size: 15px;
+  font-size: 11.5px;
   font-weight: 700;
-  color: #1E293B;
-  text-transform: none;
-  letter-spacing: 0;
-  border-bottom: 1px solid #EEF2F7;
+  letter-spacing: 0.5px;
+  color: #00366e;
+  background: linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 100%);
+  border-bottom: 1px solid #E2E8F0;
+  border-radius: 9px 9px 0 0;
+  text-transform: uppercase;
   flex-shrink: 0; // les zones de droite sont à hauteur contrainte : pas d'écrasement
 
-  i {
-    font-size: 16px;
-    color: #00366e;
+  > i {
+    font-size: 15px;
+    color: #64748B;
+  }
+
+  // Titre : tronqué plutôt que de pousser les actions hors du bandeau
+  .section-titre {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  // Pastille numérotée : la cascade société → type de document impose de
+  // remplir les sections de haut en bas.
+  .section-num {
+    flex-shrink: 0;
+    width: 19px;
+    height: 19px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #00366e;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0;
   }
 }
 
@@ -1286,6 +1319,7 @@ input[type="checkbox"]:checked {
 .form-section-body {
   container-type: inline-size;
   container-name: form-col;
+  padding: 0 14px;
 }
 
 // Repli : pleine largeur (panneau étroit, ou navigateur sans @container)
@@ -1321,9 +1355,12 @@ input[type="checkbox"]:checked {
   align-items: center;
   justify-content: center;
   gap: 10px;
+  // Enfant direct de .form-scroll, qui n'a plus de retrait latéral depuis que
+  // les bandeaux de section affleurent les bords : il porte le sien.
+  margin: 0 14px;
   padding: 18px 16px;
   border: 1.5px dashed #CBD5E1;
-  border-radius: 8px;
+  border-radius: 5px;
   background: #F8FAFC;
   color: #94A3B8;
   font-size: 12px;
@@ -1355,7 +1392,7 @@ input[type="checkbox"]:checked {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  padding: 14px;
+  padding: 0 0 4px; // idem volet gauche : l'en-tête affleure le haut du volet
   box-sizing: border-box;
 }
 
@@ -1480,13 +1517,13 @@ input[type="checkbox"]:checked {
 }
 
 .upload-section-body {
-  padding: 0 2px;
+  padding: 0 14px;
 }
 
 .tree-body {
   flex: 1;
   min-height: 0;
-  padding: 0;
+  padding: 0 8px;
   overflow: auto;
 }
 
@@ -1643,7 +1680,7 @@ input[type="checkbox"]:checked {
 .preview-body {
   flex: 1;
   min-height: 0;
-  padding: 0;
+  padding: 0 14px;
   overflow: auto;
 
   .preview-content {
@@ -2073,15 +2110,16 @@ input[type="checkbox"]:checked {
 
   .form-panel,
   .upload-panel {
-    padding: 10px !important;
+    padding: 0 !important;
     gap: 10px !important;
   }
 
+  // Bandeau conservé sur mobile, simplement plus compact
   .form-section-label,
   .upload-section-label {
-    padding: 0 2px 8px;
+    padding: 8px 10px;
     margin-bottom: 10px;
-    font-size: 14px;
+    font-size: 11px;
   }
 
   .upload-section-label {

@@ -1078,6 +1078,27 @@ export class ScannerComponent implements OnInit, AfterViewInit, OnDestroy {
         this.isRenderingPdf = false;
         this.currentPageInput = 1;
 
+        this.loadPdfDocument(url, (pwd ?? '').toString(), false);
+    }
+
+    renderPdfWithPassword(url: string, password: string) {
+        this.loadPdfDocument(url, (password ?? '').toString(), true);
+    }
+
+    /* Point d'entrée unique vers pdf.js.
+
+       pdf.js refuse un PDF protégé de deux façons distinctes, que l'ancien code
+       confondait : NEED_PASSWORD (aucun mot de passe fourni) et
+       INCORRECT_PASSWORD (mot de passe fourni mais refusé par le fichier). D'où
+       l'impression que la saisie est réclamée « alors que le mot de passe est
+       bien dans le retour de l'API » : la valeur arrive bien, mais le fichier la
+       rejette (pièce ré-encodée par l'OCR, mot de passe propriétaire enregistré
+       à la place du mot de passe d'ouverture, espaces parasites…).
+
+       Le message distingue désormais les deux cas et la console indique ce qui a
+       été réellement essayé. Un mot de passe refusé est automatiquement retenté
+       une fois sans ses espaces de bordure avant de solliciter l'utilisateur. */
+    private loadPdfDocument(url: string, pwd: string, retry: boolean) {
         pdfjsLib.getDocument({url, password: pwd}).promise
             .then((pdf: any) => {
                 this.pdfDoc = pdf;
@@ -1086,26 +1107,43 @@ export class ScannerComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.renderPage(1);
             })
             .catch((error: any) => {
-                if (error.name === 'PasswordException') {
-                    const pass = prompt('Ce PDF est protégé. Veuillez saisir le mot de passe :');
-                    if (pass) this.renderPdfWithPassword(url, pass);
-                } else {
+                if (error?.name !== 'PasswordException') {
                     console.error('Erreur de chargement du PDF:', error);
                     this.isLoadingPreview = false;
+                    this.cdr.detectChanges();
+                    return;
                 }
-            });
-    }
 
-    renderPdfWithPassword(url: string, password: string) {
-        pdfjsLib.getDocument({url, password}).promise
-            .then((pdf: any) => {
-                this.pdfDoc = pdf;
-                this.totalPages = pdf.numPages;
-                this.cdr.detectChanges();
-                this.renderPage(1);
-            })
-            .catch(() => {
+                // PasswordResponses : 1 = NEED_PASSWORD, 2 = INCORRECT_PASSWORD
+                const motDePasseAbsent = error?.code === 1 || !pwd;
+
+                console.warn('[Aperçu PDF] mot de passe refusé', {
+                    url,
+                    motDePasseFourni: !!pwd,
+                    longueur: pwd.length,
+                    espacesDeBordure: pwd !== pwd.trim(),
+                    code: error?.code,
+                    message: error?.message
+                });
+
+                // Repli silencieux : mot de passe enregistré avec des espaces
+                if (!motDePasseAbsent && !retry && pwd.trim() && pwd.trim() !== pwd) {
+                    this.loadPdfDocument(url, pwd.trim(), true);
+                    return;
+                }
+
                 this.isLoadingPreview = false;
+                this.cdr.detectChanges();
+
+                const message = motDePasseAbsent
+                    ? "Ce PDF est protégé et aucun mot de passe n'est enregistré pour cette pièce. Veuillez le saisir :"
+                    : 'Le mot de passe enregistré pour cette pièce a été refusé par le fichier. Veuillez le saisir :';
+
+                const pass = prompt(message);
+                if (pass) {
+                    this.isLoadingPreview = true;
+                    this.loadPdfDocument(url, pass, true);
+                }
             });
     }
 
