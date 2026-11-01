@@ -476,6 +476,25 @@ nz-splitter {
 }
 
 // ── Canvas scrollable ───────────────────
+/* Ajustement automatique actif : le bouton « ajuster a la largeur » et le
+   badge de zoom sont mis en evidence pour que l'utilisateur sache que le zoom
+   suit la taille du cadre. */
+.pdf-ctrl-btn.pdf-ctrl-btn-actif {
+  background: #2563EB;
+  color: #fff;
+
+  &:hover:not(:disabled) {
+    background: #3B82F6;
+    color: #fff;
+  }
+}
+
+// La barre d'outils est sombre : l'accent se fait en bleu clair.
+.pdf-zoom-badge.pdf-zoom-badge-auto {
+  border-color: #2563EB;
+  color: #93C5FD;
+}
+
 .pdf-canvas-wrapper {
   flex: 1;
   min-height: 0;

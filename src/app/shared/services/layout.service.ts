@@ -7,6 +7,13 @@ import { Injectable } from '@angular/core';
 export class LayoutService {
 
   public closeSidebar: boolean = true;
+
+  /* Repli imposé par l'écran affiché (ex. « Ajouter un document », qui a besoin
+     de toute la largeur pour le formulaire et l'aperçu). Le composant le lève
+     dans ngOnInit et le baisse dans ngOnDestroy ; la mise en page le respecte
+     aux redimensionnements, et un clic sur le bouton menu le désactive pour
+     rendre la main à l'utilisateur. */
+  public replierForce: boolean = false;
   public fullScreen: boolean = false;
   public isLanguage: boolean = false;
   public isSearchOpen: boolean = false;

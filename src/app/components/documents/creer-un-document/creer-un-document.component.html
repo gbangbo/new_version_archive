@@ -873,7 +873,9 @@
                                                 title="Réduire (−25%)">
                                             <i class="fa-solid fa-magnifying-glass-minus"></i>
                                         </button>
-                                        <span class="pdf-zoom-badge">{{ pdfZoomLabel }}</span>
+                                        <span class="pdf-zoom-badge"
+                                              [class.pdf-zoom-badge-auto]="pdfAutoFit"
+                                              [title]="pdfZoomTitle">{{ pdfZoomLabel }}</span>
                                         <button class="pdf-ctrl-btn"
                                                 (click)="zoomInPdf()"
                                                 [disabled]="pdfScale >= 3 || isRenderingPdf"
@@ -887,9 +889,12 @@
                                     <!-- Ajustements -->
                                     <div class="pdf-ctrl-group">
                                         <button class="pdf-ctrl-btn"
+                                                [class.pdf-ctrl-btn-actif]="pdfAutoFit"
                                                 (click)="fitWidthPdf()"
                                                 [disabled]="isRenderingPdf"
-                                                title="Ajuster à la largeur">
+                                                [title]="pdfAutoFit
+                                                    ? 'Ajustement automatique à la largeur (actif)'
+                                                    : 'Ajuster à la largeur et suivre la taille de l\'écran'">
                                             <i class="fa-solid fa-arrows-left-right"></i>
                                         </button>
                                         <button class="pdf-ctrl-btn"

@@ -33,11 +33,7 @@ export class ContentComponent {
       }
     });
 
-    if(window.innerWidth < 1200){
-      this.layoutService.closeSidebar = true;
-    }else {
-      this.layoutService.closeSidebar = false;
-    }
+    this.appliquerEtatSidebar();
 
     if(window.innerWidth <= 992){
       this.layoutService.config.settings.sidebar_type = 'compact-wrapper';
@@ -50,13 +46,16 @@ export class ContentComponent {
     }
   }
 
+  /* État de la barre latérale : repliée sous 1200px, ou quand l'écran affiché
+     l'impose (layoutService.replierForce). */
+  private appliquerEtatSidebar(): void {
+    this.layoutService.closeSidebar =
+      window.innerWidth < 1200 || this.layoutService.replierForce;
+  }
+
   @HostListener('window:resize', ['$event'])
   onResize() {
-    if(window.innerWidth < 1200){
-      this.layoutService.closeSidebar = true;
-    }else {
-      this.layoutService.closeSidebar = false;
-    }
+    this.appliquerEtatSidebar();
     if(window.innerWidth <= 992){
       this.layoutService.config.settings.sidebar_type = 'compact-wrapper';
     }else{

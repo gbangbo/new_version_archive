@@ -31,5 +31,6 @@ export class LogoComponent implements OnInit {
 
     toggleSidebar() {
         this.layoutService.closeSidebar = !this.layoutService.closeSidebar;
+        this.layoutService.replierForce = false;
     }
 }

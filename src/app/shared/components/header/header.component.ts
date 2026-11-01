@@ -33,7 +33,11 @@ export class HeaderComponent {
     logoDark1: string = 'assets/images/logo/logo_dark.png';
     @Input() icon: string;
     @Input() type: string;
-    isIcon: string = 'menu';
+    /* Déduite de l'état réel : la barre peut aussi être repliée sans clic
+       (largeur de fenêtre, écran qui impose le repli). */
+    get isIcon(): string {
+        return this.layoutService.closeSidebar ? 'x' : 'menu';
+    }
 
     constructor(public layoutService: LayoutService, private autor: Authorization, private cdr: ChangeDetectorRef) {
         this.users = this.autor.getInfosUsers();
@@ -56,8 +60,8 @@ export class HeaderComponent {
 
     toggleSidebar() {
         this.layoutService.closeSidebar = !this.layoutService.closeSidebar;
-        this.isIcon = this.layoutService.closeSidebar ? 'x' : 'menu';
-        console.log("isIcon===", this.isIcon)
+        // Clic explicite : l'utilisateur reprend la main sur le repli automatique.
+        this.layoutService.replierForce = false;
         this.cdr.detectChanges();
     }
 

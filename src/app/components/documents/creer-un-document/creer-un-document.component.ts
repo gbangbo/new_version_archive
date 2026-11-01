@@ -44,6 +44,7 @@ import {SvgIconComponent} from "../../../shared/components/ui/svg-icon/svg-icon.
 import Swal from 'sweetalert2';
 import moment from "moment";
 import {decryptData} from "../../../config/config";
+import {LayoutService} from "../../../shared/services/layout.service";
 import {HistoLogService} from "../../../shared/services/histo-log.service";
 // Désactiver l'auto-découverte AU NIVEAU MODULE (en dehors de la classe)
 Dropzone.autoDiscover = false;
@@ -281,6 +282,8 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
     // de la souris : cliquer dans l'aperçu a déjà fait perdre le focus au champ.
     captureCible: any = null;
     private textLayerTask: any = null;
+    /** État de la barre latérale avant l'entrée sur cet écran. */
+    private sidebarAvant = false;
 
     pdfDoc: any = null;
     currentPage = 1;
@@ -289,6 +292,17 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
     pdfRotation = 0;
     isRenderingPdf = false;
     currentPageInput = 1;
+
+    /* Ajustement automatique du zoom.
+
+       Par défaut la page est mise à l'échelle de la largeur disponible, et le
+       zoom suit chaque redimensionnement (fenêtre, splitter, plein écran).
+       Un zoom manuel (+ / − / 100%) désactive ce suivi ; le bouton
+       « Ajuster à la largeur » le réactive. */
+    pdfAutoFit = true;
+    private pdfResizeObs?: ResizeObserver;
+    private pdfWrapperObserve: HTMLElement | null = null;
+    private pdfFitTimer: any = null;
     idcategorie: string = 'i';
 
     // ── État du viewer Office ────────────────────────────────────
@@ -300,6 +314,12 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
 
     get pdfZoomLabel(): string {
         return Math.round(this.pdfScale * 100) + '%';
+    }
+
+    get pdfZoomTitle(): string {
+        return this.pdfAutoFit
+            ? 'Zoom ajusté automatiquement à la largeur du cadre'
+            : 'Zoom manuel';
     }
 
     get officeZoomLabel(): string {
@@ -426,6 +446,7 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
                 private router: Router,
                 private toast: ToastrService, private cdr: ChangeDetectorRef, private sanitizer: DomSanitizer,
                 private histoLog: HistoLogService,
+                private layoutService: LayoutService,
                 private hostRef: ElementRef<HTMLElement>) {
         //  this.dataSource.setData(TREE_DATA);
 
@@ -435,6 +456,19 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
         pdfjsLib.GlobalWorkerOptions.workerSrc = '/assets/pdfjs/pdf.worker.mjs';
         // Masque le pied de page global sur cet écran (l'info est reprise dans la barre d'actions)
         document.body.classList.add('hide-app-footer');
+        /* Replie la barre latérale : le formulaire et l'aperçu se partagent la
+           largeur, chaque pixel compte. L'état précédent est rendu en quittant.
+
+           Le drapeau est posé tout de suite (il n'est pas affiché), mais le
+           changement visible attend le tour de boucle suivant : closeSidebar est
+           lié dans le gabarit du parent, déjà vérifié quand ce ngOnInit s'exécute
+           (NG0100). */
+        this.sidebarAvant = this.layoutService.closeSidebar;
+        this.layoutService.replierForce = true;
+        setTimeout(() => {
+            this.layoutService.closeSidebar = true;
+            this.cdr.detectChanges();
+        }, 0);
         this.editor = new Editor();
         this.editor2 = new Editor();
         window.scrollTo({top: 0, behavior: 'smooth'});
@@ -727,8 +761,13 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
     ngOnDestroy(): void {
         // Rétablit le pied de page global en quittant l'écran
         document.body.classList.remove('hide-app-footer');
+        // ...ainsi que la barre latérale telle qu'elle était avant d'entrer ici
+        this.layoutService.replierForce = false;
+        this.layoutService.closeSidebar = window.innerWidth < 1200 ? true : this.sidebarAvant;
         window.removeEventListener('resize', this.ajusterHauteurCarte);
         this.resizeObs?.disconnect();
+        this.pdfResizeObs?.disconnect();
+        clearTimeout(this.pdfFitTimer);
         this.editor.destroy();
         this.editor2.destroy();
         // ou componentWillUnmount() ou onUnmounted()
@@ -1177,6 +1216,7 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
         this.pdfRotation = 0;
         this.isRenderingPdf = false;
         this.currentPageInput = 1;
+        this.pdfAutoFit = true;
 
         this.loadPdfDocument(url, (pwd ?? '').toString(), false);
     }
@@ -1204,7 +1244,8 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
                 this.pdfDoc = pdf;
                 this.totalPages = pdf.numPages;
                 this.cdr.detectChanges();
-                this.renderPage(1);
+                this.surveillerLargeurCadrePdf();
+                this.afficherPage(1);
             })
             .catch((error: any) => {
                 if (error?.name !== 'PasswordException') {
@@ -1374,45 +1415,123 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
     // ── Navigation ───────────────────────────────────────────────
     prevPage() {
         if (this.currentPage > 1 && !this.isRenderingPdf)
-            this.renderPage(this.currentPage - 1);
+            this.afficherPage(this.currentPage - 1);
     }
 
     nextPage() {
         if (this.currentPage < this.totalPages && !this.isRenderingPdf)
-            this.renderPage(this.currentPage + 1);
+            this.afficherPage(this.currentPage + 1);
     }
 
     goToPage() {
         const p = Math.max(1, Math.min(this.totalPages, this.currentPageInput || 1));
         this.currentPageInput = p;
-        if (p !== this.currentPage) this.renderPage(p);
+        if (p !== this.currentPage) this.afficherPage(p);
+    }
+
+    /* Affiche une page en recalculant d'abord l'échelle si le suivi
+       automatique est actif : les pages d'un même PDF n'ont pas toujours le
+       même format (planche A3 au milieu d'un document A4). */
+    private afficherPage(pageNum: number): void {
+        if (!this.pdfAutoFit) {
+            this.renderPage(pageNum);
+            return;
+        }
+        this.calculerEchelleLargeur(pageNum).then(echelle => {
+            if (echelle !== null) this.pdfScale = echelle;
+            this.renderPage(pageNum);
+        });
     }
 
     // ── Zoom ─────────────────────────────────────────────────────
     zoomInPdf() {
         if (this.pdfScale >= 3 || this.isRenderingPdf) return;
+        this.pdfAutoFit = false;
         this.pdfScale = parseFloat(Math.min(3, this.pdfScale + 0.25).toFixed(2));
         this.renderPage(this.currentPage);
     }
 
     zoomOutPdf() {
         if (this.pdfScale <= 0.25 || this.isRenderingPdf) return;
+        this.pdfAutoFit = false;
         this.pdfScale = parseFloat(Math.max(0.25, this.pdfScale - 0.25).toFixed(2));
         this.renderPage(this.currentPage);
     }
 
     resetZoomPdf() {
         if (this.isRenderingPdf) return;
+        this.pdfAutoFit = false;
         this.pdfScale = 1.0;
         this.renderPage(this.currentPage);
     }
 
+    /** Ajuste à la largeur et réactive le suivi automatique. */
     fitWidthPdf() {
-        if (!this.pdfDoc || !this.pdfWrapper || this.isRenderingPdf) return;
-        this.pdfDoc.getPage(this.currentPage).then((page: any) => {
-            const viewport = page.getViewport({scale: 1, rotation: this.pdfRotation});
-            const w = this.pdfWrapper.nativeElement.clientWidth - 32;
-            this.pdfScale = parseFloat((w / viewport.width).toFixed(2));
+        if (!this.pdfDoc || this.isRenderingPdf) return;
+        this.pdfAutoFit = true;
+        this.calculerEchelleLargeur(this.currentPage).then(echelle => {
+            if (echelle !== null) this.pdfScale = echelle;
+            this.renderPage(this.currentPage);
+        });
+    }
+
+    /* Échelle qui fait tenir la page dans la largeur utile du cadre.
+
+       clientWidth exclut déjà l'ascenseur vertical ; on retire les 16px de
+       padding de .pdf-canvas-wrapper de chaque côté. Retourne null tant que le
+       cadre n'est pas mesurable (aperçu pas encore dans le DOM). */
+    private calculerEchelleLargeur(pageNum: number): Promise<number | null> {
+        const cadre = this.cadrePdf();
+        if (!this.pdfDoc || !cadre) return Promise.resolve(null);
+        const dispo = cadre.clientWidth - 32;
+        if (dispo <= 0) return Promise.resolve(null);
+
+        return this.pdfDoc.getPage(pageNum)
+            .then((page: any) => {
+                const viewport = page.getViewport({scale: 1, rotation: this.pdfRotation});
+                if (!viewport.width) return null;
+                const echelle = Math.min(3, Math.max(0.25, dispo / viewport.width));
+                return parseFloat(echelle.toFixed(2));
+            })
+            .catch(() => null);
+    }
+
+    private cadrePdf(): HTMLElement | null {
+        return this.pdfWrapper?.nativeElement
+            ?? (document.querySelector('.pdf-canvas-wrapper') as HTMLElement | null);
+    }
+
+    /* Suit la largeur du cadre d'aperçu : redimensionnement de la fenêtre,
+       déplacement du splitter, passage en plein écran, repli de la barre
+       latérale… Un ResizeObserver couvre tous ces cas d'un seul coup. */
+    private surveillerLargeurCadrePdf(): void {
+        const cadre = this.cadrePdf();
+        if (!cadre || typeof ResizeObserver === 'undefined') return;
+        if (this.pdfWrapperObserve === cadre) return;
+
+        this.pdfResizeObs?.disconnect();
+        this.pdfResizeObs = new ResizeObserver(() => {
+            if (!this.pdfAutoFit || !this.pdfDoc) return;
+            // Anti-rebond : un glissement de splitter émet des dizaines
+            // d'événements, on ne relance qu'un rendu à la fin du geste.
+            clearTimeout(this.pdfFitTimer);
+            this.pdfFitTimer = setTimeout(() => this.reajusterZoomAuto(), 150);
+        });
+        this.pdfResizeObs.observe(cadre);
+        this.pdfWrapperObserve = cadre;
+    }
+
+    private reajusterZoomAuto(): void {
+        if (!this.pdfAutoFit || !this.pdfDoc) return;
+        if (this.isRenderingPdf) {
+            // Rendu en cours : on repasse juste après.
+            this.pdfFitTimer = setTimeout(() => this.reajusterZoomAuto(), 150);
+            return;
+        }
+        this.calculerEchelleLargeur(this.currentPage).then(echelle => {
+            if (echelle === null) return;
+            if (Math.abs(echelle - this.pdfScale) < 0.02) return;
+            this.pdfScale = echelle;
             this.renderPage(this.currentPage);
         });
     }
@@ -1421,7 +1540,7 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
     rotatePdf(dir: 'left' | 'right') {
         if (this.isRenderingPdf) return;
         this.pdfRotation = (this.pdfRotation + (dir === 'right' ? 90 : -90) + 360) % 360;
-        this.renderPage(this.currentPage);
+        this.afficherPage(this.currentPage);
     }
 
     // ── Actions fichier ──────────────────────────────────────────
