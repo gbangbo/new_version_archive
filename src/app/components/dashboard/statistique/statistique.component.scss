@@ -1,0 +1,471 @@
+/* ═══════════════════════════════════════════════════════════
+   TABLEAU DE BORD DES DOCUMENTS
+   Reprend le vocabulaire visuel des écrans métier (op-toolbar)
+   ═══════════════════════════════════════════════════════════ */
+
+:host {
+    display: block;
+}
+
+/* ── Barre d'outils ──────────────────────────────────────── */
+.st-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    padding: 16px 20px;
+}
+
+.st-toolbar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.st-toolbar-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #EEF2FF, #E0E7FF);
+    color: #4F46E5;
+    flex-shrink: 0;
+
+    i {
+        font-size: 19px;
+    }
+}
+
+.st-toolbar-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    color: #0F172A;
+    letter-spacing: 0.02em;
+}
+
+.st-toolbar-sub {
+    display: block;
+    font-size: 11px;
+    color: #94A3B8;
+    font-weight: 500;
+    margin-top: 1px;
+}
+
+.st-toolbar-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.st-annee-select {
+    min-width: 128px;
+}
+
+.st-range {
+    width: 230px;
+}
+
+/* ── Boutons ─────────────────────────────────────────────── */
+.st-btn {
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 0 12px;
+    border-radius: 8px;
+    border: 1.5px solid #E2E8F0;
+    background: #F8FAFC;
+    color: #475569;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.18s;
+
+    &:hover:not(:disabled) {
+        border-color: #CBD5E1;
+        background: #FFFFFF;
+        color: #0F172A;
+    }
+
+    &:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+    }
+
+    i {
+        font-size: 13px;
+    }
+}
+
+.st-btn-ghost {
+    width: 34px;
+    padding: 0;
+}
+
+.st-btn-primary {
+    border-color: #4F46E5;
+    background: #4F46E5;
+    color: #FFFFFF;
+
+    &:hover:not(:disabled) {
+        background: #4338CA;
+        border-color: #4338CA;
+        color: #FFFFFF;
+    }
+}
+
+.st-export-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding-left: 8px;
+    margin-left: 2px;
+    border-left: 1px solid #E2E8F0;
+}
+
+/* ── États (chargement / erreur / vide) ──────────────────── */
+.st-state {
+    padding: 44px 20px;
+    text-align: center;
+}
+
+.st-state-icon {
+    width: 54px;
+    height: 54px;
+    margin: 0 auto 14px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #F1F5F9;
+    color: #94A3B8;
+
+    svg {
+        width: 24px;
+        height: 24px;
+    }
+
+    &--error {
+        background: #FEF2F2;
+        color: #DC2626;
+    }
+}
+
+.st-state-title {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 700;
+    color: #0F172A;
+}
+
+.st-state-text {
+    margin: 6px 0 0;
+    font-size: 12.5px;
+    color: #64748B;
+    font-weight: 500;
+}
+
+.op-spinner {
+    width: 44px;
+    height: 44px;
+    border: 4px solid #E2E8F0;
+    border-top-color: #4F46E5;
+    border-radius: 50%;
+    animation: st-spin 0.8s linear infinite;
+    margin: 0 auto 12px;
+}
+
+@keyframes st-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ── Tuiles chiffrées ────────────────────────────────────── */
+.st-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 16px;
+}
+
+.st-kpi {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 18px;
+    border-radius: 12px;
+    background: #FFFFFF;
+    border: 1px solid #EEF2F7;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    transition: box-shadow 0.18s, transform 0.18s;
+
+    &:hover {
+        box-shadow: 0 6px 18px rgba(15, 23, 42, 0.07);
+        transform: translateY(-1px);
+    }
+}
+
+.st-kpi-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: var(--kpi-color, #4F46E5);
+    background: color-mix(in srgb, var(--kpi-color, #4F46E5) 12%, #FFFFFF);
+
+    svg {
+        width: 20px;
+        height: 20px;
+    }
+}
+
+.st-kpi-body {
+    min-width: 0;
+}
+
+.st-kpi-value {
+    display: block;
+    font-size: 22px;
+    font-weight: 800;
+    line-height: 1.1;
+    color: #0F172A;
+}
+
+.st-kpi-label {
+    display: block;
+    margin-top: 2px;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #94A3B8;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ── En-tête de carte graphique ──────────────────────────── */
+.st-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 18px;
+    border-bottom: 1px solid #F1F5F9;
+}
+
+.st-card-head-left {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    min-width: 0;
+}
+
+.st-card-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.st-card-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #0F172A;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.st-card-sub {
+    font-size: 11.5px;
+    color: #94A3B8;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.st-card-badge {
+    font-size: 12px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+}
+
+.st-chart {
+    padding: 8px 10px 0;
+}
+
+/* ── Palmarès sous le graphique ──────────────────────────── */
+.st-rank {
+    padding: 6px 18px 16px;
+}
+
+.st-rank-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 8px;
+    border-radius: 8px;
+    transition: background 0.15s;
+
+    & + .st-rank-row {
+        border-top: 1px solid #F8FAFC;
+    }
+
+    &--clickable {
+        cursor: pointer;
+
+        &:hover {
+            background: #F8FAFC;
+        }
+    }
+}
+
+.st-rank-label {
+    flex: 0 0 34%;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #334155;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.st-rank-bar {
+    flex: 1 1 auto;
+    height: 7px;
+    border-radius: 6px;
+    background: #F1F5F9;
+    overflow: hidden;
+}
+
+.st-rank-fill {
+    display: block;
+    height: 100%;
+    border-radius: 6px;
+    min-width: 2px;
+    transition: width 0.4s ease;
+}
+
+.st-rank-value {
+    flex: 0 0 auto;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #0F172A;
+    min-width: 42px;
+    text-align: right;
+}
+
+.st-rank-pct {
+    flex: 0 0 auto;
+    font-size: 11px;
+    font-weight: 600;
+    color: #94A3B8;
+    min-width: 44px;
+    text-align: right;
+}
+
+.st-rank-chevron {
+    color: #CBD5E1;
+    display: flex;
+
+    svg {
+        width: 14px;
+        height: 14px;
+    }
+}
+
+.st-rank-more {
+    margin: 8px 0 0;
+    font-size: 11.5px;
+    color: #94A3B8;
+    font-weight: 600;
+    text-align: center;
+}
+
+/* ── Tableau de détail ───────────────────────────────────── */
+.st-detail {
+    padding: 4px 0 8px;
+}
+
+.st-detail-empty {
+    margin: 0;
+    padding: 28px 20px;
+    text-align: center;
+    font-size: 12.5px;
+    color: #94A3B8;
+    font-weight: 600;
+}
+
+.st-table-wrap {
+    overflow-x: auto;
+    max-height: 420px;
+    overflow-y: auto;
+}
+
+.st-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12.5px;
+
+    thead th {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        background: #F8FAFC;
+        color: #475569;
+        font-weight: 700;
+        text-align: left;
+        padding: 10px 14px;
+        white-space: nowrap;
+        border-bottom: 1px solid #E2E8F0;
+    }
+
+    tbody td {
+        padding: 9px 14px;
+        color: #334155;
+        border-bottom: 1px solid #F1F5F9;
+        white-space: nowrap;
+        max-width: 280px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    tbody tr:hover td {
+        background: #F8FAFC;
+    }
+}
+
+/* ── Adaptations mobile (breakpoints Tailwind inversés) ──── */
+@media (max-width: 991px) {
+    .st-toolbar {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .st-range {
+        width: 100%;
+    }
+
+    .st-toolbar-right {
+        width: 100%;
+    }
+
+    .st-rank-label {
+        flex-basis: 42%;
+    }
+
+    .st-rank-pct {
+        display: none;
+    }
+}

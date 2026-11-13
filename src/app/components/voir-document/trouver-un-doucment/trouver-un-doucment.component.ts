@@ -321,6 +321,7 @@ export class TrouverUnDoucmentComponent implements OnInit, OnDestroy {
             .then((res: any) => {
                 this.isSearching = false;
                 this.hasSearched = true;
+                console.log("res?.body ====", res?.body)
                 if (res?.body?.status || res?.body?.success) {
                     this.results = res.body.data.map((e: any) => ({
                         ...e,

@@ -437,6 +437,10 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
     dataBoites: any = [];
     isload: boolean = false;
     isloadSerie: boolean = false;
+    private seriesPretes: Promise<any> | null = null;
+    /* Arborescence brute des séries : dataSeries n'en garde que les racines,
+       alors que la modification doit y retrouver un nœud de n'importe quel niveau. */
+    private dataSeriesRaw: any[] = [];
     dataSites: any = [];
     dataSeries: any = [];
 
@@ -482,7 +486,9 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
         //  this.showTypeDoc(this.users?.datasociete?.uid, '');
         this.showOrganigramme(this.users?.datasociete?.uid, '');
         this.showSites(this.users?.datasociete?.uid, '');
-        this.showSerie('', '', '');
+        // La promesse est conservée : la modification doit attendre que la liste
+        // des séries soit là avant d'y poser la valeur du document.
+        this.seriesPretes = this.showSerie('', '', '');
         // Forcer la mise à jour de l'icône dossier à chaque toggle
         this.treeControl.expansionModel.changed.subscribe(() => setTimeout(() => this.cdr.detectChanges(), 0));
 
@@ -494,11 +500,20 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
     }
 
     /* Pré-remplit le formulaire à partir d'un document existant */
-    private async hydrateForEdit(doc: any): Promise<void> {
+    private async hydrateForEdit(docListe: any): Promise<void> {
         this.isEdit = true;
+        this.isloading = true;
+
+        /* Les trois écrans qui ouvrent la modification (accueil, mes documents,
+           recherche) ne transmettent qu'un extrait de la ligne affichée : pas de
+           série, pas de propriétés dynamiques, pas d'emplacement physique, et une
+           date déjà reformatée. On repart donc de la fiche complète. */
+        const complet = await this.fetchDocumentComplet(docListe?.uid || docListe?.iddocuments || '');
+        const doc = complet ? {...docListe, ...complet} : docListe;
 
         // Type d'archivage selon la présence d'une boîte
         const hasBoite = !!doc?.databoites?.uid;
+        this.archiveStatus = hasBoite ? 'definitive' : 'courante';
         this.validationForm.get('typeArchivage')?.setValue(hasBoite ? 'definitive' : 'courante');
 
         // Statut : privé (0) / public (1) / confidentiel (2)
@@ -510,37 +525,194 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
             code_docs: doc?.code_docs || '',
             lib_docs: doc?.lib_docs || doc?.lib_document || '',
             desc_docs: doc?.desc_docs || '',
-            date_docs: doc?.date_docs ? new Date(doc.date_docs) : null,
+            date_docs: this.parseDateDoc(doc?.date_docs || doc?.date_document),
             publishe: this.statutToCode(this.documentStatus),
-            idcategories: doc?.datacategories?.uid || '',
         });
 
-        // Boîte (si archivage définitif) : on injecte l'option pour l'afficher
-        if (hasBoite) {
-            this.dataBoites = [{label: doc.databoites.code_boites, value: doc.databoites.uid}];
-            this.validationForm.get('idboites')?.setValue(doc.databoites.uid);
-        }
+        // Emplacement physique (site → rayon → boîte)
+        await this.hydrateEmplacement(doc);
 
         // Services bénéficiaires
-        const services = (doc?.dataservices || []).map((s: any) => s?.uid).filter((v: any) => v);
+        const services = (doc?.dataservices || [])
+            .map((s: any) => s?.uid || s?.idservices)
+            .filter((v: any) => v);
         if (services.length) {
             this.validationForm.get('dataservices')?.setValue(services);
         }
 
-        // Pièces déjà attachées au document (remplacent la zone temporaire)
+        // Type de document + propriétés dynamiques (plan de classement inclus)
+        await this.hydrateTypeEtProprietes(doc);
+
+        /* Pièces déjà attachées (elles remplacent la zone temporaire). Chargées
+           après le type : le rangement dans l'arbre suppose le plan de
+           classement du type déjà en place. */
         await this.loadDocumentPieces(doc?.uid || '');
 
-        // Type de document : charger les types de la catégorie puis appliquer
+        /* Série en dernier : la poser déclenche selectSerie → showTypeDoc, qui
+           réécrit dataTypeDocument. Le faire plus tôt viderait la liste des
+           types pendant la construction des propriétés dynamiques. */
+        await this.hydrateSerie(doc);
+
+        this.isloading = false;
+        this.cdr.detectChanges();
+    }
+
+    private async hydrateSerie(doc: any): Promise<void> {
         const catUid = doc?.datacategories?.uid || '';
-        const typeUid = doc?.datatype_document?.[0]?.uid || '';
-        if (catUid && typeUid) {
-            await this.showTypeDoc('', '', catUid);
-            this.validationForm.get('idtype_docs')?.setValue(typeUid);
-            this.changeType({value: typeUid});   // déclenche showCatOrder → rebuildTreeWithFiles
-            this.prefillProprietes(doc);
+        if (!catUid) return;
+        try {
+            await this.seriesPretes;
+        } catch {
+            // liste indisponible : on se rabattra sur l'option du document
         }
 
+        /* Le document pointe sur le dossier où il est rangé (« BANQUE »), pas sur
+           la série : la liste ne contient que les racines du plan de classement.
+           On remonte donc à l'ancêtre racine du nœud. */
+        let serieUid = this.racineSerie(catUid);
+
+        /* À défaut, la racine du plan chargé pour le type du document : c'est la
+           même série, vue depuis l'autre bout. */
+        if (!serieUid) {
+            const racinePlan = this.cleanTreeData?.[0]?.key || '';
+            if (racinePlan && (this.dataSeries || []).some((s: any) => s?.value === racinePlan)) {
+                serieUid = racinePlan;
+            }
+        }
+
+        // Sinon on affiche le nœud tel quel plutôt que de laisser le champ vide
+        if (!serieUid) {
+            serieUid = catUid;
+            if (!(this.dataSeries || []).some((s: any) => s?.value === catUid)) {
+                const cat = doc.datacategories;
+                this.dataSeries = [
+                    ...(this.dataSeries || []),
+                    {
+                        label: `${cat?.code_categories || ''} ${cat?.code_categories ? '-' : ''} ${cat?.name_categories || ''}`.trim(),
+                        value: catUid,
+                    },
+                ];
+            }
+        }
+
+        this.poserValeurSelect2('idcategories', serieUid);
+    }
+
+    /* Racine de l'arborescence des séries contenant le nœud `uid`. */
+    private racineSerie(uid: string): string {
+        const chercher = (noeuds: any[], racine: string): string => {
+            for (const noeud of noeuds || []) {
+                const courante = racine || noeud?.uid || '';
+                if (noeud?.uid === uid) return courante;
+                const trouve = chercher(noeud?.children || [], courante);
+                if (trouve) return trouve;
+            }
+            return '';
+        };
+        return chercher(this.dataSeriesRaw, '');
+    }
+
+    /* ng-select2-component ne résout le libellé d'une valeur qu'à l'instant où
+       on la lui pose, à partir des options qu'il détient déjà. Affecter la liste
+       et la valeur dans le même tour laisse le champ vide — et le composant
+       renvoie alors `undefined` dans le contrôle. On force donc la propagation
+       de [data] avant de poser la valeur. */
+    private poserValeurSelect2(nom: string, valeur: any): void {
+        const ctrl = this.validationForm.get(nom);
+        if (!ctrl || !valeur) return;
         this.cdr.detectChanges();
+        ctrl.setValue(valeur);
+    }
+
+    /* Fiche complète du document, seule source fiable pour la modification. */
+    private async fetchDocumentComplet(uid: string): Promise<any | null> {
+        if (!uid) return null;
+        const idsociete = this.users?.datasociete?.uid || '';
+        try {
+            const res: any = await this.httService.getData(
+                `${environment.api_url}api/:savedocuments?idsociete=${idsociete}&iddocuments=${uid}`,
+                false,
+                this.users?.access_token || ''
+            ).toPromise();
+            if (!(res?.body?.status || res?.body?.success)) return null;
+            const data = res.body.data;
+            const fiche = Array.isArray(data) ? data[0] : data;
+            return fiche && typeof fiche === 'object' ? fiche : null;
+        } catch {
+            return null;
+        }
+    }
+
+    /* Les listes reformatent la date en JJ/MM/AAAA avant de la transmettre :
+       new Date() la lirait à l'américaine (et renverrait Invalid Date passé le
+       12 du mois). Les deux écritures sont acceptées. */
+    private parseDateDoc(valeur: any): Date | null {
+        if (!valeur) return null;
+        if (valeur instanceof Date) return isNaN(valeur.getTime()) ? null : valeur;
+        const m = moment(String(valeur), ['YYYY-MM-DD', moment.ISO_8601, 'DD/MM/YYYY', 'DD-MM-YYYY'], true);
+        return m.isValid() ? m.toDate() : null;
+    }
+
+    /* Emplacement physique : on recharge les listes dépendantes (rayons du site,
+       boîtes du rayon) pour que les trois sélecteurs soient lisibles ET
+       modifiables, et pas seulement porteurs d'un identifiant. */
+    private async hydrateEmplacement(doc: any): Promise<void> {
+        const idsociete = this.users?.datasociete?.uid || '';
+        const idsite = doc?.datasites?.uid || doc?.datarayons?.datasites?.uid || '';
+        const idrayon = doc?.datarayons?.uid || doc?.databoites?.datarayons?.uid || '';
+        const idboite = doc?.databoites?.uid || '';
+
+        if (idsite) {
+            // dataSites est chargé depuis ngOnInit ; poser la valeur déclenche
+            // aussi changeSite, donc le rechargement des rayons du site.
+            this.poserValeurSelect2('idsite', idsite);
+        }
+        if (idrayon) {
+            await this.showRayons(idsociete, '', idsite);
+            if (!(this.dataRayon || []).some((r: any) => r?.value === idrayon)) {
+                this.dataRayon = [
+                    ...(this.dataRayon || []),
+                    {label: doc?.datarayons?.libelle_rayon || doc?.datarayons?.code_rayon || '', value: idrayon},
+                ];
+            }
+            this.poserValeurSelect2('idrayon', idrayon);
+        }
+        if (idboite) {
+            await this.showBoites(idsociete, idrayon, '');
+            // Repli si la liste des boîtes n'a pas pu être chargée
+            if (!(this.dataBoites || []).some((b: any) => b?.value === idboite)) {
+                this.dataBoites = [
+                    ...(this.dataBoites || []),
+                    {label: doc?.databoites?.code_boites || '', value: idboite},
+                ];
+            }
+            this.poserValeurSelect2('idboites', idboite);
+        }
+    }
+
+    /* Type de document : la liste des types dépend de la série. Quand la série
+       est absente, le type porté par le document sert lui-même d'option — il
+       transporte déjà ses propriétés. */
+    private async hydrateTypeEtProprietes(doc: any): Promise<void> {
+        const typeDoc = doc?.datatype_document?.[0] || doc?.datatypedocuments || null;
+        const typeUid = typeDoc?.uid || '';
+        if (!typeUid) return;
+
+        const catUid = doc?.datacategories?.uid || '';
+        if (catUid) {
+            await this.showTypeDoc('', '', catUid);
+        }
+
+        if (!(this.dataTypeDocument || []).some((t: any) => t?.uid === typeUid)) {
+            this.dataTypeDocument = [
+                ...(this.dataTypeDocument || []),
+                {...typeDoc, label: typeDoc?.libelle_type_docs, value: typeUid},
+            ];
+        }
+
+        this.poserValeurSelect2('idtype_docs', typeUid);
+        await this.changeType({value: typeUid});   // charge aussi le plan de classement
+        this.prefillProprietes(doc);
     }
 
     /* Nettoie le nom d'une pièce : retire l'éventuelle URL/query et
@@ -570,8 +742,12 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
             this.isloading = false;
             if (res.body.status || res.body.success) {
                 this.dataFileTemps = (res.body.data || []).map((d: any) => {
-                    const url = d.url_file || d.lib_file_temp || d.file || '';
-                    const ext = (d.extension || this.getFileExtension(url) || '').toLowerCase();
+                    const url = d.url_file || d.url_file_docs || d.lib_file_temp || d.file || '';
+                    /* Les pièces d'un document renvoient extension_file_docs
+                       (avec le point) là où la zone temporaire renvoie extension. */
+                    const ext = (d.extension || d.extension_file_docs || this.getFileExtension(url) || '')
+                        .toLowerCase()
+                        .replace('.', '');
                     const rawName = d.name_piece_docs || d.name_file_docs || d.name || '';
                     return {
                         uid: d.uid,
@@ -596,17 +772,56 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
         }
     }
 
-    /* Reporte les valeurs des propriétés dynamiques du document sur le formulaire */
+    /* Reporte les valeurs des propriétés dynamiques du document sur le formulaire.
+       L'API les loge dans datatype_document[0].dataPro[].dataValue[] (même
+       structure que la fenêtre « Voir le détail ») ; les formes à plat des
+       anciennes réponses restent acceptées. */
     private prefillProprietes(doc: any): void {
-        const saved = doc?.proprietes_docs || doc?.dataproprietes_docs || doc?.dataproprietes || [];
-        if (!this.ligneTypeOfDoc?.dataPro?.length || !saved?.length) return;
-        this.ligneTypeOfDoc.dataPro.forEach((p: any) => {
-            const match = saved.find((s: any) =>
-                s?.idproprietes_docs === p.uid || s?.uid === p.uid || s?.iduid === p.uid);
-            if (match) {
-                p.value_proprietes_docs = match.value_proprietes_docs ?? match.value ?? '';
+        if (!this.ligneTypeOfDoc?.dataPro?.length) return;
+
+        const valeurs = new Map<string, any>();
+
+        const propsDuType = doc?.datatype_document?.[0]?.dataPro || [];
+        (Array.isArray(propsDuType) ? propsDuType : []).forEach((p: any) => {
+            const v = this.extraireValeurPropriete(p?.dataValue);
+            if (p?.uid && v !== '') valeurs.set(p.uid, v);
+        });
+
+        const aPlat = doc?.proprietes_docs || doc?.dataproprietes_docs || doc?.dataproprietes || [];
+        (Array.isArray(aPlat) ? aPlat : []).forEach((s: any) => {
+            const uid = s?.idproprietes_docs || s?.dataproprietes_docs?.uid || s?.uid || s?.iduid;
+            const v = s?.value_proprietes_docs ?? s?.value;
+            if (uid && v !== null && v !== undefined && String(v).trim() !== '') {
+                valeurs.set(uid, v);
             }
         });
+
+        if (!valeurs.size) return;
+
+        this.ligneTypeOfDoc.dataPro.forEach((p: any) => {
+            if (!valeurs.has(p.uid)) return;
+            const v = valeurs.get(p.uid);
+            // nz-date-picker attend un objet Date, pas la chaîne renvoyée par l'API
+            p.value_proprietes_docs = p?.type_proprietes_docs === 'date'
+                ? (this.parseDateDoc(v) ?? v)
+                : v;
+        });
+    }
+
+    /* La valeur saisie arrive dans dataValue, tantôt en tableau, tantôt en objet. */
+    private extraireValeurPropriete(dataValue: any): string {
+        if (dataValue === null || dataValue === undefined) return '';
+        if (Array.isArray(dataValue)) {
+            return dataValue
+                .map((v: any) => v?.value_proprietes_docs ?? v?.value ?? '')
+                .filter((v: any) => String(v).trim() !== '')
+                .join(', ');
+        }
+        if (typeof dataValue === 'object') {
+            const v = dataValue?.value_proprietes_docs ?? dataValue?.value ?? '';
+            return String(v).trim();
+        }
+        return String(dataValue).trim();
     }
 
     hasChild = (_: number, node: ExampleFlatNode): boolean => node.expandable;
@@ -1715,25 +1930,31 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
         this.ligneTypeOfDoc = [];
         this.captureCible = null; // les champs sont reconstruits : plus rien à armer
 
-        if (!event.value) return;
-        this.showCatOrder('', event.value, '');
+        if (!event.value) return Promise.resolve();
 
-        this.ligneTypeOfDoc = this.dataTypeDocument.find((d: any) => d.uid == event.value);
-        this.ligneTypeOfDoc.dataPro = this.ligneTypeOfDoc.dataPro.map((d: any) => {
-            return {
-                ...d,
-                lib_proprietes_docs: this.capitalize(d.lib_proprietes_docs)
-            }
-        })
-        const elementsARetirer = [
-            "Numéro du document",
-            "Objet du document",
-            "Date du document"
-        ];
+        /* Le type peut être absent de la liste (série non résolue en
+           modification) : sans garde, l'accès à dataPro casse l'écran. */
+        const ligne = this.dataTypeDocument.find((d: any) => d.uid == event.value);
+        if (ligne) {
+            this.ligneTypeOfDoc = ligne;
+            this.ligneTypeOfDoc.dataPro = (this.ligneTypeOfDoc.dataPro || []).map((d: any) => {
+                return {
+                    ...d,
+                    lib_proprietes_docs: this.capitalize(d.lib_proprietes_docs)
+                }
+            })
+            const elementsARetirer = [
+                "Numéro du document",
+                "Objet du document",
+                "Date du document"
+            ];
 
-        this.ligneTypeOfDoc.dataPro = this.ligneTypeOfDoc.dataPro.filter(
-            (item: any) => !elementsARetirer.includes(item.lib_proprietes_docs)
-        );
+            this.ligneTypeOfDoc.dataPro = this.ligneTypeOfDoc.dataPro.filter(
+                (item: any) => !elementsARetirer.includes(item.lib_proprietes_docs)
+            );
+        }
+
+        return this.showCatOrder('', event.value, '');
     }
 
     capitalize(str: string | null | undefined): string {
@@ -1798,7 +2019,8 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
             "code_docs": this.validationForm.value.code_docs,
             "lib_docs": this.validationForm.value.lib_docs,
             "date_docs": moment(this.validationForm.value.date_docs).format('YYYY-MM-DD'),
-            "date_sig": "",
+            // En modification, date_sig porte la date du jour (date de reprise)
+            "date_sig":  moment().format('YYYY-MM-DD'),
             "desc_docs": this.validationForm.value.desc_docs,
             "etat_docs": 0,
             "active_docs": true,
@@ -1836,6 +2058,7 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
 
         this.isloading = true;
         this.isSaving = true;
+        console.log("payload===",payload)
         this.httService.postData(`${environment.api_url}api/:savedocuments`, payload, this.users?.access_token || '')
             .toPromise()
             .then((res: any) => {
@@ -1909,7 +2132,9 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
         this.resetTree();
         this.idcategorie = '';
         const url = `${environment.api_url}api/save-categorie-plan-classement?${params.toString()}`;
-        this.httService.getData(url, false, this.users?.access_token || '')
+        // La promesse est rendue : en modification, les pièces du document ne
+        // peuvent être rangées qu'une fois le plan de classement chargé.
+        return this.httService.getData(url, false, this.users?.access_token || '')
             .toPromise()
             .then((res: any) => {
                 if (res.body.status || res.body.success) {
@@ -2176,7 +2401,7 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
 
     showRayons(idsociete: string = '', idrayon: string = '', idsite: string = '') {
         this.dataRayon = [];
-        this.httService.getData(`${environment.api_url}api/:saverayons?idsociete=${idsociete}&idrayon=${idrayon}&idsite=${idsite}`, false, this.users?.access_token || '')
+        return this.httService.getData(`${environment.api_url}api/:saverayons?idsociete=${idsociete}&idrayon=${idrayon}&idsite=${idsite}`, false, this.users?.access_token || '')
             .toPromise()
             .then((res: any) => {
                 this.isloading = false;
@@ -2207,7 +2432,7 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
     showBoites(idsociete: string = '', idrayon: string = '', idsite: string = '') {
         this.dataBoites = [];
         this.loadingBoite = true;
-        this.httService.getData(`${environment.api_url}api/:saveboites?idsociete=${idsociete}&idrayon=${idrayon}&idsite=${idsite}`, false, this.users?.access_token || '')
+        return this.httService.getData(`${environment.api_url}api/:saveboites?idsociete=${idsociete}&idrayon=${idrayon}&idsite=${idsite}`, false, this.users?.access_token || '')
             .toPromise()
             .then((res: any) => {
                 this.loadingBoite = false;
@@ -2228,11 +2453,12 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
     showSerie(idsociete: string = '', idtype_document: string = '', idcategories: string = '') {
         this.isloadSerie = true;
         this.dataSeries = [];
-        this.httService.getData(`${environment.api_url}api/:save-categorie-plan-classement?idsociete=${idsociete}&idtype_document=${idtype_document}&idcategories=${idcategories}`, false, this.users?.access_token || '')
+        return this.httService.getData(`${environment.api_url}api/:save-categorie-plan-classement?idsociete=${idsociete}&idtype_document=${idtype_document}&idcategories=${idcategories}`, false, this.users?.access_token || '')
             .toPromise()
             .then((res: any) => {
                 this.isloadSerie = false;
                 if (res.body.status || res.body.success) {
+                    this.dataSeriesRaw = res.body.data || [];
                     this.dataSeries = res.body.data.map((e: any) => {
                         return {
                             label: `${e.code_categories || ''} ${e.code_categories ? '-' : ''} ${e?.name_categories}`,

@@ -1,0 +1,285 @@
+<div class="container statistique-dashboard">
+    <div class="grid grid-cols-12 card-gap">
+
+        <!-- ══════════════════════════════════════════════════════
+             EN-TÊTE : titre, filtres, export
+        ══════════════════════════════════════════════════════ -->
+        <div class="col-span-12">
+            <app-card [border]="true" [padding]="false">
+                <div class="st-toolbar">
+
+                    <div class="st-toolbar-left">
+                        <div class="st-toolbar-icon">
+                            <i class="far fa-chart-bar"></i>
+                        </div>
+                        <div>
+                            <span class="st-toolbar-label">TABLEAU DE BORD DES DOCUMENTS</span>
+                            <span class="st-toolbar-sub">Statistiques — {{ libellePeriode }}</span>
+                        </div>
+                    </div>
+
+                    <div class="st-toolbar-right">
+
+                        <!-- Année -->
+                        <nz-select class="st-annee-select"
+                                   [(ngModel)]="annee"
+                                   (ngModelChange)="onAnneeChange($event)"
+                                   nzPlaceHolder="Année">
+                            <nz-option *ngFor="let a of anneeOptions"
+                                       [nzLabel]="'Année ' + a"
+                                       [nzValue]="a"></nz-option>
+                        </nz-select>
+
+                        <!-- Période personnalisée -->
+                        <nz-range-picker class="st-range"
+                                         nzFormat="dd/MM/yyyy"
+                                         [ngModel]="dateRange"
+                                         (ngModelChange)="onRangeChange($event)"></nz-range-picker>
+
+                        <button class="st-btn st-btn-ghost" (click)="reinitialiser()"
+                                nz-tooltip nzTooltipTitle="Réinitialiser les filtres">
+                            <app-feather-icon [icon]="'rotate-ccw'" class="icon-xs"></app-feather-icon>
+                        </button>
+
+                        <button class="st-btn st-btn-ghost" (click)="charger()"
+                                nz-tooltip nzTooltipTitle="Actualiser">
+                            <app-feather-icon [icon]="'refresh-cw'" class="icon-xs"></app-feather-icon>
+                        </button>
+
+                        <!-- Exports -->
+                        <div class="st-export-group">
+                            <button class="st-btn st-btn-export" (click)="exporter('xlsx')"
+                                    [disabled]="exportEnCours"
+                                    nz-tooltip nzTooltipTitle="Exporter en Excel">
+                                <i class="far fa-file-excel"></i>
+                                <span>{{ exportEnCours === 'xlsx' ? '…' : 'Excel' }}</span>
+                            </button>
+                            <button class="st-btn st-btn-export" (click)="exporter('pdf')"
+                                    [disabled]="exportEnCours"
+                                    nz-tooltip nzTooltipTitle="Exporter en PDF">
+                                <i class="far fa-file-pdf"></i>
+                                <span>{{ exportEnCours === 'pdf' ? '…' : 'PDF' }}</span>
+                            </button>
+                            <button class="st-btn st-btn-export" (click)="exporter('doc')"
+                                    [disabled]="exportEnCours"
+                                    nz-tooltip nzTooltipTitle="Exporter en Word">
+                                <i class="far fa-file-word"></i>
+                                <span>{{ exportEnCours === 'doc' ? '…' : 'Word' }}</span>
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </app-card>
+        </div>
+
+        <!-- ══════════════════════════════════════════════════════
+             CHARGEMENT
+        ══════════════════════════════════════════════════════ -->
+        <div class="col-span-12" *ngIf="isloading">
+            <app-card [border]="true">
+                <div class="st-state">
+                    <div class="op-spinner"></div>
+                    <p class="st-state-text">Chargement des statistiques…</p>
+                </div>
+            </app-card>
+        </div>
+
+        <!-- ══════════════════════════════════════════════════════
+             ERREUR
+        ══════════════════════════════════════════════════════ -->
+        <div class="col-span-12" *ngIf="enErreur">
+            <app-card [border]="true">
+                <div class="st-state">
+                    <div class="st-state-icon st-state-icon--error">
+                        <app-feather-icon [icon]="'alert-triangle'"></app-feather-icon>
+                    </div>
+                    <p class="st-state-title">Impossible de charger le tableau de bord</p>
+                    <p class="st-state-text">Vérifiez votre connexion puis réessayez.</p>
+                    <button class="st-btn st-btn-primary mt-3" (click)="charger()">Réessayer</button>
+                </div>
+            </app-card>
+        </div>
+
+        <!-- ══════════════════════════════════════════════════════
+             AUCUNE DONNÉE
+        ══════════════════════════════════════════════════════ -->
+        <div class="col-span-12" *ngIf="aucuneDonnee">
+            <app-card [border]="true">
+                <div class="st-state">
+                    <div class="st-state-icon">
+                        <app-feather-icon [icon]="'bar-chart-2'"></app-feather-icon>
+                    </div>
+                    <p class="st-state-title">Aucune statistique pour cette période</p>
+                    <p class="st-state-text">Changez l'année ou l'intervalle de dates pour afficher des résultats.</p>
+                </div>
+            </app-card>
+        </div>
+
+        <!-- ══════════════════════════════════════════════════════
+             TUILES CHIFFRÉES
+        ══════════════════════════════════════════════════════ -->
+        <div class="col-span-12" *ngIf="!isloading && !enErreur && kpis.length">
+            <div class="st-kpi-grid">
+                <div class="st-kpi" *ngFor="let k of kpis; trackBy: trackByCle"
+                     [style.--kpi-color]="k.couleur">
+                    <div class="st-kpi-icon">
+                        <app-feather-icon [icon]="k.icone"></app-feather-icon>
+                    </div>
+                    <div class="st-kpi-body">
+                        <span class="st-kpi-value">{{ k.valeur | number:'1.0-0':'fr' }}</span>
+                        <span class="st-kpi-label">{{ k.libelle }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══════════════════════════════════════════════════════
+             ÉVOLUTION DANS LE TEMPS
+        ══════════════════════════════════════════════════════ -->
+        <div class="col-span-12" *ngIf="!isloading && !enErreur && evolutionChart">
+            <app-card [border]="true" [padding]="false">
+                <div class="st-card-head">
+                    <div class="st-card-head-left">
+                        <span class="st-card-dot" style="background:#4F46E5"></span>
+                        <span class="st-card-title">Évolution des documents</span>
+                    </div>
+                    <span class="st-card-sub">{{ libellePeriode }}</span>
+                </div>
+                <div class="st-chart">
+                    <apx-chart
+                        [series]="evolutionChart.series"
+                        [chart]="evolutionChart.chart"
+                        [stroke]="evolutionChart.stroke"
+                        [dataLabels]="evolutionChart.dataLabels"
+                        [fill]="evolutionChart.fill"
+                        [xaxis]="evolutionChart.xaxis"
+                        [yaxis]="evolutionChart.yaxis"
+                        [grid]="evolutionChart.grid"
+                        [colors]="evolutionChart.colors"
+                        [markers]="evolutionChart.markers"
+                        [tooltip]="evolutionChart.tooltip"></apx-chart>
+                </div>
+            </app-card>
+        </div>
+
+        <!-- ══════════════════════════════════════════════════════
+             BLOCS : typologie, service, direction, département…
+        ══════════════════════════════════════════════════════ -->
+        <ng-container *ngIf="!isloading && !enErreur">
+            <div class="col-span-6 lg:col-span-12" *ngFor="let g of groupes; trackBy: trackByCle">
+                <app-card [border]="true" [padding]="false" [cardClass]="'h-full'">
+
+                    <div class="st-card-head">
+                        <div class="st-card-head-left">
+                            <span class="st-card-dot" [style.background]="g.couleur"></span>
+                            <span class="st-card-title">{{ g.titre }}</span>
+                        </div>
+                        <span class="st-card-badge" [style.color]="g.couleur"
+                              [style.background]="g.couleur + '14'">
+                            {{ g.total | number:'1.0-0':'fr' }}
+                        </span>
+                    </div>
+
+                    <!-- Graphique : anneau pour la typologie, barres pour le reste -->
+                    <div class="st-chart">
+                        <apx-chart *ngIf="g.typeChart === 'donut'"
+                            [series]="g.chart.series"
+                            [chart]="g.chart.chart"
+                            [labels]="g.chart.labels"
+                            [colors]="g.chart.colors"
+                            [stroke]="g.chart.stroke"
+                            [dataLabels]="g.chart.dataLabels"
+                            [legend]="g.chart.legend"
+                            [plotOptions]="g.chart.plotOptions"
+                            [tooltip]="g.chart.tooltip"></apx-chart>
+
+                        <apx-chart *ngIf="g.typeChart === 'bar'"
+                            [series]="g.chart.series"
+                            [chart]="g.chart.chart"
+                            [plotOptions]="g.chart.plotOptions"
+                            [dataLabels]="g.chart.dataLabels"
+                            [xaxis]="g.chart.xaxis"
+                            [yaxis]="g.chart.yaxis"
+                            [grid]="g.chart.grid"
+                            [colors]="g.chart.colors"
+                            [tooltip]="g.chart.tooltip"></apx-chart>
+                    </div>
+
+                    <!-- Palmarès -->
+                    <div class="st-rank">
+                        <div class="st-rank-row"
+                             *ngFor="let it of g.top; trackBy: trackByLabel"
+                             [class.st-rank-row--clickable]="g.detail && it.id"
+                             (click)="g.detail && it.id ? ouvrirDetail(g, it) : null">
+                            <span class="st-rank-label" [title]="it.label">{{ it.label }}</span>
+                            <span class="st-rank-bar">
+                                <span class="st-rank-fill"
+                                      [style.width.%]="it.pct"
+                                      [style.background]="g.couleur"></span>
+                            </span>
+                            <span class="st-rank-value">{{ it.value | number:'1.0-0':'fr' }}</span>
+                            <span class="st-rank-pct">{{ it.pct }}%</span>
+                            <app-feather-icon *ngIf="g.detail && it.id"
+                                              [icon]="'chevron-right'"
+                                              class="st-rank-chevron"></app-feather-icon>
+                        </div>
+                        <p class="st-rank-more" *ngIf="g.reste">
+                            + {{ g.reste }} autre(s)
+                        </p>
+                    </div>
+
+                </app-card>
+            </div>
+        </ng-container>
+
+        <!-- ══════════════════════════════════════════════════════
+             DÉTAIL (?detail=direction|departement|service&id=)
+        ══════════════════════════════════════════════════════ -->
+        <div class="col-span-12" *ngIf="detailOuvert">
+            <app-card [border]="true" [padding]="false">
+
+                <div class="st-card-head">
+                    <div class="st-card-head-left">
+                        <span class="st-card-dot" style="background:#0F172A"></span>
+                        <span class="st-card-title">Détail — {{ detailTitre }}</span>
+                    </div>
+                    <button class="st-btn st-btn-ghost" (click)="fermerDetail()"
+                            nz-tooltip nzTooltipTitle="Fermer">
+                        <app-feather-icon [icon]="'x'" class="icon-xs"></app-feather-icon>
+                    </button>
+                </div>
+
+                <div class="st-detail">
+                    <div class="st-state" *ngIf="detailChargement">
+                        <div class="op-spinner"></div>
+                        <p class="st-state-text">Chargement du détail…</p>
+                    </div>
+
+                    <p class="st-detail-empty"
+                       *ngIf="!detailChargement && !detailLignes.length">
+                        Aucun document pour cette sélection.
+                    </p>
+
+                    <div class="st-table-wrap"
+                         *ngIf="!detailChargement && detailLignes.length && detailColonnes.length">
+                        <table class="st-table">
+                            <thead>
+                            <tr>
+                                <th *ngFor="let c of detailColonnes">{{ c.libelle }}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr *ngFor="let ligne of detailLignes">
+                                <td *ngFor="let c of detailColonnes">{{ valeurCellule(ligne, c.cle) }}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </app-card>
+        </div>
+
+    </div>
+</div>

@@ -8,12 +8,12 @@ import {ECommerceComponent} from "./e-commerce/e-commerce.component";
 import {SocialComponent} from "./social/social.component";
 import {SchoolManagementComponent} from './school-management/school-management.component';
 import {PosComponent} from './pos/pos.component';
-import {CrmComponent} from './crm/crm.component';
 import {AnalyticsComponent} from './analytics/analytics.component';
 import {HrComponent} from './hr/hr.component';
 import {ProjectsComponent} from './projects/projects.component';
 import {LogisticsComponent} from './logistics/logistics.component';
 import {AccueilComponent} from "../accueil/accueil.component";
+import {StatistiqueComponent} from "./statistique/statistique.component";
 
 export const dashboard: Routes = [
     {
@@ -27,10 +27,10 @@ export const dashboard: Routes = [
     },
     {
         path: 'statistique',
-        component: CrmComponent,
+        component: StatistiqueComponent,
         data: {
-            pageTitle: "CRM Dashboard",
-            title: "CRM",
+            pageTitle: "Statistiques",
+            title: "Statistiques",
             breadcrumb: "Statistiques"
         },
     },

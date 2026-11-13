@@ -6,7 +6,13 @@ import {FeatherIconComponent} from '../../../../shared/components/ui/feather-ico
 import {NzTagModule} from 'ng-zorro-antd/tag';
 import {NzSelectModule} from 'ng-zorro-antd/select';
 import {NzTooltipDirective} from 'ng-zorro-antd/tooltip';
-import {OwlDateTimeModule, OwlNativeDateTimeModule, OWL_DATE_TIME_LOCALE, DateTimeAdapter, OwlDateTimeIntl} from '@danielmoncada/angular-datetime-picker';
+import {
+    OwlDateTimeModule,
+    OwlNativeDateTimeModule,
+    OWL_DATE_TIME_LOCALE,
+    DateTimeAdapter,
+    OwlDateTimeIntl
+} from '@danielmoncada/angular-datetime-picker';
 
 /* Libellés owl en français (From/To → Du/Au, etc.) */
 export class OwlIntlFr extends OwlDateTimeIntl {
@@ -29,6 +35,7 @@ export class OwlIntlFr extends OwlDateTimeIntl {
     override cancelBtnLabel = 'Annuler';
     override setBtnLabel = 'Valider';
 }
+
 import {DocActionMenuComponent} from '../../../../shared/components/ui/doc-action-menu/doc-action-menu.component';
 import {NzIconModule} from 'ng-zorro-antd/icon';
 import {environment} from '../../../../../environments/environment';
@@ -206,6 +213,7 @@ export class MesDocsComponent implements OnInit {
         ).toPromise()
             .then((res: any) => {
                 this.isloading = false;
+                console.log("res.body ===", res.body)
                 if (res.body.status || res.body.success) {
                     this.docsRaw = (res.body.data || []).map((e: any) => ({
                         ...e,
