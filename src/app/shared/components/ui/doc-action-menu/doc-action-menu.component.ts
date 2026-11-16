@@ -60,6 +60,11 @@ export class DocActionMenuComponent {
        navigation des actions par défaut (consulter, classer…) */
     @Input() autoNavigate: boolean = true;
 
+    /* Autorise les actions sur les pièces jointes du popup de détail
+       (visionnage + suppression). La liste des pièces, elle, reste
+       visible partout — aujourd'hui seul documents/mes-documents agit */
+    @Input() showPieceActions: boolean = false;
+
     /* Émis pour toute action cliquée — utile pour les actions
        non gérées en interne ou un comportement personnalisé */
     @Output() action = new EventEmitter<DocActionEvent>();

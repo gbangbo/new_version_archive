@@ -121,6 +121,11 @@
                                         </span>
                                     </div>
                                 </nz-tree-node-option>
+                                <span class="tree-delete-btn"
+                                      title="Supprimer le fichier"
+                                      (click)="deleteTreeFile(node, $event)">
+                                    <i class="icofont icofont-trash"></i>
+                                </span>
                             </nz-tree-node>
 
                             <!-- ── Nœud DOSSIER ─────────────────────── -->

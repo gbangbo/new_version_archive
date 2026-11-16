@@ -1,5 +1,5 @@
 <div class="fv-backdrop" *ngIf="visible" (click)="closeModal()">
-    <div class="fv-panel" (click)="$event.stopPropagation()">
+    <div class="fv-panel" [class.fv-panel-preview]="previewOpen" (click)="$event.stopPropagation()">
 
         <div class="fv-header">
             <div class="fv-header-titles">
@@ -79,8 +79,168 @@
                                 </div>
                             </ng-template>
                         </div>
+
+                        <!-- ── Pièces jointes ── -->
+                        <div class="resume-section">
+                            <div class="resume-section-title">
+                                <app-feather-icon [icon]="'paperclip'" class="icon-sm"></app-feather-icon>
+                                PIÈCES JOINTES
+                                <span class="resume-count" *ngIf="!isLoadingFiles && !accessForbidden">
+                                    {{ files.length }}
+                                </span>
+                            </div>
+
+                            <!-- Chargement -->
+                            <div class="dm-files-loading" *ngIf="isLoadingFiles">
+                                <div class="dm-mini-spinner"></div>
+                                <span>Chargement des pièces jointes…</span>
+                            </div>
+
+                            <!-- Accès refusé (403) -->
+                            <div class="resume-empty" *ngIf="!isLoadingFiles && accessForbidden">
+                                <app-feather-icon [icon]="'lock'" class="icon-sm"></app-feather-icon>
+                                Vous n'avez pas l'autorisation de consulter les pièces de ce document
+                            </div>
+
+                            <!-- Liste des pièces -->
+                            <ng-container *ngIf="!isLoadingFiles && !accessForbidden">
+                                <div class="dm-file-row"
+                                     *ngFor="let file of files; let i = index"
+                                     [class.dm-file-active]="previewItem?.uid === file.uid">
+                                    <span class="dm-file-thumb" [ngClass]="fileTone(file.extension)">
+                                        <nz-icon *ngIf="file.extension === 'pdf'" nzType="file-pdf"
+                                                 nzTheme="twotone" [nzTwotoneColor]="'#ff4d4f'"/>
+                                        <nz-icon *ngIf="isImage(file.extension)" nzType="file-image"
+                                                 nzTheme="twotone" [nzTwotoneColor]="'#722ed1'"/>
+                                        <nz-icon *ngIf="['doc','docx'].includes(file.extension)" nzType="file-word"
+                                                 nzTheme="twotone" [nzTwotoneColor]="'#1890ff'"/>
+                                        <nz-icon *ngIf="['xls','xlsx'].includes(file.extension)" nzType="file-excel"
+                                                 nzTheme="twotone" [nzTwotoneColor]="'#52c41a'"/>
+                                        <nz-icon *ngIf="['ppt','pptx'].includes(file.extension)" nzType="file-ppt"
+                                                 nzTheme="twotone" [nzTwotoneColor]="'#fa8c16'"/>
+                                        <nz-icon *ngIf="!file.extension ||
+                                                       (file.extension !== 'pdf' &&
+                                                        !isImage(file.extension) &&
+                                                        !isOffice(file.extension))"
+                                                 nzType="file" nzTheme="outline"/>
+                                    </span>
+
+                                    <span class="dm-file-info">
+                                        <span class="dm-file-name" [title]="file.name">{{ file.name }}</span>
+                                        <span class="dm-file-meta">
+                                            <span class="dm-file-ext" *ngIf="file.extension">{{ file.extension | uppercase }}</span>
+                                            <span class="dm-file-dot" *ngIf="file.extension && file.nombre_page">•</span>
+                                            <span *ngIf="file.nombre_page">
+                                                {{ file.nombre_page }} page{{ +file.nombre_page > 1 ? 's' : '' }}
+                                            </span>
+                                        </span>
+                                    </span>
+
+                                    <span class="dm-file-actions" *ngIf="showPieceActions">
+                                        <button class="dm-round-btn dm-round-view"
+                                                type="button"
+                                                *ngIf="file.url_file"
+                                                nz-tooltip nzTooltipTitle="Visionner la pièce" nzTooltipPlacement="top"
+                                                [disabled]="previewingUid === file.uid || deletingUid === file.uid"
+                                                (click)="previewFile(file, $event)">
+                                            <i class="fa-solid fa-circle-notch fa-spin"
+                                               *ngIf="previewingUid === file.uid"></i>
+                                            <i class="icofont icofont-eye-alt"
+                                               *ngIf="previewingUid !== file.uid"></i>
+                                        </button>
+
+                                        <button class="dm-round-btn dm-round-delete"
+                                                type="button"
+                                                nz-tooltip nzTooltipTitle="Supprimer la pièce" nzTooltipPlacement="top"
+                                                [disabled]="deletingUid === file.uid"
+                                                (click)="confirmDeletePiece(file, $event)">
+                                            <i class="fa-solid fa-circle-notch fa-spin"
+                                               *ngIf="deletingUid === file.uid"></i>
+                                            <i class="icofont icofont-trash"
+                                               *ngIf="deletingUid !== file.uid"></i>
+                                        </button>
+                                    </span>
+                                </div>
+
+                                <!-- Aucune pièce -->
+                                <div class="resume-empty" *ngIf="!files.length">
+                                    <app-feather-icon [icon]="'inbox'" class="icon-sm"></app-feather-icon>
+                                    Aucune pièce jointe pour ce document
+                                </div>
+                            </ng-container>
+                        </div>
                     </div>
                 </app-card>
+        </div>
+
+        <!-- ═══ Panneau de visionnage (glisse depuis la droite) ═══ -->
+        <div class="dm-preview-panel" [class.open]="previewOpen">
+            <div class="dm-preview-header">
+                <button class="dm-preview-back" type="button" (click)="closePreview()" title="Retour au détail">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <span class="dm-preview-title" [title]="previewItem?.name">{{ previewItem?.name }}</span>
+                <button class="dm-preview-close" type="button" (click)="closePreview()" title="Fermer l'aperçu">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="dm-preview-body custom-scrollbar"
+                 (contextmenu)="$event.preventDefault()"
+                 (dragstart)="$event.preventDefault()">
+
+                <!-- Chargement -->
+                <div class="dm-preview-loading" *ngIf="previewLoading">
+                    <div class="dm-mini-spinner"></div>
+                    <span>Préparation de l'aperçu…</span>
+                </div>
+
+                <!-- Erreur / non prévisualisable -->
+                <div class="dm-preview-error" *ngIf="!previewLoading && previewError">
+                    <i class="fa-regular fa-file-lines"></i>
+                    <span>{{ previewError }}</span>
+                    <button class="dm-open-tab-btn" type="button" (click)="openInNewTab()">
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i> Ouvrir dans un onglet
+                    </button>
+                </div>
+
+                <!-- Image -->
+                <img *ngIf="!previewLoading && !previewError && previewIsImage"
+                     [src]="previewImageUrl" class="dm-preview-img" alt="aperçu"
+                     [style.width.%]="previewZoom * 100"/>
+
+                <!-- PDF (page courante) -->
+                <img *ngIf="!previewLoading && !previewError && !previewIsImage && previewImages.length"
+                     [src]="previewImages[currentPreviewPage - 1]" class="dm-preview-page" alt="page"
+                     [style.width.%]="previewZoom * 100"/>
+            </div>
+
+            <!-- Barre d'outils : pagination + zoom -->
+            <div class="dm-preview-toolbar"
+                 *ngIf="!previewLoading && !previewError && (previewImages.length || previewIsImage)">
+
+                <div class="dm-pager" *ngIf="!previewIsImage && previewImages.length > 1">
+                    <button type="button" (click)="prevPage()" [disabled]="currentPreviewPage <= 1" title="Page précédente">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </button>
+                    <span class="dm-pager-info">{{ currentPreviewPage }} / {{ previewImages.length }}</span>
+                    <button type="button" (click)="nextPage()" [disabled]="currentPreviewPage >= previewImages.length" title="Page suivante">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                </div>
+
+                <div class="dm-zoomer">
+                    <button type="button" (click)="zoomOut()" [disabled]="previewZoom <= minZoom" title="Dézoomer">
+                        <i class="fa-solid fa-magnifying-glass-minus"></i>
+                    </button>
+                    <span class="dm-zoom-info" (click)="resetZoom()" title="Réinitialiser le zoom">
+                        {{ previewZoom * 100 | number:'1.0-0' }}%
+                    </span>
+                    <button type="button" (click)="zoomIn()" [disabled]="previewZoom >= maxZoom" title="Zoomer">
+                        <i class="fa-solid fa-magnifying-glass-plus"></i>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 </div>

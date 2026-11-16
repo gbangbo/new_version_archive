@@ -473,10 +473,42 @@
 
     > nz-tree-node-option {
       border-radius: 3px !important;
+      flex: 1;
+      min-width: 0;
 
       &:hover {
         background: #f0f0f0 !important;
       }
+    }
+
+    // Corbeille du fichier : apparait au survol de la ligne,
+    // meme traitement que le menu des dossiers (folder-menu-btn)
+    .tree-delete-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      margin-right: 6px;
+      border-radius: 4px;
+      cursor: pointer;
+      flex-shrink: 0;
+      opacity: 0;
+      transition: opacity 0.15s, background 0.15s;
+
+      i {
+        font-size: 13px;
+        line-height: 1;
+        color: #EF4444;
+      }
+
+      &:hover {
+        background: #FEE2E2;
+      }
+    }
+
+    &:hover .tree-delete-btn {
+      opacity: 1;
     }
 
     &.node-dragging {

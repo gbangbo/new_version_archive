@@ -5,18 +5,9 @@
              EN-TÊTE : titre, filtres, export
         ══════════════════════════════════════════════════════ -->
         <div class="col-span-12">
-            <app-card [border]="true" [padding]="false">
+            <app-card [border]="true" [padding]="false"
+                      cardClass="st-toolbar-card" cardBodyClass="st-toolbar-body">
                 <div class="st-toolbar">
-
-                    <div class="st-toolbar-left">
-                        <div class="st-toolbar-icon">
-                            <i class="far fa-chart-bar"></i>
-                        </div>
-                        <div>
-                            <span class="st-toolbar-label">TABLEAU DE BORD DES DOCUMENTS</span>
-                            <span class="st-toolbar-sub">Statistiques — {{ libellePeriode }}</span>
-                        </div>
-                    </div>
 
                     <div class="st-toolbar-right">
 
@@ -24,9 +15,10 @@
                         <nz-select class="st-annee-select"
                                    [(ngModel)]="annee"
                                    (ngModelChange)="onAnneeChange($event)"
+                                   [nzShowSearch]="true"
                                    nzPlaceHolder="Année">
                             <nz-option *ngFor="let a of anneeOptions"
-                                       [nzLabel]="'Année ' + a"
+                                       [nzLabel]="a + ''"
                                        [nzValue]="a"></nz-option>
                         </nz-select>
 
@@ -48,12 +40,6 @@
 
                         <!-- Exports -->
                         <div class="st-export-group">
-                            <button class="st-btn st-btn-export" (click)="exporter('xlsx')"
-                                    [disabled]="exportEnCours"
-                                    nz-tooltip nzTooltipTitle="Exporter en Excel">
-                                <i class="far fa-file-excel"></i>
-                                <span>{{ exportEnCours === 'xlsx' ? '…' : 'Excel' }}</span>
-                            </button>
                             <button class="st-btn st-btn-export" (click)="exporter('pdf')"
                                     [disabled]="exportEnCours"
                                     nz-tooltip nzTooltipTitle="Exporter en PDF">
@@ -120,25 +106,46 @@
              TUILES CHIFFRÉES
         ══════════════════════════════════════════════════════ -->
         <div class="col-span-12" *ngIf="!isloading && !enErreur && kpis.length">
-            <div class="st-kpi-grid">
-                <div class="st-kpi" *ngFor="let k of kpis; trackBy: trackByCle"
-                     [style.--kpi-color]="k.couleur">
-                    <div class="st-kpi-icon">
-                        <app-feather-icon [icon]="k.icone"></app-feather-icon>
-                    </div>
-                    <div class="st-kpi-body">
-                        <span class="st-kpi-value">{{ k.valeur | number:'1.0-0':'fr' }}</span>
-                        <span class="st-kpi-label">{{ k.libelle }}</span>
+            <div class="st-kpi-zone">
+                <div class="st-kpi-grid">
+                    <div class="st-kpi" *ngFor="let k of kpis; trackBy: trackByCle"
+                         [style.--kpi-color]="k.couleur">
+                        <div class="st-kpi-icon">
+                            <app-svg-icon [icon]="k.icone"></app-svg-icon>
+                        </div>
+                        <div class="st-kpi-body">
+                            <span class="st-kpi-value">{{ k.valeur | number:'1.0-0':'fr' }}</span>
+                            <span class="st-kpi-label">{{ k.libelle }}</span>
+                        </div>
                     </div>
                 </div>
+
+                <!-- Dépliage des compteurs secondaires (actifs, privés, publiés…) -->
+                <button type="button" class="st-kpi-toggle"
+                        *ngIf="kpisDetails.length"
+                        [class.active]="detailsDeplies"
+                        [attr.aria-expanded]="detailsDeplies"
+                        (click)="basculerDetails()"
+                        nz-tooltip
+                        [nzTooltipTitle]="detailsDeplies ? 'Masquer le détail' : 'Voir le détail'">
+                    <app-feather-icon [icon]="detailsDeplies ? 'chevron-up' : 'chevron-down'"
+                                      class="icon-xs"></app-feather-icon>
+                </button>
+            </div>
+
+            <div class="st-kpi-details" *ngIf="detailsDeplies && kpisDetails.length">
+                <span class="st-kpi-chip" *ngFor="let d of kpisDetails; trackBy: trackByCle">
+                    <span class="st-kpi-chip-label">{{ d.libelle }}</span>
+                    <span class="st-kpi-chip-value">{{ d.valeur | number:'1.0-0':'fr' }}</span>
+                </span>
             </div>
         </div>
 
         <!-- ══════════════════════════════════════════════════════
              ÉVOLUTION DANS LE TEMPS
         ══════════════════════════════════════════════════════ -->
-        <div class="col-span-12" *ngIf="!isloading && !enErreur && evolutionChart">
-            <app-card [border]="true" [padding]="false">
+        <div class="col-span-6 lg:col-span-12" *ngIf="!isloading && !enErreur && evolutionChart">
+            <app-card [border]="true" [padding]="false" [cardClass]="'h-full'">
                 <div class="st-card-head">
                     <div class="st-card-head-left">
                         <span class="st-card-dot" style="background:#4F46E5"></span>
@@ -157,7 +164,9 @@
                         [yaxis]="evolutionChart.yaxis"
                         [grid]="evolutionChart.grid"
                         [colors]="evolutionChart.colors"
+                        [plotOptions]="evolutionChart.plotOptions"
                         [markers]="evolutionChart.markers"
+                        [legend]="evolutionChart.legend"
                         [tooltip]="evolutionChart.tooltip"></apx-chart>
                 </div>
             </app-card>
@@ -166,8 +175,10 @@
         <!-- ══════════════════════════════════════════════════════
              BLOCS : typologie, service, direction, département…
         ══════════════════════════════════════════════════════ -->
-        <ng-container *ngIf="!isloading && !enErreur">
-            <div class="col-span-6 lg:col-span-12" *ngFor="let g of groupes; trackBy: trackByCle">
+        <!-- Gabarit d'une carte de bloc, instancié avant et après la carte organisation -->
+        <ng-template #carteBloc let-liste>
+            <div *ngFor="let g of liste; trackBy: trackByCle"
+                 [ngClass]="g.pleineLargeur ? 'col-span-12' : 'col-span-6 lg:col-span-12'">
                 <app-card [border]="true" [padding]="false" [cardClass]="'h-full'">
 
                     <div class="st-card-head">
@@ -177,12 +188,48 @@
                         </div>
                         <span class="st-card-badge" [style.color]="g.couleur"
                               [style.background]="g.couleur + '14'">
-                            {{ g.total | number:'1.0-0':'fr' }}
+                            <span class="st-card-badge-cle">Total :</span>
+                            <span class="st-card-badge-val">{{ g.total | number:'1.0-0':'fr' }}</span>
                         </span>
                     </div>
 
-                    <!-- Graphique : anneau pour la typologie, barres pour le reste -->
-                    <div class="st-chart">
+                    <!-- Consultations : un tableau plutôt qu'un graphique -->
+                    <div class="st-table-wrap st-table-bloc" *ngIf="g.typeChart === 'tableau'">
+                        <table class="st-table">
+                            <thead>
+                            <tr>
+                                <th class="st-col-code">Code</th>
+                                <th>Libellé du document</th>
+                                <th class="st-col-nb">Total vues</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr *ngFor="let it of g.items; trackBy: trackByLabel">
+                                <td class="st-col-code">{{ it.code || '—' }}</td>
+                                <td [title]="it.label">{{ it.label }}</td>
+                                <td class="st-col-nb">{{ it.value | number:'1.0-0':'fr' }}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Graphique : colonnes pour la typologie, anneau pour les
+                         consultations, barres horizontales pour le reste -->
+                    <div class="st-chart" *ngIf="g.typeChart !== 'tableau'">
+                        <apx-chart *ngIf="g.typeChart === 'colonnes'"
+                            [series]="g.chart.series"
+                            [chart]="g.chart.chart"
+                            [plotOptions]="g.chart.plotOptions"
+                            [dataLabels]="g.chart.dataLabels"
+                            [stroke]="g.chart.stroke"
+                            [legend]="g.chart.legend"
+                            [colors]="g.chart.colors"
+                            [fill]="g.chart.fill"
+                            [grid]="g.chart.grid"
+                            [xaxis]="g.chart.xaxis"
+                            [yaxis]="g.chart.yaxis"
+                            [tooltip]="g.chart.tooltip"></apx-chart>
+
                         <apx-chart *ngIf="g.typeChart === 'donut'"
                             [series]="g.chart.series"
                             [chart]="g.chart.chart"
@@ -199,6 +246,9 @@
                             [chart]="g.chart.chart"
                             [plotOptions]="g.chart.plotOptions"
                             [dataLabels]="g.chart.dataLabels"
+                            [stroke]="g.chart.stroke"
+                            [legend]="g.chart.legend"
+                            [fill]="g.chart.fill"
                             [xaxis]="g.chart.xaxis"
                             [yaxis]="g.chart.yaxis"
                             [grid]="g.chart.grid"
@@ -206,8 +256,9 @@
                             [tooltip]="g.chart.tooltip"></apx-chart>
                     </div>
 
-                    <!-- Palmarès -->
-                    <div class="st-rank">
+                    <!-- Palmarès : masqué sur les blocs dont le graphique porte
+                         déjà chaque valeur (cf. SANS_PALMARES). -->
+                    <div class="st-rank" *ngIf="g.palmares">
                         <div class="st-rank-row"
                              *ngFor="let it of g.top; trackBy: trackByLabel"
                              [class.st-rank-row--clickable]="g.detail && it.id"
@@ -219,7 +270,6 @@
                                       [style.background]="g.couleur"></span>
                             </span>
                             <span class="st-rank-value">{{ it.value | number:'1.0-0':'fr' }}</span>
-                            <span class="st-rank-pct">{{ it.pct }}%</span>
                             <app-feather-icon *ngIf="g.detail && it.id"
                                               [icon]="'chevron-right'"
                                               class="st-rank-chevron"></app-feather-icon>
@@ -231,7 +281,62 @@
 
                 </app-card>
             </div>
-        </ng-container>
+        </ng-template>
+
+        <!-- Blocs placés avant la carte organisation (typologie) -->
+        <ng-container *ngIf="!isloading && !enErreur"
+                      [ngTemplateOutlet]="carteBloc"
+                      [ngTemplateOutletContext]="{$implicit: groupesAvant}"></ng-container>
+
+        <!-- ══════════════════════════════════════════════════════
+             ORGANISATION : service / direction / département,
+             une seule carte commutée par un sélecteur segmenté.
+        ══════════════════════════════════════════════════════ -->
+        <div class="col-span-12"
+             *ngIf="!isloading && !enErreur && groupeOrganisation as go">
+            <app-card [border]="true" [padding]="false" [cardClass]="'h-full'">
+
+                <!-- Une seule ligne d'en-tête : l'onglet actif nomme déjà le
+                     bloc, un titre séparé ferait doublon. -->
+                <div class="st-card-head st-card-head--seg">
+                    <div class="st-seg">
+                        <button type="button" class="st-seg-btn"
+                                *ngFor="let o of ongletsOrganisation; trackBy: trackByCle"
+                                [class.active]="o.cle === orgActive"
+                                (click)="choisirOrganisation(o.cle)">
+                            <span>{{ o.libelle }}</span>
+                        </button>
+                    </div>
+                    <span class="st-card-badge" [style.color]="go.couleur"
+                          [style.background]="go.couleur + '14'">
+                        <span class="st-card-badge-cle">Total&nbsp;:</span>
+                        <span class="st-card-badge-val">{{ go.total | number:'1.0-0':'fr' }}</span>
+                    </span>
+                </div>
+
+                <div class="st-chart">
+                    <apx-chart
+                        [series]="go.chart.series"
+                        [chart]="go.chart.chart"
+                        [plotOptions]="go.chart.plotOptions"
+                        [dataLabels]="go.chart.dataLabels"
+                        [stroke]="go.chart.stroke"
+                        [legend]="go.chart.legend"
+                        [fill]="go.chart.fill"
+                        [xaxis]="go.chart.xaxis"
+                        [yaxis]="go.chart.yaxis"
+                        [grid]="go.chart.grid"
+                        [colors]="go.chart.colors"
+                        [tooltip]="go.chart.tooltip"></apx-chart>
+                </div>
+
+            </app-card>
+        </div>
+
+        <!-- Blocs placés après (consultations, agents) -->
+        <ng-container *ngIf="!isloading && !enErreur"
+                      [ngTemplateOutlet]="carteBloc"
+                      [ngTemplateOutletContext]="{$implicit: groupesApres}"></ng-container>
 
         <!-- ══════════════════════════════════════════════════════
              DÉTAIL (?detail=direction|departement|service&id=)

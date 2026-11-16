@@ -219,7 +219,7 @@ export class ClasserDocumentComponent implements OnInit {
                         }
                     }) || [];
                     this.fileAssignments.clear();
-                    if (this.cleanTreeData.length) this.rebuildTree();
+                    this.rebuildTree();
                 }
             })
             .catch(() => {
@@ -228,7 +228,16 @@ export class ClasserDocumentComponent implements OnInit {
     }
 
     private rebuildTree(): void {
-        if (!this.cleanTreeData?.length) return;
+        // Plan de classement vide : les pièces s'affichent quand même,
+        // posées à la racine du dossier principal
+        if (!this.cleanTreeData?.length) {
+            const racine = this.pieceFiles.map(f => this.mapFileToNode(f));
+            this.treeData = racine;
+            this.dataSource.setData([...racine]);
+            this.refreshPanel();
+            this.cdr.detectChanges();
+            return;
+        }
 
         const grouped = new Map<string, ClassifyNode[]>();
         const unassigned: ClassifyNode[] = [];
@@ -244,11 +253,26 @@ export class ClasserDocumentComponent implements OnInit {
             }
         }
 
-        const tree = this.injectFiles(JSON.parse(JSON.stringify(this.cleanTreeData)), grouped);
+        const dossiersTrouves = new Set<string>();
+        const tree = this.injectFiles(JSON.parse(JSON.stringify(this.cleanTreeData)), grouped, dossiersTrouves);
 
-        if (unassigned.length && tree.length) {
+        // Fichiers restés en dehors de l'arbre : ceux sans catégorie, et ceux
+        // dont la catégorie est absente du plan chargé (catégorie d'un autre
+        // plan, ou racine écartée faute d'enfants). Sans ce repli ils
+        // disparaîtraient de l'écran alors que l'API les renvoie.
+        const placees = new Set<string>();
+        this.collectFileUids(tree, placees);
+
+        const horsDossier = [
+            ...unassigned,
+            ...this.pieceFiles
+                .filter(f => !placees.has(f.uid) && !unassigned.some(n => n.uid === f.uid))
+                .map(f => this.mapFileToNode(f)),
+        ];
+
+        if (horsDossier.length && tree.length) {
             const root = tree[0];
-            root.children = [...(root.children || []).filter((n: any) => !n.isFile), ...unassigned];
+            root.children = [...(root.children || []), ...horsDossier];
         }
 
         this.treeData = tree;
@@ -258,12 +282,28 @@ export class ClasserDocumentComponent implements OnInit {
         this.cdr.detectChanges();
     }
 
-    private injectFiles(nodes: ClassifyNode[], grouped: Map<string, ClassifyNode[]>): ClassifyNode[] {
+    /* Relève les uid des fichiers déjà posés dans l'arbre */
+    private collectFileUids(nodes: ClassifyNode[], acc: Set<string>): void {
+        for (const n of nodes) {
+            if (n.isFile) {
+                const uid = n.uid || n.key || '';
+                if (uid) acc.add(uid);
+            }
+            if (n.children?.length) this.collectFileUids(n.children, acc);
+        }
+    }
+
+    private injectFiles(
+        nodes: ClassifyNode[],
+        grouped: Map<string, ClassifyNode[]>,
+        dossiersTrouves: Set<string>
+    ): ClassifyNode[] {
         return nodes.map(node => {
             const k = node.key || node.uid || '';
             const files = grouped.get(k) || [];
+            if (files.length) dossiersTrouves.add(k);
             if (node.children) {
-                node.children = [...this.injectFiles(node.children, grouped), ...files];
+                node.children = [...this.injectFiles(node.children, grouped, dossiersTrouves), ...files];
             } else if (files.length) {
                 node.children = [...files];
             }
@@ -616,14 +656,33 @@ export class ClasserDocumentComponent implements OnInit {
         }
     }
 
+    /* Suppression depuis la barre d'actions du panneau de droite */
     async deleteFile(): Promise<void> {
         if (!this.selectedItem?.isFile) return;
+        await this.confirmDeletePiece(this.selectedItem);
+    }
+
+    /* Suppression depuis le plan de classement (corbeille sur le noeud fichier) */
+    async deleteTreeFile(node: FlatNode, event: Event): Promise<void> {
+        event.preventDefault();
+        event.stopPropagation();
+        if (!node?.isFile) return;
+        await this.confirmDeletePiece({
+            name: node.name,
+            uid: node.uid || node.key,
+            extension: node.extension,
+            isFile: true,
+        });
+    }
+
+    private async confirmDeletePiece(item: ClassifyNode): Promise<void> {
+        const libelle = `${item.name}${item.extension ? '.' + item.extension : ''}`;
 
         const result = await Swal.fire({
             html: `<div style="margin-top:8px">
                      <p style="font-size:17px;font-weight:700;color:#0F172A;margin-bottom:10px">Supprimer ce fichier ?</p>
                      <p style="font-size:13px;color:#64748B;margin:0">
-                       <strong>${this.selectedItem.name}.${this.selectedItem.extension}</strong> sera définitivement supprimé.
+                       <strong>${libelle}</strong> sera définitivement supprimé.
                      </p>
                    </div>`,
             icon: 'warning',
@@ -637,13 +696,20 @@ export class ClasserDocumentComponent implements OnInit {
 
         if (!result.isConfirmed) return;
 
-        const uid = this.selectedItem.uid!;
+        const uid = item.uid!;
+        if (!uid) return;
         this.isSaving = true;
 
+        // Même endpoint que le popup de détail : DELETE sur
+        // :consultation-pieces-documents (cf. documentation de l'API)
         this.httService
-            .postData(
-                `${environment.api_url}api/:supprimer-pieces-documents`,
-                {idpiece_docs: uid, iddocuments: this.sessionData?.uid},
+            .deleteData(
+                `${environment.api_url}api/:consultation-pieces-documents`,
+                {
+                    idsociete: this.users?.datasociete?.uid || this.sessionData?.datasociete?.uid || '',
+                    idpiece_docs: uid,
+                    iddocuments: this.sessionData?.uid || '',
+                },
                 this.users?.access_token || ''
             )
             .toPromise()
@@ -652,7 +718,9 @@ export class ClasserDocumentComponent implements OnInit {
                 if (res.body.status || res.body.success) {
                     this.pieceFiles = this.pieceFiles.filter(f => f.uid !== uid);
                     this.fileAssignments.delete(uid);
-                    this.selectedItem = null;
+                    if (this.selectedItem?.uid === uid) this.selectedItem = null;
+                    // L'aperçu affiche peut-être le fichier supprimé
+                    if (this.previewItem?.uid === uid) this.closePreview();
                     this.rebuildTree();
                     this.toast.success('Fichier supprimé.', '', {
                         positionClass: 'toast-top-right',
@@ -667,9 +735,11 @@ export class ClasserDocumentComponent implements OnInit {
                     });
                 }
             })
-            .catch(() => {
+            .catch((err: any) => {
                 this.isSaving = false;
-                this.toast.error('Erreur lors de la suppression.', '', {
+                const message = err?.error?.err?.message || err?.error?.message
+                    || 'Erreur lors de la suppression.';
+                this.toast.error(message, '', {
                     positionClass: 'toast-top-right',
                     closeButton: true,
                     timeOut: 4000
