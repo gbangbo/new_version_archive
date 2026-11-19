@@ -125,6 +125,31 @@ export class EditionLocaleService {
         return this.etats.get(pieceId) || {pieceId, phase: 'inactif'};
     }
 
+    /**
+     * Piece actuellement confiee au poste, s'il y en a une.
+     *
+     * UNE SEULE EDITION A LA FOIS. Deux documents sortis en meme temps, ce
+     * sont deux Word ouverts et deux retours dont rien ne dit lequel ira dans
+     * quel message — et le poste n'a aucun verrou qui l'en empeche. La regle
+     * est donc tenue ici, au seul endroit qui connait l'etat de toutes les
+     * pieces.
+     */
+    pieceEnCours(): EtatEdition | null {
+        for (const etat of this.etats.values()) {
+            if (this.estOccupee(etat.pieceId)) return etat;
+        }
+        return null;
+    }
+
+    /**
+     * Vrai si cette piece est bloquee par l'edition d'une AUTRE. Sert a
+     * griser le bouton plutot qu'a laisser l'utilisateur buter dessus.
+     */
+    bloqueeParUneAutre(pieceId: string): boolean {
+        const occupee = this.pieceEnCours();
+        return !!occupee && occupee.pieceId !== pieceId;
+    }
+
     /** Commentaire en cours de saisie pour cette piece. */
     commentaire(pieceId: string): string {
         return this.etat(pieceId).commentaire || '';
@@ -186,7 +211,18 @@ export class EditionLocaleService {
                  contexte: { imputation?: string; contributeur?: string } = {}): Promise<void> {
         if (this.estOccupee(piece.id)) return;
 
-        this.majEtat(piece.id, {phase: 'ouverture', message: ''});
+        // Garde defensif : l'interface grise deja le bouton, mais rien ne doit
+        // pouvoir sortir un second document par un autre chemin.
+        const occupee = this.pieceEnCours();
+        if (occupee) {
+            console.warn('[Edition locale] refus : « ' + (occupee.nomLocal || occupee.pieceId)
+                + " » est deja en cours d'edition.");
+            return;
+        }
+
+        // Le nom est connu des maintenant : il sert au message qui explique
+        // pourquoi les autres pieces sont bloquees, des la phase « ouverture ».
+        this.majEtat(piece.id, {phase: 'ouverture', message: '', nomLocal: piece.nom});
 
         try {
             const reponse = await this.pont.appelerExtension<DocumentPoste>('edition', {

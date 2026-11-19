@@ -403,6 +403,29 @@ export class MailDetailsComponent implements AfterViewInit, OnChanges, OnDestroy
   }
 
   /**
+   * Une seule édition à la fois : tant qu'un document est sur le poste, les
+   * autres pièces ne sont pas proposables. Deux Word ouverts en parallèle
+   * donneraient deux retours sans qu'on sache lequel va dans quel message.
+   */
+  editionBloquee(piece: ImputationFichier): boolean {
+    return this.editionLocale.bloqueeParUneAutre(piece?.id);
+  }
+
+  /** Nom du document qui retient le verrou, pour l'expliquer à l'utilisateur. */
+  nomEditionEnCours(): string {
+    const occupee = this.editionLocale.pieceEnCours();
+    return occupee?.nomLocal || 'Un document';
+  }
+
+  /** Infobulle du bouton « Modifier », selon qu'il est disponible ou bloqué. */
+  titreBoutonEditer(piece: ImputationFichier): string {
+    return this.editionBloquee(piece)
+      ? `« ${this.nomEditionEnCours()} » est déjà en cours d'édition. `
+        + "Terminez-le ou abandonnez-le avant d'en ouvrir un autre."
+      : 'Récupérer sur mon poste et modifier dans Word';
+  }
+
+  /**
    * Confie la pièce au poste. L'événement est arrêté ici : un clic sur la
    * carte ouvre l'aperçu, ce qui n'est pas ce qu'on demande en cliquant sur
    * « Modifier ».
@@ -410,6 +433,20 @@ export class MailDetailsComponent implements AfterViewInit, OnChanges, OnDestroy
   modifierEnLocal(piece: ImputationFichier, event?: Event): void {
     event?.stopPropagation();
     if (!this.estEditableEnLocal(piece) || this.editionEnCours(piece)) return;
+
+    // Le bouton est grisé, mais le clavier et la barre de la visionneuse
+    // passent par ici aussi : on explique plutôt que de ne rien faire.
+    if (this.editionBloquee(piece)) {
+      Swal.fire({
+        title: 'Une édition est déjà en cours',
+        html: `« <b>${this.nomEditionEnCours()}</b> » est ouvert sur votre poste.`
+            + "<br>Terminez-le ou abandonnez-le avant d'en ouvrir un autre.",
+        icon: 'info',
+        confirmButtonText: 'Compris',
+        confirmButtonColor: 'rgba(0,54,110)',
+      });
+      return;
+    }
 
     this.editionLocale.ouvrir(
       {id: piece.id, nom: piece.nom, url: piece.url},

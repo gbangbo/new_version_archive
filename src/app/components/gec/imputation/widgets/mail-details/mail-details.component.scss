@@ -962,6 +962,16 @@
     color: #b3261e;
 }
 
+/* Une seule édition à la fois. Le bouton reste cliquable — il explique alors
+   pourquoi il ne fait rien — mais son apparence dit qu'il n'est pas
+   disponible. `disabled` aurait supprimé l'infobulle, qui porte justement le
+   nom du document qui bloque. */
+.imput-piece-editer-bloque,
+.vis-btn-editer-bloque {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
 /* Mot joint à la contribution, sous le bandeau « document ouvert ». */
 .imput-edit-fin {
     display: flex;

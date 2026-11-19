@@ -328,10 +328,14 @@
              conversation encore ouverte. -->
         @if(estEditableEnLocal(piece)) {
           @if(!editionEnCours(piece)) {
+            <!-- Une seule édition à la fois : le bouton est grisé tant qu'un
+                 autre document est sur le poste, et son infobulle dit lequel. -->
             <button type="button" class="imput-piece-editer"
-                    title="Récupérer sur mon poste et modifier dans Word"
+                    [class.imput-piece-editer-bloque]="editionBloquee(piece)"
+                    [attr.aria-disabled]="editionBloquee(piece) ? 'true' : null"
+                    [title]="titreBoutonEditer(piece)"
                     (click)="modifierEnLocal(piece, $event)">
-              <app-feather-icon [icon]="'edit-3'"></app-feather-icon>
+              <app-feather-icon [icon]="editionBloquee(piece) ? 'lock' : 'edit-3'"></app-feather-icon>
               Modifier
             </button>
           } @else {
@@ -435,19 +439,23 @@
         }
         @if(visionneuse && estEditableEnLocal(visionneuse)) {
           <button type="button" class="vis-btn vis-btn-editer"
+                  [class.vis-btn-editer-bloque]="editionBloquee(visionneuse)"
                   [title]="editionEnCours(visionneuse)
                      ? 'Abandonner l\'édition en cours'
-                     : 'Récupérer sur mon poste et modifier dans Word'"
+                     : titreBoutonEditer(visionneuse)"
                   (click)="editionEnCours(visionneuse)
                      ? abandonnerEdition(visionneuse)
                      : modifierEnLocal(visionneuse)">
             @if(editionEnCours(visionneuse)) {
               <span class="imput-edit-spin"></span>
             } @else {
-              <app-feather-icon [icon]="'edit-3'"></app-feather-icon>
+              <app-feather-icon
+                [icon]="editionBloquee(visionneuse) ? 'lock' : 'edit-3'"></app-feather-icon>
             }
             <span class="vis-btn-texte">
-              {{ editionEnCours(visionneuse) ? 'Édition en cours' : 'Modifier sur mon poste' }}
+              {{ editionEnCours(visionneuse) ? 'Édition en cours'
+                 : editionBloquee(visionneuse) ? 'Édition occupée'
+                 : 'Modifier sur mon poste' }}
             </span>
           </button>
         }
