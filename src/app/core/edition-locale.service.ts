@@ -112,7 +112,13 @@ export class EditionLocaleService {
      * `url` est celle de la piece en ligne : c'est le poste qui la telecharge,
      * la page ne fait pas transiter le fichier.
      */
-    async ouvrir(piece: { id: string; nom: string; url: string }, contexte: any = {}): Promise<void> {
+    /**
+     * `contexte` porte l'imputation et le **contributeur** : le poste renomme le
+     * document avec ce nom au retour, seul moyen de distinguer les contributions
+     * puisqu'aucun verrou n'empêche deux personnes d'éditer en parallèle.
+     */
+    async ouvrir(piece: { id: string; nom: string; url: string },
+                 contexte: { imputation?: string; contributeur?: string } = {}): Promise<void> {
         if (this.estOccupee(piece.id)) return;
 
         this.majEtat(piece.id, {phase: 'ouverture', message: ''});

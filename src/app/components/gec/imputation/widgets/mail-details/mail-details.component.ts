@@ -24,6 +24,7 @@ import {
   incrusterEtiquettePdf,
 } from '../../etiquette-courrier';
 import { EditionLocaleService, EtatEdition } from '../../../../../core/edition-locale.service';
+import { Authorization } from '../../../../../protect/authorization.service';
 import { Subscription } from 'rxjs';
 
 const AUTORISER_VISIONNEUSE_EXTERNE = true;
@@ -105,7 +106,8 @@ export class MailDetailsComponent implements AfterViewInit, OnChanges, OnDestroy
 
   constructor(private cdr: ChangeDetectorRef, private renderer: Renderer2,
               private sanitizer: DomSanitizer,
-              public editionLocale: EditionLocaleService) {
+              public editionLocale: EditionLocaleService,
+              private autor: Authorization) {
     pdfjsLib.GlobalWorkerOptions.workerSrc = '/assets/pdfjs/pdf.worker.mjs';
   }
 
@@ -381,8 +383,30 @@ export class MailDetailsComponent implements AfterViewInit, OnChanges, OnDestroy
 
     this.editionLocale.ouvrir(
       {id: piece.id, nom: piece.nom, url: piece.url},
-      {imputation: this.imputation?.uid || ''}
+      {imputation: this.imputation?.uid || '', contributeur: this.nomContributeur}
     );
+  }
+
+  /**
+   * Nom qui figurera dans le fichier revenu dans le fil, sous la forme
+   * `<base>_<contributeur>_<horodatage>.docx`. Aucun verrou n'empêchant deux
+   * personnes de travailler en même temps, c'est ce nom qui dit qui a écrit
+   * quoi.
+   *
+   * `moi` ne porte que l'uid, et expediteur/destinataire ne portent que
+   * l'e-mail (voir imputation-api.ts) : la session est la seule source du nom.
+   * Repli en cascade jusqu'à l'uid, pour ne jamais rendre un fichier anonyme.
+   */
+  private get nomContributeur(): string {
+    const session: any = this.autor.getInfosUsers();
+    const perso = session?.datapersonnel || {};
+    const nom = [perso.nom, perso.prenom].filter((x: any) => !!x).join(' ').trim();
+    if (nom) return nom;
+
+    const email = session?.email || perso.email || '';
+    if (email) return String(email).split('@')[0];
+
+    return this.moi || '';
   }
 
   /** Renonce à l'édition : le poste purge sa copie, la pièce redevient libre. */

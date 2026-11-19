@@ -187,7 +187,22 @@ export class ScannerBridgeService {
     private async envoyer<T = any>(action: string, params: any = {}, timeoutMs = ScannerBridgeService.TIMEOUT_DEFAUT): Promise<T> {
         const runtime = this.messagerie;
         if (!runtime) {
-            throw new Error("Ce navigateur ne permet pas de joindre l'extension. Utilisez Google Chrome.");
+            // Deux causes tres differentes, qu'il faut distinguer sous peine
+            // d'envoyer l'utilisateur chercher Chrome alors qu'il y est deja :
+            //
+            //  - navigateur non Chromium : « window.chrome » est absent ;
+            //  - page dont l'adresse n'est pas declaree dans
+            //    « externally_connectable » du manifeste : Chrome n'injecte
+            //    alors PAS « chrome.runtime » dans la page. C'est le cas sur
+            //    http://localhost:4200 (serveur de developpement Angular), le
+            //    manifeste publie n'autorisant que archivepro.ci et le port
+            //    3000.
+            const chromium = !!(window as any).chrome;
+            throw new Error(chromium
+                ? "L'extension n'autorise pas cette adresse (" + window.location.origin
+                  + "). Ouvrez l'application depuis archivepro.ci, ou chargez "
+                  + "l'extension en mode developpeur avec cette adresse declaree."
+                : "Ce navigateur ne permet pas de joindre l'extension. Utilisez Google Chrome.");
         }
 
         const id = await this.detecter();
