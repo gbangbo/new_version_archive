@@ -359,6 +359,24 @@
           Le document est ouvert sur votre poste. Fermez-le une fois vos
           observations saisies : la nouvelle version reviendra seule dans le fil.
         </div>
+
+        <!-- Mot joint à la contribution. Saisi pendant que Word est ouvert,
+             il part avec le document : au retour automatique comme à la
+             publication manuelle. Les clics sont arrêtés ici, la carte
+             ouvrant l'aperçu. -->
+        <div class="imput-edit-fin" (click)="$event.stopPropagation()">
+          <textarea class="imput-edit-commentaire" rows="2"
+                    maxlength="1000"
+                    placeholder="Votre commentaire sur cette version (facultatif)"
+                    [value]="commentaireEdition(piece)"
+                    (input)="majCommentaire(piece, $event)"></textarea>
+          <button type="button" class="imput-edit-terminer"
+                  title="Publier le document tel qu'il est enregistré, sans attendre la fermeture de Word"
+                  (click)="terminerEdition(piece, $event)">
+            <app-feather-icon [icon]="'send'"></app-feather-icon>
+            Terminer et publier
+          </button>
+        </div>
       }
 
       @if(phaseEdition(piece) === 'erreur') {

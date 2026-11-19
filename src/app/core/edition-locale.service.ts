@@ -39,12 +39,20 @@ export interface EtatEdition {
     message?: string;
     /** Nom du fichier tel que le poste l'a depose. */
     nomLocal?: string;
+    /**
+     * Commentaire saisi pendant l'edition, publie avec la contribution.
+     * Conserve ici et non dans le composant : il doit survivre au changement
+     * de conversation et au rafraichissement du fil.
+     */
+    commentaire?: string;
 }
 
 /** Document revenu du poste, pret a etre publie dans le fil. */
 export interface RetourEdition {
     pieceId: string;
     fichier: File;
+    /** Mot de l'auteur, saisi pendant l'edition. Vide s'il n'a rien ecrit. */
+    commentaire?: string;
 }
 
 /** Un sondage en cours : son minuteur, son depart, et son verrou d'appel. */
@@ -115,6 +123,38 @@ export class EditionLocaleService {
 
     etat(pieceId: string): EtatEdition {
         return this.etats.get(pieceId) || {pieceId, phase: 'inactif'};
+    }
+
+    /** Commentaire en cours de saisie pour cette piece. */
+    commentaire(pieceId: string): string {
+        return this.etat(pieceId).commentaire || '';
+    }
+
+    /**
+     * Enregistre le mot que l'auteur joindra a sa contribution.
+     *
+     * Saisi pendant que Word est ouvert : l'utilisateur explique ce qu'il a
+     * modifie sans quitter la page, et le texte part avec le document des son
+     * retour — automatique a la fermeture de Word, ou provoque par `terminer`.
+     */
+    definirCommentaire(pieceId: string, texte: string): void {
+        this.majEtat(pieceId, {commentaire: texte});
+    }
+
+    /**
+     * Met fin a l'edition sans attendre la fermeture de Word et publie le
+     * document tel qu'il est enregistre sur le poste.
+     *
+     * Le poste rend le fichier present sur le disque sans exiger que
+     * l'application l'ait relache : ce qui remonte est donc le dernier
+     * ENREGISTREMENT de l'utilisateur, pas forcement ce qu'il voit a l'ecran.
+     * C'est a l'interface de le dire clairement avant d'appeler ceci.
+     */
+    async terminer(pieceId: string): Promise<void> {
+        if (this.etat(pieceId).phase !== 'edition') return;
+
+        this.arreterSondage(pieceId);
+        await this.recuperer(pieceId, {id: pieceId});
     }
 
     /** Vrai tant que la piece est entre les mains du poste. */
@@ -244,8 +284,12 @@ export class EditionLocaleService {
             if (!resultat?.base64) throw new Error('Le poste n\'a pas renvoye de contenu.');
 
             const nom = resultat.nom || doc.nomFinal || doc.nom || 'document.docx';
-            this.retour$.next({pieceId, fichier: this.enFichier(resultat.base64, nom)});
-            this.majEtat(pieceId, {phase: 'inactif', nomLocal: nom, message: ''});
+            const commentaire = this.commentaire(pieceId);
+
+            this.retour$.next({pieceId, fichier: this.enFichier(resultat.base64, nom), commentaire});
+            // Le commentaire est consomme : la piece redevient vierge pour une
+            // edition suivante, qui ne doit pas heriter du mot precedent.
+            this.majEtat(pieceId, {phase: 'inactif', nomLocal: nom, message: '', commentaire: ''});
         } catch (e: any) {
             this.majEtat(pieceId, {phase: 'erreur', message: this.messageLisible(e)});
         }

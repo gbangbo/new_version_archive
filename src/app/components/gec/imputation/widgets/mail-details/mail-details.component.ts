@@ -130,7 +130,8 @@ export class MailDetailsComponent implements AfterViewInit, OnChanges, OnDestroy
     // Version modifiée revenue du poste : elle est publiée dans le fil par le
     // canal habituel, donc avec l'auteur et l'horodatage du contributeur.
     this.abosEdition.add(
-      this.editionLocale.retour$.subscribe(retour => this.publierContribution(retour.fichier))
+      this.editionLocale.retour$.subscribe(
+        retour => this.publierContribution(retour.fichier, retour.commentaire))
     );
 
     // `retour$` est un Subject : rien n'est rejoué pour un abonné tardif. La
@@ -449,10 +450,53 @@ export class MailDetailsComponent implements AfterViewInit, OnChanges, OnDestroy
    * poste lui a donné — c'est lui qui distingue les contributions entre
    * elles, puisqu'aucun verrou n'empêche deux éditions simultanées.
    */
-  private publierContribution(fichier: File): void {
+  private publierContribution(fichier: File, commentaire?: string): void {
+    const mot = (commentaire || '').trim();
+
     this.repondre.emit({
-      texte: `Contribution déposée depuis le poste : ${fichier.name}`,
+      // Le mot de l'auteur prime : c'est lui qui porte le sens de la
+      // contribution. Le repli ne sert qu'à ne jamais publier un message vide.
+      texte: mot || `Contribution déposée depuis le poste : ${fichier.name}`,
       fichiers: [fichier],
+    });
+  }
+
+  // ── Commentaire et clôture manuelle ──────────────────────────────
+
+  /** Texte déjà saisi pour cette pièce, conservé par le service. */
+  commentaireEdition(piece: ImputationFichier): string {
+    return this.editionLocale.commentaire(piece?.id);
+  }
+
+  /** Saisie au fil de l'eau : le texte survit à un rafraîchissement du fil. */
+  majCommentaire(piece: ImputationFichier, event: Event): void {
+    const zone = event.target as HTMLTextAreaElement;
+    this.editionLocale.definirCommentaire(piece.id, zone.value);
+  }
+
+  /**
+   * Publie sans attendre la fermeture de Word.
+   *
+   * Ce qui remonte est le dernier ENREGISTREMENT, pas l'écran : on le
+   * rappelle avant d'agir, car un utilisateur qui n'a pas enregistré
+   * publierait une version incomplète sans comprendre pourquoi.
+   */
+  terminerEdition(piece: ImputationFichier, event?: Event): void {
+    event?.stopPropagation();
+    if (this.phaseEdition(piece) !== 'edition') return;
+
+    Swal.fire({
+      title: 'Publier cette version ?',
+      html: "Le document sera repris <b>tel qu'il est enregistré</b> sur votre poste."
+          + '<br>Enregistrez dans Word (Ctrl+S) avant de confirmer.',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Publier',
+      cancelButtonText: 'Annuler',
+      confirmButtonColor: 'rgba(0,54,110)',
+      reverseButtons: true,
+    }).then(reponse => {
+      if (reponse.isConfirmed) void this.editionLocale.terminer(piece.id);
     });
   }
 
