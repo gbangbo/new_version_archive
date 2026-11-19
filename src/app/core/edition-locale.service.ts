@@ -47,10 +47,20 @@ export interface RetourEdition {
     fichier: File;
 }
 
+/** Un sondage en cours : son minuteur, son depart, et son verrou d'appel. */
+interface Sondage {
+    minuteur: any;
+    debut: number;
+    /** Vrai pendant qu'un controle est en vol, pour ne pas en lancer deux. */
+    enVol: boolean;
+}
+
 /** Ce que le poste renvoie pour un document en cours d'edition. */
 interface DocumentPoste {
     id: string;
     nom?: string;
+    /** `false` quand le poste ne connait plus ce document (registre purge). */
+    present?: boolean;
     /** `true` des que l'application locale a rendu la main. */
     termine?: boolean;
     /** Nom retenu par le poste apres son renommage. */
@@ -78,9 +88,24 @@ export class EditionLocaleService {
     readonly retour$ = new Subject<RetourEdition>();
 
     /** Sondages en cours, pour pouvoir les arreter. */
-    private readonly sondages = new Map<string, any>();
+    private readonly sondages = new Map<string, Sondage>();
 
     constructor(private pont: ScannerBridgeService) {
+        // Chrome ralentit les minuteurs des onglets caches — jusqu'a un par
+        // minute passe cinq minutes d'arriere-plan. Un document ferme pendant
+        // ce temps remonterait donc avec beaucoup de retard. On force un
+        // controle des le retour sur l'onglet : le registre du poste, lui, est
+        // reste a jour.
+        if (typeof document !== 'undefined') {
+            document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'visible') this.controlerTous();
+            });
+        }
+    }
+
+    /** Controle immediat de tous les documents suivis. */
+    private controlerTous(): void {
+        this.sondages.forEach((_, pieceId) => void this.controler(pieceId));
     }
 
     /** Vrai si la piece releve de l'edition sur poste. */
@@ -147,42 +172,61 @@ export class EditionLocaleService {
     private lancerSondage(pieceId: string): void {
         this.arreterSondage(pieceId);
 
-        const debut = Date.now();
-        const minuteur = setInterval(async () => {
-            if (Date.now() - debut > EditionLocaleService.DUREE_MAX) {
+        const minuteur = setInterval(
+            () => void this.controler(pieceId),
+            EditionLocaleService.PERIODE_SONDAGE,
+        );
+        this.sondages.set(pieceId, {minuteur, debut: Date.now(), enVol: false});
+    }
+
+    /**
+     * Demande au poste ou en est un document, et le rapatrie s'il est termine.
+     *
+     * Sorti du minuteur pour servir aussi au reveil d'onglet et a la reprise :
+     * c'est le meme controle dans les trois cas, et il doit rester le seul
+     * endroit qui decide de recuperer.
+     */
+    private async controler(pieceId: string): Promise<void> {
+        const sondage = this.sondages.get(pieceId);
+        if (!sondage || sondage.enVol) return;
+
+        if (Date.now() - sondage.debut > EditionLocaleService.DUREE_MAX) {
+            this.arreterSondage(pieceId);
+            this.majEtat(pieceId, {
+                phase: 'erreur',
+                message: "L'edition dure depuis trop longtemps : le suivi a ete interrompu.",
+            });
+            return;
+        }
+
+        sondage.enVol = true;
+        try {
+            const doc = await this.pont.appelerExtension<DocumentPoste>('edition', {
+                operation: 'etat' as OperationEdition,
+                id: pieceId,
+            }, 10000);
+
+            if (doc?.termine) {
                 this.arreterSondage(pieceId);
-                this.majEtat(pieceId, {
-                    phase: 'erreur',
-                    message: "L'edition dure depuis trop longtemps : le suivi a ete interrompu.",
-                });
-                return;
+                await this.recuperer(pieceId, doc);
             }
-
-            try {
-                const doc = await this.pont.appelerExtension<DocumentPoste>('edition', {
-                    operation: 'etat' as OperationEdition,
-                    id: pieceId,
-                }, 10000);
-
-                if (doc?.termine) {
-                    this.arreterSondage(pieceId);
-                    await this.recuperer(pieceId, doc);
-                }
-            } catch (e: any) {
-                // Un poste momentanement injoignable ne doit pas annuler une
-                // edition en cours : on laisse le sondage reprendre au tour
-                // suivant et on ne touche pas a la phase.
-                console.warn('[Edition locale] sondage sans reponse', e);
-            }
-        }, EditionLocaleService.PERIODE_SONDAGE);
-
-        this.sondages.set(pieceId, minuteur);
+        } catch (e: any) {
+            // Un poste momentanement injoignable ne doit pas annuler une
+            // edition en cours : on laisse le sondage reprendre au tour
+            // suivant et on ne touche pas a la phase.
+            console.warn('[Edition locale] sondage sans reponse', e);
+        } finally {
+            // `sondages` a pu etre vide entre-temps : on relache le verrou sur
+            // l'entree retrouvee, pas sur une reference peut-etre perimee.
+            const courant = this.sondages.get(pieceId);
+            if (courant) courant.enVol = false;
+        }
     }
 
     private arreterSondage(pieceId: string): void {
-        const minuteur = this.sondages.get(pieceId);
-        if (minuteur) {
-            clearInterval(minuteur);
+        const sondage = this.sondages.get(pieceId);
+        if (sondage) {
+            clearInterval(sondage.minuteur);
             this.sondages.delete(pieceId);
         }
     }
@@ -207,6 +251,56 @@ export class EditionLocaleService {
         }
     }
 
+    /**
+     * Reprend les editions que la page avait perdues de vue.
+     *
+     * POURQUOI
+     * Le sondage vit dans la page : il meurt avec elle. Si l'utilisateur ferme
+     * l'onglet ou le navigateur pendant qu'il travaille dans Word — ou si le
+     * poste redemarre — le document modifie reste sur le disque du poste et
+     * plus personne ne vient le chercher. Le travail existe mais n'arrive
+     * jamais dans le fil.
+     *
+     * Le registre du poste, lui, a survecu : il est la source de verite. On le
+     * lit a l'ouverture d'une conversation et on raccroche les documents qui la
+     * concernent — ceux deja termines sont publies, ceux encore ouverts
+     * reprennent leur sondage.
+     *
+     * Silencieux par construction : un poste absent est le cas ordinaire (tout
+     * le monde n'a pas le service installe), il ne doit pas afficher d'erreur a
+     * chaque ouverture de conversation.
+     *
+     * @param piecesDuFil identifiants des pieces de la conversation affichee.
+     */
+    async reprendre(piecesDuFil: string[]): Promise<void> {
+        const attendus = new Set(piecesDuFil.filter(Boolean));
+        if (!attendus.size) return;
+
+        let registre: { documents?: DocumentPoste[] };
+        try {
+            registre = await this.pont.appelerExtension<{ documents?: DocumentPoste[] }>('edition', {
+                operation: 'etat' as OperationEdition,
+            }, 10000);
+        } catch {
+            return;
+        }
+
+        for (const doc of registre?.documents || []) {
+            const id = doc?.id;
+            // Hors de cette conversation, ou deja suivi : on n'y touche pas.
+            if (!id || !attendus.has(id) || this.sondages.has(id)) continue;
+            if (doc.present === false) continue;
+
+            if (doc.termine) {
+                this.majEtat(id, {phase: 'retour', nomLocal: doc.nomFinal || doc.nom});
+                await this.recuperer(id, doc);
+            } else {
+                this.majEtat(id, {phase: 'edition', nomLocal: doc.nom, message: ''});
+                this.lancerSondage(id);
+            }
+        }
+    }
+
     /** Abandonne l'edition et demande au poste de purger sa copie. */
     async abandonner(pieceId: string): Promise<void> {
         this.arreterSondage(pieceId);
@@ -226,7 +320,7 @@ export class EditionLocaleService {
 
     /** Remet l'etat a zero, sans parler au poste (changement de conversation). */
     reinitialiser(): void {
-        this.sondages.forEach(m => clearInterval(m));
+        this.sondages.forEach(s => clearInterval(s.minuteur));
         this.sondages.clear();
         this.etats.clear();
         this.etats$.next(new Map());

@@ -132,6 +132,34 @@ export class MailDetailsComponent implements AfterViewInit, OnChanges, OnDestroy
     this.abosEdition.add(
       this.editionLocale.retour$.subscribe(retour => this.publierContribution(retour.fichier))
     );
+
+    // `retour$` est un Subject : rien n'est rejoué pour un abonné tardif. La
+    // reprise demandée par ngOnChanges — qui s'exécute AVANT ce hook — a donc
+    // été mise en attente jusqu'ici, sinon une contribution récupérée pendant
+    // ce court intervalle serait émise sans personne pour l'écouter.
+    this.vueEditionPrete = true;
+    this.lancerReprise();
+  }
+
+  /** Vrai une fois `retour$` écouté : avant, toute reprise est différée. */
+  private vueEditionPrete = false;
+
+  /**
+   * Demande au poste s'il garde des documents de cette conversation.
+   *
+   * C'est le filet des cas où la page a disparu pendant l'édition : onglet
+   * fermé, navigateur quitté, poste redémarré. Le document modifié dort alors
+   * sur le disque du poste sans que personne vienne le chercher.
+   */
+  private lancerReprise(): void {
+    if (!this.vueEditionPrete) return;
+
+    const pieces = [
+      ...(this.imputation?.piecesJointes || []).map(f => f.id),
+      ...(this.imputation?.messages || []).flatMap(m => (m.fichiers || []).map(f => f.id)),
+    ].filter(Boolean);
+
+    void this.editionLocale.reprendre(pieces);
   }
 
   ngOnDestroy(): void {
@@ -223,6 +251,7 @@ export class MailDetailsComponent implements AfterViewInit, OnChanges, OnDestroy
     const apresUid = (evolution?.currentValue as Imputation | null)?.uid;
     if (evolution && avantUid !== apresUid) {
       this.editionLocale.reinitialiser();
+      this.lancerReprise();
     }
 
     if (!evolution) return;
