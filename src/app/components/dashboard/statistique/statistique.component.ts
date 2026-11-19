@@ -143,6 +143,9 @@ const TUILES_SUMMARY: { cle: string; libelle: string; icone: string; couleur: st
  * suite avec un libellé déduit, pour ne rien perdre si l'API en ajoute.
  */
 const DETAILS_SUMMARY: { cle: string; libelle: string }[] = [
+    // Cumuls toutes périodes confondues, en regard des compteurs filtrés des tuiles.
+    {cle: 'alldocuments', libelle: 'Tous les dossiers'},
+    {cle: 'allpieces', libelle: 'Toutes les pièces jointes'},
     {cle: 'documents_active', libelle: 'Dossiers actifs'},
     {cle: 'documents_inactifs', libelle: 'Dossiers inactifs'},
     {cle: 'documents_publies', libelle: 'Dossiers publics'},
@@ -316,8 +319,14 @@ export class StatistiqueComponent implements OnInit {
         return `année ${this.annee}`;
     }
 
-    get aucuneDonnee(): boolean {
-        return !this.isloading && !this.enErreur && !this.groupes.length && !this.evolution.length && !this.kpis.length;
+    /**
+     * Vrai quand la période filtrée ne produit aucune visualisation : ni courbe
+     * d'évolution, ni bloc de répartition. Les tuiles ne comptent pas, car des
+     * compteurs hors période (types de documents, boîtes) restent renseignés
+     * même pour une année vide — sans ce test, le bas de page restait blanc.
+     */
+    get aucunGraphique(): boolean {
+        return !this.isloading && !this.enErreur && !this.groupes.length && !this.evolutionChart;
     }
 
     // ═══════════════════════════════════════════════════════════
@@ -1056,7 +1065,60 @@ export class StatistiqueComponent implements OnInit {
                         + `</div>`;
                 },
             },
+            // Douze abscisses dans la largeur d'un téléphone : « Janv. » et ses
+            // voisins se chevauchaient. On rétrécit puis on incline, et sous
+            // 576 px on ne garde que l'initiale du mois, seule façon de les
+            // tenir toutes à l'horizontale sans qu'elles se touchent.
+            responsive: [
+                {
+                    breakpoint: 992,
+                    options: {
+                        xaxis: {
+                            labels: {
+                                rotate: -45,
+                                rotateAlways: true,
+                                style: {fontSize: '9px', colors: '#64748B'},
+                            },
+                        },
+                        dataLabels: {
+                            style: {fontSize: '9px', fontWeight: 600, fontFamily: 'inherit'},
+                            background: {enabled: true, foreColor: '#FFFFFF', borderRadius: 5, padding: 4, borderWidth: 0, opacity: 1, dropShadow: {enabled: false}},
+                        },
+                    },
+                },
+                {
+                    breakpoint: 576,
+                    options: {
+                        chart: {height: 260},
+                        xaxis: {
+                            labels: {
+                                rotate: 0,
+                                rotateAlways: false,
+                                hideOverlappingLabels: false,
+                                formatter: (valeur: string) => this.initialeMois(valeur),
+                                style: {fontSize: '10px', colors: '#64748B'},
+                            },
+                        },
+                        plotOptions: {bar: {columnWidth: '38%', borderRadius: 2}},
+                        dataLabels: {
+                            style: {fontSize: '8px', fontWeight: 600, fontFamily: 'inherit'},
+                            background: {enabled: true, foreColor: '#FFFFFF', borderRadius: 4, padding: 3, borderWidth: 0, opacity: 1, dropShadow: {enabled: false}},
+                        },
+                    },
+                },
+            ],
         };
+    }
+
+    /**
+     * Abscisse réduite pour les très petits écrans : l'initiale quand le
+     * libellé est bien un mois connu (« Janv. » → « J »), sinon les trois
+     * premiers caractères, pour ne pas rendre illisible un axe non mensuel.
+     */
+    private initialeMois(valeur: string): string {
+        const texte = String(valeur ?? '').trim();
+        if (!texte) return '';
+        return MOIS_COURTS.includes(texte) ? texte.charAt(0) : texte.slice(0, 3);
     }
 
     /**

@@ -282,6 +282,21 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
     // de la souris : cliquer dans l'aperçu a déjà fait perdre le focus au champ.
     captureCible: any = null;
     private textLayerTask: any = null;
+
+    // ── Capture par zone (PDF scanne, sans couche de texte) ──────
+    /* Faux des que getTextContent() ne renvoie rien pour la page affichee :
+       le document est une image, la selection native est impossible et on
+       bascule sur le trace d'une zone suivi d'un OCR local. */
+    pageTexteDisponible = true;
+    /** Rectangle en cours de trace, en pixels du canvas affiche. */
+    zoneOcr: { x: number; y: number; w: number; h: number } | null = null;
+    private zoneDepart: { x: number; y: number } | null = null;
+    zoneEnTrace = false;
+    ocrZoneEnCours = false;
+    ocrZoneProgres = 0;
+    /** Worker tesseract cree a la premiere demande puis reutilise. */
+    private ocrWorker: any = null;
+    private ocrWorkerPromesse: Promise<any> | null = null;
     /** État de la barre latérale avant l'entrée sur cet écran. */
     private sidebarAvant = false;
 
@@ -980,6 +995,10 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
         this.layoutService.replierForce = false;
         this.layoutService.closeSidebar = window.innerWidth < 1200 ? true : this.sidebarAvant;
         window.removeEventListener('resize', this.ajusterHauteurCarte);
+        // Le worker OCR porte un thread et quelques Mo de WASM : on le rend
+        try { this.ocrWorker?.terminate(); } catch { /* jamais créé */ }
+        this.ocrWorker = null;
+        this.ocrWorkerPromesse = null;
         this.resizeObs?.disconnect();
         this.pdfResizeObs?.disconnect();
         clearTimeout(this.pdfFitTimer);
@@ -1549,6 +1568,11 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
         const container = document.getElementById('pdf-text-layer');
         if (!container) return;
 
+        // Toute nouvelle page annule la zone en cours de trace
+        this.zoneOcr = null;
+        this.zoneDepart = null;
+        this.zoneEnTrace = false;
+
         // Un rendu peut être encore en cours (changement de page rapide, zoom
         // répété) : on l'annule avant de repartir, sinon les deux couches se
         // superposent.
@@ -1565,7 +1589,12 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
         container.style.height = viewport.height + 'px';
 
         page.getTextContent().then((textContent: any) => {
-            if (!textContent?.items?.length) return;
+            // Un PDF scanné ne renvoie aucun item : il n'y a pas de texte à
+            // sélectionner, la capture passera par le tracé d'une zone + OCR.
+            const aDuTexte = !!textContent?.items?.length;
+            this.majDisponibiliteTexte(aDuTexte);
+            if (!aDuTexte) return;
+
             const layer = new (pdfjsLib as any).TextLayer({
                 textContentSource: textContent,
                 container,
@@ -1573,7 +1602,10 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
             });
             this.textLayerTask = layer;
             layer.render().catch(() => { /* rendu annulé */ });
-        }).catch(() => { /* page sans contenu texte */ });
+        }).catch(() => {
+            // Page illisible côté texte : même traitement qu'un scan
+            this.majDisponibiliteTexte(false);
+        });
     }
 
     // ── Capture d'une sélection du PDF vers un champ Métadonnées ──
@@ -1609,9 +1641,22 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
         const ancre = selection?.anchorNode as Node | null;
         if (!container || !ancre || !container.contains(ancre)) return;
 
-        // Les retours à la ligne du PDF n'ont pas de sens dans un champ
-        const texte = brut.replace(/\s+/g, ' ').trim();
+        this.injecterDansChampArme(brut);
+        selection?.removeAllRanges();
+    }
+
+    /* Ajoute un fragment au champ armé, qu'il vienne de la couche de texte
+       ou de l'OCR d'une zone. Le contenu existant n'est jamais écrasé :
+       la valeur est complétée, ce qui permet de composer un champ à partir
+       de plusieurs fragments du document. */
+    private injecterDansChampArme(brut: string): void {
         const item = this.captureCible;
+        if (!item) return;
+
+        // Les retours à la ligne du PDF n'ont pas de sens dans un champ
+        const texte = (brut || '').replace(/\s+/g, ' ').trim();
+        if (!texte) return;
+
         const actuel = (item.value_proprietes_docs ?? '').toString();
 
         if (item.type_proprietes_docs === 'number') {
@@ -1623,8 +1668,286 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
             item.value_proprietes_docs = actuel ? actuel + ' ' + texte : texte;
         }
 
-        selection?.removeAllRanges();
         this.cdr.detectChanges();
+    }
+
+    // ── Capture par zone sur un PDF scanné (OCR local) ──────────
+
+    /* Mémorise si la page courante offre du texte sélectionnable. Appelé
+       depuis une promesse pdf.js : le rendu doit être déclenché à la main. */
+    private majDisponibiliteTexte(disponible: boolean): void {
+        if (this.pageTexteDisponible === disponible) return;
+        this.pageTexteDisponible = disponible;
+        this.cdr.detectChanges();
+    }
+
+    /* Vrai quand il faut proposer le tracé d'une zone plutôt que la
+       sélection native : un champ est armé et la page n'a pas de texte. */
+    get captureZoneActive(): boolean {
+        return !!this.captureCible && !this.pageTexteDisponible;
+    }
+
+    onZoneMouseDown(event: MouseEvent): void {
+        if (!this.captureZoneActive || this.ocrZoneEnCours) return;
+        event.preventDefault();
+
+        const point = this.pointDansCalque(event);
+        this.zoneDepart = point;
+        this.zoneEnTrace = true;
+        this.zoneOcr = {x: point.x, y: point.y, w: 0, h: 0};
+    }
+
+    onZoneMouseMove(event: MouseEvent): void {
+        if (!this.zoneEnTrace || !this.zoneDepart) return;
+
+        const point = this.pointDansCalque(event);
+        this.zoneOcr = {
+            x: Math.min(this.zoneDepart.x, point.x),
+            y: Math.min(this.zoneDepart.y, point.y),
+            w: Math.abs(point.x - this.zoneDepart.x),
+            h: Math.abs(point.y - this.zoneDepart.y)
+        };
+    }
+
+    onZoneMouseUp(): void {
+        if (!this.zoneEnTrace) return;
+        this.zoneEnTrace = false;
+        this.zoneDepart = null;
+
+        const zone = this.zoneOcr;
+        // Un simple clic ne doit pas déclencher un OCR : on exige une zone
+        // assez grande pour contenir au moins quelques caractères.
+        if (!zone || zone.w < 12 || zone.h < 8) {
+            this.zoneOcr = null;
+            return;
+        }
+
+        this.lancerOcrZone(zone);
+    }
+
+    /* Coordonnées du pointeur dans le repère du calque, qui recouvre
+       exactement le canvas : la zone tracée reste juste quel que soit le
+       zoom ou le défilement. */
+    private pointDansCalque(event: MouseEvent): { x: number; y: number } {
+        const calque = document.getElementById('pdf-zone-layer');
+        const rect = calque?.getBoundingClientRect();
+        if (!rect) return {x: 0, y: 0};
+        return {
+            x: Math.max(0, Math.min(rect.width, event.clientX - rect.left)),
+            y: Math.max(0, Math.min(rect.height, event.clientY - rect.top))
+        };
+    }
+
+    /* Découpe la zone dans le canvas, la remet à l'échelle pour l'OCR,
+       puis injecte le texte reconnu dans le champ armé. */
+    private async lancerOcrZone(zone: { x: number; y: number; w: number; h: number }): Promise<void> {
+        const canvas = document.getElementById('pdf-canvas') as HTMLCanvasElement | null;
+        if (!canvas) {
+            this.zoneOcr = null;
+            return;
+        }
+
+        // Le canvas est affiché à sa taille naturelle, mais on ne fait aucune
+        // hypothèse : on convertit via le ratio réel rendu / affiché.
+        const affiche = canvas.getBoundingClientRect();
+        const ratioX = affiche.width ? canvas.width / affiche.width : 1;
+        const ratioY = affiche.height ? canvas.height / affiche.height : 1;
+
+        const sx = Math.round(zone.x * ratioX);
+        const sy = Math.round(zone.y * ratioY);
+        const sw = Math.round(zone.w * ratioX);
+        const sh = Math.round(zone.h * ratioY);
+        if (sw < 4 || sh < 4) {
+            this.zoneOcr = null;
+            return;
+        }
+
+        this.ocrZoneEnCours = true;
+        this.ocrZoneProgres = 0;
+        this.cdr.detectChanges();
+
+        try {
+            const image = this.preparerImageOcr(canvas, sx, sy, sw, sh);
+            const worker = await this.obtenirOcrWorker();
+            const resultat = await worker.recognize(image);
+            const texte = resultat?.data?.text || '';
+
+            if (texte.trim()) {
+                this.injecterDansChampArme(texte);
+            } else {
+                this.toast.info(
+                    'Aucun texte reconnu dans la zone. Essayez une zone plus large ou augmentez le zoom.',
+                    'OCR'
+                );
+            }
+        } catch (e: any) {
+            console.error('[OCR zone] échec', e);
+            // tesseract.js rejette parfois avec undefined (échec de chargement
+            // du worker) : un message générique vaut mieux qu'un vide.
+            const brut = e?.message ?? e;
+            const detail = (brut ? brut.toString() : 'le worker OCR n\'a pas pu démarrer')
+                .slice(0, 200);
+            this.toast.error(
+                "La reconnaissance de texte n'a pas pu aboutir sur cette zone. "
+                + detail,
+                'OCR',
+                {timeOut: 12000}
+            );
+        } finally {
+            this.ocrZoneEnCours = false;
+            this.ocrZoneProgres = 0;
+            this.zoneOcr = null;
+            this.cdr.detectChanges();
+        }
+    }
+
+    /* Recadre la zone et l'agrandit si elle est petite : Tesseract perd
+       beaucoup de précision en dessous d'une trentaine de pixels de hauteur
+       de ligne. Le résultat est passé en niveaux de gris contrastés, ce qui
+       aide sur les fonds de scan jaunis. */
+    private preparerImageOcr(
+        source: HTMLCanvasElement, sx: number, sy: number, sw: number, sh: number
+    ): HTMLCanvasElement {
+        const facteur = Math.max(1, Math.min(4, 160 / Math.max(1, sh)));
+        const cible = document.createElement('canvas');
+        cible.width = Math.round(sw * facteur);
+        cible.height = Math.round(sh * facteur);
+
+        const ctx = cible.getContext('2d')!;
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, cible.width, cible.height);
+        ctx.drawImage(source, sx, sy, sw, sh, 0, 0, cible.width, cible.height);
+
+        try {
+            const donnees = ctx.getImageData(0, 0, cible.width, cible.height);
+            const px = donnees.data;
+            for (let i = 0; i < px.length; i += 4) {
+                const gris = 0.299 * px[i] + 0.587 * px[i + 1] + 0.114 * px[i + 2];
+                // Contraste autour du gris moyen, borné à [0, 255]
+                const ajuste = Math.max(0, Math.min(255, (gris - 128) * 1.45 + 128));
+                px[i] = px[i + 1] = px[i + 2] = ajuste;
+            }
+            ctx.putImageData(donnees, 0, 0);
+        } catch { /* canvas souillé : on envoie l'image telle quelle */ }
+
+        return cible;
+    }
+
+    /* Worker Tesseract paresseux : le chargement du cœur WASM et des données
+       françaises coûte quelques secondes, on ne le fait qu'à la première
+       zone puis on garde le worker pour les suivantes. */
+    private obtenirOcrWorker(): Promise<any> {
+        if (this.ocrWorker) return Promise.resolve(this.ocrWorker);
+        if (this.ocrWorkerPromesse) return this.ocrWorkerPromesse;
+
+        this.ocrWorkerPromesse = (async () => {
+            // tesseract.js est publie en CommonJS avec un module.exports etale :
+            // selon le bundler, l'import dynamique expose les fonctions a la
+            // racine ou sous `default`. On accepte les deux formes.
+            const mod: any = await import('tesseract.js');
+            const createWorker = mod.createWorker ?? mod.default?.createWorker;
+            if (typeof createWorker !== 'function') {
+                throw new Error('createWorker introuvable dans tesseract.js');
+            }
+
+            // Un worker dont le script est introuvable échoue via onerror, et
+            // tesseract.js rejette alors avec `event.message`, vide : on se
+            // retrouve avec une erreur « undefined » impossible à lire. On
+            // vérifie donc les fichiers d'abord, pour nommer le fautif.
+            await this.verifierAssetsOcr();
+
+            const worker = await createWorker('fra', 1, {
+                workerPath: this.urlAssetOcr('assets/tesseract/worker.min.js'),
+                corePath: this.urlAssetOcr(this.cheminCoeurOcr()),
+                langPath: this.urlAssetOcr('assets/tesseract/lang'),
+                // Les donnees de langue sont deployees NON compressees. Servi
+                // en .gz, le fichier repart avec un en-tete Content-Encoding:
+                // gzip (dev server Angular comme Nginx) : le navigateur le
+                // decompresse deja et tesseract.js echoue en voulant le
+                // decompresser une seconde fois.
+                gzip: false,
+                // Par defaut tesseract.js lance son worker depuis une URL blob:.
+                // Le coeur WASM resout alors son fichier .wasm a cote du blob
+                // au lieu de /assets/tesseract, et l'initialisation reste
+                // bloquee indefiniment. Nos fichiers sont servis par la meme
+                // origine : le worker peut etre charge directement.
+                workerBlobURL: false,
+                logger: (m: any) => {
+                    if (m?.status === 'recognizing text') {
+                        this.ocrZoneProgres = Math.round((m.progress || 0) * 100);
+                        this.cdr.detectChanges();
+                    }
+                }
+            });
+            this.ocrWorker = worker;
+            return worker;
+        })();
+
+        this.ocrWorkerPromesse.catch(() => {
+            // L'échec ne doit pas condamner les tentatives suivantes
+            this.ocrWorkerPromesse = null;
+        });
+
+        return this.ocrWorkerPromesse;
+    }
+
+    /* Contrôle que les fichiers OCR sont bien servis. Deux pièges courants :
+       le serveur de développement n'a pas été redémarré depuis l'ajout des
+       assets dans angular.json, ou le repli SPA renvoie index.html en 200
+       pour un fichier absent — le worker recevrait alors du HTML à exécuter. */
+    private async verifierAssetsOcr(): Promise<void> {
+        const fichiers = [
+            'assets/tesseract/worker.min.js',
+            this.cheminCoeurOcr(),
+            this.cheminCoeurOcr().replace(/\.js$/, '.wasm'),
+            'assets/tesseract/lang/fra.traineddata'
+        ];
+
+        const controles = await Promise.all(fichiers.map(async (chemin) => {
+            try {
+                const rep = await fetch(this.urlAssetOcr(chemin), {method: 'HEAD'});
+                const type = rep.headers.get('content-type') || '';
+                if (!rep.ok) return `${chemin} (HTTP ${rep.status})`;
+                if (type.includes('text/html')) return `${chemin} (page HTML reçue)`;
+                return null;
+            } catch {
+                return `${chemin} (injoignable)`;
+            }
+        }));
+
+        const manquants = controles.filter((c): c is string => c !== null);
+        if (manquants.length) {
+            throw new Error(
+                'fichiers OCR non servis : ' + manquants.join(', ')
+                + ' — redémarrez le serveur après la mise à jour des assets'
+            );
+        }
+    }
+
+    /* tesseract.js résout ses chemins contre window.location.href : un chemin
+       relatif se retrouverait préfixé par la route courante
+       (/documents/assets/…). On ancre donc tout sur le <base href> de
+       l'application, ce qui reste juste si elle est servie sous un sous-chemin. */
+    private urlAssetOcr(chemin: string): string {
+        return new URL(chemin, document.baseURI).href;
+    }
+
+    /* Deux variantes du cœur sont embarquées : on désigne le fichier
+       explicitement, sinon tesseract.js va chercher les versions tout-en-un
+       de 4 Mo que nous ne déployons pas. */
+    private cheminCoeurOcr(): string {
+        // Sonde WebAssembly SIMD standard (wasm-feature-detect)
+        const sondeSimd = new Uint8Array([
+            0, 97, 115, 109, 1, 0, 0, 0, 1, 5, 1, 96, 0, 1, 123,
+            3, 2, 1, 0, 10, 10, 1, 8, 0, 65, 0, 253, 15, 253, 98, 11
+        ]);
+        let simd = false;
+        try { simd = WebAssembly.validate(sondeSimd); } catch { simd = false; }
+        return simd
+            ? 'assets/tesseract/tesseract-core-simd-lstm.js'
+            : 'assets/tesseract/tesseract-core-lstm.js';
     }
 
     // ── Navigation ───────────────────────────────────────────────

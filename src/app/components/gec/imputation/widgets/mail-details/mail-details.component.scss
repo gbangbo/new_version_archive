@@ -145,11 +145,18 @@
     margin-top: 10px;
 }
 
+/* Carte + bandeau d'édition : c'est ce bloc qui porte la largeur, la carte
+   la remplit. */
+.imput-piece-bloc {
+    width: 300px;
+    max-width: 100%;
+}
+
 .imput-piece {
     display: flex;
     align-items: center;
     gap: 10px;
-    width: 300px;
+    width: 100%;
     max-width: 100%;
     padding: 8px 12px;
     border: 1px solid rgba(82, 82, 108, 0.15);
@@ -872,4 +879,105 @@
 
 .imput-outil-danger {
     color: #c2352d;
+}
+
+/* ════════════════════════════════════════════════
+   ÉDITION D'UNE PIÈCE WORD SUR LE POSTE
+   ════════════════════════════════════════════════ */
+
+.imput-piece-editer {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 9px;
+    border: 1px solid rgba(0, 54, 110, 0.25);
+    border-radius: 999px;
+    background: rgba(0, 54, 110, 0.07);
+    color: #00366e;
+    font-size: 10.5px;
+    font-weight: 700;
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+
+    &:hover {
+        background: rgba(0, 54, 110, 0.14);
+    }
+
+    ::ng-deep svg {
+        width: 12px;
+        height: 12px;
+    }
+}
+
+/* Pendant l'édition, le bouton devient la sortie de secours : il abandonne. */
+.imput-piece-editer-occupe {
+    border-color: rgba(214, 123, 20, 0.35);
+    background: rgba(214, 123, 20, 0.12);
+    color: #a35c0c;
+
+    &:hover {
+        background: rgba(214, 123, 20, 0.2);
+    }
+}
+
+.imput-edit-spin {
+    width: 10px;
+    height: 10px;
+    flex-shrink: 0;
+    border: 2px solid rgba(163, 92, 12, 0.3);
+    border-top-color: #a35c0c;
+    border-radius: 50%;
+    animation: imput-edit-spin 0.7s linear infinite;
+}
+
+@keyframes imput-edit-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Explication sous la carte : ce qu'on attend de l'utilisateur, ou l'échec. */
+.imput-edit-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    margin-top: 6px;
+    padding: 7px 10px;
+    border-radius: 8px;
+    background: rgba(214, 123, 20, 0.1);
+    color: #8a4f0a;
+    font-size: 11px;
+    line-height: 1.45;
+
+    ::ng-deep svg {
+        width: 13px;
+        height: 13px;
+        flex-shrink: 0;
+        margin-top: 1px;
+    }
+}
+
+.imput-edit-note-erreur {
+    background: rgba(211, 47, 47, 0.09);
+    color: #b3261e;
+}
+
+/* Dans la barre de la visionneuse, le bouton porte son libellé : il n'est pas
+   évident à deviner, contrairement à l'imprimante ou au téléchargement. */
+.vis-btn-editer {
+    width: auto !important;
+    gap: 6px;
+    padding: 0 12px;
+}
+
+.vis-btn-texte {
+    font-size: 11.5px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+    .vis-btn-texte {
+        display: none;
+    }
 }

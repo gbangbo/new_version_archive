@@ -595,6 +595,106 @@ nz-splitter {
   }
 }
 
+// ═════════════════════════════════════
+// CALQUE DE TRACÉ DE ZONE (PDF scanné → OCR)
+// ═════════════════════════════════════
+// Sans couche de texte il n'y a rien à sélectionner : on recouvre la page d'un
+// calque qui capte le glisser de la souris. Il passe au-dessus de la couche de
+// texte (z-index 2), qui est de toute façon vide sur ces documents.
+.pdf-zone-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  cursor: crosshair;
+  user-select: none;
+  // Le voile du rectangle deborde volontairement : on le borne a la page
+  overflow: hidden;
+
+  // Pendant la reconnaissance, plus aucun nouveau tracé
+  &.zone-occupee {
+    cursor: progress;
+  }
+}
+
+// Rectangle en cours de tracé
+.pdf-zone-rect {
+  position: absolute;
+  border: 1.5px solid #00366e;
+  border-radius: 3px;
+  background: rgba(0, 54, 110, 0.12);
+  box-shadow: 0 0 0 9999px rgba(15, 23, 42, 0.08);
+  pointer-events: none;
+}
+
+.pdf-zone-rect-badge {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: #00366e;
+  color: #fff;
+  font-size: 10.5px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.pdf-zone-spin {
+  width: 10px;
+  height: 10px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: preview-spin 0.7s linear infinite;
+}
+
+// Rappel flottant tant qu'aucune zone n'a été tracée
+.pdf-zone-aide {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 13px;
+  border-radius: 999px;
+  background: rgba(0, 20, 30, 0.82);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  pointer-events: none;
+  animation: preview-loader-in 0.2s ease-out both;
+
+  i {
+    font-size: 11px !important;
+    color: #fff !important;
+  }
+}
+
+// Variante du bandeau Métadonnées quand la capture se fait par zone
+.capture-hint.capture-hint-zone {
+  background: rgba(214, 123, 20, 0.12);
+  color: #a35c0c;
+
+  i {
+    color: #a35c0c !important;
+  }
+
+  .capture-hint-off {
+    color: #a35c0c;
+
+    &:hover {
+      background: rgba(214, 123, 20, 0.2);
+    }
+  }
+}
+
 // Champ des Métadonnées en attente d'une sélection dans le PDF
 .champ-capture-actif {
   border-color: #00366e !important;
@@ -1984,23 +2084,51 @@ input[type="checkbox"]:checked {
 // ═══════════════════════════════════════
 // PREVIEW LOADER
 // ═══════════════════════════════════════
+// Overlay centre sur toute la zone d'apercu : il masque le canvas encore vide
+// pendant le rendu au lieu de pousser le contenu vers le bas.
+.preview-body {
+  position: relative;
+
+  // Pendant le chargement, pas de scroll sous l'overlay
+  &:has(.preview-loader) {
+    overflow: hidden;
+  }
+}
+
 .preview-loader {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  padding: 48px 20px;
+  gap: 14px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(2px);
+  animation: preview-loader-in 0.18s ease-out both;
 }
 
 .preview-spinner {
+  position: relative;
   display: block;
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   border: 3px solid #E2E8F0;
-  border-top-color: rgba(0, 54, 110);
-  border-radius: 10%;
-  animation: preview-spin 0.75s linear infinite;
+  border-top-color: #00366e;
+  border-radius: 50%;
+  animation: preview-spin 0.7s linear infinite;
+
+  // Second anneau, plus lent et en sens inverse : lecture plus douce
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 5px;
+    border: 2px solid transparent;
+    border-bottom-color: rgba(0, 54, 110, 0.35);
+    border-radius: 50%;
+    animation: preview-spin 1.1s linear infinite reverse;
+  }
 }
 
 @keyframes preview-spin {
@@ -2009,10 +2137,32 @@ input[type="checkbox"]:checked {
   }
 }
 
+@keyframes preview-loader-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 .preview-loader-text {
   font-size: 12px;
   font-weight: 500;
-  color: #94A3B8;
+  letter-spacing: 0.02em;
+  color: #64748B;
+}
+
+// Accessibilite : on coupe la rotation si l'utilisateur limite les animations
+@media (prefers-reduced-motion: reduce) {
+  .preview-spinner,
+  .preview-spinner::after {
+    animation-duration: 2.4s;
+  }
+
+  .preview-loader {
+    animation: none;
+  }
 }
 
 // ═══════════════════════════════════════
@@ -2468,7 +2618,12 @@ input[type="checkbox"]:checked {
   }
 
   .preview-loader {
-    padding: 30px 16px;
+    gap: 10px;
+  }
+
+  .preview-spinner {
+    width: 32px;
+    height: 32px;
   }
 
   .preview-placeholder {

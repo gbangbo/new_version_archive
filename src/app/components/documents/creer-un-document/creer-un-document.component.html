@@ -457,9 +457,17 @@
 <!--                            <span class="section-num">2</span>-->
                             <i class="fa-solid fa-list-ul"></i>
                             <span class="section-titre">Métadonnées</span>
-                            <span class="capture-hint" *ngIf="captureCible">
-                                <i class="fa-solid fa-hand-pointer"></i>
-                                Sélectionnez dans le PDF &rarr; {{ libelleCapture }}
+                            <span class="capture-hint" *ngIf="captureCible"
+                                  [class.capture-hint-zone]="captureZoneActive">
+                                <i class="fa-solid"
+                                   [class.fa-hand-pointer]="!captureZoneActive"
+                                   [class.fa-vector-square]="captureZoneActive"></i>
+                                <ng-container *ngIf="!captureZoneActive">
+                                    Sélectionnez dans le PDF &rarr; {{ libelleCapture }}
+                                </ng-container>
+                                <ng-container *ngIf="captureZoneActive">
+                                    Tracez une zone sur le PDF &rarr; {{ libelleCapture }}
+                                </ng-container>
                                 <button type="button" class="capture-hint-off"
                                         title="Désactiver la capture"
                                         (click)="desarmerCapture($event)">&times;</button>
@@ -963,6 +971,35 @@
                                              class="pdf-text-layer"
                                              [class.capture-armee]="captureCible"
                                              (mouseup)="onPdfTextSelection()"></div>
+
+                                        <!-- Calque de tracé : actif uniquement sur une page sans
+                                             texte sélectionnable, quand un champ est armé. -->
+                                        <div id="pdf-zone-layer"
+                                             class="pdf-zone-layer"
+                                             *ngIf="captureZoneActive"
+                                             [class.zone-occupee]="ocrZoneEnCours"
+                                             (mousedown)="onZoneMouseDown($event)"
+                                             (mousemove)="onZoneMouseMove($event)"
+                                             (mouseup)="onZoneMouseUp()"
+                                             (mouseleave)="onZoneMouseUp()">
+
+                                            <div class="pdf-zone-rect"
+                                                 *ngIf="zoneOcr"
+                                                 [style.left.px]="zoneOcr.x"
+                                                 [style.top.px]="zoneOcr.y"
+                                                 [style.width.px]="zoneOcr.w"
+                                                 [style.height.px]="zoneOcr.h">
+                                                <span class="pdf-zone-rect-badge" *ngIf="ocrZoneEnCours">
+                                                    <span class="pdf-zone-spin"></span>
+                                                    Lecture {{ ocrZoneProgres }}%
+                                                </span>
+                                            </div>
+
+                                            <div class="pdf-zone-aide" *ngIf="!zoneOcr && !ocrZoneEnCours">
+                                                <i class="fa-solid fa-vector-square"></i>
+                                                Document scanné &mdash; tracez une zone autour du texte
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 

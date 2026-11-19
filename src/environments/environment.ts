@@ -4,12 +4,15 @@ export const environment = {
     production: true,
     key: cryptojs.enc.Utf8.parse('1234567890123456'),
     iv: cryptojs.enc.Utf8.parse('1234567890123456'),
-    // api_url: 'http://localhost:3500/parseur-awp/:',
-    // api_url: 'http://archivepro.ci:3500/parseur-awp/:',
-    // URL_API: 'http://api-ged.archivepro.ci/',
+
+    api_url: 'http://archivepro.ci:3500/parseur-awp/:',
+    URL_API: 'http://api-ged.archivepro.ci/',
+
 //http://larouteafricaine.com:81/?utm_source=chatgpt.com
-    api_url: 'https://archivepro.lragroupe.com:3500/parseur-awp/:',
-    URL_API: 'https://archivepro.lragroupe.com/',
+
+    // api_url: 'https://172.20.129.35:3500/parseur-awp/:',
+    // URL_API: 'https://172.20.129.35/',
+
     //api_url: 'https://gateway.drhsante.net:3010/endpoint-archivepro/:',
     CONFIG: {
         APP_NAME: 'ARCHIVE WEB PRO',

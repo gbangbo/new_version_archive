@@ -280,7 +280,7 @@
 
 /* ── États (chargement / erreur / vide) ──────────────────── */
 .st-state {
-  padding: 44px 20px;
+  padding: 46px 20px 42px;
   text-align: center;
 }
 
@@ -303,6 +303,21 @@
   &--error {
     background: #FEF2F2;
     color: #DC2626;
+  }
+}
+
+/* Illustration de l'état vide : plus large qu'une icône, sans pastille
+   grise derrière. Volontairement fixe — un état d'erreur ou de vide n'a
+   pas à s'animer dans un tableau de bord de gestion. */
+.st-state-art {
+  width: 186px;
+  max-width: 62%;
+  margin: 0 auto 18px;
+
+  svg {
+    width: 100%;
+    height: auto;
+    display: block;
   }
 }
 
@@ -724,6 +739,11 @@
   overflow-x: auto;
   max-height: 420px;
   overflow-y: auto;
+  /* Inertie iOS et geste horizontal qui ne remonte pas à la page : sans cela,
+     le défilement vertical captait le doigt et les colonnes de droite
+     restaient inatteignables. */
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
 }
 
 /* Tableau rendu directement dans une carte de bloc (consultations).
@@ -828,13 +848,49 @@
     flex-basis: 42%;
   }
 
-  /* Le bouton de dépliage passe sous les tuiles plutôt qu'à leur droite. */
+  /* La barre d'outils empile ses contrôles : chacun prend toute la largeur
+     pour rester tapable, et les deux exports se partagent la dernière ligne. */
+  .st-annee-select {
+    width: 100%;
+  }
+
+  .st-export-group {
+    flex: 1 1 100%;
+    padding-left: 0;
+    margin-left: 0;
+    border-left: 0;
+  }
+
+  .st-export-group .st-btn-export {
+    flex: 1 1 0;
+    justify-content: center;
+  }
+
+  /* Le bouton de dépliage passe sous les tuiles plutôt qu'à leur droite.
+     « stretch » est indispensable : en colonne, la grille restait un élément
+     flex centré, donc dimensionné sur son contenu, d'où les marges blanches
+     de part et d'autre des tuiles. */
   .st-kpi-zone {
     flex-direction: column;
+    align-items: stretch;
+  }
+
+  /* La grille reprend toute la largeur disponible ; sur tablette elle garde
+     plusieurs colonnes, le téléphone est traité plus bas. */
+  .st-kpi-grid {
+    width: 100%;
+    gap: 12px;
   }
 
   .st-kpi-toggle {
     align-self: center;
+  }
+
+  /* Les compteurs secondaires passent en liste pleine largeur, libellé à
+     gauche et valeur à droite, plutôt qu'en pastilles éparpillées. */
+  .st-kpi-chip {
+    flex: 1 1 100%;
+    justify-content: space-between;
   }
 
   /* Le tableau garde sa largeur utile et défile horizontalement :
@@ -861,3 +917,54 @@
 
 }
 
+/* ── Téléphone : une colonne pleine largeur partout ──────── */
+@media (max-width: 575px) {
+  /* minmax(210px) laissait deux colonnes serrées sur un écran de 390px :
+     sous cette largeur, une tuile par ligne reste lisible. */
+  .st-kpi-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .st-kpi {
+    padding: 14px 16px;
+  }
+
+  /* Chaque carte de bloc occupe la largeur, sans gouttière résiduelle. */
+  .st-card-head {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .st-state {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .st-state-art {
+    width: 148px;
+  }
+
+  /* Le tableau des consultations tient dans la largeur de l'écran : le
+     min-width de 560px imposait un défilement horizontal que l'on
+     n'arrivait pas à déclencher au doigt, la colonne « Total vues »
+     restait donc hors d'atteinte. Les trois colonnes sont désormais
+     visibles d'emblée, le libellé passant à la ligne. */
+  .st-table-bloc .st-table {
+    min-width: 0;
+    font-size: 10.5px;
+  }
+
+  .st-table-bloc .st-table thead th,
+  .st-table-bloc .st-table tbody td {
+    padding: 6px 8px;
+  }
+
+  .st-table-bloc .st-table .st-col-code {
+    width: 40%;
+  }
+
+  .st-table-bloc .st-table .st-col-nb {
+    width: 48px;
+    text-align: right;
+  }
+}

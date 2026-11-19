@@ -228,6 +228,7 @@ export class OngletComponent implements OnInit, AfterViewInit {
             if (res.body.status || res.body.success) {
                 this.treeData = this.mapApiToTree(res.body.data);
                 this.dataSource.setData(this.treeData);
+                console.log('this.treeData ===',this.treeData)
                 setTimeout(() => this.syncHScroll());
             }
         }).catch(() => {

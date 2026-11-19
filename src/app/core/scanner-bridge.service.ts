@@ -244,6 +244,22 @@ export class ScannerBridgeService {
         });
     }
 
+    /**
+     * Canal generique vers l'extension, pour les fonctionnalites qui ne
+     * relevent PAS de la numerisation.
+     *
+     * Ce service encapsule la detection de l'extension et le dialogue avec
+     * elle : ce transport est commun. Ce qui ne doit pas etre melange, ce sont
+     * les ACTIONS et les routes — une fonctionnalite nouvelle apporte les
+     * siennes et ne detourne jamais celles du scan (regle posee dans
+     * `fi-7480/ROUTES-API.md`).
+     *
+     * Premier usage : l'edition de documents sur le poste (EditionLocaleService).
+     */
+    appelerExtension<T = any>(action: string, params: any = {}, timeoutMs?: number): Promise<T> {
+        return this.envoyer<T>(action, params, timeoutMs ?? ScannerBridgeService.TIMEOUT_DEFAUT);
+    }
+
     // ────────────────────────────────────────────────────────────
     // Actions exposees par background.js
     // ────────────────────────────────────────────────────────────

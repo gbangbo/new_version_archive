@@ -88,21 +88,6 @@
         </div>
 
         <!-- ══════════════════════════════════════════════════════
-             AUCUNE DONNÉE
-        ══════════════════════════════════════════════════════ -->
-        <div class="col-span-12" *ngIf="aucuneDonnee">
-            <app-card [border]="true">
-                <div class="st-state">
-                    <div class="st-state-icon">
-                        <app-feather-icon [icon]="'bar-chart-2'"></app-feather-icon>
-                    </div>
-                    <p class="st-state-title">Aucune statistique pour cette période</p>
-                    <p class="st-state-text">Changez l'année ou l'intervalle de dates pour afficher des résultats.</p>
-                </div>
-            </app-card>
-        </div>
-
-        <!-- ══════════════════════════════════════════════════════
              TUILES CHIFFRÉES
         ══════════════════════════════════════════════════════ -->
         <div class="col-span-12" *ngIf="!isloading && !enErreur && kpis.length">
@@ -142,6 +127,62 @@
         </div>
 
         <!-- ══════════════════════════════════════════════════════
+             AUCUN GRAPHIQUE — occupe la place laissée vide quand la période
+             filtrée ne renvoie ni courbe d'évolution ni bloc de répartition,
+             même si les compteurs globaux ci-dessus restent chiffrés.
+        ══════════════════════════════════════════════════════ -->
+        <div class="col-span-12" *ngIf="aucunGraphique">
+            <app-card [border]="true">
+                <div class="st-state">
+                    <!-- Illustration de l'état vide, dans le vocabulaire du
+                         métier : une chemise ouverte — onglet, encoche de
+                         préhension, étiquette — dont il ne reste que les
+                         emplacements en pointillés. La place des documents
+                         existe, aucun n'a été classé sur la période. Teintes
+                         d'interface, pour rester discrète dans la carte. -->
+                    <div class="st-state-art" aria-hidden="true">
+                        <svg viewBox="0 0 200 156" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Dos de la chemise et son onglet -->
+                            <path d="M28 48a10 10 0 0 1 10-10h38l13 15h73a10 10 0 0 1 10 10v49H28V48z"
+                                  fill="#F1F5F9" stroke="#94A3B8" stroke-width="2.8"
+                                  stroke-linejoin="round"/>
+                            <!-- Pli de l'onglet, pour donner l'épaisseur du carton -->
+                            <path d="M89 53h83" stroke="#CBD5E1" stroke-width="2"
+                                  stroke-linecap="round"/>
+
+                            <!-- Emplacements vides : les documents attendus, absents -->
+                            <rect x="63" y="74" width="19" height="28" rx="4" fill="#FFFFFF"
+                                  stroke="#CBD5E1" stroke-width="2.2" stroke-dasharray="5 6"/>
+                            <rect x="118" y="66" width="19" height="36" rx="4" fill="#FFFFFF"
+                                  stroke="#CBD5E1" stroke-width="2.2" stroke-dasharray="5 6"/>
+
+                            <!-- Rabat avant, avec l'encoche de préhension -->
+                            <path d="M26 102h56a20 11 0 0 0 36 0h56l-12 32a8 8 0 0 1-8 5H46a8 8 0 0 1-8-5l-12-32z"
+                                  fill="#FFFFFF" stroke="#94A3B8" stroke-width="2.8"
+                                  stroke-linejoin="round"/>
+                            <!-- Nervure du rabat -->
+                            <path d="M42 120h116" stroke="#F1F5F9" stroke-width="2"
+                                  stroke-linecap="round"/>
+
+                            <!-- Étiquette -->
+                            <rect x="70" y="124" width="60" height="9" rx="4.5" fill="#E0E7FF"/>
+                        </svg>
+                    </div>
+                    <p class="st-state-title">
+                        {{ kpis.length ? 'Aucun graphique pour cette période' : 'Aucune statistique pour cette période' }}
+                    </p>
+                    <p class="st-state-text">
+                        Aucun document n'a été enregistré sur la période sélectionnée ({{ libellePeriode }}).
+                        Changez l'année ou l'intervalle de dates pour afficher des résultats.
+                    </p>
+                    <button class="st-btn st-btn-primary mt-3" (click)="reinitialiser()">
+                        Réinitialiser les filtres
+                    </button>
+                </div>
+            </app-card>
+        </div>
+
+        <!-- ══════════════════════════════════════════════════════
              ÉVOLUTION DANS LE TEMPS
         ══════════════════════════════════════════════════════ -->
         <div class="col-span-6 lg:col-span-12" *ngIf="!isloading && !enErreur && evolutionChart">
@@ -167,6 +208,7 @@
                         [plotOptions]="evolutionChart.plotOptions"
                         [markers]="evolutionChart.markers"
                         [legend]="evolutionChart.legend"
+                        [responsive]="evolutionChart.responsive"
                         [tooltip]="evolutionChart.tooltip"></apx-chart>
                 </div>
             </app-card>

@@ -19,6 +19,12 @@ import {
   ImputationFichier, ImputationMessage, ImputationPersonne, libelleTypeFichier,
   niveauPriorite,
 } from '../../imputation-api';
+import {
+  construireEtiquettes, dessinerEtiquetteCanvas, EtiquetteCourrier,
+  incrusterEtiquettePdf,
+} from '../../etiquette-courrier';
+import { EditionLocaleService, EtatEdition } from '../../../../../core/edition-locale.service';
+import { Subscription } from 'rxjs';
 
 const AUTORISER_VISIONNEUSE_EXTERNE = true;
 
@@ -74,11 +80,32 @@ export class MailDetailsComponent implements AfterViewInit, OnChanges, OnDestroy
   public reponseTexte: string = '';
   public fichiers: File[] = [];
 
+  /**
+   * Étiquette « courrier » à apposer, par identifiant de pièce. Seule la
+   * première pièce PDF de chaque message y figure (voir construireEtiquettes).
+   */
+  private etiquettes = new Map<string, EtiquetteCourrier>();
+
+  /**
+   * Édition d'une pièce Word sur le poste de l'utilisateur. L'état est tenu
+   * par le service : la carte du fil et la visionneuse affichent la même
+   * chose, même si l'aperçu est fermé puis rouvert.
+   */
+  etatsEdition = new Map<string, EtatEdition>();
+  private abosEdition = new Subscription();
+
+  /** Étiquette de la pièce actuellement ouverte, null si elle n'en porte pas. */
+  private get etiquetteCourante(): EtiquetteCourrier | null {
+    const id = this.visionneuse?.id;
+    return (id && this.etiquettes.get(id)) || null;
+  }
+
   /** Conteneur de la visionneuse, déplacé sous <body> (voir ngAfterViewInit). */
   @ViewChild('visHote', { static: true }) visHote!: ElementRef<HTMLElement>;
 
   constructor(private cdr: ChangeDetectorRef, private renderer: Renderer2,
-              private sanitizer: DomSanitizer) {
+              private sanitizer: DomSanitizer,
+              public editionLocale: EditionLocaleService) {
     pdfjsLib.GlobalWorkerOptions.workerSrc = '/assets/pdfjs/pdf.worker.mjs';
   }
 
@@ -90,9 +117,23 @@ export class MailDetailsComponent implements AfterViewInit, OnChanges, OnDestroy
    */
   ngAfterViewInit(): void {
     this.renderer.appendChild(document.body, this.visHote.nativeElement);
+
+    this.abosEdition.add(
+      this.editionLocale.etats$.subscribe(etats => {
+        this.etatsEdition = etats;
+        this.cdr.detectChanges();
+      })
+    );
+
+    // Version modifiée revenue du poste : elle est publiée dans le fil par le
+    // canal habituel, donc avec l'auteur et l'horodatage du contributeur.
+    this.abosEdition.add(
+      this.editionLocale.retour$.subscribe(retour => this.publierContribution(retour.fichier))
+    );
   }
 
   ngOnDestroy(): void {
+    this.abosEdition.unsubscribe();
     this.libererDefilement();
     if (this.visMinuteurOffice) clearTimeout(this.visMinuteurOffice);
     if (this.minuteurNouveaux) clearTimeout(this.minuteurNouveaux);
@@ -167,6 +208,21 @@ export class MailDetailsComponent implements AfterViewInit, OnChanges, OnDestroy
    */
   ngOnChanges(changements: SimpleChanges): void {
     const evolution = changements['imputation'];
+
+    // Les pièces étiquetées changent avec la conversation ET avec le fil :
+    // un message ajouté peut amener une nouvelle première pièce PDF. Le sens
+    // ARRIVE / DEPART dépend aussi de `moi`, qui peut arriver après coup.
+    if (evolution || changements['moi']) {
+      this.etiquettes = construireEtiquettes(this.imputation, this.moi);
+    }
+
+    // Autre conversation : les éditions suivies ne la concernent plus.
+    const avantUid = (evolution?.previousValue as Imputation | null)?.uid;
+    const apresUid = (evolution?.currentValue as Imputation | null)?.uid;
+    if (evolution && avantUid !== apresUid) {
+      this.editionLocale.reinitialiser();
+    }
+
     if (!evolution) return;
 
     const avant = evolution.previousValue as Imputation | null;
@@ -289,6 +345,62 @@ export class MailDetailsComponent implements AfterViewInit, OnChanges, OnDestroy
       bouts.push(`${f.nombrePages} page${f.nombrePages > 1 ? 's' : ''}`);
     }
     return bouts.filter(b => b).join(' · ');
+  }
+
+  // ══ Édition d'une pièce Word sur le poste ═══════════════════════
+
+  /** Vrai pour les pièces que le poste sait ouvrir en édition (Word). */
+  estEditableEnLocal(piece: ImputationFichier): boolean {
+    return !!piece?.url
+      && !this.conversationCloturee
+      && this.editionLocale.estEditable(piece.extension);
+  }
+
+  /** Phase courante d'une pièce : pilote l'affichage du bouton et du bandeau. */
+  phaseEdition(piece: ImputationFichier): string {
+    return this.etatsEdition.get(piece?.id)?.phase || 'inactif';
+  }
+
+  messageEdition(piece: ImputationFichier): string {
+    return this.etatsEdition.get(piece?.id)?.message || '';
+  }
+
+  editionEnCours(piece: ImputationFichier): boolean {
+    const phase = this.phaseEdition(piece);
+    return phase === 'ouverture' || phase === 'edition' || phase === 'retour';
+  }
+
+  /**
+   * Confie la pièce au poste. L'événement est arrêté ici : un clic sur la
+   * carte ouvre l'aperçu, ce qui n'est pas ce qu'on demande en cliquant sur
+   * « Modifier ».
+   */
+  modifierEnLocal(piece: ImputationFichier, event?: Event): void {
+    event?.stopPropagation();
+    if (!this.estEditableEnLocal(piece) || this.editionEnCours(piece)) return;
+
+    this.editionLocale.ouvrir(
+      {id: piece.id, nom: piece.nom, url: piece.url},
+      {imputation: this.imputation?.uid || ''}
+    );
+  }
+
+  /** Renonce à l'édition : le poste purge sa copie, la pièce redevient libre. */
+  abandonnerEdition(piece: ImputationFichier, event?: Event): void {
+    event?.stopPropagation();
+    this.editionLocale.abandonner(piece.id);
+  }
+
+  /**
+   * Publie la version revenue du poste. Le fichier porte déjà le nom que le
+   * poste lui a donné — c'est lui qui distingue les contributions entre
+   * elles, puisqu'aucun verrou n'empêche deux éditions simultanées.
+   */
+  private publierContribution(fichier: File): void {
+    this.repondre.emit({
+      texte: `Contribution déposée depuis le poste : ${fichier.name}`,
+      fichiers: [fichier],
+    });
   }
 
   // ══ Visionneuse intégrée ═════════════════════════════════════════════════
@@ -496,7 +608,13 @@ export class MailDetailsComponent implements AfterViewInit, OnChanges, OnDestroy
       const viewport = page.getViewport({scale: this.visZoomNiveau * 1.5});
       canvas.height = viewport.height;
       canvas.width = viewport.width;
-      page.render({canvasContext: canvas.getContext('2d')!, viewport}).promise.then(() => {
+      const ctx = canvas.getContext('2d')!;
+      page.render({canvasContext: ctx, viewport}).promise.then(() => {
+        // L'étiquette ne vaut que pour la première page, comme un post-it
+        // collé sur la couverture du courrier.
+        if (numero === 1 && this.etiquetteCourante) {
+          dessinerEtiquetteCanvas(ctx, this.etiquetteCourante, canvas.width, canvas.height);
+        }
         this.visChargement = false;
         this.cdr.detectChanges();
       });
@@ -578,8 +696,13 @@ export class MailDetailsComponent implements AfterViewInit, OnChanges, OnDestroy
       const viewport = page.getViewport({scale: 2});
       canvas.width = viewport.width;
       canvas.height = viewport.height;
-      return page.render({canvasContext: canvas.getContext('2d')!, viewport})
-        .promise.then(() => canvas.toDataURL('image/png'));
+      const ctx = canvas.getContext('2d')!;
+      return page.render({canvasContext: ctx, viewport}).promise.then(() => {
+        if (numero === 1 && this.etiquetteCourante) {
+          dessinerEtiquetteCanvas(ctx, this.etiquetteCourante, canvas.width, canvas.height);
+        }
+        return canvas.toDataURL('image/png');
+      });
     });
   }
 
@@ -633,7 +756,22 @@ export class MailDetailsComponent implements AfterViewInit, OnChanges, OnDestroy
     if (!fichier?.url) return;
     try {
       const reponse = await fetch(fichier.url);
-      const blob = await reponse.blob();
+      let blob = await reponse.blob();
+
+      // Copie étiquetée : le fichier archivé n'est pas touché, seule la
+      // copie remise à l'utilisateur porte le post-it. En cas d'échec
+      // (PDF chiffré, structure inhabituelle) on livre l'original plutôt
+      // que de refuser le téléchargement.
+      const etiquette = this.etiquetteCourante;
+      if (etiquette && this.visEstPdf) {
+        try {
+          const octets = await incrusterEtiquettePdf(await blob.arrayBuffer(), etiquette);
+          blob = new Blob([octets as any], {type: 'application/pdf'});
+        } catch (e) {
+          console.warn('[Étiquette courrier] incrustation impossible, original livré', e);
+        }
+      }
+
       const lien = document.createElement('a');
       lien.href = URL.createObjectURL(blob);
       lien.download = fichier.nom;

@@ -300,6 +300,10 @@
 <ng-template #cartesFichiers let-liste>
   <div class="imput-pieces">
     @for(piece of liste; track piece.id) {
+      <!-- Carte et bandeau d'édition forment un seul élément du flux : sans ce
+           bloc, le bandeau deviendrait un voisin de carte et se retrouverait
+           rattaché à la mauvaise pièce quand deux cartes partagent une ligne. -->
+      <div class="imput-piece-bloc">
       <div class="imput-piece" [class.imput-piece-cliquable]="piece.url"
            [title]="piece.url ? 'Consulter la pièce' : ''"
            (click)="ouvrirVisionneuse(piece)">
@@ -320,11 +324,49 @@
             <span class="imput-piece-detail">{{ detailFichier(piece) }}</span>
           }
         </div>
+        <!-- Édition sur le poste : réservée aux pièces Word d'une
+             conversation encore ouverte. -->
+        @if(estEditableEnLocal(piece)) {
+          @if(!editionEnCours(piece)) {
+            <button type="button" class="imput-piece-editer"
+                    title="Récupérer sur mon poste et modifier dans Word"
+                    (click)="modifierEnLocal(piece, $event)">
+              <app-feather-icon [icon]="'edit-3'"></app-feather-icon>
+              Modifier
+            </button>
+          } @else {
+            <button type="button" class="imput-piece-editer imput-piece-editer-occupe"
+                    title="Abandonner l'édition et purger la copie locale"
+                    (click)="abandonnerEdition(piece, $event)">
+              <span class="imput-edit-spin"></span>
+              {{ phaseEdition(piece) === 'ouverture' ? 'Envoi au poste…'
+                 : phaseEdition(piece) === 'retour' ? 'Récupération…'
+                 : 'Édition en cours' }}
+            </button>
+          }
+        }
+
         @if(piece.url) {
           <span class="imput-piece-ouvrir" aria-hidden="true">
             <app-feather-icon [icon]="'eye'"></app-feather-icon>
           </span>
         }
+      </div>
+
+      @if(phaseEdition(piece) === 'edition') {
+        <div class="imput-edit-note">
+          <app-feather-icon [icon]="'monitor'"></app-feather-icon>
+          Le document est ouvert sur votre poste. Fermez-le une fois vos
+          observations saisies : la nouvelle version reviendra seule dans le fil.
+        </div>
+      }
+
+      @if(phaseEdition(piece) === 'erreur') {
+        <div class="imput-edit-note imput-edit-note-erreur">
+          <app-feather-icon [icon]="'alert-triangle'"></app-feather-icon>
+          {{ messageEdition(piece) }}
+        </div>
+      }
       </div>
     }
   </div>
@@ -373,6 +415,25 @@
             <app-feather-icon [icon]="'printer'"></app-feather-icon>
           </button>
         }
+        @if(visionneuse && estEditableEnLocal(visionneuse)) {
+          <button type="button" class="vis-btn vis-btn-editer"
+                  [title]="editionEnCours(visionneuse)
+                     ? 'Abandonner l\'édition en cours'
+                     : 'Récupérer sur mon poste et modifier dans Word'"
+                  (click)="editionEnCours(visionneuse)
+                     ? abandonnerEdition(visionneuse)
+                     : modifierEnLocal(visionneuse)">
+            @if(editionEnCours(visionneuse)) {
+              <span class="imput-edit-spin"></span>
+            } @else {
+              <app-feather-icon [icon]="'edit-3'"></app-feather-icon>
+            }
+            <span class="vis-btn-texte">
+              {{ editionEnCours(visionneuse) ? 'Édition en cours' : 'Modifier sur mon poste' }}
+            </span>
+          </button>
+        }
+
         <button type="button" class="vis-btn" title="Télécharger" (click)="telecharger()">
           <app-feather-icon [icon]="'download'"></app-feather-icon>
         </button>
