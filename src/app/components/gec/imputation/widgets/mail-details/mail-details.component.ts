@@ -130,8 +130,10 @@ export class MailDetailsComponent implements AfterViewInit, OnChanges, OnDestroy
     // Version modifiée revenue du poste : elle est publiée dans le fil par le
     // canal habituel, donc avec l'auteur et l'horodatage du contributeur.
     this.abosEdition.add(
-      this.editionLocale.retour$.subscribe(
-        retour => this.publierContribution(retour.fichier, retour.commentaire))
+      this.editionLocale.retour$.subscribe(retour => {
+        this.publierContribution(retour.fichier, retour.commentaire);
+        if (retour.encoreOuvert) this.avertirDocumentEncoreOuvert();
+      })
     );
 
     // `retour$` est un Subject : rien n'est rejoué pour un abonné tardif. La
@@ -500,6 +502,26 @@ export class MailDetailsComponent implements AfterViewInit, OnChanges, OnDestroy
 
   // ── Commentaire et clôture manuelle ──────────────────────────────
 
+  /**
+   * Publication faite alors que Word tenait encore le document.
+   *
+   * Le poste a volontairement gardé sa copie — l'effacer ferait échouer le
+   * prochain enregistrement de Word. Mais plus personne ne la surveille :
+   * ce qui sera saisi après coup ne partira pas, et il faut le dire.
+   */
+  private avertirDocumentEncoreOuvert(): void {
+    Swal.fire({
+      title: 'Version publiée',
+      html: 'Le document est <b>toujours ouvert dans Word</b> sur votre poste.'
+          + '<br>Ce que vous y écrirez maintenant ne sera pas publié : fermez-le,'
+          + " puis utilisez à nouveau « Modifier » si vous avez d'autres"
+          + ' observations à porter.',
+      icon: 'info',
+      confirmButtonText: 'Compris',
+      confirmButtonColor: 'rgba(0,54,110)',
+    });
+  }
+
   /** Texte déjà saisi pour cette pièce, conservé par le service. */
   commentaireEdition(piece: ImputationFichier): string {
     return this.editionLocale.commentaire(piece?.id);
@@ -525,7 +547,9 @@ export class MailDetailsComponent implements AfterViewInit, OnChanges, OnDestroy
     Swal.fire({
       title: 'Publier cette version ?',
       html: "Le document sera repris <b>tel qu'il est enregistré</b> sur votre poste."
-          + '<br>Enregistrez dans Word (Ctrl+S) avant de confirmer.',
+          + '<br>Enregistrez dans Word (Ctrl+S) avant de confirmer.'
+          + '<br><br>Vous pouvez laisser Word ouvert : la version publiée sera'
+          + ' celle du dernier enregistrement.',
       icon: 'question',
       showCancelButton: true,
       confirmButtonText: 'Publier',

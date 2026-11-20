@@ -972,23 +972,26 @@
     cursor: not-allowed;
 }
 
-/* Mot joint à la contribution, sous le bandeau « document ouvert ». */
+/* Mot joint à la contribution, sous le bandeau « document ouvert ».
+   EMPILÉ, jamais côte à côte : la carte d'une pièce vit dans une colonne
+   étroite, et le bouton y laissait à peine cent pixels à la zone de saisie —
+   le texte d'invite s'y pliait sur cinq lignes avec un ascenseur. */
 .imput-edit-fin {
     display: flex;
-    align-items: flex-end;
+    flex-direction: column;
+    align-items: stretch;
     gap: 8px;
     margin-top: 6px;
+}
 
-    /* Sous 992px (la config Tailwind est en max-width), la zone de saisie et
-       le bouton ne tiennent plus côte à côte. */
-    @media (max-width: 991px) {
-        flex-direction: column;
-        align-items: stretch;
-    }
+.imput-edit-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
 }
 
 .imput-edit-commentaire {
-    flex: 1 1 auto;
+    width: 100%;
     min-width: 0;
     resize: vertical;
     padding: 7px 10px;
@@ -1012,8 +1015,10 @@
 .imput-edit-terminer {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 6px;
     flex: 0 0 auto;
+    white-space: nowrap;
     padding: 8px 14px;
     border: none;
     border-radius: 8px;

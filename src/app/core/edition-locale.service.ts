@@ -53,6 +53,11 @@ export interface RetourEdition {
     fichier: File;
     /** Mot de l'auteur, saisi pendant l'edition. Vide s'il n'a rien ecrit. */
     commentaire?: string;
+    /**
+     * Le poste tenait encore le document ouvert au moment de la publication :
+     * ce qui sera saisi apres coup ne partira pas. A dire a l'utilisateur.
+     */
+    encoreOuvert?: boolean;
 }
 
 /** Un sondage en cours : son minuteur, son depart, et son verrou d'appel. */
@@ -312,7 +317,9 @@ export class EditionLocaleService {
         this.majEtat(pieceId, {phase: 'retour'});
 
         try {
-            const resultat = await this.pont.appelerExtension<{ nom: string; base64: string }>('edition', {
+            const resultat = await this.pont.appelerExtension<{
+                nom: string; base64: string; encoreOuvert?: boolean;
+            }>('edition', {
                 operation: 'recuperer' as OperationEdition,
                 id: pieceId,
             }, 60000);
@@ -322,7 +329,12 @@ export class EditionLocaleService {
             const nom = resultat.nom || doc.nomFinal || doc.nom || 'document.docx';
             const commentaire = this.commentaire(pieceId);
 
-            this.retour$.next({pieceId, fichier: this.enFichier(resultat.base64, nom), commentaire});
+            this.retour$.next({
+                pieceId,
+                fichier: this.enFichier(resultat.base64, nom),
+                commentaire,
+                encoreOuvert: !!resultat.encoreOuvert,
+            });
             // Le commentaire est consomme : la piece redevient vierge pour une
             // edition suivante, qui ne doit pas heriter du mot precedent.
             this.majEtat(pieceId, {phase: 'inactif', nomLocal: nom, message: '', commentaire: ''});
