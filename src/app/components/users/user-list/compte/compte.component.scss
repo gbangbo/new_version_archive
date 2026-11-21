@@ -958,12 +958,13 @@
 
 $col-logo: 62px;
 $col-service: 150px;
+$col-role: 130px;
 $col-email: 200px;
 $col-etat: 110px;
 $col-cree: 150px;
 $col-actions: 120px;           // 2 boutons de 28px + marge + padding
 $col-name: 260px;              // largeur mini de la colonne « Nom & prénoms »
-$tt-min-width: 1052px;         // somme des colonnes -> déclenche le scroll horizontal
+$tt-min-width: 1182px;         // somme des colonnes -> déclenche le scroll horizontal
 
 .tree-table-wrap {
   display: flex;
@@ -1078,6 +1079,21 @@ $tt-min-width: 1052px;         // somme des colonnes -> déclenche le scroll hor
   font-size: 12px;
   color: #475569;
   border-right: 1px solid #F1F5F9;
+}
+
+.ttc-role {
+  width: $col-role;
+  min-width: $col-role;
+  font-size: 12px;
+  color: #475569;
+  border-right: 1px solid #F1F5F9;
+}
+
+.tt-role-tag {
+  display: inline-block;
+  color: rgba(0, 54, 110, 1);
+  font-size: 12px;
+  font-weight: 600;
 }
 
 .ttc-email {
@@ -1242,10 +1258,11 @@ $tt-min-width: 1052px;         // somme des colonnes -> déclenche le scroll hor
   $m-name: 150px;
   $m-service: 110px;
   $m-email: 150px;
+  $m-role: 100px;
   $m-etat: 80px;
   $m-cree: 84px;
   $m-actions: 96px;
-  $m-min-width: $m-logo + $m-name + $m-service + $m-email + $m-etat + $m-cree + $m-actions;
+  $m-min-width: $m-logo + $m-name + $m-service + $m-role + $m-email + $m-etat + $m-cree + $m-actions;
 
   .tree-table-header,
   .tree-table-body,
@@ -1269,6 +1286,7 @@ $tt-min-width: 1052px;         // somme des colonnes -> déclenche le scroll hor
 
   .ttc-logo    { width: $m-logo !important;    min-width: $m-logo !important; }
   .ttc-service { width: $m-service !important; min-width: $m-service !important; }
+  .ttc-role    { width: $m-role !important;    min-width: $m-role !important; }
   .ttc-email   { width: $m-email !important;   min-width: $m-email !important; }
   .ttc-etat    { width: $m-etat !important;    min-width: $m-etat !important; }
   .ttc-cree    { width: $m-cree !important;    min-width: $m-cree !important; }

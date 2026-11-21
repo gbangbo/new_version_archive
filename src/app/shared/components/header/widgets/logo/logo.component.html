@@ -1,8 +1,8 @@
 <div class="logo-wrapper">
     <a href="javascript:void(0)" [routerLink]="['/']" style="display: flex; align-items: center; gap: 12px; text-decoration: none;">
         <span class="logo-badge">
-            <img class="for-light" src="assets/images/logo/logo_apw_full.png" alt="logo">
-            <img class="for-dark"  src="assets/images/logo/logo_apw_full.png" alt="logo">
+            <!-- Logo de la societe tire de la session ; la marque APW sert de repli -->
+            <img [src]="logoSociete" (error)="logoIndisponible()" alt="logo">
         </span>
         <!-- font-weight 500 et non 600 : avec les deux faces Cocon (400 et 700),
              600 est arrondi vers le haut et tape dans le gras, trop lourd ici.

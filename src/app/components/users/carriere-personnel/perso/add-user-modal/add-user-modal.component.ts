@@ -9,7 +9,7 @@ import {NzSwitchModule} from "ng-zorro-antd/switch";
 import {Select2Module} from "ng-select2-component";
 
 @Component({
-    selector: 'app-add-user-modal',
+    selector: 'app-perso-add-user-modal',
     imports: [CommonModule, FormsModule, ReactiveFormsModule, NzSwitchModule, Select2Module],
     templateUrl: './add-user-modal.component.html',
     styleUrl: './add-user-modal.component.scss',

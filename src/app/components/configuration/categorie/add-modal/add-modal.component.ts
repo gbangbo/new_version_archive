@@ -6,8 +6,6 @@ import {Authorization} from "../../../../protect/authorization.service";
 import {HttpService} from "../../../../core/http.service";
 import Swal from "sweetalert2";
 import {NzSwitchModule} from "ng-zorro-antd/switch";
-import {HttpClient, HttpHeaders} from "@angular/common/http";
-import {decryptData, postDataCrypte} from "../../../../config/config";
 
 @Component({
     selector: 'app-add-modal',
@@ -37,9 +35,11 @@ export class AddModalComponent {
     isloading: boolean = false;
     users: any = [];
     typeAlerte: string = '';
-    title: string = `AJOUTER UNE SERIE`;
+    title: string = `Ajouter une série`;
+    // Pilote le libellé et l'icône du bouton de validation
+    isEdit: boolean = false;
 
-    constructor(private autor: Authorization, private httService: HttpService, private http: HttpClient) {
+    constructor(private autor: Authorization, private httService: HttpService) {
         this.users = this.autor.getInfosUsers();
     }
 
@@ -56,8 +56,9 @@ export class AddModalComponent {
                 parent: data?.parent,
             });
             console.log("this.validationForm ===", this.validationForm.value)
-            this.title = data?.sens == 'a' ? `AJOUT DE SERIE` : `MODIFICATION DE SERIE`
-            this.errorTexte = `Vous êtes sur le point de modifier la série « ${changes['dataLigne']?.currentValue?.name} ».`;
+            this.isEdit = data?.sens != 'a';
+            this.title = data?.sens == 'a' ? `Ajouter une série` : `Modifier la série`
+            this.errorTexte = `Vous êtes sur le point ${data?.sens == 'a' ? `d’ajouter une série à` : `de modifier la série`} « ${changes['dataLigne']?.currentValue?.name} ».`;
             this.typeAlerte = 'prim';
         }
     }
@@ -101,9 +102,9 @@ export class AddModalComponent {
             .catch((err) => {
                 this.isloading = false;
                 console.log("err", err)
-                this.isloading = false;
-                this.errorTexte = err?.error?.err?.message || "Une erreur est survenue !"
-                this.isloading = false;
+                this.errorTexte = err?.error?.err?.message || err?.error?.message || "Une erreur est survenue !";
+                // Sans ça, l'erreur s'affichait dans le bandeau d'information bleu
+                this.typeAlerte = 'danger';
             });
     }
 

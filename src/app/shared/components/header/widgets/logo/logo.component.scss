@@ -14,9 +14,22 @@
   justify-content: center;
   flex-shrink: 0;
 
+  // Les logos clients arrivent de tout : PNG transparent, JPEG sur fond blanc,
+  // photo recadree. Une pastille blanche arrondie les met tous dans le meme
+  // cadre et evite le rectangle blanc brut pose sur le bleu de la sidebar.
+  width: 34px;
+  height: 34px;
+  padding: 3px;
+  border-radius: 9px;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.22);
+  overflow: hidden;
+
   img {
-    width: 23px;
-    height: auto;
+    width: 100%;
+    height: 100%;
     object-fit: contain;
+    display: block;
+    border-radius: 6px;
   }
 }

@@ -30,6 +30,21 @@
                     <!-- Zone défilante : tout le contenu au-dessus de la barre d'actions -->
                     <div class="form-scroll">
 
+                    <!-- Bandeau : on modifie un document existant, pas une création -->
+                    <div class="edit-banner" *ngIf="isEdit">
+                        <span class="edit-banner-icone"><i class="fa-solid fa-pen-to-square"></i></span>
+                        <div class="edit-banner-texte">
+                            <strong>Modification d'un document existant</strong>
+                            <span class="edit-banner-ref" *ngIf="validationForm.value.code_docs">
+                                N° {{ validationForm.value.code_docs }}
+                            </span>
+                        </div>
+                        <button type="button" class="edit-banner-sortie" (click)="resetAfterSave()"
+                                title="Abandonner la modification et repartir sur un nouveau document">
+                            <i class="fa-solid fa-xmark"></i> Quitter
+                        </button>
+                    </div>
+
                     <!-- Section : Informations générales -->
                     <div class="form-section">
                         <div class="form-section-label">
@@ -624,9 +639,22 @@
                         </div>
                     </div>
 
+                    <!-- Pendant le chargement : le panneau existe déjà, avec son spinner -->
+                    <div class="upload-section tree-section" *ngIf="arbreEnChargement">
+                        <div class="upload-section-label">
+                            <i class="fa-solid fa-sitemap"></i>
+                            <span class="section-titre">Plan de classement + fichiers importés</span>
+                        </div>
+                        <div class="upload-section-body tree-body tree-chargement">
+                            <div class="tree-spinner"></div>
+                            <p class="tree-chargement-texte">Chargement des fichiers…</p>
+                            <p class="tree-chargement-sous">Plan de classement et pièces du document</p>
+                        </div>
+                    </div>
+
                     <!-- Section : Fichiers importés -->
                     <div class="upload-section tree-section"
-                         *ngIf="treeData?.length"
+                         *ngIf="!arbreEnChargement && treeData?.length"
                          [class.section-pliee]="treeReplie">
                         <div class="upload-section-label section-pliable"
                              (click)="treeReplie = !treeReplie"

@@ -7,8 +7,6 @@ import {HttpService} from "../../../../core/http.service";
 import Swal from "sweetalert2";
 import {ImageUploadComponent} from "../../../users/widgets/image-upload/image-upload.component";
 import {NzSwitchModule} from "ng-zorro-antd/switch";
-import {HttpClient, HttpHeaders} from "@angular/common/http";
-import {decryptData, postDataCrypte} from "../../../../config/config";
 
 @Component({
     selector: 'app-societe-modal',
@@ -46,9 +44,11 @@ export class SocieteModalComponent {
     users: any = [];
     selectedFile: File | null = null;
     typeAlerte: string = '';
-    title: string = 'AJOUTER UNE SOCIETE';
+    title: string = 'Ajouter une société';
+    // Pilote le libellé et l'icône du bouton de validation
+    isEdit: boolean = false;
 
-    constructor(private autor: Authorization, private httService: HttpService, private http: HttpClient) {
+    constructor(private autor: Authorization, private httService: HttpService) {
         this.users = this.autor.getInfosUsers();
     }
 
@@ -74,6 +74,8 @@ export class SocieteModalComponent {
         const data = changes['dataLigne']?.currentValue;
         console.log("data ====", data)
         if (data && Object.keys(data).length > 0) {
+            // En modification, on affiche le logo déjà enregistré
+            this.imageUrl = data.sens == 'a' ? '' : (data?.logo || '');
             this.validationForm.patchValue({
                 raison_sociale: data.sens == 'a' ? '' : data?.name,
                 telephone: data.sens == 'a' ? '' : data?.telephone,
@@ -101,8 +103,9 @@ export class SocieteModalComponent {
             // }
 
             console.log("this.validationForm ===", this.validationForm.value)
-            this.title = data?.sens == 'a' ? `AJOUT DE SOUS-SOCIETE` : `MODIFICATION DE  SOUS-SOCIETE`
-            this.errorTexte = `Vous êtes sur le point ${data?.sens == 'a' ? `d’ajouter un` : `de modifier le`} sous-société  ${data?.sens == 'a' ? `à la société` : ``} « ${changes['dataLigne']?.currentValue?.name} ».`;
+            this.isEdit = data?.sens != 'a';
+            this.title = data?.sens == 'a' ? `Ajouter une sous-société` : `Modifier la sous-société`
+            this.errorTexte = `Vous êtes sur le point ${data?.sens == 'a' ? `d’ajouter un` : `de modifier la`} sous-société  ${data?.sens == 'a' ? `à la société` : ``} « ${changes['dataLigne']?.currentValue?.name} ».`;
             this.typeAlerte = 'prim';
         }
     }
@@ -115,73 +118,89 @@ export class SocieteModalComponent {
         }
 
         this.isloading = true;
-        let payload = {
+        const payload = {
             ...this.validationForm.value,
-            "action": this.validationForm.value.action,
+            "action": this.validationForm.value.action || '1',
             "double_auth": this.validationForm.value.double_auth ? 1 : 0,
             "parent": this.validationForm.value.parent || '',
             "idsociete": this.users?.datasociete?.uid,
-        }
-        console.log("payload ====", payload)
+        };
+
+        // 1) Les données du formulaire, par la passerelle chiffrée.
         let rPons: any = {};
         try {
-            let res: any = await this.newPostData(`${environment.api_url}auth/:savesociete`,
-                {
-                    data: postDataCrypte(payload)
-                }, this.users?.access_token);
-            rPons = decryptData(res.data);
-            if (!rPons.status) {
-                this.errorTexte = `${rPons.message || 'Une erreur est survenue.'}`;
-                this.typeAlerte = 'danger';
-                return
-            }
+            const res: any = await this.httService
+                .postData(`${environment.api_url}auth/:savesociete`, payload, this.users?.access_token || '')
+                .toPromise();
+            rPons = res?.body || {};
         } catch (e: any) {
             this.isloading = false;
-            this.errorTexte = e?.error?.message || "Une erreur est survenue !";
+            this.errorTexte = e?.error?.err?.message || e?.error?.message || "Une erreur est survenue !";
             this.typeAlerte = 'danger';
-            return
+            return;
         }
 
+        if (!rPons?.status) {
+            this.isloading = false;
+            this.errorTexte = `${rPons?.message || 'Une erreur est survenue.'}`;
+            this.typeAlerte = 'danger';
+            return;
+        }
+
+        const societeUid = rPons?.data?.uid || this.validationForm.value.uid || '';
+        const libelle = rPons?.message || 'La société a bien été enregistrée.';
+
+        // 2) Aucun logo choisi : il n'y a que le formulaire à annoncer.
         if (!this.selectedFile) {
+            this.isloading = false;
             this.closeModal(true);
             Swal.fire({
-                title: rPons?.message,
+                title: 'Enregistrement effectué',
+                text: `${libelle} Aucun logo n'a été sélectionné.`,
                 icon: 'success',
                 confirmButtonText: 'OK'
-            })
-            return
+            });
+            return;
         }
 
+        // 3) Le logo passe par la même passerelle que le reste : l'appel direct
+        //    vers URL_API était bloqué par CORS depuis le navigateur.
         const formData = new FormData();
-        formData.append('societe_uid', rPons.data.uid);
-        if (this.selectedFile) {
-            formData.append('logo', this.selectedFile);
+        formData.append('societe_uid', societeUid);
+        formData.append('logo', this.selectedFile, this.selectedFile.name);
+
+        let logoOk = false;
+        let logoMessage = '';
+        try {
+            const resLogo: any = await this.httService
+                .postDataMultipart(`${environment.api_url}auth/:save-logo-societe`, formData, this.users?.access_token || '')
+                .toPromise();
+            logoOk = !!(resLogo?.body?.status || resLogo?.body?.success);
+            logoMessage = resLogo?.body?.message || '';
+        } catch (e: any) {
+            logoMessage = e?.error?.err?.message || e?.error?.message || '';
         }
 
-        this.isloading = true;
-        const headers = new HttpHeaders({
-            Authorization: `Bearer ${this.users?.access_token}`
-        });
-        this.http.post(`${environment.URL_API}auth/save-logo-societe`, formData, {headers}).subscribe({
-            next: (res: any) => {
-                console.log(res)
-                this.isloading = false;
-                if (res.success) {
-                    this.closeModal(true);
-                    Swal.fire({
-                        title: rPons?.message,
-                        icon: 'success',
-                        confirmButtonText: 'OK'
-                    })
-                }
-            },
-            error: (err) => {
-                this.isloading = false;
-                this.errorTexte = err?.error?.err?.message || "Une erreur est survenue !";
-                this.typeAlerte = 'danger';
-            }
-        });
+        this.isloading = false;
+        // La société existe déjà côté serveur : on ferme et on rafraîchit même
+        // si le logo a échoué, sinon un nouvel envoi la créerait en double.
+        this.closeModal(true);
 
+        if (logoOk) {
+            Swal.fire({
+                title: 'Enregistrement effectué',
+                text: `${libelle} Le logo a également été enregistré.`,
+                icon: 'success',
+                confirmButtonText: 'OK'
+            });
+        } else {
+            Swal.fire({
+                title: 'Enregistrement partiel',
+                text: `${libelle} En revanche, le logo n'a pas pu être enregistré${logoMessage ? ` : ${logoMessage}` : ''}. Reprenez-le en modifiant la société.`,
+                icon: 'warning',
+                confirmButtonText: 'OK'
+            });
+        }
     }
 
     closeModal(e?: boolean) {
@@ -195,23 +214,5 @@ export class SocieteModalComponent {
 
     onImageRemoved(): void {
         this.selectedFile = null;
-    }
-
-
-    newPostData(url: string, payload: any, token: any) {
-        const headers = new HttpHeaders({
-            Authorization: `Bearer ${token}`
-        });
-        return new Promise((resolve, reject) => {
-            this.http.post(url, payload, {headers})
-                .subscribe(
-                    (data) => {
-                        resolve(data)
-                    },
-                    (err) => {
-                        reject(err)
-                    }
-                )
-        })
     }
 }

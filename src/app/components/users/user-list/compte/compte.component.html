@@ -105,6 +105,15 @@
                                                       [class.tt-sort-active]="sortKey === 'libelle_service' && sortOrder === 'desc'">↓</span>
                                             </span>
                                         </div>
+                                        <div class="ttc-role" (click)="sortBy('libelle_role')">
+                                            Rôle
+                                            <span class="tt-sort-icons">
+                                                <span class="tt-sort-up"
+                                                      [class.tt-sort-active]="sortKey === 'libelle_role' && sortOrder === 'asc'">↑</span>
+                                                <span class="tt-sort-down"
+                                                      [class.tt-sort-active]="sortKey === 'libelle_role' && sortOrder === 'desc'">↓</span>
+                                            </span>
+                                        </div>
                                         <div class="ttc-email" (click)="sortBy('emailAgent')">
                                             Email
                                             <span class="tt-sort-icons">
@@ -142,6 +151,11 @@
                                             </div>
                                             <div class="ttc-service">
                                                 <span [innerHTML]="highlightMatch(row.libelle_service, searchValue)"></span>
+                                            </div>
+                                            <div class="ttc-role">
+                                                <span class="tt-role-tag" *ngIf="row.libelle_role"
+                                                      [innerHTML]="highlightMatch(row.libelle_role, searchValue)"></span>
+                                                <span *ngIf="!row.libelle_role">—</span>
                                             </div>
                                             <div class="ttc-email">
                                                 <span [innerHTML]="highlightMatch(row.emailAgent, searchValue)"></span>

@@ -32,7 +32,10 @@
                                             <div>
                                                 <span class="op-toolbar-label">JOURNAL DES HISTORIQUES</span>
                                                 <span class="op-toolbar-count">
-                                                    {{ rows.length || 0 }} entrée(s)
+                                                    {{ total || 0 }} entrée(s)
+                                                    <ng-container *ngIf="nbPages > 1">
+                                                        — page {{ pageIndex }} / {{ nbPages }}
+                                                    </ng-container>
                                                 </span>
                                             </div>
                                         </div>
@@ -51,10 +54,10 @@
 
                                         <!-- ── Export (menu déroulant) ── -->
                                         <div class="op-export" (click)="$event.stopPropagation()">
-                                            <button class="op-btn op-btn-outline" [disabled]="!rows.length"
+                                            <button class="op-btn op-btn-outline" [disabled]="!rows.length || isExporting"
                                                     [class.active]="exportOpen"
                                                     (click)="toggleExport($event)">
-                                                <i class="fa-solid fa-file-export"></i>
+                                                <i class="fa-solid" [ngClass]="isExporting ? 'fa-circle-notch fa-spin' : 'fa-file-export'"></i>
                                                 <span class="btn-label">Exporter</span>
                                                 <i class="fa-solid fa-chevron-down op-export-caret" [class.up]="exportOpen"></i>
                                             </button>
@@ -154,130 +157,181 @@
                                 </div>
 
                                 <!-- ══ TABLE ════════════════════════════════════ -->
-                                <div class="overflow-x-auto support-ticket-table custom-scrollbar">
-                                    <nz-table
-                                        #nzTable
-                                        [nzData]="rows"
-                                        [nzPageSize]="10"
-                                        [nzShowPagination]="true"
-                                        [nzShowTotal]="totalTemplate"
-                                        nzShowSizeChanger
-                                        nzBordered
-                                        nzSize="small"
-                                        [nzNoResult]="emptyTpl"
-                                    >
-                                        <thead>
-                                        <tr>
-                                            <th nzWidth="170px"
-                                                nzColumnKey="entite"
-                                                [nzSortFn]="sortFns.entite"
-                                                [nzSortDirections]="['ascend','descend',null]">
-                                                Entité
-                                            </th>
-                                            <th nzWidth="165px"
-                                                nzColumnKey="numero_doc"
-                                                [nzSortFn]="sortFns.numeroDoc"
-                                                [nzSortDirections]="['ascend','descend',null]">
-                                                Numéro doc.
-                                            </th>
-                                            <th nzWidth="150px"
-                                                nzColumnKey="direction"
-                                                [nzSortFn]="sortFns.direction"
-                                                [nzSortDirections]="['ascend','descend',null]">
-                                                Direction
-                                            </th>
-                                            <th nzWidth="150px"
-                                                nzColumnKey="service"
-                                                [nzSortFn]="sortFns.service"
-                                                [nzSortDirections]="['ascend','descend',null]"
-                                                [nzFilterFn]="filterService"
-                                                [nzFilters]="filtersService">
-                                                Service
-                                            </th>
-                                            <th nzWidth="120px" nzAlign="center"
-                                                nzColumnKey="type_doc"
-                                                [nzSortFn]="sortFns.typeDoc"
-                                                [nzSortDirections]="['ascend','descend',null]">
-                                                Type de doc.
-                                            </th>
-                                            <!-- Colonne principale : le libellé de l'action -->
-                                            <th nzWidth="420px" class="col-action" nzColumnKey="action_logs">
-                                                Action
-                                            </th>
-                                            <th nzWidth="160px"
-                                                nzColumnKey="par_qui"
-                                                [nzSortFn]="sortFns.parQui"
-                                                [nzSortDirections]="['ascend','descend',null]">
-                                                Par qui ?
-                                            </th>
-                                            <th nzWidth="145px"
-                                                nzColumnKey="date"
-                                                [nzSortFn]="sortFns.date"
-                                                [nzSortDirections]="['descend','ascend',null]">
-                                                Date d'action
-                                            </th>
-                                            <th nzWidth="110px" nzAlign="center" nzColumnKey="autorise">
-                                                Autorisé
-                                            </th>
-                                        </tr>
-                                        </thead>
+                                <!-- Même trame que /records-management/type-de-document :
+                                     en-tête collant, lignes en flex, pied avec pagination.
+                                     Ici la pagination est servie par l'API (total / page /
+                                     page_size), le tri joue sur la page affichée. -->
+                                <div class="tt-scroll-shell" [class.tt-more-right]="hScrollMore">
+                                    <div class="tree-table-wrap" #tableWrap (scroll)="syncHScroll()">
 
-                                        <tbody>
-                                        <tr *ngFor="let row of nzTable.data" class="op-table-row">
-                                            <!-- Entité -->
-                                            <td>
-                                                <span class="cell-text cell-wrap">{{ row.entite || '—' }}</span>
-                                            </td>
-                                            <!-- Numéro doc. -->
-                                            <td>
-                                                <span class="cell-text cell-wrap">{{ row.numero_doc || '—' }}</span>
-                                            </td>
-                                            <!-- Direction -->
-                                            <td>
-                                                <span class="cell-text cell-wrap">{{ row.direction || '—' }}</span>
-                                            </td>
-                                            <!-- Service -->
-                                            <td>
-                                                <span class="cell-text cell-wrap">{{ row.service || '—' }}</span>
-                                            </td>
-                                            <!-- Type de doc. -->
-                                            <td nzAlign="center">
-                                                <span class="cell-text cell-wrap">{{ row.type_doc || '—' }}</span>
-                                            </td>
-                                            <!-- Action (libellé du log) — colonne principale -->
-                                            <td class="col-action">
-                                                <span class="cell-text cell-wrap cell-action">{{ row.action_logs || '—' }}</span>
-                                            </td>
-                                            <!-- Par qui ? -->
-                                            <td>
-                                                <span class="cell-text cell-wrap">{{ row.par_qui || '—' }}</span>
-                                            </td>
-                                            <!-- Date d'action -->
-                                            <td>
-                                                <span class="cell-text cell-wrap">{{ row.date || '—' }}</span>
-                                            </td>
-                                            <!-- Autorisé -->
-                                            <td nzAlign="center">
-                                                <span class="cell-text cell-wrap">{{ row.autorise || '—' }}</span>
-                                            </td>
-                                        </tr>
-                                        </tbody>
-                                    </nz-table>
+                                        <!-- Entête colonnes -->
+                                        <div class="tree-table-header">
+                                            <div class="ttc-entite" (click)="sortBy('entite')">
+                                                Entité
+                                                <span class="tt-sort-icons">
+                                                    <span class="tt-sort-up"
+                                                          [class.tt-sort-active]="sortKey === 'entite' && sortOrder === 'asc'">↑</span>
+                                                    <span class="tt-sort-down"
+                                                          [class.tt-sort-active]="sortKey === 'entite' && sortOrder === 'desc'">↓</span>
+                                                </span>
+                                            </div>
+                                            <div class="ttc-numdoc" (click)="sortBy('numero_doc')">
+                                                Numéro doc.
+                                                <span class="tt-sort-icons">
+                                                    <span class="tt-sort-up"
+                                                          [class.tt-sort-active]="sortKey === 'numero_doc' && sortOrder === 'asc'">↑</span>
+                                                    <span class="tt-sort-down"
+                                                          [class.tt-sort-active]="sortKey === 'numero_doc' && sortOrder === 'desc'">↓</span>
+                                                </span>
+                                            </div>
+                                            <div class="ttc-direction" (click)="sortBy('direction')">
+                                                Direction
+                                                <span class="tt-sort-icons">
+                                                    <span class="tt-sort-up"
+                                                          [class.tt-sort-active]="sortKey === 'direction' && sortOrder === 'asc'">↑</span>
+                                                    <span class="tt-sort-down"
+                                                          [class.tt-sort-active]="sortKey === 'direction' && sortOrder === 'desc'">↓</span>
+                                                </span>
+                                            </div>
+                                            <div class="ttc-service" (click)="sortBy('service')">
+                                                Service
+                                                <span class="tt-sort-icons">
+                                                    <span class="tt-sort-up"
+                                                          [class.tt-sort-active]="sortKey === 'service' && sortOrder === 'asc'">↑</span>
+                                                    <span class="tt-sort-down"
+                                                          [class.tt-sort-active]="sortKey === 'service' && sortOrder === 'desc'">↓</span>
+                                                </span>
+                                            </div>
+                                            <div class="ttc-typedoc" (click)="sortBy('type_doc')">
+                                                Type de doc.
+                                                <span class="tt-sort-icons">
+                                                    <span class="tt-sort-up"
+                                                          [class.tt-sort-active]="sortKey === 'type_doc' && sortOrder === 'asc'">↑</span>
+                                                    <span class="tt-sort-down"
+                                                          [class.tt-sort-active]="sortKey === 'type_doc' && sortOrder === 'desc'">↓</span>
+                                                </span>
+                                            </div>
+                                            <div class="ttc-action" (click)="sortBy('action_logs')">
+                                                Action
+                                                <span class="tt-sort-icons">
+                                                    <span class="tt-sort-up"
+                                                          [class.tt-sort-active]="sortKey === 'action_logs' && sortOrder === 'asc'">↑</span>
+                                                    <span class="tt-sort-down"
+                                                          [class.tt-sort-active]="sortKey === 'action_logs' && sortOrder === 'desc'">↓</span>
+                                                </span>
+                                            </div>
+                                            <div class="ttc-parqui" (click)="sortBy('par_qui')">
+                                                Par qui ?
+                                                <span class="tt-sort-icons">
+                                                    <span class="tt-sort-up"
+                                                          [class.tt-sort-active]="sortKey === 'par_qui' && sortOrder === 'asc'">↑</span>
+                                                    <span class="tt-sort-down"
+                                                          [class.tt-sort-active]="sortKey === 'par_qui' && sortOrder === 'desc'">↓</span>
+                                                </span>
+                                            </div>
+                                            <div class="ttc-date" (click)="sortBy('ts')">
+                                                Date d'action
+                                                <span class="tt-sort-icons">
+                                                    <span class="tt-sort-up"
+                                                          [class.tt-sort-active]="sortKey === 'ts' && sortOrder === 'asc'">↑</span>
+                                                    <span class="tt-sort-down"
+                                                          [class.tt-sort-active]="sortKey === 'ts' && sortOrder === 'desc'">↓</span>
+                                                </span>
+                                            </div>
+                                            <div class="ttc-autorise">Autorisé</div>
+                                        </div>
+
+                                        <!-- Lignes -->
+                                        <div class="tree-table-body">
+                                            <div class="tt-row" *ngFor="let row of rows">
+                                                <div class="ttc-entite">
+                                                    <span class="tt-name-text tt-parent">{{ row.entite || '—' }}</span>
+                                                </div>
+                                                <div class="ttc-numdoc">{{ row.numero_doc || '—' }}</div>
+                                                <div class="ttc-direction">{{ row.direction || '—' }}</div>
+                                                <div class="ttc-service">{{ row.service || '—' }}</div>
+                                                <div class="ttc-typedoc">{{ row.type_doc || '—' }}</div>
+                                                <div class="ttc-action">{{ row.action_logs || '—' }}</div>
+                                                <div class="ttc-parqui">{{ row.par_qui || '—' }}</div>
+                                                <div class="ttc-date">{{ row.date || '—' }}</div>
+                                                <div class="ttc-autorise">{{ row.autorise || '—' }}</div>
+                                            </div>
+
+                                            <!-- Empty state -->
+                                            <div *ngIf="!isloading && !rows.length" class="op-empty-state">
+                                                <app-feather-icon class="icon-inbox" [icon]="'inbox'"></app-feather-icon>
+                                                <span>Aucun historique trouvé !</span>
+                                                <small *ngIf="searchValue">
+                                                    Aucun résultat pour « {{ searchValue }} »
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
 
-                                <ng-template #totalTemplate let-total>
-                                    Total : <strong>{{ total }}</strong> enregistrement(s)
-                                </ng-template>
+                                <!-- Ascenseur horizontal dessiné (visible en permanence) -->
+                                <div class="tt-hscroll" *ngIf="hScrollVisible" #hBar
+                                     (pointerdown)="onBarPointerDown($event)">
+                                    <div class="tt-hscroll-thumb"
+                                         [style.width.px]="thumbWidth"
+                                         [style.left.px]="thumbLeft"></div>
+                                </div>
 
-                                <ng-template #emptyTpl>
-                                    <div class="op-empty-state">
-                                        <app-feather-icon class="icon-inbox" [icon]="'inbox'"></app-feather-icon>
-                                        <span>Aucun historique trouvé !</span>
-                                        <small *ngIf="searchValue">
-                                            Aucun résultat pour « {{ searchValue }} »
-                                        </small>
+                                <!-- Pied : total + pagination serveur -->
+                                <div class="tree-table-footer">
+                                    <span class="tt-total">
+                                        Total : <strong>{{ total }}</strong> enregistrement(s)
+                                    </span>
+
+                                    <div class="tt-pager" *ngIf="total > 0">
+                                        <select class="tt-pager-taille"
+                                                [ngModel]="pageSize"
+                                                (ngModelChange)="changerTaille($event)"
+                                                title="Lignes par page">
+                                            <option *ngFor="let t of taillesPage" [ngValue]="t">{{ t }} / page</option>
+                                        </select>
+
+                                        <!-- Première page -->
+                                        <button class="tt-pager-btn" type="button"
+                                                [disabled]="pageIndex <= 1"
+                                                (click)="allerPage(1)"
+                                                title="Première page">
+                                            <i class="fa-solid fa-angles-left"></i>
+                                        </button>
+
+                                        <!-- Page précédente -->
+                                        <button class="tt-pager-btn" type="button"
+                                                [disabled]="pageIndex <= 1"
+                                                (click)="allerPage(pageIndex - 1)"
+                                                title="Page précédente">
+                                            <i class="fa-solid fa-chevron-left"></i>
+                                        </button>
+
+                                        <!-- Numéros de page : 1 2 3 … 67 -->
+                                        <ng-container *ngFor="let p of pagesAffichees; trackBy: trackPage">
+                                            <span class="tt-pager-sep" *ngIf="p.sep">…</span>
+                                            <button class="tt-pager-num" type="button" *ngIf="!p.sep"
+                                                    [class.active]="p.num === pageIndex"
+                                                    (click)="allerPage(p.num)">{{ p.num }}</button>
+                                        </ng-container>
+
+                                        <!-- Page suivante -->
+                                        <button class="tt-pager-btn" type="button"
+                                                [disabled]="pageIndex >= nbPages"
+                                                (click)="allerPage(pageIndex + 1)"
+                                                title="Page suivante">
+                                            <i class="fa-solid fa-chevron-right"></i>
+                                        </button>
+
+                                        <!-- Dernière page -->
+                                        <button class="tt-pager-btn" type="button"
+                                                [disabled]="pageIndex >= nbPages"
+                                                (click)="allerPage(nbPages)"
+                                                title="Dernière page">
+                                            <i class="fa-solid fa-angles-right"></i>
+                                        </button>
                                     </div>
-                                </ng-template>
+                                </div>
 
                             </div>
                         </div>

@@ -291,185 +291,6 @@
 }
 
 // ══════════════════════════════════════════════════════════
-// TABLE — collé à la barre d'outils (aucun vide au-dessus de l'entête)
-// ══════════════════════════════════════════════════════════
-:host ::ng-deep {
-  .ant-table-wrapper,
-  .ant-spin-nested-loading,
-  .ant-spin-container,
-  .ant-table,
-  .ant-table-container,
-  .ant-table-content,
-  nz-table-inner-default,
-  nz-table-inner-scroll {
-    margin-top: 0 !important;
-    padding-top: 0 !important;
-  }
-
-  nz-table-inner-default,
-  nz-table-inner-scroll { display: block; }
-
-  .ant-table-content > table,
-  .ant-table table { margin-top: 0 !important; }
-
-  // Reliquat d'entête flottant (mode nzScroll, désormais inutilisé ici)
-  .ant-table-header { display: none !important; }
-}
-
-// ══════════════════════════════════════════════════════════
-// TABLE HEADERS
-// ══════════════════════════════════════════════════════════
-::ng-deep .ant-table-thead > tr > th {
-  font-size: 12px !important;
-  font-weight: 600 !important;
-  color: #374151 !important;
-  background: #F1F5F9 !important;
-  padding: 10px 12px !important;
-  border-bottom: 1px solid #E2E8F0 !important;
-  border-right: 1px solid #E2E8F0 !important;
-  white-space: nowrap !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-}
-
-::ng-deep .ant-table-column-sorters {
-  display: flex !important;
-  align-items: center !important;
-  gap: 4px;
-  min-width: 0 !important;
-}
-
-::ng-deep .ant-table-column-title {
-  flex: 1 1 auto !important;
-  min-width: 0 !important;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-::ng-deep .ant-table-column-has-sorters:hover { background: #E8F0FE !important; }
-
-::ng-deep .ant-table-column-sorter-up.active .anticon,
-::ng-deep .ant-table-column-sorter-down.active .anticon { color: hsl(208, 67%, 24%) !important; }
-
-::ng-deep .ant-table-filter-trigger { color: #CBD5E1; font-size: 12px !important; }
-::ng-deep .ant-table-filter-trigger.active { color: hsl(208, 67%, 24%) !important; }
-
-::ng-deep .ant-table-thead span::after { content: none !important; }
-::ng-deep table thead tr th span::before { content: none !important; }
-::ng-deep table thead tr th span { right: 0px !important; }
-
-// ══════════════════════════════════════════════════════════
-// TABLE BODY CELLS
-// ══════════════════════════════════════════════════════════
-:host ::ng-deep .ant-table-tbody > tr > td {
-  font-size: 12px !important;
-  color: #374151 !important;
-  padding: 6px 12px !important;
-  vertical-align: middle !important;
-  border-bottom: 1px solid #F1F5F9 !important;
-  border-right: 1px solid #F1F5F9 !important;
-  transition: background 0.12s;
-}
-
-:host ::ng-deep .ant-table-thead > tr > th { padding: 8px 12px !important; }
-
-// Lignes alternées
-::ng-deep .ant-table-tbody > tr:nth-child(even) > td { background: #FAFBFC !important; }
-
-// Hover ligne
-.op-table-row:hover td,
-::ng-deep .ant-table-tbody > tr:hover > td { background: #EFF6FF !important; }
-
-// ── Textes cellules ──
-.cell-text {
-  display: block;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.cell-wrap {
-  white-space: normal !important;
-  // Coupe d'abord aux espaces ; ne casse un mot que s'il est vraiment trop long
-  word-break: normal;
-  overflow-wrap: break-word;
-  overflow: visible !important;
-  text-overflow: unset !important;
-  line-height: 1.4;
-}
-
-// Colonne « Action » : la plus riche en information
-.cell-action {
-  color: #1E293B;
-}
-
-// Neutralise les min-width hérités du template DataTables (.support-ticket-table),
-// qui écrasaient la colonne Action au profit des 5 premières colonnes.
-:host ::ng-deep .support-ticket-table {
-  thead, tbody {
-    tr {
-      th, td {
-        &:first-child,
-        &:nth-child(2),
-        &:nth-child(3),
-        &:nth-child(4),
-        &:nth-child(5) {
-          min-width: 0 !important;
-        }
-      }
-    }
-  }
-}
-
-// Largeur minimale garantie pour la colonne Action
-:host ::ng-deep .col-action {
-  min-width: 380px !important;
-}
-
-// ══════════════════════════════════════════════════════════
-// SCROLLBAR
-// ══════════════════════════════════════════════════════════
-::ng-deep .ant-table-body {
-  scrollbar-width: thin;
-  scrollbar-color: #E2E8F0 transparent;
-
-  &::-webkit-scrollbar { height: 5px; width: 5px; }
-
-  &::-webkit-scrollbar-thumb {
-    background: #CBD5E1;
-    border-radius: 4px;
-    &:hover { background: #94A3B8; }
-  }
-}
-
-// ══════════════════════════════════════════════════════════
-// PAGINATION
-// ══════════════════════════════════════════════════════════
-::ng-deep .ant-table-pagination {
-  padding: 10px 20px !important;
-  margin: 0 !important;
-  border-top: 1px solid #E8EDF2;
-  background: #F8FAFC;
-  // La table défile horizontalement : on épingle la pagination sur la zone
-  // visible pour qu'elle occupe toujours toute la largeur affichée.
-  position: sticky;
-  left: 0;
-  z-index: 2;
-}
-
-::ng-deep .ant-pagination-total-text {
-  font-size: 12px;
-  color: #64748B;
-
-  strong { color: #0F172A; font-weight: 700; }
-}
-
-::ng-deep .ant-empty-normal { display: none; }
-
-::ng-deep .ant-tag { text-align: center; }
-
-// ══════════════════════════════════════════════════════════
 // EMPTY STATE
 // ══════════════════════════════════════════════════════════
 .op-empty-state {
@@ -500,22 +321,403 @@
   opacity: 0.5;
 }
 
-:host ::ng-deep .ant-table-tbody > tr > td:has(.op-empty-state) {
-  padding: 0 !important;
-  text-align: center !important;
-  width: 100% !important;
-}
+// ══════════════════════════════════════════════════════════
+// TABLE « tree-table » — même trame que /records-management/type-de-document
+// ══════════════════════════════════════════════════════════
+$col-entite: 170px;
+$col-numdoc: 150px;
+$col-direction: 160px;
+$col-service: 160px;
+$col-typedoc: 110px;
+$col-action: 320px;            // colonne principale : le libellé du log
+$col-parqui: 150px;
+$col-date: 140px;
+$col-autorise: 100px;
+$tt-min-width: 1460px;         // somme des colonnes -> déclenche le scroll horizontal
 
-// ══════════════════════════════════════════════════════════
-// RESPONSIVE
-// ══════════════════════════════════════════════════════════
-@media (max-width: 768px) {
-  :host ::ng-deep .ant-table-tbody > tr > td,
-  ::ng-deep .ant-table-thead > tr > th {
-    font-size: 11px !important;
-    padding: 7px 8px !important;
+.tree-table-wrap {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  border-top: 1px solid #E2E8F0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+
+  &::-webkit-scrollbar {
+    height: 0;                 // remplacée par .tt-hscroll, toujours visible
   }
 }
+
+// ── Header ────────────────────────────────
+.tree-table-header {
+  display: flex;
+  align-items: center;
+  padding: 0;
+  background: #F1F5F9;
+  border-bottom: 1px solid #E2E8F0;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #374151;
+  min-height: 34px;
+  min-width: $tt-min-width;
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  user-select: none;
+
+  > div {
+    padding: 0 10px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    height: 34px;
+    white-space: nowrap;
+    border-right: 1px solid #E2E8F0;
+
+    &:last-child {
+      border-right: none;
+    }
+  }
+
+  > div[class^='ttc-']:not(.ttc-autorise) {
+    cursor: pointer;
+
+    &:hover {
+      background: #E2E8F0;
+    }
+  }
+}
+
+// ── Body ──────────────────────────────────
+.tree-table-body {
+  overflow: visible;           // le défilement est géré par .tree-table-wrap
+  min-width: $tt-min-width;
+}
+
+.tt-row {
+  display: flex;
+  align-items: stretch;
+  min-height: 34px;
+  border-bottom: 1px solid #F1F5F9;
+  transition: background 0.12s;
+  width: 100%;
+  min-width: $tt-min-width;
+  line-height: 1;
+
+  &:nth-child(even) {
+    background: #FAFBFC;
+  }
+
+  &:hover {
+    background: #EFF6FF;
+  }
+
+  > div {
+    padding: 5px 10px;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    overflow: hidden;
+    font-size: 10.5px;
+    color: #374151;
+    border-right: 1px solid #F1F5F9;
+
+    &:last-child {
+      border-right: none;
+    }
+  }
+}
+
+// ── Colonnes ──────────────────────────────
+.ttc-entite {
+  width: $col-entite;
+  min-width: $col-entite;
+  gap: 8px;
+}
+
+.ttc-numdoc {
+  width: $col-numdoc;
+  min-width: $col-numdoc;
+  font-weight: 600;
+  color: #475569;
+}
+
+.ttc-direction {
+  width: $col-direction;
+  min-width: $col-direction;
+  color: #64748B;
+}
+
+.ttc-service {
+  width: $col-service;
+  min-width: $col-service;
+  color: #64748B;
+}
+
+.ttc-typedoc {
+  width: $col-typedoc;
+  min-width: $col-typedoc;
+  justify-content: center;
+  color: #64748B;
+}
+
+.ttc-action {
+  flex: 1 0 $col-action;
+  min-width: $col-action;
+  color: #1E293B;
+}
+
+.ttc-parqui {
+  width: $col-parqui;
+  min-width: $col-parqui;
+  color: #64748B;
+}
+
+.ttc-date {
+  width: $col-date;
+  min-width: $col-date;
+  color: #64748B;
+}
+
+.ttc-autorise {
+  width: $col-autorise;
+  min-width: $col-autorise;
+  justify-content: center;
+  color: #64748B;
+}
+
+// ── Aucune troncature : le texte passe à la ligne dans toutes les colonnes ──
+.tt-row > div,
+.tt-row > div * {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  line-height: 1.35;
+}
+
+.tt-name-text {
+  font-size: 10.5px;
+  color: #374151;
+}
+
+.tt-parent {
+  font-weight: 600;
+  color: #0F172A;
+}
+
+// ── Icônes de tri dans l'entête ───────────
+.tt-sort-icons {
+  display: inline-flex;
+  flex-direction: column;
+  font-size: 9px;
+  color: #CBD5E1;
+  line-height: 1;
+  gap: 1px;
+  margin-left: 2px;
+}
+
+.tt-sort-active {
+  color: #2563EB;
+}
+
+// ── Ascenseur horizontal dessiné ──────────
+.tt-scroll-shell {
+  position: relative;
+
+  &.tt-more-right::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 28px;
+    pointer-events: none;
+    background: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.95));
+  }
+}
+
+.tt-hscroll {
+  position: relative;
+  height: 10px;
+  margin: 6px 12px 0;
+  border-radius: 6px;
+  background: #F1F5F9;
+  border: 1px solid #E2E8F0;
+  cursor: pointer;
+  touch-action: none;
+  user-select: none;
+}
+
+.tt-hscroll-thumb {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: 6px;
+  background: #94A3B8;
+  transition: background 0.15s;
+}
+
+.tt-hscroll:hover .tt-hscroll-thumb,
+.tt-hscroll:active .tt-hscroll-thumb {
+  background: #64748B;
+}
+
+// ── Pied : total à gauche, pagination à droite ──
+.tree-table-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 8px 16px;
+  border-top: 1px solid #E2E8F0;
+  background: #F8FAFC;
+  font-size: 11.5px;
+  color: #64748B;
+  min-height: 40px;
+
+  strong {
+    color: #0F172A;
+    font-weight: 700;
+  }
+}
+
+.tt-pager {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tt-pager-taille {
+  height: 28px;
+  padding: 0 6px;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 6px;
+  background: #fff;
+  font-size: 11.5px;
+  color: #475569;
+  cursor: pointer;
+}
+
+.tt-pager-btn {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 6px;
+  background: #fff;
+  color: #475569;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+
+  &:hover:not(:disabled) {
+    background: #EFF6FF;
+    border-color: #BFDBFE;
+  }
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+}
+
+.tt-pager-num {
+  min-width: 26px;
+  height: 26px;
+  padding: 0 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 6px;
+  background: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+
+  &:hover:not(:disabled):not(.active) {
+    background: #EFF6FF;
+    border-color: #BFDBFE;
+  }
+
+  &.active {
+    background: rgba(0, 54, 110);
+    border-color: rgba(0, 54, 110);
+    color: #fff;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+}
+
+.tt-pager-sep {
+  padding: 0 2px;
+  font-size: 11px;
+  color: #94A3B8;
+  user-select: none;
+}
+
+.tt-pager-page {
+  font-size: 11.5px;
+  color: #0F172A;
+  font-weight: 600;
+  min-width: 64px;
+  text-align: center;
+}
+
+// ── Mobile : colonnes resserrées mais lisibles ──
+@media (max-width: 767px) {
+  $m-entite: 130px;
+  $m-numdoc: 110px;
+  $m-direction: 120px;
+  $m-service: 120px;
+  $m-typedoc: 90px;
+  $m-action: 220px;
+  $m-parqui: 110px;
+  $m-date: 110px;
+  $m-autorise: 80px;
+  $m-min-width: $m-entite + $m-numdoc + $m-direction + $m-service + $m-typedoc
+                + $m-action + $m-parqui + $m-date + $m-autorise;
+
+  .tree-table-header,
+  .tree-table-body,
+  .tt-row {
+    min-width: $m-min-width;
+  }
+
+  .tree-table-header > div,
+  .tt-row > div {
+    padding: 4px 7px;
+    font-size: 10px;
+  }
+
+  .ttc-entite    { width: $m-entite !important;    min-width: $m-entite !important; }
+  .ttc-numdoc    { width: $m-numdoc !important;    min-width: $m-numdoc !important; }
+  .ttc-direction { width: $m-direction !important; min-width: $m-direction !important; }
+  .ttc-service   { width: $m-service !important;   min-width: $m-service !important; }
+  .ttc-typedoc   { width: $m-typedoc !important;   min-width: $m-typedoc !important; }
+  .ttc-parqui    { width: $m-parqui !important;    min-width: $m-parqui !important; }
+  .ttc-date      { width: $m-date !important;      min-width: $m-date !important; }
+  .ttc-autorise  { width: $m-autorise !important;  min-width: $m-autorise !important; }
+
+  .tree-table-header > .ttc-action,
+  .tt-row > .ttc-action {
+    flex: 1 0 $m-action !important;
+    min-width: $m-action !important;
+  }
+
+  .tt-name-text { font-size: 10px; }
+}
+
+
 
 // ═══════════════════════════════════════
 // FILTRES « PILLS »

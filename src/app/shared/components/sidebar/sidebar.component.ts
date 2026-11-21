@@ -39,8 +39,19 @@ export class SidebarComponent {
     public pinedItem: Menu[] = [];
     public users: any = [];
 
+    // Meme regle que le bloc de marque : logo de la societe, repli sur la marque APW
+    readonly LOGO_PAR_DEFAUT = 'assets/images/logo/logo_apw_full.png';
+    logoSociete: string = this.LOGO_PAR_DEFAUT;
+
+    logoIndisponible(): void {
+        if (this.logoSociete !== this.LOGO_PAR_DEFAUT) {
+            this.logoSociete = this.LOGO_PAR_DEFAUT;
+        }
+    }
+
     constructor(private autor: Authorization, private router: Router, public layoutService: LayoutService) {
         this.users = this.autor.getInfosUsers();
+        this.logoSociete = this.users?.datasociete?.logo || this.LOGO_PAR_DEFAUT;
 
         // ── Menu statique (shared/data/menu.ts) ───────────────────────────
         // Conservé tel quel : il suffit de décommenter ces trois lignes et de

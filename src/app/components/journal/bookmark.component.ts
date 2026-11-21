@@ -1,7 +1,6 @@
-import {Component, HostListener, OnInit} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, HostListener, OnInit, ViewChild} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
-import {NzTableModule} from 'ng-zorro-antd/table';
 import {NzTagModule} from 'ng-zorro-antd/tag';
 import {NzSelectModule} from 'ng-zorro-antd/select';
 import {NzDatePickerModule} from 'ng-zorro-antd/date-picker';
@@ -31,15 +30,16 @@ interface JournalRow {
     ts: number;
     raw: any;
     societe: any;
+    datapersonnel: any;
 }
 
 @Component({
     selector: 'app-bookmark',
-    imports: [CommonModule, FormsModule, NzTableModule, NzTagModule, NzSelectModule, NzDatePickerModule, NzToolTipModule, CardComponent, FeatherIconComponent],
+    imports: [CommonModule, FormsModule, NzTagModule, NzSelectModule, NzDatePickerModule, NzToolTipModule, CardComponent, FeatherIconComponent],
     templateUrl: './bookmark.component.html',
     styleUrl: './bookmark.component.scss'
 })
-export class BookmarkComponent implements OnInit {
+export class BookmarkComponent implements OnInit, AfterViewInit {
 
     private users: any = [];
     isloading: boolean = false;
@@ -57,6 +57,38 @@ export class BookmarkComponent implements OnInit {
     private allRows: JournalRow[] = [];
     rows: JournalRow[] = [];
 
+    // ── Pagination serveur ────────────────────────────────────────────
+    // La trame renvoie total / page / page_size / total_pages : le tableau
+    // n'affiche qu'une page à la fois, le pied pilote la requête suivante.
+    pageIndex: number = 1;
+    pageSize: number = 10;
+    total: number = 0;
+    totalPages: number = 1;
+    readonly taillesPage: number[] = [10, 20, 50, 100];
+    isExporting: boolean = false;
+
+    // Si l'API ignore `page` / `page_size`, on charge la liste entière une fois
+    // et on la découpe ici : le pied de pagination reste utilisable.
+    private paginationServeur: boolean = true;
+    private lignesCompletes: JournalRow[] | null = null;
+    /** 1re ligne de la page précédemment affichée : sert à repérer une page qui ne change pas. */
+    private dernierPremierUid: string = '';
+
+    // ── Tri (clic sur l'entête), appliqué à la page affichée ──────────
+    sortKey: string = '';
+    sortOrder: 'asc' | 'desc' | '' = '';
+
+    // ── Ascenseur horizontal dessiné (les barres natives sont masquées sur iOS) ──
+    @ViewChild('tableWrap') tableWrap?: ElementRef<HTMLDivElement>;
+    @ViewChild('hBar') hBar?: ElementRef<HTMLDivElement>;
+    hScrollVisible = false;
+    hScrollMore = false;
+    thumbWidth = 0;
+    thumbLeft = 0;
+    private dragging = false;
+    private dragStartX = 0;
+    private dragStartScroll = 0;
+
     constructor(private autor: Authorization, private httService: HttpService) {
     }
 
@@ -69,68 +101,332 @@ export class BookmarkComponent implements OnInit {
     }
 
     // ── Chargement ────────────────────────────────────────────────────
-    loadJournal(): void {
+    /** Construit l'URL de la page demandée (mêmes filtres, pagination explicite). */
+    private buildUrl(page: number, pageSize: number): string {
+        const params = new URLSearchParams({
+            idhistopiecedocs: '',
+            idsociete: this.selectedSociete || this.users?.datasociete?.uid || '',
+            idservice: '',
+            iddocuments: '',
+            idpiece_docs: '',
+            iduser_auth: this.selectedUser || '',
+            code_action: '',
+            date_start: this.selectedDateRange?.[0] ? moment(this.selectedDateRange[0]).format('YYYY-MM-DD') : '',
+            date_end: this.selectedDateRange?.[1] ? moment(this.selectedDateRange[1]).format('YYYY-MM-DD') : '',
+            page: String(page),
+            page_size: String(pageSize),
+        });
+        return `${environment.api_url}api/:save-historisation-pieces-docs?${params.toString()}`;
+    }
+
+    /**
+     * @param resetPage true quand les critères changent : on repart de la page 1,
+     *                  false quand c'est le pied de pagination qui demande une page.
+     */
+    loadJournal(resetPage: boolean = true): void {
+        if (resetPage) {
+            // Nouveaux critères : on oublie ce qu'on savait de la pagination.
+            this.pageIndex = 1;
+            this.lignesCompletes = null;
+            this.paginationServeur = true;
+            this.dernierPremierUid = '';
+        }
+
+        // Mode local : la liste entière est déjà en mémoire, on découpe.
+        if (!this.paginationServeur && this.lignesCompletes) {
+            this.afficherPageLocale();
+            return;
+        }
+
         this.isloading = true;
         this.allRows = [];
         this.rows = [];
-        const id = this.selectedSociete || this.users?.datasociete?.uid || '';
-        const iduser = this.selectedUser || '';
-        const dateStart = this.selectedDateRange?.[0] ? moment(this.selectedDateRange[0]).format('YYYY-MM-DD') : '';
-        const dateEnd = this.selectedDateRange?.[1] ? moment(this.selectedDateRange[1]).format('YYYY-MM-DD') : '';
-        const url = `${environment.api_url}api/:save-historisation-pieces-docs`
-            + `?idhistopiecedocs=&idsociete=${id}&idservice=&iddocuments=&idpiece_docs=&iduser_auth=${iduser}&code_action=&date_start=${dateStart}&date_end=${dateEnd}`;
 
-        this.httService.getData(url, false, this.users?.access_token || '').toPromise()
+        const demandee = this.pageIndex;
+        const taille = this.pageSize;
+
+        this.httService.getData(this.buildUrl(demandee, taille), false, this.users?.access_token || '')
+            .toPromise()
             .then((res: any) => {
-                this.isloading = false;
-                console.log('save-historisation-pieces-docs ===', res.body);
-                if (res.body.status || res.body.success) {
-                    this.allRows = (res.body.data || []).map((e: any) => this.mapRow(e));
-                    this.filtersService = [...new Set(this.allRows.map(r => r.service).filter(Boolean))]
-                        .map(v => ({text: v, value: v}));
-                    this.applyFilter();
+                const body = res?.body || {};
+                if (!(body.status || body.success)) {
+                    this.isloading = false;
+                    this.total = 0;
+                    this.totalPages = 1;
+                    return;
                 }
+                console.log('body.data',  body.data)
+                const lignes: JournalRow[] = (body.data || []).map((e: any) => this.mapRow(e));
+                const pageRenvoyee = Number(body.page) || demandee;
+                this.total = Number(body.total ?? lignes.length) || 0;
+                this.totalPages = Number(body.total_pages)
+                    || Math.max(1, Math.ceil(this.total / taille));
+
+                // Le serveur a-t-il réellement servi la page demandée ? On ne se
+                // fie pas au seul champ `page` : on regarde surtout si les lignes
+                // ont changé — une page qui renvoie la même première ligne que la
+                // précédente n'a pas été paginée.
+                const premierUid = lignes[0]?.uid || '';
+                const memeContenu = !!premierUid && premierUid === this.dernierPremierUid;
+                const ignoreLaPagination = lignes.length > taille
+                    || (demandee > 1 && (pageRenvoyee !== demandee || memeContenu));
+
+                if (!ignoreLaPagination) {
+                    this.isloading = false;
+                    this.dernierPremierUid = premierUid;
+                    this.allRows = lignes;
+                    this.applyFilter();
+                    return;
+                }
+
+                // Non : on prend la main. La liste entière est chargée une fois,
+                // puis découpée ici — le pied redevient utilisable quoi qu'il
+                // arrive côté API.
+                console.warn('[journal] la pagination serveur est ignorée (page demandée',
+                    demandee, ', page renvoyée', pageRenvoyee, ', mêmes lignes :', memeContenu,
+                    ') : découpage local activé.');
+                this.paginationServeur = false;
+
+                if (lignes.length >= this.total) {
+                    this.isloading = false;
+                    this.lignesCompletes = lignes;
+                    this.afficherPageLocale();
+                    return;
+                }
+
+                this.chargerToutesLesLignes()
+                    .then(tout => {
+                        this.isloading = false;
+                        // On ne bascule en local que si la liste est bien complète :
+                        // sinon le total affiché serait tronqué.
+                        if (tout.length >= this.total && tout.length > lignes.length) {
+                            this.lignesCompletes = tout;
+                            this.afficherPageLocale();
+                            return;
+                        }
+                        // L'API ne sait pas davantage renvoyer la liste entière :
+                        // on affiche ce qu'elle a donné plutôt que de tronquer le total.
+                        console.warn('[journal] la liste complète n\'a pas pu être récupérée :',
+                            'la pagination restera figée tant que l\'API ignorera `page`.');
+                        this.paginationServeur = true;
+                        this.lignesCompletes = null;
+                        this.allRows = lignes;
+                        this.applyFilter();
+                    })
+                    .catch(() => {
+                        this.isloading = false;
+                        this.paginationServeur = true;
+                        this.lignesCompletes = null;
+                        this.allRows = lignes;
+                        this.applyFilter();
+                    });
             })
             .catch(() => {
                 this.isloading = false;
+                this.total = 0;
+                this.totalPages = 1;
             });
+    }
+
+    /** Découpe la page courante dans la liste complète (mode local). */
+    private afficherPageLocale(): void {
+        const tout = this.lignesCompletes || [];
+        this.total = tout.length;
+        this.totalPages = Math.max(1, Math.ceil(this.total / this.pageSize));
+        if (this.pageIndex > this.totalPages) {
+            this.pageIndex = this.totalPages;
+        }
+        const debut = (this.pageIndex - 1) * this.pageSize;
+        this.allRows = tout.slice(debut, debut + this.pageSize);
+        this.applyFilter();
+    }
+
+    // ── Pied de pagination ────────────────────────────────────────────
+    get nbPages(): number {
+        return Math.max(1, this.totalPages || 1);
+    }
+
+    /**
+     * Les numéros de page à afficher : 1 2 3 … 67, resserrés autour de la page
+     * courante. `sep: true` marque une coupure (les points de suspension).
+     *
+     * Le tableau est mémorisé : s'il était reconstruit à chaque détection de
+     * changement (et il y en a une à chaque mouvement de souris, à cause de
+     * l'écouteur `pointermove` de l'ascenseur), le `*ngFor` recréerait les
+     * boutons entre le `mousedown` et le `mouseup` — le navigateur n'émettrait
+     * alors jamais l'événement `click` et la pagination resterait muette.
+     */
+    private clePages: string = '';
+    private cachePages: Array<{ num: number; sep: boolean }> = [];
+
+    get pagesAffichees(): Array<{ num: number; sep: boolean }> {
+        const cle = `${this.pageIndex}/${this.nbPages}`;
+        if (cle !== this.clePages) {
+            this.clePages = cle;
+            this.cachePages = this.construirePages();
+        }
+        return this.cachePages;
+    }
+
+    /** Identité stable pour le *ngFor des numéros de page. */
+    trackPage = (index: number, p: { num: number; sep: boolean }) => p.sep ? `sep-${index}` : `page-${p.num}`;
+
+    private construirePages(): Array<{ num: number; sep: boolean }> {
+        const n = this.nbPages;
+        const courante = this.pageIndex;
+        const page = (num: number) => ({num, sep: false});
+        const coupure = () => ({num: 0, sep: true});
+
+        if (n <= 7) {
+            return Array.from({length: n}, (_, i) => page(i + 1));
+        }
+
+        const liste: Array<{ num: number; sep: boolean }> = [page(1)];
+        const debut = Math.max(2, courante - 1);
+        const fin = Math.min(n - 1, courante + 1);
+
+        if (debut > 2) liste.push(coupure());
+        for (let i = debut; i <= fin; i++) liste.push(page(i));
+        if (fin < n - 1) liste.push(coupure());
+
+        liste.push(page(n));
+        return liste;
+    }
+
+    allerPage(page: number): void {
+        const cible = Math.min(Math.max(page || 1, 1), this.nbPages);
+        if (cible === this.pageIndex) return;
+        this.pageIndex = cible;
+        this.loadJournal(false);
+    }
+
+    changerTaille(taille: number): void {
+        if (!taille || taille === this.pageSize) return;
+        this.pageSize = taille;
+        this.pageIndex = 1;
+        this.loadJournal(false);
+    }
+
+    // ── Tri par colonne : asc → desc → aucun (sur la page affichée) ───
+    sortBy(key: string): void {
+        if (this.sortKey !== key) {
+            this.sortKey = key;
+            this.sortOrder = 'asc';
+        } else if (this.sortOrder === 'asc') {
+            this.sortOrder = 'desc';
+        } else {
+            this.sortKey = '';
+            this.sortOrder = '';
+        }
+        this.applyFilter();
+    }
+
+    private applySort(): void {
+        if (!this.sortKey || !this.sortOrder) return;
+        const key = this.sortKey;
+        const dir = this.sortOrder === 'desc' ? -1 : 1;
+        this.rows = [...this.rows].sort((a: any, b: any) => {
+            const va = a?.[key];
+            const vb = b?.[key];
+            if (typeof va === 'number' && typeof vb === 'number') {
+                return (va - vb) * dir;
+            }
+            return String(va ?? '').localeCompare(String(vb ?? '')) * dir;
+        });
+    }
+
+    // ══ Ascenseur horizontal personnalisé ═════════════════════════════
+    ngAfterViewInit(): void {
+        setTimeout(() => this.syncHScroll());
+    }
+
+    @HostListener('window:resize')
+    syncHScroll(): void {
+        const el = this.tableWrap?.nativeElement;
+        if (!el) return;
+
+        const maxScroll = el.scrollWidth - el.clientWidth;
+        this.hScrollVisible = maxScroll > 2;
+        this.hScrollMore = el.scrollLeft < maxScroll - 2;
+
+        const barEl = this.hBar?.nativeElement;
+        if (this.hScrollVisible && !barEl) {
+            // la barre vient d'apparaître : on recalcule une fois qu'elle est rendue
+            setTimeout(() => this.syncHScroll());
+        }
+
+        const track = barEl?.clientWidth || el.clientWidth;
+        this.thumbWidth = Math.max(40, Math.round(track * (el.clientWidth / el.scrollWidth)));
+        const maxX = track - this.thumbWidth;
+        this.thumbLeft = maxScroll > 0 ? Math.round((el.scrollLeft / maxScroll) * maxX) : 0;
+    }
+
+    onBarPointerDown(ev: PointerEvent): void {
+        const el = this.tableWrap?.nativeElement;
+        const bar = this.hBar?.nativeElement;
+        if (!el || !bar) return;
+
+        const rect = bar.getBoundingClientRect();
+        const maxScroll = el.scrollWidth - el.clientWidth;
+        const maxX = rect.width - this.thumbWidth;
+        const pointerX = ev.clientX - rect.left;
+
+        // clic hors du pouce : on saute directement à cette position
+        if (pointerX < this.thumbLeft || pointerX > this.thumbLeft + this.thumbWidth) {
+            const x = Math.min(Math.max(pointerX - this.thumbWidth / 2, 0), maxX);
+            el.scrollLeft = maxX > 0 ? (x / maxX) * maxScroll : 0;
+        }
+
+        this.dragging = true;
+        this.dragStartX = ev.clientX;
+        this.dragStartScroll = el.scrollLeft;
+        bar.setPointerCapture(ev.pointerId);
+        ev.preventDefault();
+        this.syncHScroll();
+    }
+
+    @HostListener('document:pointermove', ['$event'])
+    onBarPointerMove(ev: PointerEvent): void {
+        if (!this.dragging) return;
+        const el = this.tableWrap?.nativeElement;
+        const bar = this.hBar?.nativeElement;
+        if (!el || !bar) return;
+
+        const maxScroll = el.scrollWidth - el.clientWidth;
+        const maxX = bar.clientWidth - this.thumbWidth;
+        const dx = ev.clientX - this.dragStartX;
+        el.scrollLeft = this.dragStartScroll + (maxX > 0 ? dx * (maxScroll / maxX) : 0);
+    }
+
+    @HostListener('document:pointerup')
+    @HostListener('document:pointercancel')
+    onBarPointerUp(): void {
+        this.dragging = false;
     }
 
     private mapRow(e: any): JournalRow {
         const dateVal = e?.date_en || e?.created_at || '';
-        const p = e?.datauser?.datapersonnel || e?.datapersonnel || null;
+        const p = e?.iduser_save?.datapersonnel ||  null;
         const nom = p ? `${p?.nom || ''} ${p?.prenom || ''}`.trim() : '';
+
         return {
             uid: e?.uid || e?.idhistopiecedocs || '',
             entite: e?.societe?.raison_sociale || e?.datasociete?.raison_sociale || '',
-            numero_doc: e?.datadocuments?.code_docs || e?.code_docs || '',   // à compléter
+            numero_doc: e?.piece_docs?.code_docs || e?.code_docs || '',   // à compléter
             action_doc: '',                                                  // à compléter
-            direction: '',                                                   // à compléter
-            service: e?.dataservice?.libelle || e?.dataservices?.libelle || e?.service || '',
+            direction: e?.service_tree?  e?.service_tree[0]?.libelle ||'' : '',                                                   // à compléter
+            service: e?.dataservice?.libelle || e?.dataservices?.libelle || e?.service.lib_service || '',
             type_doc: '',                                                    // à compléter
             action_logs: e?.action_logs || '',
-            par_qui: e?.user_auth || nom || e?.datauser?.email || '',
+            par_qui: nom || e?.datauser?.email || '',
             date: dateVal ? moment(dateVal).format('DD/MM/YYYY HH:mm') : '',
             autorise: '',                                                    // à compléter
             ts: dateVal ? moment(dateVal).valueOf() : 0,
             raw: e,
             societe: e?.societe,
+            datapersonnel: e?.datapersonnel,
         };
     }
-
-    // ── Tri / filtre colonne (nz-table) ───────────────────────────────
-    sortFns = {
-        entite: (a: JournalRow, b: JournalRow) => (a.entite || '').localeCompare(b.entite || ''),
-        numeroDoc: (a: JournalRow, b: JournalRow) => (a.numero_doc || '').localeCompare(b.numero_doc || ''),
-        direction: (a: JournalRow, b: JournalRow) => (a.direction || '').localeCompare(b.direction || ''),
-        service: (a: JournalRow, b: JournalRow) => (a.service || '').localeCompare(b.service || ''),
-        typeDoc: (a: JournalRow, b: JournalRow) => (a.type_doc || '').localeCompare(b.type_doc || ''),
-        parQui: (a: JournalRow, b: JournalRow) => (a.par_qui || '').localeCompare(b.par_qui || ''),
-        date: (a: JournalRow, b: JournalRow) => a.ts - b.ts,
-    };
-
-    filtersService: { text: string; value: string }[] = [];
-    filterService = (list: string[], item: JournalRow) => list.some(v => item.service === v);
 
     private loadSocietes(): void {
         this.httService.getData(
@@ -220,6 +516,9 @@ export class BookmarkComponent implements OnInit {
                 r.numero_doc.toLowerCase().includes(q) ||
                 r.service.toLowerCase().includes(q))
             : [...this.allRows];
+        this.applySort();
+        // Les colonnes changent de largeur avec le contenu : on recalcule l'ascenseur
+        setTimeout(() => this.syncHScroll());
     }
 
     // ══ Filtres « pills » ═════════════════════════════════════════════
@@ -299,8 +598,24 @@ export class BookmarkComponent implements OnInit {
     }
 
     // ══ Exports ═══════════════════════════════════════════════════════
-    private exportRows(): any[] {
-        return this.rows.map(r => ({
+    /**
+     * L'export porte sur le journal entier (filtres en cours), pas sur la seule
+     * page affichée : on redemande la liste en une fois au serveur.
+     */
+    private chargerToutesLesLignes(): Promise<JournalRow[]> {
+        const taille = Math.max(this.total || 0, this.pageSize, 1);
+        return this.httService.getData(this.buildUrl(1, taille), false, this.users?.access_token || '')
+            .toPromise()
+            .then((res: any) => {
+                const body = res?.body || {};
+                if (!(body.status || body.success)) return [...this.rows];
+                return (body.data || []).map((e: any) => this.mapRow(e));
+            })
+            .catch(() => [...this.rows]);
+    }
+
+    private exportRows(lignes: JournalRow[]): any[] {
+        return lignes.map(r => ({
             'Entité': r.entite || '',
             'Numéro doc.': r.numero_doc || '',
             'Action doc.': r.action_doc || '',
@@ -314,9 +629,13 @@ export class BookmarkComponent implements OnInit {
         }));
     }
 
-    exportExcel(): void {
-        if (!this.rows.length) return;
-        const ws = XLSX.utils.json_to_sheet(this.exportRows());
+    async exportExcel(): Promise<void> {
+        if (!this.rows.length || this.isExporting) return;
+        this.isExporting = true;
+        const lignes = await this.chargerToutesLesLignes();
+        this.isExporting = false;
+        if (!lignes.length) return;
+        const ws = XLSX.utils.json_to_sheet(this.exportRows(lignes));
         ws['!cols'] = [
             {wch: 26}, {wch: 18}, {wch: 22}, {wch: 22}, {wch: 24},
             {wch: 16}, {wch: 60}, {wch: 24}, {wch: 18}, {wch: 12},
@@ -336,7 +655,7 @@ export class BookmarkComponent implements OnInit {
     }
 
     /** Dessine un entête professionnel (logo, panneau d'infos, bandeau titre) et renvoie la position Y suivante. */
-    private drawPdfHeader(doc: jsPDF): number {
+    private drawPdfHeader(doc: jsPDF, nombreActions: number): number {
         const pageW = doc.internal.pageSize.getWidth();
         const left = 14;
         const right = pageW - 14;
@@ -394,7 +713,7 @@ export class BookmarkComponent implements OnInit {
         drawKV('Type de document', '', colX1, ky + 7);
         drawKV('Effectué par', this.userLabel || '', colX1, ky + 14);
         drawKV('Société', this.societeLabel || '', colX2, ky);
-        drawKV("Nombre d'actions", String(this.rows.length), colX2, ky + 7);
+        drawKV("Nombre d'actions", String(nombreActions), colX2, ky + 7);
 
         // ── Titre (sobre : texte navy centré) ──
         const titleY = panelY + panelH + 10;
@@ -407,7 +726,11 @@ export class BookmarkComponent implements OnInit {
     }
 
     async exportPdf(): Promise<void> {
-        if (!this.rows.length) return;
+        if (!this.rows.length || this.isExporting) return;
+        this.isExporting = true;
+        const lignes = await this.chargerToutesLesLignes();
+        this.isExporting = false;
+        if (!lignes.length) return;
         const doc = new jsPDF({orientation: 'landscape', unit: 'mm', format: 'a4'});
 
         // Chargement du logo (best-effort)
@@ -417,13 +740,13 @@ export class BookmarkComponent implements OnInit {
             (this as any)._pdfLogo = null;
         }
 
-        const startY = this.drawPdfHeader(doc);
+        const startY = this.drawPdfHeader(doc, lignes.length);
 
         autoTable(doc, {
             startY,
             head: [['Entité', 'Numéro doc.', 'Action doc.', 'Direction', 'Service',
                 'Type de doc.', 'Action', 'Par qui ?', 'Date', 'Autorisé']],
-            body: this.rows.map(r => [
+            body: lignes.map(r => [
                 r.entite || '', r.numero_doc || '', r.action_doc || '', r.direction || '', r.service || '',
                 r.type_doc || '', r.action_logs || '', r.par_qui || '', r.date || '', r.autorise || '',
             ]),

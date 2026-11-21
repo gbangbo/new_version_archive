@@ -61,6 +61,8 @@ interface FoodNode {
     password_file?: string;
     disabled?: boolean;
     isFile?: boolean;
+    /* true = pièce déjà enregistrée du document, false = fichier de la zone temporaire */
+    estPiece?: boolean;
     children?: FoodNode[];
 }
 
@@ -101,6 +103,7 @@ interface ExampleFlatNode {
     level: number;
     disabled: boolean;
     isFile: boolean;
+    estPiece: boolean;
 }
 
 @Component({
@@ -263,7 +266,22 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
 
     public editor: Editor;
     public editor2: Editor;
+    /* L'arbre de classement mélange deux provenances de fichiers, qui ne se
+       suppriment pas par le même endpoint :
+         - piecesDocument : les pièces déjà enregistrées du document (modification),
+         - fichiersTemps  : les fichiers tout juste téléversés (zone temporaire).
+       dataFileTemps reste la concaténation des deux (ce que l'arbre consomme) et
+       chaque entrée porte le marqueur estPiece. */
     dataFileTemps: any = [];
+    piecesDocument: any[] = [];
+    /* Panneau « plan de classement + fichiers » : plusieurs appels peuvent
+       tourner en même temps (plan, pièces, zone temporaire), d'où un compteur
+       plutôt qu'un booléen — le spinner s'éteint quand le dernier a rendu. */
+    private compteurChargementFichiers = 0;
+
+    /* Modification en cours dans CET onglet (survit à un F5, pas à l'onglet) */
+    private readonly CLE_EDITION = '_edit_doc_onglet_';
+    fichiersTemps: any[] = [];
     isloading: boolean = false;
     isLoadingPreview: boolean = false;
     private officeLoaderTimer: any = null;
@@ -357,6 +375,8 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
         uid: node?.uid || '',
         iduser_save: node?.iduser_save || '',
         isFile: node?.isFile || false,
+        // Sans ce report, deleteFile() ne saurait plus d'où vient le fichier
+        estPiece: node?.estPiece === true,
         level,
         disabled: !!node.disabled
     });
@@ -495,7 +515,9 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
 
         // En modification, on charge les pièces du document (pas la zone temporaire)
         const editDoc = this.autor.getEditDoc();
-        if (!editDoc) {
+        // … ou on reprend la modification en cours si la page vient d'être rechargée
+        const uidRepris = editDoc ? '' : this.uidEditionARependre();
+        if (!editDoc && !uidRepris) {
             this.loadFileTemps(this.users?.datasociete?.uid, this.users?.uid);
         }
         //  this.showTypeDoc(this.users?.datasociete?.uid, '');
@@ -510,8 +532,43 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
         // ── Mode modification : document déposé par l'action "Modifier" ──
         if (editDoc) {
             this.autor.clearEditDoc();
+            // Mémorisé pour l'onglet : un F5 ne doit pas vider l'écran en silence
+            sessionStorage.setItem(this.CLE_EDITION, editDoc?.uid || editDoc?.iddocuments || '');
             this.hydrateForEdit(editDoc);
+        } else if (uidRepris) {
+            // Rechargement : la fiche complète est de toute façon reprise à l'API
+            this.hydrateForEdit({uid: uidRepris});
         }
+    }
+
+    /* Document à reprendre après un rechargement de la page.
+
+       Le relais posé par l'action « Modifier » (_edit_doc_) est consommé dès
+       l'ouverture ; sans mémoire, un F5 vidait l'écran et repassait en création
+       sans rien dire. On garde donc l'identifiant pour l'onglet, mais on ne le
+       rejoue QUE sur un vrai rechargement : une arrivée normale sur l'écran
+       (menu, lien, URL tapée) reste une création, et la mémoire est purgée. */
+    private uidEditionARependre(): string {
+        const uid = sessionStorage.getItem(this.CLE_EDITION) || '';
+        if (!uid) return '';
+        if (this.estRechargement()) return uid;
+        sessionStorage.removeItem(this.CLE_EDITION);
+        return '';
+    }
+
+    private estRechargement(): boolean {
+        try {
+            const nav: any = performance.getEntriesByType('navigation')?.[0];
+            return nav?.type === 'reload';
+        } catch {
+            return false;
+        }
+    }
+
+    /* Fin de la modification : plus rien à reprendre */
+    private oublierEdition(): void {
+        this.autor.clearEditDoc();
+        sessionStorage.removeItem(this.CLE_EDITION);
     }
 
     /* Pré-remplit le formulaire à partir d'un document existant */
@@ -748,6 +805,7 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
         if (!iddocuments) return;
         const iduser = this.users?.uid || '';
         this.isloading = true;
+        this.debutChargementFichiers();
         try {
             const res: any = await this.httService.getData(
                 `${environment.api_url}api/:consultation-pieces-documents?iduser=${iduser}&iddocuments=${iddocuments}`,
@@ -756,7 +814,7 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
             ).toPromise();
             this.isloading = false;
             if (res.body.status || res.body.success) {
-                this.dataFileTemps = (res.body.data || []).map((d: any) => {
+                this.piecesDocument = (res.body.data || []).map((d: any) => {
                     const url = d.url_file || d.url_file_docs || d.lib_file_temp || d.file || '';
                     /* Les pièces d'un document renvoient extension_file_docs
                        (avec le point) là où la zone temporaire renvoie extension. */
@@ -775,15 +833,16 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
                         password_file: d.password_file || '',
                         iduser_save: d.iduser_save || '',
                         datacats: d.datacats || null,
+                        // Pièce déjà rattachée au document : suppression côté pièces
+                        estPiece: true,
                     };
                 });
-                this.fileAssignments.clear();
-                if (this.cleanTreeData.length > 0) {
-                    this.rebuildTreeWithFiles();
-                }
+                this.majFichiersArbre();
             }
         } catch {
             this.isloading = false;
+        } finally {
+            this.finChargementFichiers();
         }
     }
 
@@ -837,6 +896,19 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
             return String(v).trim();
         }
         return String(dataValue).trim();
+    }
+
+    get arbreEnChargement(): boolean {
+        return this.compteurChargementFichiers > 0;
+    }
+
+    private debutChargementFichiers(): void {
+        this.compteurChargementFichiers++;
+    }
+
+    private finChargementFichiers(): void {
+        this.compteurChargementFichiers = Math.max(0, this.compteurChargementFichiers - 1);
+        this.cdr.detectChanges();
     }
 
     hasChild = (_: number, node: ExampleFlatNode): boolean => node.expandable;
@@ -989,6 +1061,8 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
     }
 
     ngOnDestroy(): void {
+        // Quitter l'écran met fin à la modification (un F5, lui, ne détruit rien)
+        this.oublierEdition();
         // Rétablit le pied de page global en quittant l'écran
         document.body.classList.remove('hide-app-footer');
         // ...ainsi que la barre latérale telle qu'elle était avant d'entrer ici
@@ -1013,24 +1087,37 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
 
     loadFileTemps(idsociete: string = '', iduser_file_temp: string = '') {
         this.isloading = true;
-        this.dataFileTemps = [];
+        this.debutChargementFichiers();
+        this.fichiersTemps = [];
         this.httService.getData(`${environment.api_url}api/:saveuploadfile-temps?idsociete=${idsociete}&iduser_file_temp=${iduser_file_temp}`, false, this.users?.access_token || '')
             .toPromise()
             .then((res: any) => {
                 this.isloading = false;
+                this.finChargementFichiers();
                 if (res.body.status) {
-                    this.dataFileTemps = res.body.data;
-                    console.log("File temps ====", res.body.data)
-                    // datacats de l'API est désormais la source de vérité : on purge les overrides locaux
-                    this.fileAssignments.clear();
-                    if (this.cleanTreeData.length > 0) {
-                        this.rebuildTreeWithFiles();
-                    }
+                    // Fichier de la zone temporaire : suppression côté saveuploadfile-temps
+                    this.fichiersTemps = (res.body.data || [])
+                        .map((d: any) => ({...d, estPiece: false}));
+                    this.majFichiersArbre();
                 }
             })
-            .catch((err) => {
+            .catch(() => {
                 this.isloading = false;
+                this.finChargementFichiers();
             });
+    }
+
+    /* Rassemble les deux provenances dans la liste que l'arbre consomme :
+       les pièces déjà enregistrées d'abord, puis les fichiers téléversés. En
+       modification, un nouvel import ne doit pas faire disparaître les pièces
+       du document. */
+    private majFichiersArbre(): void {
+        this.dataFileTemps = [...(this.piecesDocument || []), ...(this.fichiersTemps || [])];
+        // datacats de l'API est la source de vérité : on purge les overrides locaux
+        this.fileAssignments.clear();
+        if (this.cleanTreeData.length > 0) {
+            this.rebuildTreeWithFiles();
+        }
     }
 
     private mapFilesToTreeNodes(): any[] {
@@ -1045,6 +1132,8 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
             password_file: d.password_file,
             iduser_save: d.iduser_save,
             datacats: d.datacats || null,
+            // Reporté sur le noeud : c'est lui que reçoit deleteFile()
+            estPiece: d.estPiece === true,
             isFile: true,
             disabled: false,
             children: undefined
@@ -1118,10 +1207,15 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
         const allFiles = this.mapFilesToTreeNodes();
         const grouped = new Map<string, any[]>();
         const unassigned: any[] = [];
+        /* Le plan affiché dépend du type de document : une pièce peut pointer vers
+           une catégorie absente de ce plan. Sans ce garde-fou, elle était rangée
+           dans un dossier introuvable, donc invisible (et donc insupprimable). */
+        const clesDuPlan = this.collecterClesDuPlan(this.cleanTreeData);
 
         for (const file of allFiles) {
             // Priorité : affectation manuelle (drag-drop) > datacats de l'API > non classé
-            const folderKey = this.fileAssignments.get(file.uid) || file.datacats?.uid || null;
+            const cat = this.fileAssignments.get(file.uid) || file.datacats?.uid || null;
+            const folderKey = cat && clesDuPlan.has(cat) ? cat : null;
             if (folderKey) {
                 if (!grouped.has(folderKey)) grouped.set(folderKey, []);
                 grouped.get(folderKey)!.push(file);
@@ -1147,6 +1241,16 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
         this.cdr.detectChanges();
     }
 
+    /* Toutes les clés de dossier du plan de classement courant */
+    private collecterClesDuPlan(nodes: any[], cles: Set<string> = new Set<string>()): Set<string> {
+        (nodes || []).forEach((node: any) => {
+            const cle = node?.key || node?.uid || '';
+            if (cle) cles.add(cle);
+            if (node?.children?.length) this.collecterClesDuPlan(node.children, cles);
+        });
+        return cles;
+    }
+
     private injectFilesIntoFolders(nodes: any[], grouped: Map<string, any[]>): any[] {
         return nodes.map((node: any) => {
             const nodeKey = node.key || node.uid || '';
@@ -1170,6 +1274,11 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
     async deleteFile(node: any, event: Event) {
         event.stopPropagation();
 
+        const libelle = `${node.name}${node.extension ? '.' + node.extension : ''}`;
+        const precision = node?.estPiece
+            ? 'Cette pièce est déjà enregistrée : elle sera retirée du document.'
+            : "Ce fichier vient d’être importé : il sera retiré de la zone de dépôt.";
+
         const result = await Swal.fire({
             html: `
               <div style="margin-top: 8px;">
@@ -1177,7 +1286,8 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
                   Êtes-vous sûr de vouloir supprimer ce fichier ?
                 </p>
                 <p style="font-size: 13px; color: #64748B; margin: 0;">
-                  Le fichier <strong>${node.name}.${node.extension}</strong> sera définitivement supprimé.
+                  Le fichier <strong>${libelle}</strong> sera définitivement supprimé.<br>
+                  ${precision}
                 </p>
               </div>
             `,
@@ -1192,6 +1302,18 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
 
         if (!result.isConfirmed) return;
 
+        /* Deux provenances, deux endpoints : une pièce déjà rattachée au document
+           se supprime par :consultation-pieces-documents, un fichier de la zone
+           temporaire par :saveuploadfile-temps (action 3). */
+        if (node?.estPiece) {
+            this.supprimerPieceEnregistree(node);
+        } else {
+            this.supprimerFichierTemporaire(node);
+        }
+    }
+
+    /* Fichier téléversé mais pas encore rattaché à un document */
+    private supprimerFichierTemporaire(node: any): void {
         const formData = new FormData();
         formData.append('action', '3');
         formData.append('idfile_temp', node.uid ?? '');
@@ -1203,21 +1325,68 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
             .toPromise()
             .then((res: any) => {
                 this.isDeleting = false;
-                console.log("Suppression ===", res.body)
                 if (res.body.status || res.body.success) {
                     this.toast.success('Fichier supprimé avec succès.', 'Succès');
-                    if (this.selectedFile?.uid === node.uid) {
-                        this.selectedFile = null;
-                    }
+                    this.oublierApercu(node);
                     this.loadFileTemps(this.users?.datasociete?.uid, this.users?.uid);
                 } else {
                     this.toast.error(res.body.message || 'Erreur lors de la suppression.', 'Erreur');
                 }
             })
-            .catch(() => {
+            .catch((err: any) => {
                 this.isDeleting = false;
-                this.toast.error('Erreur lors de la suppression du fichier.', 'Erreur');
+                this.toast.error(
+                    err?.error?.err?.message || err?.error?.message || 'Erreur lors de la suppression du fichier.',
+                    'Erreur'
+                );
             });
+    }
+
+    /* Pièce déjà enregistrée du document (mode modification) : même endpoint que
+       le plan de classement, DELETE sur :consultation-pieces-documents. */
+    private supprimerPieceEnregistree(node: any): void {
+        const uid = node?.uid || '';
+        if (!uid) return;
+
+        this.isDeleting = true;
+        this.httService
+            .deleteData(
+                `${environment.api_url}api/:consultation-pieces-documents`,
+                {
+                    idsociete: this.users?.datasociete?.uid || '',
+                    idpiece_docs: uid,
+                    iddocuments: this.validationForm.value.iddocuments || '',
+                },
+                this.users?.access_token || ''
+            )
+            .toPromise()
+            .then((res: any) => {
+                this.isDeleting = false;
+                if (res.body.status || res.body.success) {
+                    this.toast.success('Fichier supprimé avec succès.', 'Succès');
+                    this.oublierApercu(node);
+                    // Pas de rechargement : la pièce disparaît de la liste locale
+                    this.piecesDocument = (this.piecesDocument || []).filter((f: any) => f.uid !== uid);
+                    this.majFichiersArbre();
+                } else {
+                    this.toast.error(res.body.message || 'Erreur lors de la suppression.', 'Erreur');
+                }
+            })
+            .catch((err: any) => {
+                this.isDeleting = false;
+                this.toast.error(
+                    err?.error?.err?.message || err?.error?.message || 'Erreur lors de la suppression du fichier.',
+                    'Erreur'
+                );
+            });
+    }
+
+    /* L'aperçu affiche peut-être le fichier qu'on vient de supprimer */
+    private oublierApercu(node: any): void {
+        if (this.selectedFile?.uid === node?.uid) {
+            this.selectedFile = null;
+            this.previewFullscreen = false;
+        }
     }
 
     onSending(event: any) {
@@ -2287,6 +2456,8 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
     }
 
     resetAfterSave(): void {
+        // Fin de la modification : plus rien ne doit rejouer au prochain F5
+        this.oublierEdition();
         this.validationForm.reset({
             typeArchivage: 'courante',
             publishe: 0,
@@ -2311,6 +2482,8 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
         this.dataRayon = [];
         this.dataBoites = [];
         this.dataFileTemps = [];
+        this.piecesDocument = [];
+        this.fichiersTemps = [];
         this.isUploading = false;
         this.uploadProgress = 0;
         this.currentFileName = '';
@@ -2454,12 +2627,14 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
 
         this.resetTree();
         this.idcategorie = '';
+        this.debutChargementFichiers();
         const url = `${environment.api_url}api/save-categorie-plan-classement?${params.toString()}`;
         // La promesse est rendue : en modification, les pièces du document ne
         // peuvent être rangées qu'une fois le plan de classement chargé.
         return this.httService.getData(url, false, this.users?.access_token || '')
             .toPromise()
             .then((res: any) => {
+                this.finChargementFichiers();
                 if (res.body.status || res.body.success) {
                     const mapped = this.mapApiToTree(res.body.data);
                     if (!mapped?.length) {
@@ -2475,6 +2650,7 @@ export class CreerUnDocumentComponent implements OnInit, AfterViewInit, OnDestro
                 }
             })
             .catch(() => {
+                this.finChargementFichiers();
                 this.resetTree();
             });
 

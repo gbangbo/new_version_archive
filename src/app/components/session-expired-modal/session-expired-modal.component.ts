@@ -103,6 +103,27 @@ export class SessionExpiredModalComponent implements OnInit {
 
                         }
 
+                        /* Même contrôle qu'à la connexion : sans menu, chaque route
+                           renvoie /error405. On n'ouvre pas de session. */
+                        if (!_menu.length) {
+                            this.loading = false;
+                            this.loginForm.get('email')?.disable();
+                            const role = response?.dataroles?.libelle_role
+                                || response?.dataroles?.libelle_roles
+                                || response?.dataroles?.name_roles
+                                || '';
+                            const message = role
+                                ? `Aucun menu n'est associé au rôle « ${role} ». Contactez l'administrateur pour qu'un accès vous soit attribué.`
+                                : "Aucun menu n'est associé à votre rôle. Contactez l'administrateur pour qu'un accès vous soit attribué.";
+                            this.errorTexte = message;
+                            this.toast.error(message, '', {
+                                positionClass: 'toast-top-right',
+                                closeButton: true,
+                                timeOut: 6000
+                            });
+                            return;
+                        }
+
                         const mapData = {
                             ...response,
                             _menu,

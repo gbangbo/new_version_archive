@@ -33,6 +33,7 @@ interface RowData {
     photo: string;
     created_at: string;
     libelle_service: string;
+    libelle_role: string;
     color: string;
     libcolor: string;
 }
@@ -123,6 +124,8 @@ export class CompteComponent implements OnInit, AfterViewInit {
                             photo: e.datapersonnel?.photo,
                             emailAgent: e?.datapersonnel?.emailAgent,
                             libelle_service: e?.datausers?.dataservice?.libelle || '',
+                            // Le rôle arrive en deux endroits selon l'appel : on prend le premier servi
+                            libelle_role: e?.datarole?.libelle_role || e?.datausers?.dataroles?.libelle_role || '',
                             color: !e?.is_active ? '#f50' : '#87d068',
                             libcolor: !e?.is_active ? 'Inactif' : 'Actif',
                             created_at: moment(e?.created_at).format('DD/MM/YYYY')

@@ -38,7 +38,11 @@ export class AddModalComponent {
     users: any = [];
     dataSociete: any = [];
     typeAlerte: string = '';
-    title: string = 'AJOUTER UN NIVEAU';
+    title: string = 'Ajouter un niveau';
+    isEdit: boolean = false;
+    // Les messages d'erreur n'apparaissent qu'apres une saisie ou une tentative d'envoi :
+    // nz-tree-select se marque « touched » des son initialisation.
+    soumisTente: boolean = false;
 
     expandKeys = [];
     is: boolean = false;
@@ -53,7 +57,15 @@ export class AddModalComponent {
 
         const data = changes['dataLigne']?.currentValue;
         this.is = data?.is || false;
-        console.log("data ====", data)
+
+        if (data && Object.keys(data).length > 0) {
+            // Titre et rappel affiches tout de suite : le patch du formulaire, lui, attend l'arbre des societes
+            this.isEdit = data?.sens != 'a';
+            this.title = data?.sens == 'a' ? `Ajouter un sous-niveau` : `Modifier le sous-niveau`;
+            this.errorTexte = `Vous êtes sur le point ${data?.sens == 'a' ? `d’ajouter un sous-niveau a` : `de modifier le sous-niveau`} « ${data?.name} ».`;
+            this.typeAlerte = 'prim';
+        }
+
         setTimeout(() => {
             if (data && Object.keys(data).length > 0) {
 
@@ -65,10 +77,6 @@ export class AddModalComponent {
                     parent: data?.parent,
                 });
 
-                console.log("this.validationForm ===", this.validationForm.value)
-                this.title = data?.sens == 'a' ? `AJOUT D'UN SOUS NIVEAU` : `MODIFICATION D'UN SOUS NIVEAU`
-                this.errorTexte = `Vous êtes sur le point ${data?.sens == 'a' ? `d’ajouter un` : `de modifier le`} sous-niveau  ${data?.sens == 'a' ? `à` : ``} « ${changes['dataLigne']?.currentValue?.name} ».`;
-                this.typeAlerte = 'prim';
             }
         }, 1000)
 
@@ -105,8 +113,21 @@ export class AddModalComponent {
         };
     }
 
+    // Un champ n'est signale qu'apres saisie ou tentative d'envoi
+    champEnErreur(nom: string): boolean {
+        const champ = this.validationForm.get(nom);
+        return !!champ && champ.hasError('required') && (this.soumisTente || champ.dirty);
+    }
+
     submitForm(): void {
-        this.errorTexte = ''
+        this.soumisTente = true;
+        this.validationForm.markAllAsTouched();
+        if (!this.validationForm.valid) {
+            return;
+        }
+
+        this.errorTexte = '';
+        this.typeAlerte = '';
         let payload = {
             ...this.validationForm.value,
             "action": this.validationForm.value.idorganigramme ? 2 : 1,
@@ -114,7 +135,6 @@ export class AddModalComponent {
         }
 
         this.isloading = true;
-        console.log("payload ======", payload)
 
         this.httService.postData(`${environment.api_url}auth/:save-service-organigramme`, payload, this.users?.access_token)
             .toPromise()
@@ -141,8 +161,4 @@ export class AddModalComponent {
         this.modalOpen.emit(e || false);
     }
 
-
-    onChange($event: string): void {
-        console.log($event);
-    }
 }

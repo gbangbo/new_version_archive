@@ -128,6 +128,29 @@ export class ConfirmeAuthOtpComponent implements AfterViewInit {
 
                     }
 
+                    /* Même contrôle qu'à la connexion : sans menu, chaque route
+                       renvoie /error405. On n'ouvre pas de session. */
+                    if (!_menu.length) {
+                        this.loading = false;
+                        const role = response?.dataroles?.libelle_role
+                            || response?.dataroles?.libelle_roles
+                            || response?.dataroles?.name_roles
+                            || '';
+                        const message = role
+                            ? `Aucun menu n'est associé au rôle « ${role} ». Contactez l'administrateur pour qu'un accès vous soit attribué.`
+                            : "Aucun menu n'est associé à votre rôle. Contactez l'administrateur pour qu'un accès vous soit attribué.";
+                        this.errorTexte = message;
+                        // Le gabarit colore l'alerte avec typeAlerte
+                        this.typeAlerte = 'danger';
+                        this.toast.error(message, '', {
+                            positionClass: 'toast-top-right',
+                            closeButton: true,
+                            timeOut: 6000
+                        });
+                        sessionStorage.removeItem(environment.CONFIG.APP_TOKEN_NAME);
+                        return;
+                    }
+
                     const mapData = {
                         ...response,
                         _menu,

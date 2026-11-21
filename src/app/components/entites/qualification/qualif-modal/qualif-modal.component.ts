@@ -24,6 +24,9 @@ export class QualifModalComponent {
     })
 
     errorTexte: string = '';
+    typeAlerte: string = '';
+    title: string = `Ajouter une qualification`;
+    isEdit: boolean = false;
 
     @HostListener('document:keydown.escape', ['$event'])
     handleEscKey() {
@@ -39,12 +42,20 @@ export class QualifModalComponent {
 
     ngOnChanges(changes: SimpleChanges) {
         if (changes['dataLigne'] && changes['dataLigne']?.currentValue) {
-            this.validationForm.patchValue(changes['dataLigne']?.currentValue);
+            const data = changes['dataLigne']?.currentValue;
+            this.validationForm.patchValue(data);
+            this.isEdit = !!data?.uid;
+            this.title = this.isEdit ? `Modifier la qualification` : `Ajouter une qualification`;
+            if (this.isEdit) {
+                this.errorTexte = `Modification de la qualification « ${data?.libelle_poste || ''} ».`;
+                this.typeAlerte = 'prim';
+            }
         }
     }
 
     submitForm() {
         this.errorTexte = '';
+        this.typeAlerte = '';
         this.validationForm.markAllAsTouched();
         if (!this.validationForm.valid) {
             return;
@@ -57,7 +68,6 @@ export class QualifModalComponent {
             "idsociete": this.users?.datasociete?.uid || this.users?.uidsociete,
             ...this.validationForm.value
         }
-        console.log("payload ===", payload)
         this.httService.postData(`${environment.api_url}auth/:savepostes`, payload, this.users?.access_token || '')
             .toPromise()
             .then((res: any) => {
@@ -73,28 +83,12 @@ export class QualifModalComponent {
             })
             .catch((err) => {
                 this.isloading = false;
-                console.log("err", err)
-                this.isloading = false;
-                this.errorTexte = err?.error?.err?.message || "Une erreur est survenue !"
-                this.isloading = false;
+                this.typeAlerte = 'danger';
+                this.errorTexte = err?.error?.err?.message || "Une erreur est survenue !";
             });
     }
 
     closeModal(e?: boolean) {
         this.modalOpen.emit(e || false);
-    }
-
-    onImageSelected(file: File): void {
-        console.log('Fichier sélectionné:', file);
-
-        // Exemple: Upload vers votre API
-        const formData = new FormData();
-        formData.append('image', file);
-
-        // this.http.post('votre-api/upload', formData).subscribe(...);
-    }
-
-    onImageRemoved(): void {
-        console.log('Image supprimée');
     }
 }

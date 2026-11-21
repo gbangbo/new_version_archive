@@ -87,6 +87,7 @@ export class LoginComponent implements OnInit, OnDestroy {
                                 _menu: [],
                                 dataUsers: []
                             };
+
                             const mapSessionTemp = cryptSession(JSON.stringify(mapDataTemp), decode64(environment.CONFIG.APP_PASS));
                             sessionStorage.setItem(`_temp_`, mapSessionTemp);
                             this.router.navigate(["/auth/confirme-auth-otp"]);
@@ -108,6 +109,31 @@ export class LoginComponent implements OnInit, OnDestroy {
                         } catch {
 
                         }
+
+                        /* Sans menu, l'utilisateur arriverait sur une application
+                           vide : chaque route est contrôlée contre users._menu et
+                           renverrait /error405. On arrête la connexion ici plutôt
+                           que de le laisser entrer nulle part. */
+                        if (!response?._menu?.length) {
+                            this.loading = false;
+                            const role = response?.dataroles?.libelle_role
+                                || response?.dataroles?.libelle_roles
+                                || response?.dataroles?.name_roles
+                                || '';
+                            const message = role
+                                ? `Aucun menu n'est associé au rôle « ${role} ». Contactez l'administrateur pour qu'un accès vous soit attribué.`
+                                : "Aucun menu n'est associé à votre rôle. Contactez l'administrateur pour qu'un accès vous soit attribué.";
+                            this.errorTexte = message;
+                            this.toast.error(message, '', {
+                                positionClass: 'toast-top-right',
+                                closeButton: true,
+                                timeOut: 6000
+                            });
+                            // Aucune session n'est ouverte : la connexion s'arrête là
+                            sessionStorage.removeItem(environment.CONFIG.APP_TOKEN_NAME);
+                            return;
+                        }
+
                         const mapData = {
                             ...response
                         };
@@ -115,7 +141,7 @@ export class LoginComponent implements OnInit, OnDestroy {
                         const mapSession = cryptSession(JSON.stringify(mapData), decode64(environment.CONFIG.APP_PASS));
                         sessionStorage.setItem(environment.CONFIG.APP_TOKEN_NAME, mapSession);
                         localStorage.setItem("user", JSON.stringify(user));
-
+                        console.log('mapData',mapData)
                         if (!localStorage.getItem(environment.CONFIG.layout_name)) {
                             localStorage.setItem(environment.CONFIG.layout_name, 'dark-sidebar');
                         }

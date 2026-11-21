@@ -198,7 +198,7 @@
         </div>
     </div>
     @if(modalOpen){
-    <app-add-user-modal [dataLigne]="dataOneLigne" (modalOpen)="handleModal($event)"></app-add-user-modal>
+    <app-perso-add-user-modal [dataLigne]="dataOneLigne" (modalOpen)="handleModal($event)"></app-perso-add-user-modal>
     }
     @if(modalOpenCarriere){
     <app-carriere [dataLigne]="dataOneLigne" (modalOpen)="handleModalCarriere($event)"></app-carriere>
